@@ -1,0 +1,39 @@
+# Sensitive information
+*.key
+*.pem
+*.crt
+*password*
+*secret*
+.env
+credentials.txt
+config.yml
+*.conf
+
+# Proxmox backups (too large for git)
+*.vma
+*.vma.gz
+*.vma.lzo
+*.vma.zst
+*.vzdump
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+*~
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Screenshots (optional - keep these in repo)
+# docs/screenshots/*.png
+# docs/screenshots/*.jpg
+
+# Personal notes
+notes.txt
+todo.txt
