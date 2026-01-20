@@ -127,7 +127,7 @@ All phase documentation is available in the `/docs` folder:
 ## 🔗 Connect
 
 - **GitHub:** github.com/muzakkir97/homelab-infrastructure
-- **LinkedIn:** [Your LinkedIn Profile]
+- **LinkedIn:** [https://www.linkedin.com/in/muzakkir-kholil/]
 
 ---
 
