@@ -3,17 +3,19 @@
 ## 🔧 Essential Information
 
 ### Network Devices
+
 | Device | IP Address | Access Method | Credentials |
-|--------|-----------|---------------|-------------|
-| Router | 192.168.100.1 | Web UI | Your ISP credentials |
-| Switch | 192.168.100.2 | http://192.168.100.2 | admin / [your password] |
-| Proxmox | 192.168.100.25 | https://192.168.100.25:8006 | root / [your password] |
-| Gaming PC | 192.168.100.49 | Local | - |
+|--------|------------|---------------|-------------|
+| Router | [ROUTER_IP] | Web UI | Your ISP credentials |
+| Switch | [SWITCH_IP] | http://[SWITCH_IP] | admin / [your password] |
+| Proxmox | [PROXMOX_IP] | https://[PROXMOX_IP]:8006 | root / [your password] |
+| Workstation | [WORKSTATION_IP] | Local | - |
 
 ### VLAN Configuration
+
 | VLAN ID | Name | Subnet | Purpose | Current Status |
 |---------|------|--------|---------|----------------|
-| 1 | Management | 192.168.100.0/24 | Management network | ✅ Active |
+| 1 | Management | 192.168.x.0/24 | Management network | ✅ Active |
 | 10 | Main_Netwo | TBD | Client devices | ⏳ Ready (Phase 3) |
 | 20 | Homelab_se | TBD | Self-hosted services | ⏳ Ready (Phase 3) |
 | 30 | DMZ | TBD | Public-facing services | ⏳ Ready (Phase 3) |
@@ -46,9 +48,9 @@ ip addr show vmbr0
 **Check network connectivity:**
 ```bash
 # Test key devices
-ping -c 3 192.168.100.1    # Router
-ping -c 3 192.168.100.2    # Switch
-ping -c 3 192.168.100.49   # Gaming PC
+ping -c 3 [ROUTER_IP]       # Router
+ping -c 3 [SWITCH_IP]       # Switch
+ping -c 3 [WORKSTATION_IP]  # Workstation
 ```
 
 **Restart networking (if needed):**
@@ -69,59 +71,57 @@ cat /etc/network/interfaces
 nano /etc/network/interfaces
 ```
 
----
-
-### Windows Commands (Gaming PC)
+### Windows Commands (Workstation)
 
 **Check IP configuration:**
-```powershell
+```cmd
 ipconfig
 ipconfig /all  # Detailed info
 ```
 
 **Release and renew DHCP:**
-```powershell
+```cmd
 ipconfig /release
 ipconfig /renew
 ```
 
 **Flush DNS cache:**
-```powershell
+```cmd
 ipconfig /flushdns
 ```
 
 **View routing table:**
-```powershell
+```cmd
 route print
 ```
 
 **Test connectivity:**
-```powershell
-ping 192.168.100.1   # Router
-ping 192.168.100.2   # Switch
-ping 192.168.100.25  # Proxmox
+```cmd
+ping [ROUTER_IP]     # Router
+ping [SWITCH_IP]     # Switch
+ping [PROXMOX_IP]    # Proxmox
 ping 8.8.8.8         # Internet
 ```
 
 **Traceroute:**
-```powershell
-tracert 192.168.100.25
+```cmd
+tracert [PROXMOX_IP]
 ```
 
 **View ARP table:**
-```powershell
+```cmd
 arp -a
 ```
 
 **Reset network adapter:**
-```powershell
+```cmd
 # Disable adapter
-netsh interface set interface "Ethernet 2" admin=disable
+netsh interface set interface "Ethernet" admin=disable
 
 # Wait 5 seconds
 
 # Enable adapter
-netsh interface set interface "Ethernet 2" admin=enable
+netsh interface set interface "Ethernet" admin=enable
 ```
 
 ---
@@ -133,25 +133,25 @@ netsh interface set interface "Ethernet 2" admin=enable
 | Port | Device | PVID | VLAN Membership | Link Type |
 |------|--------|------|-----------------|-----------|
 | 1 | Router | 1 | VLAN 1 (Untagged) | Access |
-| 2 | Proxmox | 1 | VLAN 1 (Untagged)<br>VLAN 10,20,30,40 (Tagged) | Trunk |
+| 2 | Proxmox | 1 | VLAN 1 (Untagged), VLAN 10,20,30,40 (Tagged) | Trunk |
 | 3 | Work Laptop | 10 | VLAN 10 (Untagged) | Access |
-| 4 | Gaming PC | 1 | VLAN 1 (Untagged) | Access |
+| 4 | Workstation | 1 | VLAN 1 (Untagged) | Access |
 | 5-8 | Available | 1 | VLAN 1 (Untagged) | Access |
 
 ### Switch Access
 
 **Web Interface:**
 ```
-URL: http://192.168.100.2
+URL: http://[SWITCH_IP]
 Username: admin
 Password: [your password]
 ```
 
 **Key Pages:**
-- **VLAN Config:** VLAN → 802.1Q VLAN → VLAN Config
-- **Port Config:** VLAN → 802.1Q VLAN → Port Config
-- **PVID Settings:** VLAN → 802.1Q VLAN → Port PVID
-- **Backup Config:** System Tools → Config Files
+- VLAN Config: VLAN → 802.1Q VLAN → VLAN Config
+- Port Config: VLAN → 802.1Q VLAN → Port Config
+- PVID Settings: VLAN → 802.1Q VLAN → Port PVID
+- Backup Config: System Tools → Config Files
 
 ---
 
@@ -160,11 +160,9 @@ Password: [your password]
 ### Lost Access to Switch
 
 **Method 1: Access via VLAN 1 device**
-```
 1. Connect PC to any port (default VLAN 1)
-2. Set PC IP: 192.168.100.x (x = 50-254)
-3. Access: http://192.168.100.2
-```
+2. Set PC IP: 192.168.x.x (same subnet as switch)
+3. Access: http://[SWITCH_IP]
 
 **Method 2: Factory reset**
 ```
@@ -180,14 +178,12 @@ WARNING: This erases all configuration!
 8. Reconfigure from backup
 ```
 
----
-
 ### Lost Access to Proxmox
 
 **Method 1: Check network connectivity**
 ```bash
 # From another device on VLAN 1:
-ping 192.168.100.25
+ping [PROXMOX_IP]
 
 # If ping fails, check:
 1. Switch Port 2 configuration
@@ -213,17 +209,13 @@ cp /etc/network/interfaces.backup.YYYYMMDD /etc/network/interfaces
 systemctl restart networking
 ```
 
----
-
 ### Network Configuration Rollback
 
 **Switch:**
-```
 1. Login to switch web interface
 2. System Tools → Config Files
 3. Upload backed-up .bin file
 4. Reboot switch
-```
 
 **Proxmox:**
 ```bash
@@ -247,8 +239,8 @@ systemctl restart networking
 ```
 auto vmbr0
 iface vmbr0 inet static
-        address 192.168.100.25/24
-        gateway 192.168.100.1
+        address [PROXMOX_IP]/24
+        gateway [ROUTER_IP]
         bridge-ports eno1
         bridge-stp off
         bridge-fd 0
@@ -282,32 +274,29 @@ Hardware:
 ## 🔐 Security Best Practices
 
 ### Switch Security
-```
-✓ Change default admin password
-✓ Enable HTTPS for web interface (if available)
-✓ Disable unused ports
-✓ Regular configuration backups
-✓ Restrict management VLAN access
-```
+
+- ✓ Change default admin password
+- ✓ Enable HTTPS for web interface (if available)
+- ✓ Disable unused ports
+- ✓ Regular configuration backups
+- ✓ Restrict management VLAN access
 
 ### Proxmox Security
-```
-✓ Use strong root password
-✓ Enable firewall
-✓ Keep system updated (apt update && apt upgrade)
-✓ Use SSH key authentication (disable password)
-✓ Regular backups
-✓ Restrict web interface access to management VLAN
-```
+
+- ✓ Use strong root password
+- ✓ Enable firewall
+- ✓ Keep system updated (`apt update && apt upgrade`)
+- ✓ Use SSH key authentication (disable password)
+- ✓ Regular backups
+- ✓ Restrict web interface access to management VLAN
 
 ### Network Security
-```
-✓ Separate management from production VLANs
-✓ Default deny firewall rules (Phase 3)
-✓ Monitor logs for suspicious activity
-✓ Document all configuration changes
-✓ Test changes in isolated environment first
-```
+
+- ✓ Separate management from production VLANs
+- ✓ Default deny firewall rules (Phase 3)
+- ✓ Monitor logs for suspicious activity
+- ✓ Document all configuration changes
+- ✓ Test changes in isolated environment first
 
 ---
 
@@ -335,8 +324,6 @@ journalctl -f
 Node → System → Syslog
 ```
 
----
-
 ### Switch Monitoring
 
 **Web UI:**
@@ -351,29 +338,26 @@ System → Log
 ## 🔄 Regular Maintenance Tasks
 
 ### Weekly
-```
-□ Check Proxmox updates available
-□ Review system logs for errors
-□ Verify all critical services online
-□ Test backup restoration (once/month)
-```
+
+- □ Check Proxmox updates available
+- □ Review system logs for errors
+- □ Verify all critical services online
+- □ Test backup restoration (once/month)
 
 ### Monthly
-```
-□ Backup switch configuration
-□ Backup Proxmox configuration
-□ Review network topology (any changes?)
-□ Update documentation
-□ Check disk space on Proxmox
-```
+
+- □ Backup switch configuration
+- □ Backup Proxmox configuration
+- □ Review network topology (any changes?)
+- □ Update documentation
+- □ Check disk space on Proxmox
 
 ### Quarterly
-```
-□ Apply Proxmox updates (after testing)
-□ Review and update firewall rules
-□ Audit user access
-□ Verify disaster recovery plan
-```
+
+- □ Apply Proxmox updates (after testing)
+- □ Review and update firewall rules
+- □ Audit user access
+- □ Verify disaster recovery plan
 
 ---
 
@@ -421,25 +405,23 @@ VM cannot reach internet
 ## 📚 Useful Resources
 
 ### Official Documentation
-- **Proxmox:** https://pve.proxmox.com/wiki/Network_Configuration
-- **TP-Link Switch:** https://www.tp-link.com/support/download/
-- **VLAN Tutorial:** https://en.wikipedia.org/wiki/IEEE_802.1Q
+
+- Proxmox: https://pve.proxmox.com/wiki/Network_Configuration
+- TP-Link Switch: https://www.tp-link.com/support/download/
+- VLAN Tutorial: https://en.wikipedia.org/wiki/IEEE_802.1Q
 
 ### Community Resources
-- **Reddit r/homelab:** https://reddit.com/r/homelab
-- **Reddit r/Proxmox:** https://reddit.com/r/Proxmox
-- **ServeTheHome:** https://www.servethehome.com/
 
-### Your Documentation
-- **GitHub Repository:** github.com/muzakkir97/homelab-infrastructure
-- **Network Topology:** `/docs/network-topology-phase2.md`
-- **Phase 2 Guide:** `/docs/phase-2-vlan-segmentation-complete.md`
+- Reddit r/homelab: https://reddit.com/r/homelab
+- Reddit r/Proxmox: https://reddit.com/r/Proxmox
+- ServeTheHome: https://www.servethehome.com/
 
 ---
 
 ## 💾 Backup Locations
 
 ### Configuration Backups
+
 ```
 Switch Config:
 └─ /home/user/homelab-backups/phase2/TP-Link-SG108E-VLAN-Config-YYYY-MM-DD.bin
@@ -448,27 +430,14 @@ Proxmox Network Config:
 └─ /etc/network/interfaces.backup.YYYYMMDD
 
 Documentation:
-└─ github.com/muzakkir97/homelab-infrastructure
+└─ GitHub repository
 ```
 
 ### Backup Schedule
-```
-□ Switch: After any VLAN changes
-□ Proxmox: Daily (automatic via cron)
-□ Documentation: After each phase completion
-```
 
----
-
-## 📞 Support Contacts
-
-### Hardware Support
-- **TP-Link Support:** https://www.tp-link.com/support/
-- **Local IT Store:** [Your local computer shop]
-
-### Online Communities
-- **r/homelab Discord:** [Discord invite link if member]
-- **Proxmox Forums:** https://forum.proxmox.com/
+- □ Switch: After any VLAN changes
+- □ Proxmox: Daily (automatic via cron)
+- □ Documentation: After each phase completion
 
 ---
 
@@ -484,14 +453,14 @@ bridge vlan show
 ip addr show vmbr0
 echo ""
 echo "=== Connectivity Tests ==="
-ping -c 3 192.168.100.1
-ping -c 3 192.168.100.2
-ping -c 3 192.168.100.49
+ping -c 3 [ROUTER_IP]
+ping -c 3 [SWITCH_IP]
+ping -c 3 [WORKSTATION_IP]
 
 # Expected output:
 # VLAN filtering: 1 (enabled)
 # Bridge shows VLANs 1,10,20,30,40
-# IP: 192.168.100.25/24
+# IP: [PROXMOX_IP]/24
 # All pings: 0% packet loss
 ```
 
@@ -500,5 +469,16 @@ ping -c 3 192.168.100.49
 
 ---
 
-*Last Updated: Phase 2 Completion - January 2025*
+## Placeholder Reference
+
+| Placeholder | Description |
+|-------------|-------------|
+| [ROUTER_IP] | Router/gateway IP |
+| [SWITCH_IP] | Switch management IP |
+| [PROXMOX_IP] | Proxmox server IP |
+| [WORKSTATION_IP] | Workstation IP |
+
+---
+
+*Last Updated: Phase 2 Completion - January 2025*  
 *Next Phase: pfSense Integration (Phase 3)*
