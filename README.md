@@ -1,265 +1,237 @@
-# Homelab Infrastructure Project
+# 🏗️ Homelab Infrastructure Project
 
-## 🎯 Project Overview
+> Enterprise-grade homelab built for learning cloud engineering, cybersecurity, and infrastructure management
 
-Building an enterprise-grade homelab infrastructure for cybersecurity learning and self-hosted services.
-
-**Goal:** Replace ~RM 780/year in cloud subscriptions with self-hosted alternatives while developing enterprise networking and security skills.
-
----
-
-## 📊 Project Phases
-
-### ✅ Phase 1: Proxmox Setup (Complete)
-- Installed Proxmox VE 8.x on Ryzen 5 5600X server
-- Configured ZFS storage pool with mirror redundancy
-- Established baseline virtualization infrastructure
-
-📄 [Phase 1 Documentation](docs/phase-1/)
+[![Status](https://img.shields.io/badge/Status-Active-success)](/)
+[![Proxmox](https://img.shields.io/badge/Proxmox-VE%208.x-orange)](/)
+[![Phase](https://img.shields.io/badge/Phase-6F%20Infrastructure%20Audit-yellow)](/)
+[![Containers](https://img.shields.io/badge/Containers-9%20LXC-blue)](/)
+[![VLANs](https://img.shields.io/badge/VLANs-5%20Segments-purple)](/)
 
 ---
 
-### ✅ Phase 2: VLAN Network Segmentation (Complete)
+## 👤 About Me
 
-**Status:** ✅ Complete (January 2025)
+**Name**: Muzakkir Kholil  
+**Role**: Customer Service Engineer @ F-Secure  
+**Location**: Kuala Lumpur, Malaysia  
+**Domain**: [najhin-gaming.com](https://najhin-gaming.com)  
+**Goal**: Cloud Engineering / DevOps career transition
 
-**Achievements:**
-- Configured TP-Link TL-SG108E managed switch with 5 VLANs
-- Implemented 802.1Q VLAN tagging with trunk ports
-- Set up Proxmox VLAN-aware bridge
-- Established network segmentation foundation
-
-**VLANs Created:**
-| VLAN ID | Name | Purpose |
-|---------|------|---------|
-| 1 | Management | Infrastructure management |
-| 10 | Main Network | General client devices |
-| 20 | Services | Homelab services (Pi-hole, NAS, VMs) |
-| 30 | DMZ | Public-facing services |
-| 40 | Malware Lab | Isolated security testing |
-
-**Skills Developed:**
-- 802.1Q VLAN configuration
-- Trunk vs access port concepts
-- PVID (Port VLAN ID) configuration
-- Network troubleshooting methodology
-
-📄 [Full Documentation](docs/phase-2/) | 🗺️ [Network Topology](docs/phase-2/network-topology.md) | 🔧 [Quick Reference Guide](docs/phase-2/quick-reference.md)
+Building this homelab to develop hands-on skills in virtualization, networking, monitoring, automation, and cybersecurity — all documented as a living portfolio.
 
 ---
 
-### ✅ Phase 3: pfSense Router-on-a-Stick (Complete)
+## 📋 What This Project Demonstrates
 
-**Status:** ✅ Complete (January 2026)
+- **Network Segmentation** — 5 VLANs with router-on-a-stick topology via pfSense
+- **Infrastructure Monitoring** — Full Prometheus + Grafana + Loki + Alertmanager stack
+- **Reverse Proxy & SSL** — Nginx Proxy Manager with Let's Encrypt via Cloudflare DNS-01
+- **Game Server Hosting** — Pterodactyl Panel + Wings managing Terraria & Minecraft servers
+- **Remote Access** — Tailscale VPN (subnet router on pfSense) + Cloudflare Zero Trust
+- **Backup & Storage** — NAS-backed container backups via SMB
+- **Security Practices** — No admin interfaces exposed, DNS record cleanup, firewall segmentation
 
-**Achievements:**
-- Deployed pfSense 2.7.2-RELEASE on AC8F Intel N100 Mini PC
-- Implemented **router-on-a-stick** architecture with 802.1Q VLAN trunking
-- Configured 5 VLANs routed through single physical interface
-- Established centralized firewall with inter-VLAN routing
-- Created isolated malware lab with blocked internet access
+---
 
-**Technical Implementation:**
+## 🖥️ Hardware
 
-| Component | Configuration |
+| Component | Specification |
 |-----------|---------------|
-| WAN Interface | DHCP from ISP Router (2.5 Gbps) |
-| LAN Interface | VLAN Trunk (1 Gbps) |
-| VLAN 1 | 192.168.1.0/24 - Management |
-| VLAN 10 | 192.168.10.0/24 - Main Network |
-| VLAN 20 | 192.168.20.0/24 - Homelab Services |
-| VLAN 30 | 192.168.30.0/24 - DMZ |
-| VLAN 40 | 192.168.40.0/24 - Malware Lab (Isolated) |
-
-**Firewall Rules:**
-- VLANs 1, 10, 20, 30: Full internet access via NAT
-- VLAN 40: **Blocked from internet** - isolated for safe malware analysis
-
-**Challenges Overcome:**
-- Intel i226-V driver compatibility issues with FreeBSD/pfSense
-- Systematic port testing and documentation
-- Switch trunk port configuration for multi-VLAN support
-
-**Skills Developed:**
-- Router-on-a-stick architecture
-- pfSense installation and configuration
-- Firewall rule creation and management
-- Inter-VLAN routing concepts
-- Hardware troubleshooting and adaptation
-
-📄 [Installation Guide](docs/phase-3/phase-3-installation-guide.md) | 🔧 [Troubleshooting Log](docs/phase-3/phase-3-troubleshooting-log.md) | 🗺️ [Network Topology](docs/phase-3/phase-3-network-topology.md)
-
----
-
-### 🟡 Phase 4: Self-Hosted Services (Planned)
-
-**Status:** 🟡 Planning
-
-**Objectives:**
-- Deploy Pi-hole on VLAN 20 for network-wide DNS filtering
-- Configure UGREEN NAS for centralized storage
-- Set up Tailscale VPN on pfSense for secure remote access
-- Implement Nginx Proxy Manager for reverse proxy with SSL
-
----
-
-### 🟡 Phase 5: Game Servers (Planned)
-
-**Status:** 🟡 Planning
-
-**Objectives:**
-- Minecraft server deployment
-- Project Zomboid dedicated server
-- Terraria server
-- Centralized game server management
-
----
-
-### 🟡 Phase 6: Security Lab (Planned)
-
-**Status:** 🟡 Planning
-
-**Objectives:**
-- Malware analysis VMs on isolated VLAN 40
-- Red Team practice environment
-- Security tool deployment (Wazuh, ELK Stack)
-
----
-
-## 🖥️ Hardware Inventory
-
-### Core Infrastructure
-
-| Device | Specs | Role | Status |
-|--------|-------|------|--------|
-| Proxmox Server | Ryzen 5 5600X, 32GB RAM, ZFS Mirror | Hypervisor | ✅ Operational |
-| AC8F Mini PC | Intel N100, 8GB RAM, 5x 2.5GbE | pfSense Router | ✅ Operational |
-| TP-Link TL-SG108E | 8-port Managed Switch | VLAN Switching | ✅ Configured |
-| Raspberry Pi 4B | 4GB RAM | Pi-hole DNS | ⏳ Phase 4 |
-| UGREEN NASync | 2-bay NAS | Network Storage | ⏳ Phase 4 |
-
-### AC8F Port Status (Intel i226-V)
-
-| Port | Interface | Status | Notes |
-|------|-----------|--------|-------|
-| Port 1010 | igc0 | ❌ | Driver compatibility issue |
-| LAN4 | igc1 | ❌ | Driver compatibility issue |
-| LAN3 | igc2 | ✅ | Used for LAN/VLAN Trunk |
-| LAN2 | igc3 | ✅ | Used for WAN (2.5 Gbps) |
+| **Server** | AMD Ryzen 5 5600X · 32GB DDR4 · Proxmox VE |
+| **Firewall** | AC8F Mini PC · Intel N100 · pfSense 2.7.2 |
+| **Switch** | TP-Link TL-SG108E · 8-port managed · 802.1Q |
+| **NAS** | UGREEN DXP2800 "Kinmoon" · 3.6TB WD Purple |
+| **DNS** | Raspberry Pi 4 · Pi-hole v6.3 |
+| **ISP** | 600 Mbps / 200 Mbps (Time Internet) |
 
 ---
 
 ## 🌐 Network Architecture
 
 ```
-                            INTERNET
-                                │
-                                ▼
-                    ┌───────────────────────┐
-                    │      ISP Router       │
-                    │    (WiFi + DHCP)      │
-                    └───────────┬───────────┘
-                                │
-              ┌─────────────────┴─────────────────┐
-              │                                   │
-              ▼                                   ▼
-    ┌─────────────────┐                 ┌─────────────────┐
-    │   WiFi Clients  │                 │  pfSense Router │
-    │ (Shared Network)│                 │   (AC8F N100)   │
-    └─────────────────┘                 │                 │
-                                        │  WAN: DHCP      │
-                                        │  LAN: Trunk     │
-                                        └────────┬────────┘
-                                                 │
-                                    802.1Q VLAN Trunk
-                                    (VLANs 1,10,20,30,40)
-                                                 │
-                                                 ▼
-                                    ┌────────────────────┐
-                                    │  TP-Link TL-SG108E │
-                                    │   Managed Switch   │
-                                    └────────┬───────────┘
-                                             │
-              ┌──────────────┬───────────────┼───────────────┬──────────────┐
-              │              │               │               │              │
-              ▼              ▼               ▼               ▼              ▼
-        ┌──────────┐  ┌──────────┐    ┌──────────┐    ┌──────────┐   ┌──────────┐
-        │ Proxmox  │  │Workstation│   │ Pi-hole  │    │   NAS    │   │  Future  │
-        │ (Trunk)  │  │ (VLAN 1) │    │(VLAN 20) │    │(VLAN 20) │   │ Devices  │
-        └──────────┘  └──────────┘    └──────────┘    └──────────┘   └──────────┘
+                    ┌─────────────┐
+                    │   Internet  │
+                    └──────┬──────┘
+                           │
+                    ┌──────┴──────┐
+                    │ ISP Router  │
+                    │192.168.100.1│
+                    └──────┬──────┘
+                           │
+                    ┌──────┴──────┐
+                    │  pfSense    │
+                    │  (N100)     │
+                    │Router-on-   │
+                    │  a-Stick    │
+                    └──────┬──────┘
+                           │ 802.1Q Trunk
+                    ┌──────┴──────┐
+                    │ TP-Link     │
+                    │ TL-SG108E   │
+                    └──────┬──────┘
+           ┌───────┬───────┼───────┬───────┐
+           │       │       │       │       │
+        VLAN10  VLAN20  VLAN30  VLAN40  VLAN50
+         Mgmt   Main   Services  DMZ   Malware
 ```
 
----
+### VLAN Design
 
-## 💰 Cost Savings Projection
-
-### Annual Subscription Costs Being Replaced:
-
-| Service | Annual Cost | Self-Hosted Alternative |
-|---------|-------------|------------------------|
-| Google Drive (200GB) | ~RM 250/year | Nextcloud |
-| iCloud Photos | ~RM 130/year | Immich |
-| Game Server Hosting | ~RM 400/year | Self-hosted |
-| **Total Annual Savings** | **~RM 780/year** | |
-
-**Hardware Investment:** ~RM 2,500 (one-time)  
-**ROI:** ~3 years
+| VLAN | Name | Subnet | Purpose | Security |
+|------|------|--------|---------|----------|
+| 10 | Management | 192.168.10.0/24 | Proxmox, pfSense | Highest — admin only |
+| 20 | Main Network | 192.168.20.0/24 | Client devices | Medium — trusted users |
+| 30 | Services | 192.168.30.0/24 | All hosted services | Medium — controlled |
+| 40 | DMZ | 192.168.40.0/24 | Future public-facing | Low trust |
+| 50 | Malware Lab | 192.168.50.0/24 | Security research | Air-gapped — isolated |
 
 ---
 
-## 🎓 Skills Developed
+## 📦 Services & Containers
 
-### Phase 1 - Virtualization
-- Proxmox VE installation and configuration
-- ZFS storage management
-- Virtual machine deployment
+### LXC Containers (Proxmox)
 
-### Phase 2 - Network Segmentation
-- VLAN configuration and management
-- 802.1Q tagging protocol
-- Trunk and access port concepts
-- Network segmentation principles
+| CTID | Name | Service | Target IP | Status |
+|------|------|---------|-----------|--------|
+| 201 | nginx-proxy-manager | Reverse Proxy & SSL | 192.168.30.201 | ✅ Running |
+| 202 | monitoring-prometheus | Metrics Collection | 192.168.30.202 | ⏳ Pending migration |
+| 203 | monitoring-grafana | Dashboards & Viz | 192.168.30.203 | ⏳ Pending migration |
+| 204 | monitoring-loki | Log Aggregation | 192.168.30.204 | ⏳ Pending migration |
+| 205 | monitoring-alertmanager | Alert Routing | 192.168.30.205 | ⏳ Pending migration |
+| 206 | monitoring-uptime | Uptime Kuma | 192.168.30.206 | ✅ Running |
+| 207 | network-ddns | Cloudflare DDNS | 192.168.30.207 | ✅ Running |
+| 300 | gaming-panel | Pterodactyl Panel | 192.168.30.210 | ✅ Running |
+| 302 | gaming-wings-1 | Pterodactyl Wings | 192.168.30.212 | ✅ Running |
 
-### Phase 3 - Enterprise Routing
-- **Router-on-a-stick architecture**
-- pfSense firewall administration
-- Inter-VLAN routing
-- Firewall rule creation
-- Hardware troubleshooting
-- FreeBSD/pfSense driver issues
+### Physical Devices
 
----
+| Device | Role | IP | Status |
+|--------|------|-----|--------|
+| Proxmox Server | Hypervisor | 192.168.10.5 | ✅ Online |
+| pfSense | Firewall/Router | 192.168.10.1 | ✅ Online |
+| Pi-hole (RPi4) | DNS Filtering | 192.168.20.10 → .30.10 | ⏳ Migrating |
+| Kinmoon NAS | Backup Storage | 192.168.1.15 | ✅ Online |
+| TP-Link Switch | Layer 2 | 192.168.1.20 | ✅ Online |
 
-## 📚 Documentation Structure
+### External Services
 
-```
-docs/
-├── phase-1/
-│   └── proxmox-setup.md
-├── phase-2/
-│   ├── vlan-configuration.md
-│   ├── network-topology.md
-│   └── quick-reference.md
-└── phase-3/
-    ├── phase-3-summary.md
-    ├── phase-3-installation-guide.md
-    ├── phase-3-troubleshooting-log.md
-    └── phase-3-network-topology.md
-```
+| Service | Purpose |
+|---------|---------|
+| Cloudflare | DNS, CDN, Zero Trust Access |
+| Tailscale | VPN (subnet router on pfSense) |
+| Let's Encrypt | SSL certificates (DNS-01 via Cloudflare) |
 
 ---
 
-## 🔗 Connect
+## 🔒 Security Architecture
 
-- **GitHub:** [github.com/muzakkir97](https://github.com/muzakkir97)
-- **LinkedIn:** [linkedin.com/in/muzakkir-kholil](https://www.linkedin.com/in/muzakkir-kholil/)
+| Layer | Implementation |
+|-------|----------------|
+| Perimeter | ISP router → pfSense firewall |
+| Network | 5 VLAN segments (air-gapped malware lab) |
+| DNS | Pi-hole ad/tracker blocking |
+| Access | Tailscale VPN + Cloudflare Access (Zero Trust) |
+| Transport | TLS everywhere via NPM + Let's Encrypt |
+| Monitoring | Prometheus + Alertmanager (Telegram & Discord) |
+| Logging | Loki + Promtail centralized log aggregation |
+
+**Key security decisions:**
+- No admin interfaces (Proxmox, pfSense, Pi-hole) exposed to internet
+- All external access via Tailscale VPN or Cloudflare Access with email OTP
+- Wildcard and admin DNS records deleted from Cloudflare
+- VLAN 50 (Malware Lab) completely air-gapped — no routing, no DHCP
 
 ---
 
-## 📝 License
+## 🗺️ Project Phases
 
-This project is documented for educational purposes. Feel free to use as reference for your own homelab projects.
+### Completed ✅
+
+| Phase | Description | Date |
+|-------|-------------|------|
+| 1 | Proxmox VE bare-metal installation | Jan 2026 |
+| 2 | pfSense firewall & initial VLAN setup | Jan 2026 |
+| 3 | Core services (Pi-hole, NPM, Tailscale, DDNS) | Jan 2026 |
+| 4 | External access & SSL (Cloudflare, Let's Encrypt) | Feb 2026 |
+| 5 | Monitoring stack (Prometheus, Grafana, Loki, Alertmanager, Uptime Kuma) | Feb 2026 |
+| 6A-6D | Gaming platform (Pterodactyl Panel + Wings, Terraria) | Feb 2026 |
+| 9 | NAS deployment (UGREEN DXP2800, SMB backups) | Mar 2026 |
+
+### Current 🔧
+
+| Phase | Description | Progress |
+|-------|-------------|----------|
+| 6F | Infrastructure Audit & Correction — VLAN restructure, security fixes, container migration | 75% |
+
+### Planned 📋
+
+| Phase | Description | Priority |
+|-------|-------------|----------|
+| 6E | Homepage Dashboard (gethomepage.dev) | Medium |
+| 7A | Backup strategy (scheduled, rotation, recovery testing) | High |
+| 7B | n8n workflow automation (Discord/Telegram bots, GitHub sync) | Medium |
+| 7C | AI Agent deployment (OpenClaw, portfolio documentation) | Low |
+| 8 | Gaming expansion (Minecraft, Project Zomboid) | Low |
+
+### Future Services Under Consideration
+
+- **Gitea** — Self-hosted Git for IaC repos and CI/CD
+- **Drone CI / Woodpecker** — CI/CD pipelines integrated with Gitea
+- **Ansible Semaphore** — Web UI for infrastructure-as-code management
+- **Authentik** — SSO/Identity provider (LDAP/SAML/OIDC)
+- **Self-hosted Email** — Mailcow or Mox (replace Gmail)
+- **Netbox** — IP Address Management (replace manual tracking)
+- **HashiCorp Vault** — Secrets management
+- **Obsidian + Syncthing** — Self-hosted note sync for knowledge management
 
 ---
 
-**Last Updated:** January 2026 - Phase 3 Complete ✅
+## 📊 Architecture Decision Records
+
+| ADR | Decision | Rationale |
+|-----|----------|-----------|
+| 001 | LXC over VMs | 32GB RAM constraint; LXC uses ~256-512MB vs VM 2-4GB |
+| 002 | One container per service | Mirrors microservices; independent backup/update/firewall |
+| 003 | Router-on-a-stick | Cost-effective; single managed switch handles L2 |
+| 004 | Gaming on VLAN 30 | Reduces complexity; same access patterns as other services |
+| 005 | Cloudflare for external | DDoS protection, SSL termination, Zero Trust (free tier) |
+| 006 | Tailscale for admin | No exposed SSH; WireGuard-based; works through NAT |
+
+---
+
+## 📂 Documentation
+
+Detailed documentation is maintained in the [`docs/`](./docs/) folder:
+
+| File | Purpose |
+|------|---------|
+| `current-state.md` | Verified live infrastructure (source of truth) |
+| `architecture.md` | Target design, ADRs, network diagrams |
+| `roadmap.md` | Phase status, timeline, ideas backlog |
+| `service-catalog.md` | All services with ports, configs, dependencies |
+| `troubleshooting.md` | Past issues and resolutions |
+| `commands.md` | Copy-paste ready commands |
+| `changelog.md` | Version history of all changes |
+
+---
+
+## 🛠️ Key Lessons Learned
+
+1. **VLAN-aware bridges need subinterfaces** — Proxmox management IP must be on `vmbr0.XX`, not the base bridge
+2. **SMB over NFS for LXC backups** — NFS can't handle LXC user namespace UID mapping
+3. **DNS-01 over HTTP-01 for SSL** — Cloudflare proxy interferes with HTTP-01 challenges
+4. **Check interface names before editing** — `ip link show` before touching `/etc/network/interfaces`
+5. **Switch ports need PVID AND membership** — Setting only one isn't enough for access ports
+
+---
+
+## 📫 Connect
+
+- **LinkedIn**: [linkedin.com/in/muzakkir-kholil](https://www.linkedin.com/in/muzakkir-kholil/)
+- **GitHub**: [github.com/muzakkir97](https://github.com/muzakkir97)
+- **Domain**: [najhin-gaming.com](https://najhin-gaming.com)
+
+---
+
+*Last updated: March 5, 2026 — Phase 6F in progress*
