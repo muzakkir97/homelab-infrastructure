@@ -1,5 +1,11 @@
 # Phase 2: VLAN Network Segmentation
 
+> ⚠️ **Historical Document**
+> 
+> This document reflects the infrastructure state at time of writing (January 2025).
+> VLANs were restructured in Phase 6F (March 2026) to correct naming misalignments.
+> See [current-state.md](../current-state.md) for current VLAN configuration.
+
 ## 📋 Overview
 
 - **Phase:** 2 of 5
