@@ -1,5 +1,11 @@
 # Phase 1: Proxmox Foundation - Completion Report
 
+> ⚠️ **Historical Document**
+> 
+> This document reflects the infrastructure state at time of writing (December 2024).
+> Storage configuration has since changed — ZFS pool no longer exists.
+> See [current-state.md](../current-state.md) for current storage configuration.
+
 **Project:** Homelab Infrastructure  
 **Phase:** 1 - Foundation  
 **Date Started:** December 2024  
