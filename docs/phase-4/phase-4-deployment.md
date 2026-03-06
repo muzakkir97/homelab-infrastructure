@@ -1,5 +1,12 @@
 ## Overview
 
+> ⚠️ **Historical Document — Security Update**
+> 
+> This document shows proxy hosts for admin interfaces (Proxmox, Pi-hole, NPM).
+> These were **removed in Phase 6F** (March 2026) as a security fix.
+> Admin interfaces should only be accessed via Tailscale VPN.
+> See [current-state.md](../current-state.md) for current external access configuration.
+ 
 Phase 4 covers the deployment of core homelab services including DNS filtering, reverse proxy, and VPN access. This phase transforms the network infrastructure (built in Phases 1-3) into a functional homelab environment.
 
 **Deployment Period:** January 2026  
