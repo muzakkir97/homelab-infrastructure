@@ -1,5 +1,11 @@
 # Phase 3 Summary: pfSense Router-on-a-Stick Deployment
 
+> ⚠️ **Historical Document**
+> 
+> This document reflects the infrastructure state at time of writing (January 2025).
+> VLANs and network configuration were restructured in Phase 6F (March 2026).
+> See [current-state.md](../current-state.md) for current network configuration.
+
 ## Document Purpose
 This summary provides context for future Claude sessions to continue the homelab infrastructure project. It contains the current state of the project, what was accomplished, and what's planned next.
 
