@@ -4,6 +4,95 @@
 
 ---
 
+## 2026-03-07 — Tailscale Interface Blocking All Traffic
+
+**Symptoms:** pfSense shows connected in Tailscale, but accessing https://100.110.165.45 times out.
+
+**Root Cause:** No firewall rules defined on Tailscale interface. pfSense blocks all traffic by default.
+
+**Resolution:** Added firewall rules on Firewall → Rules → Tailscale:
+- Pass any from any to This Firewall (for WebUI access)
+- Pass any from any to any (for subnet routing)
+
+**Lesson:** Every pfSense interface needs explicit firewall rules. No rules = all traffic blocked.
+
+---
+
+## 2026-03-07 — Pterodactyl Panel Login Timeout (20000ms)
+
+**Symptoms:** Panel login page shows "timeout of 20000ms exceeded." Password reset also fails.
+
+**Root Cause:** Container resolv.conf still pointed to old DNS (192.168.20.10). Panel tries to verify reCAPTCHA with Google during login, which requires DNS.
+
+**Resolution:**
+```bash
+pct set 300 -nameserver 192.168.30.1
+pct stop 300 && pct start 300
+```
+Also updated APP_URL in .env from old IP to 192.168.30.210.
+
+**Lesson:** `pct set -nameserver` updates Proxmox config but NOT running container's resolv.conf. Must restart container.
+
+---
+
+## 2026-03-07 — Cross-VLAN DNS Queries Timing Out
+
+**Symptoms:** `nslookup google.com 192.168.30.10` times out from VLANs 10 and 20. Ping to Pi-hole works fine. `nc -zvu 192.168.30.10 53` shows port open.
+
+**Root Cause:** Unknown. Firewall rules are allow-all. Possibly pfSense DNS Resolver intercepting or NAT state issues.
+
+**Workaround:** pfSense DNS Resolver with Forwarding Mode. DHCP assigns VLAN gateway as DNS. pfSense forwards to Pi-hole.
+
+**Lesson:** When using pfSense with Pi-hole, DNS proxy architecture is more reliable than direct cross-VLAN queries.
+
+---
+
+## 2026-03-07 — Pi-hole Static IP Not Applied After Reboot
+
+**Symptoms:** Edited `/etc/dhcpcd.conf` with static IP. After reboot, still on DHCP. `systemctl status dhcpcd` shows "Unit could not be found."
+
+**Root Cause:** New Raspberry Pi OS (2026) uses **NetworkManager**, not dhcpcd. The dhcpcd.conf file is ignored.
+
+**Resolution:**
+```bash
+sudo nmcli con mod "netplan-eth0" ipv4.addresses 192.168.30.10/24
+sudo nmcli con mod "netplan-eth0" ipv4.gateway 192.168.30.1
+sudo nmcli con mod "netplan-eth0" ipv4.dns "1.1.1.1 8.8.8.8"
+sudo nmcli con mod "netplan-eth0" ipv4.method manual
+sudo nmcli con down "netplan-eth0" && sudo nmcli con up "netplan-eth0"
+```
+
+**Lesson:** Check `systemctl status NetworkManager` vs `systemctl status dhcpcd` to determine which network manager is active.
+
+---
+
+## 2026-03-07 — Proxmox Lost Connectivity After Switch VLAN Changes
+
+**Symptoms:** Proxmox could not ping gateway 192.168.10.1 after switch VLAN changes. Tailscale access also stopped.
+
+**Root Cause:** Port 2 (Proxmox) was set as access port (untagged VLAN 10). But Proxmox uses vmbr0.10 which sends VLAN 10 **tagged** frames. Switch was stripping the tag.
+
+**Resolution:** Changed port 2 to trunk (tagged on all VLANs), matching port 1 (pfSense).
+
+**Lesson:** Any device using VLAN-aware bridges or VLAN subinterfaces must be on a **trunk port** (tagged). Access ports are only for devices sending untagged traffic.
+
+---
+
+## 2026-03-07 — Windows nslookup Using IPv6 Instead of DHCP DNS
+
+**Symptoms:** `nslookup google.com` times out. Shows "Server: Unknown, Address: fe80::1" (IPv6). `nslookup google.com 192.168.20.1` works.
+
+**Root Cause:** Windows nslookup prefers IPv6 DNS. pfSense advertises fe80::1 via Router Advertisement.
+
+**Resolution:**
+```powershell
+Disable-NetAdapterBinding -Name "Ethernet 2" -ComponentID ms_tcpip6
+```
+
+**Lesson:** If nslookup shows fe80::1 but browser works, it's IPv6 DNS preference. Disable IPv6 or configure it properly.
+
+---
+
 ## 2026-03-05 — Proxmox Cannot Ping Gateway After VLAN Migration
 
 **Symptoms:** Proxmox had new IP on VLAN 10, could not reach gateway. "Destination Host Unreachable."
