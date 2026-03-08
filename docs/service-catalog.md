@@ -1,6 +1,6 @@
 # Service Catalog
 
-> **Last Updated:** March 5, 2026
+> **Last Updated:** March 8, 2026
 
 ---
 
@@ -24,14 +24,20 @@
 | Alertmanager | 205 | 192.168.30.205 | 9093 | Alert routing (Telegram + Discord) |
 | Uptime Kuma | 206 | 192.168.30.206 | 3001 | Service availability monitoring |
 
+## Productivity
+
+| Service | CTID | Target IP | Port | Role |
+|---------|------|-----------|------|------|
+| Nextcloud | 220 | 192.168.30.220 | 80 | Cloud storage, calendar, contacts |
+
 ## Gaming Platform
 
 | Service | CTID | Target IP | Port | Role |
 |---------|------|-----------|------|------|
 | Pterodactyl Panel | 300 | 192.168.30.210 | 443 | Game server management UI |
 | Pterodactyl Wings | 302 | 192.168.30.212 | — | Game server daemon (10GB RAM) |
-| Terraria (Calamity) | via Wings | — | 7777 | Game server (offline) |
-| Minecraft | via Wings | — | 25570 | Game server (offline) |
+| Terraria (Calamity) | via Wings | — | 7777 | Game server |
+| Minecraft | via Wings | — | 25570 | Game server |
 
 ## Storage
 
@@ -39,17 +45,27 @@
 |----|------|--------|---------|
 | local | Directory | /var/lib/vz | ISOs, templates |
 | local-lvm | LVM-Thin | pve/data | VM/CT disks |
-| kinmoon-smb | SMB/CIFS | 192.168.1.15 | Backups |
+| kinmoon-smb | SMB/CIFS | 192.168.10.15 | Backups |
+
+## External Services
+
+| Service | Type | Endpoint | Purpose |
+|---------|------|----------|---------|
+| Cloudflare Tunnel | homelab-tunnel | cloud.najhin-gaming.com → localhost:80 | Nextcloud external access |
+| Cloudflare Access | — | grafana.najhin-gaming.com | Zero-trust auth (email OTP) |
+| Let's Encrypt | DNS-01 | — | SSL certificates via Cloudflare |
 
 ## Service Dependencies
 
 ```
 Internet → Cloudflare DNS → NPM → Grafana
-                                 → Pterodactyl Panel → Wings → Game Servers
+                               → Pterodactyl Panel → Wings → Game Servers
+
+Internet → Cloudflare Tunnel → Nextcloud (CT 220)
 
 pfSense → Pi-hole (DNS) → All containers
 
-Prometheus → Node exporters (all CTs) → Alertmanager → Telegram / Discord
+Prometheus → Node exporters (all CTs + Pi-hole) → Alertmanager → Telegram / Discord
 Loki → Grafana
 
 Proxmox → Kinmoon NAS (backups)
@@ -71,6 +87,21 @@ Proxmox → Kinmoon NAS (backups)
 | 9100 | Node Exporter |
 | 25570 | Minecraft |
 
+## Container Boot Order
+
+| Order | CTID | Name | Reason |
+|-------|------|------|--------|
+| 1 | 201 | nginx-proxy-manager | Reverse proxy first |
+| 2 | 207 | network-ddns | DNS updates |
+| 3 | 202 | monitoring-prometheus | Metrics collection |
+| 4 | 204 | monitoring-loki | Log aggregation |
+| 5 | 205 | monitoring-alertmanager | Alert routing |
+| 6 | 203 | monitoring-grafana | Dashboards (needs Prometheus/Loki) |
+| 7 | 206 | monitoring-uptime | Service monitoring |
+| 8 | 220 | nextcloud | Cloud storage |
+| 9 | 300 | gaming-panel | Game management |
+| 10 | 302 | gaming-wings-1 | Game servers (needs Panel) |
+
 ---
 
-*Last updated: March 5, 2026*
+*Last updated: March 8, 2026*

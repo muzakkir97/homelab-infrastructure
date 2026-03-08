@@ -1,6 +1,6 @@
 # Roadmap
 
-> **Last Updated:** March 5, 2026
+> **Last Updated:** March 8, 2026
 
 ---
 
@@ -15,30 +15,14 @@
 | 5 | Monitoring: Prometheus, Grafana, Loki, Alertmanager, Uptime Kuma | Feb 2026 |
 | 6A-6D | Gaming: Pterodactyl Panel + Wings, Terraria (Calamity) | Feb 2026 |
 | 9 | NAS: UGREEN DXP2800 (Kinmoon), SMB backups | Mar 3, 2026 |
+| 6F | Infrastructure Audit & VLAN Migration | Mar 7, 2026 |
+| 7 | Nextcloud Deployment + Cloudflare Tunnel | Mar 8, 2026 |
 
 ---
 
-## Current Phase
+## Current Status
 
-### Phase 6F: Infrastructure Audit & Correction 🔧
-**Progress:** 75%
-
-**Completed:**
-- Security audit of all components
-- Removed admin DNS records and wildcard from Cloudflare
-- Created correct VLANs in pfSense (10, 20, 30, 40, 50)
-- Updated switch VLAN configuration
-- Moved Proxmox to VLAN 10 (192.168.10.5)
-
-**In Progress:**
-- Container network migration to VLAN 30 (9 containers)
-- Pi-hole IP migration to 192.168.30.10
-- pfSense DNS update
-
-**Pending:**
-- Replace allow-all firewall rules with proper segmentation
-- Update monitoring targets and monitors
-- Configure container autostart
+**All major infrastructure work complete.** 10 containers running with autostart configured. VLAN segmentation operational. External access via Cloudflare Tunnel (Nextcloud) and Cloudflare Access (Grafana).
 
 ---
 
@@ -46,10 +30,10 @@
 
 | Phase | Description | Priority | Depends On |
 |-------|-------------|----------|------------|
-| 6E | Homepage Dashboard (gethomepage.dev) | Medium | 6F |
-| 7A | Backup Strategy (scheduled, rotation, recovery) | High | 6F |
+| 7A | Backup Strategy (scheduled, rotation, recovery) | High | — |
+| 6E | Homepage Dashboard (gethomepage.dev) | Medium | — |
 | 7B | n8n Workflow Automation (Discord/Telegram bots) | Medium | 7A |
-| 7C | AI Agent Deployment | Low | 7B |
+| 7C | AI Agent Deployment (OpenClaw) | Low | 7B |
 | 8 | Gaming Expansion (Minecraft, Project Zomboid) | Low | — |
 
 ---
@@ -67,9 +51,8 @@
 | HashiCorp Vault | Security | Low | Secrets management |
 | Homepage Dashboard | Dashboard | Medium | Phase 6E |
 | Jellyfin | Media | Medium | Needs storage planning |
-| Nextcloud | Productivity | High | Cloud storage alternative |
 | Vaultwarden | Security | Low | Password manager |
-| Obsidian + Syncthing | Knowledge Mgmt | Low | Self-hosted note sync for markdown docs |
+| Obsidian + Syncthing | Knowledge Mgmt | Low | Self-hosted note sync |
 
 ---
 
@@ -79,6 +62,7 @@
 |------|--------|
 | Separate Gaming VLAN | Adds complexity, merged into VLAN 30 |
 | Public Web Hosting | Use cloud providers instead |
+| Cloudflare Access for Nextcloud | Incompatible with mobile app |
 
 ---
 
@@ -89,13 +73,14 @@
 ├── Jan-Feb: Phases 1-5 (Foundation)
 ├── Feb: Phase 6A-6D (Gaming)
 ├── Mar 3: Phase 9 (NAS) ✅
-├── Mar 5: Phase 6F (Audit) 🔧 ← CURRENT
-├── Mar: Phase 6E (Homepage) 📋
-├── Apr: Phase 7A (Backups) 📋
+├── Mar 7: Phase 6F (VLAN Migration) ✅
+├── Mar 8: Phase 7 (Nextcloud) ✅ ← COMPLETED
+├── Mar-Apr: Phase 7A (Backups) 📋
+├── Apr: Phase 6E (Homepage) 📋
 ├── Apr-May: Phase 7B (n8n Automation) 📋
 └── Q2-Q3: Phase 8 (Gaming Expansion) 📋
 ```
 
 ---
 
-*Last updated: March 5, 2026*
+*Last updated: March 8, 2026*

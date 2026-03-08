@@ -4,8 +4,8 @@
 
 [![Status](https://img.shields.io/badge/Status-Active-success)](/)
 [![Proxmox](https://img.shields.io/badge/Proxmox-VE%208.x-orange)](/)
-[![Phase](https://img.shields.io/badge/Phase-6F%20Infrastructure%20Audit-yellow)](/)
-[![Containers](https://img.shields.io/badge/Containers-9%20LXC-blue)](/)
+[![Phase](https://img.shields.io/badge/Phase-7%20Complete-green)](/)
+[![Containers](https://img.shields.io/badge/Containers-10%20LXC-blue)](/)
 [![VLANs](https://img.shields.io/badge/VLANs-5%20Segments-purple)](/)
 
 ---
@@ -14,7 +14,7 @@
 
 **Name**: Muzakkir Kholil  
 **Role**: Customer Service Engineer @ F-Secure  
-**Location**: Kuala Lumpur, Malaysia  
+**Location**: Petaling Jaya, Malaysia  
 **Domain**: [najhin-gaming.com](https://najhin-gaming.com)  
 **Goal**: Cloud Engineering / DevOps career transition
 
@@ -27,6 +27,7 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 - **Network Segmentation** — 5 VLANs with router-on-a-stick topology via pfSense
 - **Infrastructure Monitoring** — Full Prometheus + Grafana + Loki + Alertmanager stack
 - **Reverse Proxy & SSL** — Nginx Proxy Manager with Let's Encrypt via Cloudflare DNS-01
+- **Cloud Storage** — Self-hosted Nextcloud with Cloudflare Tunnel for external access
 - **Game Server Hosting** — Pterodactyl Panel + Wings managing Terraria & Minecraft servers
 - **Remote Access** — Tailscale VPN (subnet router on pfSense) + Cloudflare Zero Trust
 - **Backup & Storage** — NAS-backed container backups via SMB
@@ -92,15 +93,16 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 
 ### LXC Containers (Proxmox)
 
-| CTID | Name | Service | Target IP | Status |
-|------|------|---------|-----------|--------|
+| CTID | Name | Service | IP | Status |
+|------|------|---------|-----|--------|
 | 201 | nginx-proxy-manager | Reverse Proxy & SSL | 192.168.30.201 | ✅ Running |
-| 202 | monitoring-prometheus | Metrics Collection | 192.168.30.202 | ⏳ Pending migration |
-| 203 | monitoring-grafana | Dashboards & Viz | 192.168.30.203 | ⏳ Pending migration |
-| 204 | monitoring-loki | Log Aggregation | 192.168.30.204 | ⏳ Pending migration |
-| 205 | monitoring-alertmanager | Alert Routing | 192.168.30.205 | ⏳ Pending migration |
+| 202 | monitoring-prometheus | Metrics Collection | 192.168.30.202 | ✅ Running |
+| 203 | monitoring-grafana | Dashboards & Viz | 192.168.30.203 | ✅ Running |
+| 204 | monitoring-loki | Log Aggregation | 192.168.30.204 | ✅ Running |
+| 205 | monitoring-alertmanager | Alert Routing | 192.168.30.205 | ✅ Running |
 | 206 | monitoring-uptime | Uptime Kuma | 192.168.30.206 | ✅ Running |
 | 207 | network-ddns | Cloudflare DDNS | 192.168.30.207 | ✅ Running |
+| 220 | nextcloud | Cloud Storage | 192.168.30.220 | ✅ Running |
 | 300 | gaming-panel | Pterodactyl Panel | 192.168.30.210 | ✅ Running |
 | 302 | gaming-wings-1 | Pterodactyl Wings | 192.168.30.212 | ✅ Running |
 
@@ -110,15 +112,15 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 |--------|------|-----|--------|
 | Proxmox Server | Hypervisor | 192.168.10.5 | ✅ Online |
 | pfSense | Firewall/Router | 192.168.10.1 | ✅ Online |
-| Pi-hole (RPi4) | DNS Filtering | 192.168.20.10 → .30.10 | ⏳ Migrating |
-| Kinmoon NAS | Backup Storage | 192.168.1.15 | ✅ Online |
+| Pi-hole (RPi4) | DNS Filtering | 192.168.30.10 | ✅ Online |
+| Kinmoon NAS | Backup Storage | 192.168.10.15 | ✅ Online |
 | TP-Link Switch | Layer 2 | 192.168.1.20 | ✅ Online |
 
 ### External Services
 
 | Service | Purpose |
 |---------|---------|
-| Cloudflare | DNS, CDN, Zero Trust Access |
+| Cloudflare | DNS, CDN, Zero Trust Access, Tunnel |
 | Tailscale | VPN (subnet router on pfSense) |
 | Let's Encrypt | SSL certificates (DNS-01 via Cloudflare) |
 
@@ -139,6 +141,7 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 **Key security decisions:**
 - No admin interfaces (Proxmox, pfSense, Pi-hole) exposed to internet
 - All external access via Tailscale VPN or Cloudflare Access with email OTP
+- Nextcloud external access via Cloudflare Tunnel (no port forwarding)
 - Wildcard and admin DNS records deleted from Cloudflare
 - VLAN 50 (Malware Lab) completely air-gapped — no routing, no DHCP
 
@@ -157,19 +160,15 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 | 5 | Monitoring stack (Prometheus, Grafana, Loki, Alertmanager, Uptime Kuma) | Feb 2026 |
 | 6A-6D | Gaming platform (Pterodactyl Panel + Wings, Terraria) | Feb 2026 |
 | 9 | NAS deployment (UGREEN DXP2800, SMB backups) | Mar 2026 |
-
-### Current 🔧
-
-| Phase | Description | Progress |
-|-------|-------------|----------|
-| 6F | Infrastructure Audit & Correction — VLAN restructure, security fixes, container migration | 75% |
+| 6F | Infrastructure Audit & VLAN Migration | Mar 2026 |
+| 7 | Nextcloud deployment with Cloudflare Tunnel | Mar 2026 |
 
 ### Planned 📋
 
 | Phase | Description | Priority |
 |-------|-------------|----------|
-| 6E | Homepage Dashboard (gethomepage.dev) | Medium |
 | 7A | Backup strategy (scheduled, rotation, recovery testing) | High |
+| 6E | Homepage Dashboard (gethomepage.dev) | Medium |
 | 7B | n8n workflow automation (Discord/Telegram bots, GitHub sync) | Medium |
 | 7C | AI Agent deployment (OpenClaw, portfolio documentation) | Low |
 | 8 | Gaming expansion (Minecraft, Project Zomboid) | Low |
@@ -197,6 +196,7 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 | 004 | Gaming on VLAN 30 | Reduces complexity; same access patterns as other services |
 | 005 | Cloudflare for external | DDoS protection, SSL termination, Zero Trust (free tier) |
 | 006 | Tailscale for admin | No exposed SSH; WireGuard-based; works through NAT |
+| 007 | Cloudflare Tunnel for Nextcloud | No port forwarding needed; mobile app compatible |
 
 ---
 
@@ -206,12 +206,12 @@ Detailed documentation is maintained in the [`docs/`](./docs/) folder:
 
 | File | Purpose |
 |------|---------|
+| `AI-CONTEXT.md` | Full project context for AI assistants |
 | `current-state.md` | Verified live infrastructure (source of truth) |
 | `architecture.md` | Target design, ADRs, network diagrams |
 | `roadmap.md` | Phase status, timeline, ideas backlog |
 | `service-catalog.md` | All services with ports, configs, dependencies |
-| `troubleshooting.md` | Past issues and resolutions |
-| `commands.md` | Copy-paste ready commands |
+| `troubleshoot.md` | Past issues and resolutions |
 | `changelog.md` | Version history of all changes |
 
 ---
@@ -221,8 +221,9 @@ Detailed documentation is maintained in the [`docs/`](./docs/) folder:
 1. **VLAN-aware bridges need subinterfaces** — Proxmox management IP must be on `vmbr0.XX`, not the base bridge
 2. **SMB over NFS for LXC backups** — NFS can't handle LXC user namespace UID mapping
 3. **DNS-01 over HTTP-01 for SSL** — Cloudflare proxy interferes with HTTP-01 challenges
-4. **Check interface names before editing** — `ip link show` before touching `/etc/network/interfaces`
-5. **Switch ports need PVID AND membership** — Setting only one isn't enough for access ports
+4. **Cloudflare Access blocks mobile apps** — Use Cloudflare Tunnel instead for app-compatible services
+5. **Check interface names before editing** — `ip link show` before touching `/etc/network/interfaces`
+6. **Switch ports need PVID AND membership** — Setting only one isn't enough for access ports
 
 ---
 
@@ -234,4 +235,4 @@ Detailed documentation is maintained in the [`docs/`](./docs/) folder:
 
 ---
 
-*Last updated: March 5, 2026 — Phase 6F in progress*
+*Last updated: March 8, 2026 — Phase 7 Complete*

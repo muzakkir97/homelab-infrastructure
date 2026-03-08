@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** March 6, 2026
+> **Last Updated:** March 8, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Phase 6F (Infrastructure Audit & Correction) — 75% complete. Security fixes done, VLAN migration pending.
+**Current Status:** Phase 7 (Nextcloud) complete. All major infrastructure operational. 10 containers running with autostart.
 
 ---
 
@@ -21,7 +21,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 |-------|---------|
 | **Name** | Muzakkir Kholil |
 | **Current Role** | Customer Service Engineer @ F-Secure (cybersecurity) |
-| **Location** | Kuala Lumpur, Malaysia |
+| **Location** | Petaling Jaya, Selangor, Malaysia |
 | **Target Role** | Cloud Engineering / DevOps |
 | **Domain** | najhin-gaming.com (Cloudflare) |
 | **GitHub** | github.com/muzakkir97 |
@@ -58,8 +58,8 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 | Proxmox Server | Kuromoon | Ryzen 5 5600X, 32GB RAM | 192.168.10.5 | Hypervisor |
 | pfSense Firewall | — | AC8F Mini PC, Intel N100 | 192.168.10.1 | Router, Firewall |
 | Managed Switch | — | TP-Link TL-SG108E | 192.168.1.20 | Layer 2, VLANs |
-| NAS | Kinmoon | UGREEN DXP2800, 3.6TB WD Purple | 192.168.1.15 | Backups (SMB) |
-| DNS Server | — | Raspberry Pi 4 | 192.168.20.10 | Pi-hole |
+| NAS | Kinmoon | UGREEN DXP2800, 3.6TB WD Purple | 192.168.10.15 | Backups (SMB) |
+| DNS Server | — | Raspberry Pi 4 | 192.168.30.10 | Pi-hole |
 | Gaming PC | Minimoon | Ryzen 7 7800X3D | — | Personal (not homelab) |
 
 ### Known Hardware Issues
@@ -83,7 +83,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: 192.168.100.169)
                   Mgmt     Main    Services   DMZ    Malware
 ```
 
-### VLAN Design (TARGET — after migration)
+### VLAN Design (OPERATIONAL)
 
 | VLAN ID | Name | Subnet | Gateway | Purpose |
 |---------|------|--------|---------|---------|
@@ -93,33 +93,29 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: 192.168.100.169)
 | 40 | VLAN40_DMZ | 192.168.40.0/24 | 192.168.40.1 | Future public-facing services |
 | 50 | VLAN50_MALWARE | 192.168.50.0/24 | 192.168.50.1 | Isolated security lab (no DHCP, air-gapped) |
 
-### Current State (BEFORE migration)
-- Services are scattered across wrong VLANs
-- Legacy LAN (192.168.1.0/24) still exists with Proxmox and NAS
-- VLAN migration requires ~2 hours downtime with physical access
-
 ---
 
 ## 📦 Container Inventory (Proxmox LXC)
 
-| CTID | Name | Current IP | Target IP | Status |
-|------|------|------------|-----------|--------|
-| 201 | nginx-proxy-manager | 192.168.30.10 | 192.168.30.201 | ✅ Running |
-| 202 | monitoring-prometheus | 192.168.20.11 | 192.168.30.202 | ⏳ Migration pending |
-| 203 | monitoring-grafana | 192.168.20.12 | 192.168.30.203 | ⏳ Migration pending |
-| 204 | monitoring-loki | 192.168.20.x | 192.168.30.204 | ⏳ Migration pending |
-| 205 | monitoring-alertmanager | 192.168.20.14 | 192.168.30.205 | ⏳ Migration pending |
-| 206 | monitoring-uptime | 192.168.20.x | 192.168.30.206 | ✅ Running |
-| 207 | network-ddns | 192.168.20.x | 192.168.30.207 | ✅ Running |
-| 300 | gaming-panel | 192.168.50.10 | 192.168.30.210 | ✅ Running |
-| 302 | gaming-wings-1 | 192.168.50.12 | 192.168.30.212 | ✅ Running |
+| CTID | Name | IP | Autostart | Boot Order | Status |
+|------|------|----|-----------|------------|--------|
+| 201 | nginx-proxy-manager | 192.168.30.201 | ✅ | 1 | ✅ Running |
+| 202 | monitoring-prometheus | 192.168.30.202 | ✅ | 3 | ✅ Running |
+| 203 | monitoring-grafana | 192.168.30.203 | ✅ | 6 | ✅ Running |
+| 204 | monitoring-loki | 192.168.30.204 | ✅ | 4 | ✅ Running |
+| 205 | monitoring-alertmanager | 192.168.30.205 | ✅ | 5 | ✅ Running |
+| 206 | monitoring-uptime | 192.168.30.206 | ✅ | 7 | ✅ Running |
+| 207 | network-ddns | 192.168.30.207 | ✅ | 2 | ✅ Running |
+| 220 | nextcloud | 192.168.30.220 | ✅ | 8 | ✅ Running |
+| 300 | gaming-panel | 192.168.30.210 | ✅ | 9 | ✅ Running |
+| 302 | gaming-wings-1 | 192.168.30.212 | ✅ | 10 | ✅ Running |
 
 ### Storage
 | ID | Type | Location | Purpose |
 |----|------|----------|---------|
 | local | Directory | /var/lib/vz | ISOs, templates |
 | local-lvm | LVM-Thin | pve/data | VM/CT disks |
-| kinmoon-smb | SMB/CIFS | 192.168.1.15 | Backups |
+| kinmoon-smb | SMB/CIFS | 192.168.10.15 | Backups |
 
 ---
 
@@ -138,6 +134,9 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: 192.168.100.169)
 - **Loki** — Log aggregation
 - **Alertmanager** — Alert routing (Telegram for critical, Discord for warnings)
 - **Uptime Kuma** — Service availability monitoring
+
+### Productivity
+- **Nextcloud** — Cloud storage, calendar, contacts (external via cloud.najhin-gaming.com + Cloudflare Tunnel)
 
 ### Gaming Platform
 - **Pterodactyl Panel** — Game server management UI
@@ -158,43 +157,13 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: 192.168.100.169)
 | 5 | Monitoring Stack | ✅ Complete | Feb 2026 |
 | 6A-6D | Gaming Platform (Pterodactyl, Terraria) | ✅ Complete | Feb 2026 |
 | 9 | NAS Deployment (Kinmoon) | ✅ Complete | Mar 3, 2026 |
-| **6F** | **Infrastructure Audit & Correction** | **🔧 75%** | **In Progress** |
-| 6E | Homepage Dashboard | 📋 Planned | — |
+| 6F | Infrastructure Audit & VLAN Migration | ✅ Complete | Mar 7, 2026 |
+| **7** | **Nextcloud Deployment** | ✅ **Complete** | **Mar 8, 2026** |
 | 7A | Backup Strategy | 📋 Planned (Priority) | — |
+| 6E | Homepage Dashboard | 📋 Planned | — |
 | 7B | n8n Workflow Automation | 📋 Planned | — |
 | 7C | AI Agent (OpenClaw) | 📋 Planned | — |
 | 8 | Gaming Expansion | 📋 Planned | — |
-
----
-
-## 🔧 Phase 6F: Current Work
-
-### Completed ✅
-1. **Security fixes:**
-   - Removed Cloudflare DNS records: proxmox, pihole, npm, wildcard (*)
-   - Cleaned NPM proxy hosts (only Grafana exposed now)
-   - Deleted orphaned Cloudflare Access application
-   
-2. **VLAN migration planning:**
-   - Documented all current IPs
-   - Backed up pfSense config
-   - Backed up all LXC configs to `/root/vlan-migration-backup/`
-   - Created comprehensive migration guide
-
-### Pending ⏳
-3. **VLAN migration execution** (requires ~2hr downtime window):
-   - Rename VLANs in pfSense to match design
-   - Update switch VLAN configuration
-   - Create Proxmox vmbr0.10 subinterface
-   - Migrate all 9 containers to VLAN 30
-   - Update Pi-hole IP, pfSense DNS
-   - Update firewall rules
-
-4. **Post-migration:**
-   - Configure container autostart
-   - Add inter-VLAN firewall rules (currently allow-all)
-   - Update Uptime Kuma monitors
-   - Update Prometheus targets
 
 ---
 
@@ -206,7 +175,8 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: 192.168.100.169)
 | Proxmox LXC VLAN not working | Add `bridge-vids 2-4094` to /etc/network/interfaces |
 | Intel i226-V NICs failing | FreeBSD driver issue; only igc2/igc3 work on AC8F |
 | Double NAT breaking port forward | Port forward on BOTH ISP router AND pfSense |
-| Inter-VLAN DNS not resolving | Pi-hole listening mode must be "ALL", not "LOCAL" |
+| Inter-VLAN DNS not resolving | Use pfSense DNS Resolver forwarding to Pi-hole |
+| Trunk vs access port confusion | VLAN-aware devices need trunk ports (tagged) |
 
 ### Services
 | Issue | Resolution |
@@ -214,7 +184,8 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: 192.168.100.169)
 | Let's Encrypt failing with Cloudflare | Use DNS-01 challenge, not HTTP-01 |
 | NFS permission denied for LXC backup | Use SMB instead (NFS can't handle user namespace UIDs) |
 | Minimal Debian missing rsyslog | Install explicitly: `apt install rsyslog` |
-| Docker image arch mismatch | Use multi-arch images, verify platform |
+| Cloudflare Access blocking mobile apps | Use app-native auth instead (Nextcloud brute-force protection) |
+| Uptime Kuma SSL errors | Use HTTP for internal monitoring; enable "ignore SSL" for self-signed |
 
 ### Pterodactyl/Gaming
 | Issue | Resolution |
@@ -234,18 +205,20 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: 192.168.100.169)
 | DNS | Pi-hole ad/tracker blocking |
 | VPN | Tailscale (subnet router on pfSense) |
 | External Auth | Cloudflare Access (email OTP) for Grafana |
+| External Access | Cloudflare Tunnel for Nextcloud |
 | Encryption | TLS everywhere via NPM + Let's Encrypt |
 | Monitoring | Prometheus + Alertmanager |
 
 ### Access Control
-| Resource | Internal | Tailscale | Cloudflare Access | Public |
-|----------|----------|-----------|-------------------|--------|
-| Proxmox | ❌ | ✅ | ❌ | ❌ |
-| pfSense | ❌ | ✅ | ❌ | ❌ |
-| Pi-hole | ❌ | ✅ | ❌ | ❌ |
-| Grafana | ✅ | ✅ | ✅ (OTP) | ❌ |
-| Pterodactyl | ✅ | ✅ | ❌ | ✅ |
-| Game Servers | ✅ | ✅ | ❌ | ✅ |
+| Resource | Internal | Tailscale | Cloudflare Access | Cloudflare Tunnel | Public |
+|----------|----------|-----------|-------------------|-------------------|--------|
+| Proxmox | ❌ | ✅ | ❌ | ❌ | ❌ |
+| pfSense | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Pi-hole | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Grafana | ✅ | ✅ | ✅ (OTP) | ❌ | ❌ |
+| Nextcloud | ✅ | ✅ | ❌ | ✅ | ❌ |
+| Pterodactyl | ✅ | ✅ | ❌ | ❌ | ✅ |
+| Game Servers | ✅ | ✅ | ❌ | ❌ | ✅ |
 
 ---
 
@@ -263,27 +236,27 @@ homelab-infrastructure/
 │   ├── service-catalog.md      # All services with ports/configs
 │   ├── changelog.md            # Version history
 │   ├── troubleshoot.md         # Common issues
-│   ├── phase-1/                # Historical docs
-│   ├── phase-2/
-│   ├── phase-3/
-│   ├── phase-4/
-│   ├── phase-5/
-│   ├── phase-6/                # TO BE CREATED
-│   └── phase-9/                # TO BE CREATED
+│   ├── phase-1/ through phase-9/
+│   └── phase-7/                # Nextcloud deployment
 ```
 
-### Key Files
-- **current-state.md** — Always-accurate live state (update after changes)
-- **AI-CONTEXT.md** — This file (update at end of each session)
-- **roadmap.md** — Phase progress tracking
+### Documentation Strategy
+1. **GitHub** — Always updated and latest (source of truth)
+2. **Nextcloud** — Backup copy, upload when convenient
+3. **Local (Gaming PC)** — Personal reference, sync periodically
 
 ---
 
-## ❓ Open Questions / Decisions Pending
+## ❓ Pending Tasks
 
-1. **n8n deployment timing** — Deploy during Phase 6F or wait for Phase 7B?
-2. **Homepage dashboard** — Deploy as Phase 6E after 6F, or defer further?
-3. **Missing NAS drives** — Investigate WD Green SSD and Kingston NVMe detection
+| Task | Priority |
+|------|----------|
+| Backup strategy (Phase 7A) | High |
+| Firewall rule hardening | Medium |
+| Nextcloud data dir → NAS storage | Medium |
+| Switch management IP (192.168.1.20 → 192.168.10.20) | Low |
+| Remove legacy LAN interface | Low |
+| Nextcloud 2FA (TOTP) | Low |
 
 ---
 
@@ -303,29 +276,35 @@ homelab-infrastructure/
 
 ## 📝 Session Log (Recent)
 
+### March 8, 2026
+- Deployed Nextcloud (CT 220) with LAMP stack
+- Configured Cloudflare Tunnel for external access (cloud.najhin-gaming.com)
+- Connected mobile app and desktop client
+- Fixed Uptime Kuma monitors (Grafana, Proxmox SSL issues)
+- Configured container autostart with boot order for all 10 containers
+- Fixed Pi-hole node_exporter (wasn't installed after reinstall)
+- Masked smartmontools on Pi-hole (incompatible with SD card)
+- Updated all GitHub documentation
+
+### March 7, 2026
+- Phase 6F VLAN migration completed
+- All 9 containers migrated to VLAN 30
+- Updated all service configurations with new IPs
+- Verified Tailscale VPN access working
+
 ### March 6, 2026
 - GitHub & LinkedIn documentation audit completed
 - Created AI-CONTEXT.md for multi-AI workflow
-- Fixed GitHub repo file naming (removed special characters, added .md extensions)
-- Added Phase 6A-6D, Phase 6F, Phase 9 documentation
-- Added historical correction banners to phase-1 through phase-4 docs
-- Total: 17 files changed, 4 banners added
-- Repo now fully aligned with current infrastructure state
 
 ### March 5, 2026 (Previous Session)
 - Phase 6F security fixes completed
-- VLAN migration planned but not executed
-- Updated GitHub docs (README, current-state, roadmap, etc.)
+- VLAN migration planned
 
 ### March 3, 2026
 - Phase 9 (NAS) completed
 - UGREEN DXP2800 "Kinmoon" deployed
 - SMB backup storage configured
 
-### March 2, 2026
-- Comprehensive infrastructure audit (50 issues found)
-- Created prioritized fix plan for Phase 6F
-
 ---
 
-*Last updated: March 6, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: March 8, 2026 — Update this file at the end of each session before pushing to GitHub*
