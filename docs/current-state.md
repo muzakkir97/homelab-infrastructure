@@ -1,7 +1,7 @@
 # Current State (Verified)
 
-> **Last Verified:** March 7, 2026  
-> **Status:** VLAN migration complete, minor tasks pending
+> **Last Verified:** March 8, 2026  
+> **Status:** Phase 7 complete, all services operational
 
 ---
 
@@ -60,24 +60,25 @@
 | Proxmox Server (Ryzen 5600X, 32GB) | 192.168.10.5 | 10 | ✅ Online |
 | pfSense (AC8F N100) | 192.168.10.1 | 10 | ✅ Online |
 | TP-Link TL-SG108E Switch | 192.168.1.20 | LAN | ✅ Online |
-| UGREEN NAS (Kinmoon) | 192.168.10.100 (DHCP) | 10 | ⚠️ Needs static IP |
+| UGREEN NAS (Kinmoon) | 192.168.10.15 | 10 | ✅ Online |
 | Raspberry Pi 4 (Pi-hole) | 192.168.30.10 | 30 | ✅ Online |
 
 ---
 
 ## Container Inventory
 
-| CTID | Name | IP Address | VLAN | Status |
-|------|------|------------|------|--------|
-| 201 | nginx-proxy-manager | 192.168.30.201 | 30 | ✅ Running |
-| 202 | monitoring-prometheus | 192.168.30.202 | 30 | ✅ Running |
-| 203 | monitoring-grafana | 192.168.30.203 | 30 | ✅ Running |
-| 204 | monitoring-loki | 192.168.30.204 | 30 | ✅ Running |
-| 205 | monitoring-alertmanager | 192.168.30.205 | 30 | ✅ Running |
-| 206 | monitoring-uptime | 192.168.30.206 | 30 | ✅ Running |
-| 207 | network-ddns | 192.168.30.207 | 30 | ✅ Running |
-| 300 | gaming-panel | 192.168.30.210 | 30 | ✅ Running |
-| 302 | gaming-wings-1 | 192.168.30.212 | 30 | ✅ Running |
+| CTID | Name | IP Address | VLAN | Autostart | Boot Order | Status |
+|------|------|------------|------|-----------|------------|--------|
+| 201 | nginx-proxy-manager | 192.168.30.201 | 30 | ✅ | 1 | ✅ Running |
+| 202 | monitoring-prometheus | 192.168.30.202 | 30 | ✅ | 3 | ✅ Running |
+| 203 | monitoring-grafana | 192.168.30.203 | 30 | ✅ | 6 | ✅ Running |
+| 204 | monitoring-loki | 192.168.30.204 | 30 | ✅ | 4 | ✅ Running |
+| 205 | monitoring-alertmanager | 192.168.30.205 | 30 | ✅ | 5 | ✅ Running |
+| 206 | monitoring-uptime | 192.168.30.206 | 30 | ✅ | 7 | ✅ Running |
+| 207 | network-ddns | 192.168.30.207 | 30 | ✅ | 2 | ✅ Running |
+| 220 | nextcloud | 192.168.30.220 | 30 | ✅ | 8 | ✅ Running |
+| 300 | gaming-panel | 192.168.30.210 | 30 | ✅ | 9 | ✅ Running |
+| 302 | gaming-wings-1 | 192.168.30.212 | 30 | ✅ | 10 | ✅ Running |
 
 ---
 
@@ -85,9 +86,23 @@
 
 | Service | Details | Status |
 |---------|---------|--------|
-| Cloudflare DNS | grafana (proxied), panel/mc/terraria (DNS only) | ✅ Active |
+| Cloudflare DNS | grafana, cloud (proxied), panel/mc/terraria (DNS only) | ✅ Active |
 | Cloudflare Access | Grafana (email OTP) | ✅ Active |
+| Cloudflare Tunnel | homelab-tunnel → Nextcloud (cloud.najhin-gaming.com) | ✅ Active |
 | Tailscale | pfSense subnet router (100.110.165.45) | ✅ Active |
+
+---
+
+## Uptime Kuma Monitors
+
+| Monitor | Target | Status |
+|---------|--------|--------|
+| Alertmanager | http://192.168.30.205:9093 | ✅ UP |
+| Grafana | http://192.168.30.203:3000 | ✅ UP |
+| NextCloud | http://192.168.30.220/status.php | ✅ UP |
+| Pi-hole | http://192.168.30.10 | ✅ UP |
+| Prometheus | http://192.168.30.202:9090 | ✅ UP |
+| Proxmox | https://192.168.10.5:8006 (ignore SSL) | ✅ UP |
 
 ---
 
@@ -95,13 +110,12 @@
 
 | Item | Current | Target | Priority |
 |------|---------|--------|----------|
-| NAS static IP | 192.168.10.100 (DHCP) | 192.168.10.15 | High |
-| Proxmox SMB mount | 192.168.1.15 | 192.168.10.15 | High |
-| Container autostart | Disabled | Enabled | Medium |
-| Firewall rules | Allow-all | Proper segmentation | Medium |
+| Firewall rules | Allow-all | Proper segmentation | High |
 | Switch management IP | 192.168.1.20 | 192.168.10.20 | Low |
 | Legacy LAN | Active | Remove | Low |
+| Nextcloud 2FA | Disabled | TOTP enabled | Low |
+| Nextcloud data → NAS | Local disk | NAS mount | Medium |
 
 ---
 
-*Last updated: March 7, 2026*
+*Last updated: March 8, 2026*

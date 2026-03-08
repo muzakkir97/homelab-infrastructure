@@ -4,6 +4,86 @@
 
 ---
 
+## 2026-03-08 — Pi-hole Node Exporter Missing
+
+**Symptoms:** Discord alert "CRITICAL: Host pihole is DOWN" and "Prometheus target missing: pihole"
+
+**Root Cause:** After Pi-hole reinstall during VLAN migration, prometheus-node-exporter was never installed.
+
+**Resolution:**
+```bash
+ssh pi@192.168.30.10
+sudo apt update
+sudo apt install prometheus-node-exporter -y
+```
+
+**Lesson:** After reinstalling any host, remember to reinstall node_exporter for Prometheus monitoring.
+
+---
+
+## 2026-03-08 — Smartmontools Failed on Pi-hole
+
+**Symptoms:** Discord warning "Systemd service failed on pihole: smartmontools.service"
+
+**Root Cause:** smartmontools tries to monitor S.M.A.R.T. disk health, but Raspberry Pi uses SD card which doesn't support S.M.A.R.T.
+
+**Resolution:**
+```bash
+sudo systemctl mask smartmontools
+```
+
+**Lesson:** SD card systems don't support S.M.A.R.T. monitoring. Mask the service instead of trying to fix it.
+
+---
+
+## 2026-03-08 — Uptime Kuma Grafana SSL Error
+
+**Symptoms:** Uptime Kuma shows Grafana as down with SSL/certificate error.
+
+**Root Cause:** Monitor was configured with `https://192.168.30.203:3000` but Grafana runs on HTTP internally (SSL terminates at NPM).
+
+**Resolution:** Changed monitor URL to `http://192.168.30.203:3000`
+
+**Lesson:** Internal monitoring should use HTTP if SSL terminates at reverse proxy.
+
+---
+
+## 2026-03-08 — Uptime Kuma Proxmox SSL Error
+
+**Symptoms:** Proxmox monitor showing SSL certificate errors (self-signed cert).
+
+**Root Cause:** Proxmox uses self-signed SSL certificate by default.
+
+**Resolution:** Enabled "Ignore TLS/SSL error" option in Uptime Kuma monitor settings.
+
+**Lesson:** Self-signed certs require ignoring SSL errors in monitoring tools.
+
+---
+
+## 2026-03-08 — Nextcloud Mobile App Blocked by Cloudflare Access
+
+**Symptoms:** Mobile app shows "Server not found" or authentication errors when Cloudflare Access is enabled.
+
+**Root Cause:** Cloudflare Access intercepts requests and requires browser-based authentication. Mobile apps can't complete this flow.
+
+**Resolution:** Removed Cloudflare Access policy for Nextcloud. Using Nextcloud's built-in brute-force protection instead.
+
+**Lesson:** Cloudflare Access is incompatible with native mobile apps that use API authentication. Use app-native security features instead.
+
+---
+
+## 2026-03-08 — Nextcloud Monitor ECONNREFUSED Port 443
+
+**Symptoms:** Uptime Kuma shows ECONNREFUSED on port 443 for Nextcloud.
+
+**Root Cause:** Nextcloud runs on HTTP (port 80) internally. HTTPS is handled by Cloudflare Tunnel, not Apache.
+
+**Resolution:** Monitor http://192.168.30.220/status.php instead of HTTPS.
+
+**Lesson:** When using Cloudflare Tunnel, internal services run on HTTP. The tunnel handles HTTPS termination.
+
+---
+
 ## 2026-03-07 — Tailscale Interface Blocking All Traffic
 
 **Symptoms:** pfSense shows connected in Tailscale, but accessing https://100.110.165.45 times out.
