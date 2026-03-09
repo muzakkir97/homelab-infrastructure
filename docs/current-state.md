@@ -1,6 +1,6 @@
 # Current State (Verified)
 
-> **Last Verified:** March 8, 2026  
+> **Last Verified:** March 9, 2026  
 > **Status:** Phase 7 complete, all services operational
 
 ---
@@ -37,6 +37,15 @@
 | VLAN30_SERVICES | 192.168.30.1/24 | All services |
 | VLAN40_DMZ | 192.168.40.1/24 | Public-facing |
 | VLAN50_MALWARE | 192.168.50.1/24 | Isolated sandbox |
+
+### pfSense NAT Port Forward Rules
+
+| Description | Dest Port | NAT IP | NAT Port | Status |
+|-------------|-----------|--------|----------|--------|
+| Terraria Calamity Server | 7777 | 192.168.30.212 | 7777 | ✅ Active |
+| Minecraft Server | 25565 | 192.168.30.212 | 25570 | ✅ Active |
+| HTTPS to NPM | 443 | 192.168.30.201 | 443 | ✅ Active |
+| HTTP to NPM | 80 | 192.168.30.201 | 80 | ✅ Active |
 
 ### Switch Configuration (TP-Link TL-SG108E)
 
@@ -86,10 +95,32 @@
 
 | Service | Details | Status |
 |---------|---------|--------|
-| Cloudflare DNS | grafana, cloud (proxied), panel/mc/terraria (DNS only) | ✅ Active |
+| Cloudflare DNS | grafana, cloud, panel (proxied), mc/terraria (DNS only) | ✅ Active |
 | Cloudflare Access | Grafana (email OTP) | ✅ Active |
 | Cloudflare Tunnel | homelab-tunnel → Nextcloud (cloud.najhin-gaming.com) | ✅ Active |
 | Tailscale | pfSense subnet router (100.110.165.45) | ✅ Active |
+
+---
+
+## NPM Proxy Hosts
+
+| Domain | Backend | SSL | Status |
+|--------|---------|-----|--------|
+| cloud.najhin-gaming.com | http://192.168.30.220:80 | Cloudflare Tunnel | ✅ Online |
+| grafana.najhin-gaming.com | http://192.168.30.203:3000 | Let's Encrypt | ✅ Online |
+| panel.najhin-gaming.com | http://192.168.30.210:80 | Let's Encrypt (DNS-01) | ✅ Online |
+
+---
+
+## Pterodactyl Allocations
+
+| IP | Port | Assigned To | Status |
+|----|------|-------------|--------|
+| 192.168.30.212 | 7777 | Terraria-Calamity | ✅ Active |
+| 192.168.30.212 | 25570 | Latest-Minecraft | ✅ Active |
+| 192.168.30.212 | 25571 | Unassigned | Available |
+| 192.168.30.212 | 25572 | Unassigned | Available |
+| 192.168.30.212 | 25573 | Unassigned | Available |
 
 ---
 
@@ -111,11 +142,13 @@
 | Item | Current | Target | Priority |
 |------|---------|--------|----------|
 | Firewall rules | Allow-all | Proper segmentation | High |
-| Switch management IP | 192.168.1.20 | 192.168.10.20 | Low |
-| Legacy LAN | Active | Remove | Low |
+| Switch management IP | 192.168.1.20 | 192.168.10.20 | Medium |
+| Legacy LAN | Active | Remove | Medium |
+| Wings SSL | No SSL | Let's Encrypt | Low |
 | Nextcloud 2FA | Disabled | TOTP enabled | Low |
-| Nextcloud data → NAS | Local disk | NAS mount | Medium |
+| Nextcloud data → NAS | Local disk | NAS mount | Low |
+| Pterodactyl Node label | "VLAN 50" | "VLAN 30" | Low |
 
 ---
 
-*Last updated: March 8, 2026*
+*Last updated: March 9, 2026*

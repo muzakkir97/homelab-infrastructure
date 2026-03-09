@@ -4,6 +4,47 @@
 
 ---
 
+## 2026-03-09 — Pterodactyl Panel & Game Server Migration Fixes
+
+### Changes Made
+- Fixed Pterodactyl Panel external access (panel.najhin-gaming.com)
+- Created NPM proxy host for panel with SSL via DNS-01 challenge
+- Removed orphaned NPM config file (5.conf) causing nginx conflicts
+- Updated Cloudflare DNS records to current public IP (202.184.35.79)
+- Changed `panel` DNS record from "DNS only" to "Proxied"
+- Fixed pfSense NAT rules (80/443 pointed to Pi-hole instead of NPM)
+- Updated Pterodactyl allocations from 192.168.50.12 to 192.168.30.212
+- Reassigned Terraria server to 192.168.30.212:7777
+- Reassigned Minecraft server to 192.168.30.212:25570
+- Deleted old 192.168.50.12 allocations
+- Updated pfSense NAT for game servers to new IPs
+- Deleted obsolete "Pterodactyl Panel HTTPS" NAT rule (8443→443)
+- Rolled Cloudflare API token after SSL setup
+
+### pfSense NAT Rules (Final State)
+| Description | Dest Port | NAT IP | NAT Port |
+|-------------|-----------|--------|----------|
+| Terraria Calamity Server | 7777 | 192.168.30.212 | 7777 |
+| Minecraft Server | 25565 | 192.168.30.212 | 25570 |
+| HTTPS to NPM | 443 | 192.168.30.201 | 443 |
+| HTTP to NPM | 80 | 192.168.30.201 | 80 |
+
+### NPM Proxy Hosts (Final State)
+| Domain | Backend | SSL |
+|--------|---------|-----|
+| cloud.najhin-gaming.com | 192.168.30.220:80 | Cloudflare Tunnel |
+| grafana.najhin-gaming.com | 192.168.30.203:3000 | Let's Encrypt |
+| panel.najhin-gaming.com | 192.168.30.210:80 | Let's Encrypt |
+
+### Issues Resolved
+- Pterodactyl Panel timeout → NPM proxy host + correct NAT
+- SSL certificate error → DNS-01 challenge with Cloudflare
+- Pi-hole 403 error → Fixed NAT pointing to wrong IP
+- Game server bind error → Updated allocations
+- Game servers unreachable externally → Fixed NAT rules
+
+---
+
 ## 2026-03-08 — Phase 7: Nextcloud Deployment
 
 ### Changes Made

@@ -4,6 +4,120 @@
 
 ---
 
+## 2026-03-09 — Pterodactyl Panel External Access Timeout
+
+**Symptoms:** https://panel.najhin-gaming.com times out. Internal access (192.168.30.210) works fine.
+
+**Root Cause (Multi-layered):**
+1. Cloudflare DNS records pointed to old public IP
+2. NPM had no proxy host configured for panel subdomain
+3. `panel` DNS record was "DNS only" instead of "Proxied"
+
+**Resolution:**
+1. Updated Cloudflare DNS to current public IP
+2. Created NPM proxy host: panel.najhin-gaming.com → 192.168.30.210:80
+3. Changed `panel` to Proxied (orange cloud)
+
+**Lesson:** After IP changes, check ALL Cloudflare DNS records, not just the ones DDNS updates.
+
+---
+
+## 2026-03-09 — NPM SSL Certificate "Internal Error"
+
+**Symptoms:** NPM shows "Internal Error" when requesting Let's Encrypt certificate for panel.najhin-gaming.com.
+
+**Root Cause:** Cloudflare proxy (orange cloud) blocks HTTP-01 validation. Let's Encrypt cannot reach the ACME challenge.
+
+**Resolution:**
+1. Enable "Use DNS Challenge" in NPM SSL settings
+2. Select Cloudflare as DNS provider
+3. Create API token with Zone:DNS:Edit permission
+4. Enter: `dns_cloudflare_api_token = [YOUR_TOKEN]`
+
+**Lesson:** Cloudflare-proxied domains require DNS-01 challenge, not HTTP-01.
+
+**Security Note:** Roll/regenerate API token after use if exposed.
+
+---
+
+## 2026-03-09 — Pi-hole 403 "Access Denied" When Accessing Panel Externally
+
+**Symptoms:** Accessing panel.najhin-gaming.com shows Pi-hole 403 error page: "Oops! Access denied. Did you mean to go to your Pi-hole's dashboard instead?"
+
+**Root Cause:** pfSense NAT rules for ports 80/443 pointed to Pi-hole (192.168.30.10) instead of NPM (192.168.30.201).
+
+**Resolution:**
+```
+pfSense → Firewall → NAT → Port Forward
+- HTTP to NPM: Change NAT IP from 192.168.30.10 → 192.168.30.201
+- HTTPS to NPM: Change NAT IP from 192.168.30.10 → 192.168.30.201
+```
+
+**Lesson:** When traffic reaches the wrong service, check pfSense NAT rules first.
+
+---
+
+## 2026-03-09 — NPM Nginx "Conflicting Server Name" Warning
+
+**Symptoms:** 
+```
+nginx: [warn] conflicting server name "panel.najhin-gaming.com" on 0.0.0.0:80, ignored
+```
+
+**Root Cause:** Orphaned config file (/data/nginx/proxy_host/5.conf) existed from a previously deleted proxy host. NPM UI showed one entry, but filesystem had two.
+
+**Diagnostic:**
+```bash
+pct exec 201 -- docker exec npm-app-1 grep -r "panel.najhin" /data/nginx/
+```
+
+**Resolution:**
+```bash
+pct exec 201 -- docker exec npm-app-1 rm /data/nginx/proxy_host/5.conf
+pct exec 201 -- docker exec npm-app-1 nginx -s reload
+```
+
+**Lesson:** NPM UI deletions don't always clean up config files. Check filesystem for orphaned configs.
+
+---
+
+## 2026-03-09 — Game Server "Failed to Bind Host Port" Error
+
+**Symptoms:** Terraria server fails to start with error:
+```
+failed to bind host port 192.168.50.12:7777/tcp: cannot assign requested address
+```
+
+**Root Cause:** Pterodactyl allocations still referenced old VLAN 50 IP (192.168.50.12) which no longer exists on the Wings node (now 192.168.30.212).
+
+**Resolution:**
+1. Admin → Nodes → gaming-wings-1 → Allocation
+2. Add new allocations: IP `192.168.30.212`, Ports `7777, 25570`
+3. Admin → Servers → [Server] → Build Configuration
+4. Change Game Port to new allocation (192.168.30.212:7777)
+5. Delete old 192.168.50.12 allocations
+
+**Lesson:** VLAN migrations require updating Pterodactyl allocations, not just container IPs.
+
+---
+
+## 2026-03-09 — Game Servers Not Reachable Externally
+
+**Symptoms:** Game servers running and accessible internally, but cannot connect from internet.
+
+**Root Cause:** pfSense NAT rules still pointed to old VLAN 50 IPs.
+
+**Resolution:**
+```
+pfSense → Firewall → NAT → Port Forward
+- Terraria (7777): 192.168.50.12 → 192.168.30.212
+- Minecraft (25565→25570): 192.168.50.12 → 192.168.30.212
+```
+
+**Lesson:** Always update pfSense NAT rules after changing service IPs.
+
+---
+
 ## 2026-03-08 — Pi-hole Node Exporter Missing
 
 **Symptoms:** Discord alert "CRITICAL: Host pihole is DOWN" and "Prometheus target missing: pihole"
