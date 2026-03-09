@@ -4,44 +4,36 @@
 
 ---
 
-## 2026-03-09 — Pterodactyl Panel & Game Server Migration Fixes
+## 2026-03-09 — Phase 6F: Firewall Hardening
 
 ### Changes Made
-- Fixed Pterodactyl Panel external access (panel.najhin-gaming.com)
-- Created NPM proxy host for panel with SSL via DNS-01 challenge
-- Removed orphaned NPM config file (5.conf) causing nginx conflicts
-- Updated Cloudflare DNS records to current public IP (202.184.35.79)
-- Changed `panel` DNS record from "DNS only" to "Proxied"
-- Fixed pfSense NAT rules (80/443 pointed to Pi-hole instead of NPM)
-- Updated Pterodactyl allocations from 192.168.50.12 to 192.168.30.212
-- Reassigned Terraria server to 192.168.30.212:7777
-- Reassigned Minecraft server to 192.168.30.212:25570
-- Deleted old 192.168.50.12 allocations
-- Updated pfSense NAT for game servers to new IPs
-- Deleted obsolete "Pterodactyl Panel HTTPS" NAT rule (8443→443)
-- Rolled Cloudflare API token after SSL setup
+- Audited all pfSense firewall rules across 10 interfaces
+- Created firewall aliases for cleaner rule management:
+  - IP: RFC1918, DNS_SERVERS, PROXMOX, Monitoring_Servers
+  - Ports: SERVICE_PORTS, GAME_PORTS, MONITORING_PORTS
+- Replaced "allow-all (temporary)" rules with proper inter-VLAN rules:
+  - VLAN10_MGMT: 4 rules (DNS, VLAN30 access, RFC1918 block, internet)
+  - VLAN20_MAIN: 6 rules (gateway, DNS, services, games, RFC1918 block, internet)
+  - VLAN30_SERVICES: 5 rules (DNS, Proxmox metrics, intra-VLAN, RFC1918 block, internet)
+  - VLAN40_DMZ: 3 rules (DNS, RFC1918 block, internet)
+  - VLAN50_MALWARE: 0 rules (air-gapped by design)
+- Installed Tailscale on Gaming PC for secure admin access
+- Fixed LAN DNS rule (pointed to wrong IP 192.168.20.10 → DNS_SERVERS alias)
+- Fixed Monitoring_Servers alias (had old VLAN 20 IPs)
+- Fixed MONITORING_PORTS alias (removed DNS port 53)
 
-### pfSense NAT Rules (Final State)
-| Description | Dest Port | NAT IP | NAT Port |
-|-------------|-----------|--------|----------|
-| Terraria Calamity Server | 7777 | 192.168.30.212 | 7777 |
-| Minecraft Server | 25565 | 192.168.30.212 | 25570 |
-| HTTPS to NPM | 443 | 192.168.30.201 | 443 |
-| HTTP to NPM | 80 | 192.168.30.201 | 80 |
-
-### NPM Proxy Hosts (Final State)
-| Domain | Backend | SSL |
-|--------|---------|-----|
-| cloud.najhin-gaming.com | 192.168.30.220:80 | Cloudflare Tunnel |
-| grafana.najhin-gaming.com | 192.168.30.203:3000 | Let's Encrypt |
-| panel.najhin-gaming.com | 192.168.30.210:80 | Let's Encrypt |
+### Security Improvements
+| Before | After |
+|--------|-------|
+| All VLANs allow-all | Explicit rules per VLAN |
+| Client → Management open | Client → Management blocked |
+| No lateral movement prevention | RFC1918 blocking on all VLANs |
+| Admin access from any VLAN | Admin access via Tailscale only |
 
 ### Issues Resolved
-- Pterodactyl Panel timeout → NPM proxy host + correct NAT
-- SSL certificate error → DNS-01 challenge with Cloudflare
-- Pi-hole 403 error → Fixed NAT pointing to wrong IP
-- Game server bind error → Updated allocations
-- Game servers unreachable externally → Fixed NAT rules
+- Internet loss after VLAN20 rules → Fixed Source from "address" to "subnets"
+- Same issue on all VLANs → Changed all to use "subnets"
+- LAN DNS rule wrong IP → Changed to DNS_SERVERS alias
 
 ---
 

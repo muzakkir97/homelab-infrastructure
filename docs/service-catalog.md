@@ -1,6 +1,6 @@
 # Service Catalog
 
-> **Last Updated:** March 8, 2026
+> **Last Updated:** March 9, 2026
 
 ---
 
@@ -11,7 +11,7 @@
 | pfSense | Dedicated hardware (N100) | 192.168.10.1 | 443 | Firewall, Router, DHCP, NAT |
 | Pi-hole | Bare metal (RPi4) | 192.168.30.10 | 80 | DNS filtering, ad blocking |
 | Nginx Proxy Manager | LXC (CT 201) | 192.168.30.201 | 80/443/81 | Reverse proxy, SSL termination |
-| Tailscale | On pfSense | — | — | VPN subnet router |
+| Tailscale | On pfSense + Gaming PC | 100.110.165.45 | — | VPN subnet router |
 | Cloudflare DDNS | LXC (CT 207) | 192.168.30.207 | — | Dynamic DNS updates |
 
 ## Monitoring Stack
@@ -55,6 +55,25 @@
 | Cloudflare Access | — | grafana.najhin-gaming.com | Zero-trust auth (email OTP) |
 | Let's Encrypt | DNS-01 | — | SSL certificates via Cloudflare |
 
+## pfSense Firewall Aliases
+
+### IP Aliases
+
+| Alias | Type | Values | Purpose |
+|-------|------|--------|---------|
+| RFC1918 | Network | 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 | Block private networks |
+| DNS_SERVERS | Host | 192.168.30.10 | Pi-hole |
+| PROXMOX | Host | 192.168.10.5 | Proxmox server |
+| Monitoring_Servers | Host | 192.168.30.202-206 | Monitoring stack |
+
+### Port Aliases
+
+| Alias | Type | Values | Purpose |
+|-------|------|--------|---------|
+| SERVICE_PORTS | Port | 80, 443, 3000, 3001, 8443 | Web services |
+| GAME_PORTS | Port | 7777, 25565, 25570 | Game servers |
+| MONITORING_PORTS | Port | 8006, 9100 | Proxmox + Node Exporter |
+
 ## Service Dependencies
 
 ```
@@ -69,6 +88,8 @@ Prometheus → Node exporters (all CTs + Pi-hole) → Alertmanager → Telegram 
 Loki → Grafana
 
 Proxmox → Kinmoon NAS (backups)
+
+Tailscale → pfSense (subnet router) → All VLANs (admin bypass)
 ```
 
 ## Port Reference
@@ -104,4 +125,4 @@ Proxmox → Kinmoon NAS (backups)
 
 ---
 
-*Last updated: March 8, 2026*
+*Last updated: March 9, 2026*

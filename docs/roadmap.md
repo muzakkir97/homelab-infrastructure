@@ -1,6 +1,6 @@
 # Roadmap
 
-> **Last Updated:** March 8, 2026
+> **Last Updated:** March 9, 2026
 
 ---
 
@@ -15,14 +15,14 @@
 | 5 | Monitoring: Prometheus, Grafana, Loki, Alertmanager, Uptime Kuma | Feb 2026 |
 | 6A-6D | Gaming: Pterodactyl Panel + Wings, Terraria (Calamity) | Feb 2026 |
 | 9 | NAS: UGREEN DXP2800 (Kinmoon), SMB backups | Mar 3, 2026 |
-| 6F | Infrastructure Audit & VLAN Migration | Mar 7, 2026 |
+| 6F | Infrastructure Audit, VLAN Migration & Firewall Hardening | Mar 9, 2026 |
 | 7 | Nextcloud Deployment + Cloudflare Tunnel | Mar 8, 2026 |
 
 ---
 
 ## Current Status
 
-**All major infrastructure work complete.** 10 containers running with autostart configured. VLAN segmentation operational. External access via Cloudflare Tunnel (Nextcloud) and Cloudflare Access (Grafana).
+**All major infrastructure work complete.** 10 containers running with autostart configured. VLAN segmentation operational with proper firewall rules enforced. External access via Cloudflare Tunnel (Nextcloud) and Cloudflare Access (Grafana). Admin access via Tailscale only.
 
 ---
 
@@ -73,9 +73,9 @@
 ├── Jan-Feb: Phases 1-5 (Foundation)
 ├── Feb: Phase 6A-6D (Gaming)
 ├── Mar 3: Phase 9 (NAS) ✅
-├── Mar 7: Phase 6F (VLAN Migration) ✅
-├── Mar 8: Phase 7 (Nextcloud) ✅ ← COMPLETED
-├── Mar-Apr: Phase 7A (Backups) 📋
+├── Mar 7-9: Phase 6F (VLAN Migration + Firewall Hardening) ✅
+├── Mar 8: Phase 7 (Nextcloud) ✅
+├── Mar-Apr: Phase 7A (Backups) 📋 ← NEXT
 ├── Apr: Phase 6E (Homepage) 📋
 ├── Apr-May: Phase 7B (n8n Automation) 📋
 └── Q2-Q3: Phase 8 (Gaming Expansion) 📋
@@ -83,4 +83,4 @@
 
 ---
 
-*Last updated: March 8, 2026*
+*Last updated: March 9, 2026*

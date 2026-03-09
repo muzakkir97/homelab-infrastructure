@@ -1,7 +1,7 @@
 # Current State (Verified)
 
 > **Last Verified:** March 9, 2026  
-> **Status:** Phase 7 complete, all services operational
+> **Status:** Phase 6F complete (including firewall hardening), all services operational
 
 ---
 
@@ -37,6 +37,30 @@
 | VLAN30_SERVICES | 192.168.30.1/24 | All services |
 | VLAN40_DMZ | 192.168.40.1/24 | Public-facing |
 | VLAN50_MALWARE | 192.168.50.1/24 | Isolated sandbox |
+| Tailscale | 100.110.165.45 | VPN subnet router |
+
+### pfSense Firewall Rules (Hardened)
+
+| Interface | Rules | Policy |
+|-----------|-------|--------|
+| VLAN10_MGMT | 4 | DNS → VLAN30 services → Block RFC1918 → Internet |
+| VLAN20_MAIN | 6 | Gateway → DNS → Services → Games → Block RFC1918 → Internet |
+| VLAN30_SERVICES | 5 | DNS → Proxmox metrics → Intra-VLAN → Block RFC1918 → Internet |
+| VLAN40_DMZ | 3 | DNS → Block RFC1918 → Internet |
+| VLAN50_MALWARE | 0 | Implicit deny (air-gapped) |
+| Tailscale | 2 | Full access + pfSense WebUI |
+
+### pfSense Firewall Aliases
+
+| Alias | Type | Values |
+|-------|------|--------|
+| RFC1918 | Network | 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 |
+| DNS_SERVERS | Host | 192.168.30.10 |
+| PROXMOX | Host | 192.168.10.5 |
+| Monitoring_Servers | Host | 192.168.30.202-206 |
+| SERVICE_PORTS | Port | 80, 443, 3000, 3001, 8443 |
+| GAME_PORTS | Port | 7777, 25565, 25570 |
+| MONITORING_PORTS | Port | 8006, 9100 |
 
 ### pfSense NAT Port Forward Rules
 
@@ -72,6 +96,13 @@
 | UGREEN NAS (Kinmoon) | 192.168.10.15 | 10 | ✅ Online |
 | Raspberry Pi 4 (Pi-hole) | 192.168.30.10 | 30 | ✅ Online |
 
+### Client Devices
+
+| Device | IP Address | VLAN | Tailscale IP |
+|--------|------------|------|--------------|
+| Gaming PC (Minimoon) | 192.168.20.101 | 20 | 100.106.109.4 |
+| Work Laptop | DHCP | 20 | — |
+
 ---
 
 ## Container Inventory
@@ -98,29 +129,7 @@
 | Cloudflare DNS | grafana, cloud, panel (proxied), mc/terraria (DNS only) | ✅ Active |
 | Cloudflare Access | Grafana (email OTP) | ✅ Active |
 | Cloudflare Tunnel | homelab-tunnel → Nextcloud (cloud.najhin-gaming.com) | ✅ Active |
-| Tailscale | pfSense subnet router (100.110.165.45) | ✅ Active |
-
----
-
-## NPM Proxy Hosts
-
-| Domain | Backend | SSL | Status |
-|--------|---------|-----|--------|
-| cloud.najhin-gaming.com | http://192.168.30.220:80 | Cloudflare Tunnel | ✅ Online |
-| grafana.najhin-gaming.com | http://192.168.30.203:3000 | Let's Encrypt | ✅ Online |
-| panel.najhin-gaming.com | http://192.168.30.210:80 | Let's Encrypt (DNS-01) | ✅ Online |
-
----
-
-## Pterodactyl Allocations
-
-| IP | Port | Assigned To | Status |
-|----|------|-------------|--------|
-| 192.168.30.212 | 7777 | Terraria-Calamity | ✅ Active |
-| 192.168.30.212 | 25570 | Latest-Minecraft | ✅ Active |
-| 192.168.30.212 | 25571 | Unassigned | Available |
-| 192.168.30.212 | 25572 | Unassigned | Available |
-| 192.168.30.212 | 25573 | Unassigned | Available |
+| Tailscale | pfSense (100.110.165.45) + Gaming PC (100.106.109.4) | ✅ Active |
 
 ---
 
@@ -137,17 +146,28 @@
 
 ---
 
+## Inter-VLAN Access Matrix
+
+| From → To | VLAN 10 | VLAN 20 | VLAN 30 | VLAN 40 | VLAN 50 | Internet |
+|-----------|---------|---------|---------|---------|---------|----------|
+| VLAN 10 | ✅ | ❌ | ✅ Limited | ❌ | ❌ | ✅ |
+| VLAN 20 | ❌ | ✅ | ✅ Limited | ❌ | ❌ | ✅ |
+| VLAN 30 | ✅ Metrics | ❌ | ✅ | ❌ | ❌ | ✅ |
+| VLAN 40 | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
+| VLAN 50 | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
+| Tailscale | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+---
+
 ## Pending Changes
 
 | Item | Current | Target | Priority |
 |------|---------|--------|----------|
-| Firewall rules | Allow-all | Proper segmentation | High |
+| Backup strategy | Not implemented | Phase 7A | High |
 | Switch management IP | 192.168.1.20 | 192.168.10.20 | Medium |
 | Legacy LAN | Active | Remove | Medium |
-| Wings SSL | No SSL | Let's Encrypt | Low |
 | Nextcloud 2FA | Disabled | TOTP enabled | Low |
 | Nextcloud data → NAS | Local disk | NAS mount | Low |
-| Pterodactyl Node label | "VLAN 50" | "VLAN 30" | Low |
 
 ---
 
