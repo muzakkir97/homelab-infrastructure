@@ -1,6 +1,6 @@
 # Current State (Verified)
 
-> **Last Verified:** March 9, 2026  
+> **Last Verified:** March 10, 2026  
 > **Status:** Phase 6F complete (including firewall hardening), all services operational
 
 ---
@@ -107,18 +107,20 @@
 
 ## Container Inventory
 
-| CTID | Name | IP Address | VLAN | Autostart | Boot Order | Status |
-|------|------|------------|------|-----------|------------|--------|
-| 201 | nginx-proxy-manager | 192.168.30.201 | 30 | ✅ | 1 | ✅ Running |
-| 202 | monitoring-prometheus | 192.168.30.202 | 30 | ✅ | 3 | ✅ Running |
-| 203 | monitoring-grafana | 192.168.30.203 | 30 | ✅ | 6 | ✅ Running |
-| 204 | monitoring-loki | 192.168.30.204 | 30 | ✅ | 4 | ✅ Running |
-| 205 | monitoring-alertmanager | 192.168.30.205 | 30 | ✅ | 5 | ✅ Running |
-| 206 | monitoring-uptime | 192.168.30.206 | 30 | ✅ | 7 | ✅ Running |
-| 207 | network-ddns | 192.168.30.207 | 30 | ✅ | 2 | ✅ Running |
-| 220 | nextcloud | 192.168.30.220 | 30 | ✅ | 8 | ✅ Running |
-| 300 | gaming-panel | 192.168.30.210 | 30 | ✅ | 9 | ✅ Running |
-| 302 | gaming-wings-1 | 192.168.30.212 | 30 | ✅ | 10 | ✅ Running |
+| CTID | Name | IP Address | VLAN | Cores | RAM | Autostart | Boot Order | Status |
+|------|------|------------|------|-------|-----|-----------|------------|--------|
+| 201 | nginx-proxy-manager | 192.168.30.201 | 30 | 1 | 512MB | ✅ | 1 | ✅ Running |
+| 202 | monitoring-prometheus | 192.168.30.202 | 30 | 1 | 1GB | ✅ | 3 | ✅ Running |
+| 203 | monitoring-grafana | 192.168.30.203 | 30 | 1 | 512MB | ✅ | 6 | ✅ Running |
+| 204 | monitoring-loki | 192.168.30.204 | 30 | 1 | 1GB | ✅ | 4 | ✅ Running |
+| 205 | monitoring-alertmanager | 192.168.30.205 | 30 | 1 | 512MB | ✅ | 5 | ✅ Running |
+| 206 | monitoring-uptime | 192.168.30.206 | 30 | **2** | **768MB** | ✅ | 7 | ✅ Running |
+| 207 | network-ddns | 192.168.30.207 | 30 | 1 | 256MB | ✅ | 2 | ✅ Running |
+| 220 | nextcloud | 192.168.30.220 | 30 | 2 | 4GB | ✅ | 8 | ✅ Running |
+| 300 | gaming-panel | 192.168.30.210 | 30 | 2 | 2GB | ✅ | 9 | ✅ Running |
+| 302 | gaming-wings-1 | 192.168.30.212 | 30 | 2 | 10GB | ✅ | 10 | ✅ Running |
+
+> **Note:** CT 206 (monitoring-uptime) upgraded from 1 core/512MB to 2 cores/768MB on March 10, 2026 to resolve high CPU alerts during periodic maintenance tasks.
 
 ---
 
@@ -171,4 +173,4 @@
 
 ---
 
-*Last updated: March 9, 2026*
+*Last updated: March 10, 2026*

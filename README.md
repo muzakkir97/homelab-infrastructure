@@ -4,9 +4,10 @@
 
 [![Status](https://img.shields.io/badge/Status-Active-success)](/)
 [![Proxmox](https://img.shields.io/badge/Proxmox-VE%208.x-orange)](/)
-[![Phase](https://img.shields.io/badge/Phase-7%20Complete-green)](/)
+[![Phase](https://img.shields.io/badge/Phase-6F%20Complete-green)](/)
 [![Containers](https://img.shields.io/badge/Containers-10%20LXC-blue)](/)
 [![VLANs](https://img.shields.io/badge/VLANs-5%20Segments-purple)](/)
+[![Firewall](https://img.shields.io/badge/Firewall-Hardened-red)](/)
 
 ---
 
@@ -25,13 +26,14 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 ## 📋 What This Project Demonstrates
 
 - **Network Segmentation** — 5 VLANs with router-on-a-stick topology via pfSense
+- **Firewall Hardening** — Proper inter-VLAN rules with RFC1918 blocking (no allow-all!)
 - **Infrastructure Monitoring** — Full Prometheus + Grafana + Loki + Alertmanager stack
 - **Reverse Proxy & SSL** — Nginx Proxy Manager with Let's Encrypt via Cloudflare DNS-01
 - **Cloud Storage** — Self-hosted Nextcloud with Cloudflare Tunnel for external access
 - **Game Server Hosting** — Pterodactyl Panel + Wings managing Terraria & Minecraft servers
 - **Remote Access** — Tailscale VPN (subnet router on pfSense) + Cloudflare Zero Trust
 - **Backup & Storage** — NAS-backed container backups via SMB
-- **Security Practices** — No admin interfaces exposed, DNS record cleanup, firewall segmentation
+- **Security Practices** — No admin interfaces exposed, admin access via Tailscale only
 
 ---
 
@@ -81,11 +83,20 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 
 | VLAN | Name | Subnet | Purpose | Security |
 |------|------|--------|---------|----------|
-| 10 | Management | 192.168.10.0/24 | Proxmox, pfSense | Highest — admin only |
+| 10 | Management | 192.168.10.0/24 | Proxmox, pfSense, NAS | Highest — Tailscale only |
 | 20 | Main Network | 192.168.20.0/24 | Client devices | Medium — trusted users |
 | 30 | Services | 192.168.30.0/24 | All hosted services | Medium — controlled |
 | 40 | DMZ | 192.168.40.0/24 | Future public-facing | Low trust |
 | 50 | Malware Lab | 192.168.50.0/24 | Security research | Air-gapped — isolated |
+
+### Inter-VLAN Access (Enforced)
+
+| From → To | Status | Method |
+|-----------|--------|--------|
+| VLAN 20 → VLAN 10 | ❌ Blocked | RFC1918 block rule |
+| VLAN 20 → VLAN 30 | ✅ Limited | Specific ports only |
+| VLAN 50 → Anywhere | ❌ Blocked | No rules (air-gapped) |
+| Tailscale → All | ✅ Allowed | Admin VPN bypass |
 
 ---
 
@@ -131,7 +142,8 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 | Layer | Implementation |
 |-------|----------------|
 | Perimeter | ISP router → pfSense firewall |
-| Network | 5 VLAN segments (air-gapped malware lab) |
+| Network | 5 VLAN segments with enforced firewall rules |
+| Lateral Movement | RFC1918 blocking on all VLANs |
 | DNS | Pi-hole ad/tracker blocking |
 | Access | Tailscale VPN + Cloudflare Access (Zero Trust) |
 | Transport | TLS everywhere via NPM + Let's Encrypt |
@@ -140,10 +152,10 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 
 **Key security decisions:**
 - No admin interfaces (Proxmox, pfSense, Pi-hole) exposed to internet
-- All external access via Tailscale VPN or Cloudflare Access with email OTP
-- Nextcloud external access via Cloudflare Tunnel (no port forwarding)
-- Wildcard and admin DNS records deleted from Cloudflare
+- Admin access via Tailscale VPN only (VLAN 20 blocked from VLAN 10)
+- All external access via Cloudflare Access with email OTP or Cloudflare Tunnel
 - VLAN 50 (Malware Lab) completely air-gapped — no routing, no DHCP
+- Firewall aliases for cleaner rule management (RFC1918, SERVICE_PORTS, etc.)
 
 ---
 
@@ -160,7 +172,7 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 | 5 | Monitoring stack (Prometheus, Grafana, Loki, Alertmanager, Uptime Kuma) | Feb 2026 |
 | 6A-6D | Gaming platform (Pterodactyl Panel + Wings, Terraria) | Feb 2026 |
 | 9 | NAS deployment (UGREEN DXP2800, SMB backups) | Mar 2026 |
-| 6F | Infrastructure Audit & VLAN Migration | Mar 2026 |
+| 6F | Infrastructure Audit, VLAN Migration & Firewall Hardening | Mar 2026 |
 | 7 | Nextcloud deployment with Cloudflare Tunnel | Mar 2026 |
 
 ### Planned 📋
@@ -172,17 +184,6 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 | 7B | n8n workflow automation (Discord/Telegram bots, GitHub sync) | Medium |
 | 7C | AI Agent deployment (OpenClaw, portfolio documentation) | Low |
 | 8 | Gaming expansion (Minecraft, Project Zomboid) | Low |
-
-### Future Services Under Consideration
-
-- **Gitea** — Self-hosted Git for IaC repos and CI/CD
-- **Drone CI / Woodpecker** — CI/CD pipelines integrated with Gitea
-- **Ansible Semaphore** — Web UI for infrastructure-as-code management
-- **Authentik** — SSO/Identity provider (LDAP/SAML/OIDC)
-- **Self-hosted Email** — Mailcow or Mox (replace Gmail)
-- **Netbox** — IP Address Management (replace manual tracking)
-- **HashiCorp Vault** — Secrets management
-- **Obsidian + Syncthing** — Self-hosted note sync for knowledge management
 
 ---
 
@@ -197,6 +198,7 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 | 005 | Cloudflare for external | DDoS protection, SSL termination, Zero Trust (free tier) |
 | 006 | Tailscale for admin | No exposed SSH; WireGuard-based; works through NAT |
 | 007 | Cloudflare Tunnel for Nextcloud | No port forwarding needed; mobile app compatible |
+| 008 | RFC1918 blocking | Prevents lateral movement between VLANs |
 
 ---
 
@@ -213,17 +215,20 @@ Detailed documentation is maintained in the [`docs/`](./docs/) folder:
 | `service-catalog.md` | All services with ports, configs, dependencies |
 | `troubleshoot.md` | Past issues and resolutions |
 | `changelog.md` | Version history of all changes |
+| `homelab-audit-report.md` | Infrastructure audit findings |
+| `phase-6f-firewall-hardening.md` | Firewall hardening documentation |
 
 ---
 
 ## 🛠️ Key Lessons Learned
 
-1. **VLAN-aware bridges need subinterfaces** — Proxmox management IP must be on `vmbr0.XX`, not the base bridge
-2. **SMB over NFS for LXC backups** — NFS can't handle LXC user namespace UID mapping
-3. **DNS-01 over HTTP-01 for SSL** — Cloudflare proxy interferes with HTTP-01 challenges
-4. **Cloudflare Access blocks mobile apps** — Use Cloudflare Tunnel instead for app-compatible services
-5. **Check interface names before editing** — `ip link show` before touching `/etc/network/interfaces`
-6. **Switch ports need PVID AND membership** — Setting only one isn't enough for access ports
+1. **"subnets" vs "address" in pfSense** — Use "subnets" for device traffic rules, "address" only for gateway-specific rules
+2. **VLAN-aware bridges need subinterfaces** — Proxmox management IP must be on `vmbr0.XX`, not the base bridge
+3. **SMB over NFS for LXC backups** — NFS can't handle LXC user namespace UID mapping
+4. **DNS-01 over HTTP-01 for SSL** — Cloudflare proxy interferes with HTTP-01 challenges
+5. **Cloudflare Access blocks mobile apps** — Use Cloudflare Tunnel instead for app-compatible services
+6. **Tailscale bypasses local firewall** — Traffic via Tailscale uses Tailscale interface rules
+7. **Test firewall with VPN off** — Disconnect Tailscale to verify local blocking works
 
 ---
 
@@ -235,4 +240,4 @@ Detailed documentation is maintained in the [`docs/`](./docs/) folder:
 
 ---
 
-*Last updated: March 8, 2026 — Phase 7 Complete*
+*Last updated: March 9, 2026 — Phase 6F Complete (Firewall Hardening)*

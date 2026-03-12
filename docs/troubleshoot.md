@@ -4,6 +4,47 @@
 
 ---
 
+## 2026-03-10 — Uptime Kuma (CT 206) High CPU Alerts Every 2 Hours
+
+**Symptoms:** Discord alerts "WARNING: High CPU usage on 192.168.30.206:9100" showing 94-97% CPU. Alerts repeated every ~2 hours.
+
+**Root Cause:** Container was under-resourced (1 CPU core, 512MB RAM). Periodic maintenance tasks (database cleanup, certificate checks) caused CPU spikes that overwhelmed the single core.
+
+**Diagnostic:**
+```bash
+pct exec 206 -- top -bn1 | head -15
+```
+Showed:
+- `%Cpu(s): 0.0 us, 100.0 sy` — 100% system CPU, 0% user (kernel overhead)
+- `load average: 3.72` — severely overloaded for 1-core system
+- Node.js process using 11.3GB virtual memory (normal for Node, but needs resources)
+
+**Resolution:**
+```bash
+pct set 206 -cores 2 -memory 768
+pct restart 206
+```
+
+**Verification:**
+```bash
+pct exec 206 -- uptime
+# Load average should drop below 1.0
+```
+
+**Container Resources After Fix:**
+| Setting | Before | After |
+|---------|--------|-------|
+| CPU Cores | 1 | 2 |
+| Memory | 512 MB | 768 MB |
+
+**Lesson:** 
+- Single-core containers can struggle with periodic maintenance tasks
+- High system CPU (sy) with low user CPU (us) indicates kernel/context-switch overhead
+- Load average > number of cores = overloaded system
+- Node.js apps benefit from multiple cores for garbage collection
+
+---
+
 ## 2026-03-09 — Internet Loss After Firewall Rule Changes
 
 **Symptoms:** Gaming PC lost internet access immediately after applying VLAN20_MAIN firewall rules. WiFi still worked.
@@ -33,18 +74,6 @@ Rules only matched traffic FROM the gateway itself, not from actual devices.
 
 **Root Cause:** pfSense does not respond to ICMP ping requests over the Tailscale interface by default. This is normal behavior, not a configuration error.
 
-**Verification:**
-```powershell
-# This fails (ICMP blocked)
-ping 100.110.165.45
-
-# This works (Tailscale protocol)
-tailscale ping 100.110.165.45
-
-# This works (actual traffic)
-curl https://192.168.10.5:8006
-```
-
 **Resolution:** No fix needed. ICMP ping is not required for functionality. Use `tailscale ping` for diagnostics or test actual service access.
 
 **Lesson:** Don't assume ICMP ping failure means connectivity is broken. Test actual service traffic to verify.
@@ -56,13 +85,6 @@ curl https://192.168.10.5:8006
 **Symptoms:** After implementing VLAN20 → VLAN10 block rules, `ping 192.168.10.5` still succeeded from Gaming PC.
 
 **Root Cause:** Tailscale was connected. Traffic to 192.168.10.5 was routing through the Tailscale tunnel (which has allow-all rules) instead of the local VLAN20 interface.
-
-**Verification:**
-1. Disconnect Tailscale (right-click tray icon → Disconnect)
-2. Run `ping 192.168.10.5`
-3. Should now timeout (blocked by RFC1918 rule)
-4. Reconnect Tailscale
-5. Ping works again (via Tailscale tunnel)
 
 **Resolution:** This is expected behavior. Tailscale traffic uses the Tailscale interface rules, bypassing local VLAN rules. The firewall IS working correctly.
 
@@ -215,7 +237,7 @@ Also updated APP_URL in .env from old IP to 192.168.30.210.
 
 ## 2026-03-07 — Cross-VLAN DNS Queries Timing Out
 
-**Symptoms:** `nslookup google.com 192.168.30.10` times out from VLANs 10 and 20. Ping to Pi-hole works fine. `nc -zvu 192.168.30.10 53` shows port open.
+**Symptoms:** `nslookup google.com 192.168.30.10` times out from VLANs 10 and 20. Ping to Pi-hole works fine.
 
 **Root Cause:** Unknown. Firewall rules are allow-all. Possibly pfSense DNS Resolver intercepting or NAT state issues.
 
@@ -227,7 +249,7 @@ Also updated APP_URL in .env from old IP to 192.168.30.210.
 
 ## 2026-03-07 — Pi-hole Static IP Not Applied After Reboot
 
-**Symptoms:** Edited `/etc/dhcpcd.conf` with static IP. After reboot, still on DHCP. `systemctl status dhcpcd` shows "Unit could not be found."
+**Symptoms:** Edited `/etc/dhcpcd.conf` with static IP. After reboot, still on DHCP.
 
 **Root Cause:** New Raspberry Pi OS (2026) uses **NetworkManager**, not dhcpcd. The dhcpcd.conf file is ignored.
 
@@ -246,19 +268,19 @@ sudo nmcli con down "netplan-eth0" && sudo nmcli con up "netplan-eth0"
 
 ## 2026-03-07 — Proxmox Lost Connectivity After Switch VLAN Changes
 
-**Symptoms:** Proxmox could not ping gateway 192.168.10.1 after switch VLAN changes. Tailscale access also stopped.
+**Symptoms:** Proxmox could not ping gateway 192.168.10.1 after switch VLAN changes.
 
-**Root Cause:** Port 2 (Proxmox) was set as access port (untagged VLAN 10). But Proxmox uses vmbr0.10 which sends VLAN 10 **tagged** frames. Switch was stripping the tag.
+**Root Cause:** Port 2 (Proxmox) was set as access port (untagged VLAN 10). But Proxmox uses vmbr0.10 which sends VLAN 10 **tagged** frames.
 
 **Resolution:** Changed port 2 to trunk (tagged on all VLANs), matching port 1 (pfSense).
 
-**Lesson:** Any device using VLAN-aware bridges or VLAN subinterfaces must be on a **trunk port** (tagged). Access ports are only for devices sending untagged traffic.
+**Lesson:** Any device using VLAN-aware bridges or VLAN subinterfaces must be on a **trunk port** (tagged).
 
 ---
 
 ## 2026-03-07 — Windows nslookup Using IPv6 Instead of DHCP DNS
 
-**Symptoms:** `nslookup google.com` times out. Shows "Server: Unknown, Address: fe80::1" (IPv6). `nslookup google.com 192.168.20.1` works.
+**Symptoms:** `nslookup google.com` times out. Shows "Server: Unknown, Address: fe80::1" (IPv6).
 
 **Root Cause:** Windows nslookup prefers IPv6 DNS. pfSense advertises fe80::1 via Router Advertisement.
 
@@ -267,7 +289,7 @@ sudo nmcli con down "netplan-eth0" && sudo nmcli con up "netplan-eth0"
 Disable-NetAdapterBinding -Name "Ethernet 2" -ComponentID ms_tcpip6
 ```
 
-**Lesson:** If nslookup shows fe80::1 but browser works, it's IPv6 DNS preference. Disable IPv6 or configure it properly.
+**Lesson:** If nslookup shows fe80::1 but browser works, it's IPv6 DNS preference.
 
 ---
 
@@ -275,29 +297,11 @@ Disable-NetAdapterBinding -Name "Ethernet 2" -ComponentID ms_tcpip6
 
 **Symptoms:** Proxmox had new IP on VLAN 10, could not reach gateway. "Destination Host Unreachable."
 
-**Root Cause:** Proxmox bridge (vmbr0) sent untagged traffic, but switch port expected VLAN 10 tagged traffic on the trunk.
+**Root Cause:** Proxmox bridge (vmbr0) sent untagged traffic, but switch port expected VLAN 10 tagged traffic.
 
-**Resolution:** Created VLAN subinterface `vmbr0.10` for management traffic:
-```
-auto vmbr0.10
-iface vmbr0.10 inet static
-    address 192.168.10.5/24
-    gateway 192.168.10.1
-```
+**Resolution:** Created VLAN subinterface `vmbr0.10` for management traffic.
 
-**Lesson:** When using VLAN-aware bridges on trunk ports, management IP must be on a VLAN subinterface, not the base bridge.
-
----
-
-## 2026-03-05 — Proxmox Interface Name Wrong (eno0 vs nic0)
-
-**Symptoms:** Network apply failed with "No such device" error for `eno0`.
-
-**Root Cause:** Config specified `eno0` but actual interface was `nic0`.
-
-**Resolution:** Checked backup config to find correct name, updated to `nic0`.
-
-**Lesson:** Always check `ip link show` before editing network config.
+**Lesson:** When using VLAN-aware bridges on trunk ports, management IP must be on a VLAN subinterface.
 
 ---
 
@@ -325,14 +329,6 @@ iface vmbr0.10 inet static
 
 ---
 
-## 2026-03-03 — NAS I/O Errors After Initial Setup
-
-**Symptoms:** UGREEN NAS showing I/O errors after pool creation.
-
-**Resolution:** Rebooted NAS after storage pool creation.
-
----
-
 ## 2026-02 — Large File Upload Failing to Game Servers
 
 **Symptoms:** Could not upload large game mods through Pterodactyl.
@@ -342,10 +338,6 @@ iface vmbr0.10 inet static
 **Resolution:**
 ```nginx
 client_max_body_size 100M;
-```
-```php
-upload_max_filesize = 100M
-post_max_size = 100M
 ```
 
 ---

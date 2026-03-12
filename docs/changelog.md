@@ -4,6 +4,24 @@
 
 ---
 
+## 2026-03-10 — CT 206 (Uptime Kuma) Resource Upgrade
+
+### Changes Made
+- Increased CT 206 CPU cores from 1 to 2
+- Increased CT 206 memory from 512MB to 768MB
+- Resolved recurring high CPU alerts every 2 hours
+
+### Root Cause
+Single-core container was overwhelmed by periodic maintenance tasks (database cleanup, certificate checks). Node.js garbage collection combined with kernel context-switching caused 100% system CPU spikes.
+
+### Resources After Fix
+| Setting | Before | After |
+|---------|--------|-------|
+| CPU Cores | 1 | 2 |
+| Memory | 512 MB | 768 MB |
+
+---
+
 ## 2026-03-09 — Phase 6F: Firewall Hardening
 
 ### Changes Made
