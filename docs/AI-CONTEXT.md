@@ -272,3 +272,17 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - Full pipeline working: Telegram to Claude to Nextcloud to GitHub
 
 Session April 4 2026 - Gilgamesh Upgrade Planning. Discussed MCP benefits and security risks including public endpoint and attack surface. Designed tiered permission model with Telegram 2FA for risky actions. Compared MCP vs OpenClaw vs Claude Code vs Clawdbot. OpenClaw rejected due to arbitrary shell execution risk. Claude Code has no memory so not a replacement for Claude Web. Final decision is keep Claude Pro plus upgrade Gilgamesh as overflow. Gilgamesh upgrade includes smart routing to auto-select Haiku or Sonnet or Opus based on complexity. Adding SQLite memory for last 20 messages until user runs clear command. Adding cost tracking with Prometheus metrics and Grafana dashboard. Adding homelab commands including status and restart and metrics. New utility commands include clear and memory and cost and help. Implementation estimated at 5-6 hours. Phase 7D added to roadmap. Bug noted - Gilgamesh breaks on special characters in long messages needs fix in upgrade.
+
+**Session April 4 2026 - Gilgamesh Upgrade Planning**
+- Discussed MCP (Model Context Protocol) benefits and security risks
+- Designed tiered permission model with Telegram 2FA for enhanced security
+- Evaluated alternatives: MCP vs OpenClaw vs Claude Code vs Clawdbot
+- Decision: Rejected OpenClaw due to security risks, Claude Code lacks memory
+- Final choice: Keep Claude Pro subscription + upgrade Gilgamesh bot
+- Planned Gilgamesh upgrades:
+  - Smart routing system
+  - SQLite memory integration
+  - Cost tracking features
+  - Homelab commands: status, restart, metrics
+- Added Phase 7D to development roadmap
+- Bug identified: Gilgamesh breaks on special characters (needs fix)
