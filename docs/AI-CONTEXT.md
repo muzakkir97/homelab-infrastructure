@@ -280,3 +280,17 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - Adding homelab commands: status, restart, metrics
 - Phase 7D added to roadmap
 - Bug noted: Gilgamesh breaks on special characters
+
+
+### 2026-04-04
+Session April 5 2026 Phase 7D Implementation
+- Implemented conversation memory using n8n Data Tables
+- Memory stores last 20 messages (role, content, timestamp)
+- Fixed HTTP Request JSON formatting for Claude API
+- Fixed If node routing (checks for /update command)
+- Fixed Send a text message node to return Claude response
+- Fixed Parse File to extract update content directly
+- Smart routing temporarily disabled (Sonnet only for now)
+- Save Cost node disabled pending column name fix
+- Gilgamesh now remembers context across messages
+- Memory system verified working with name recall test
