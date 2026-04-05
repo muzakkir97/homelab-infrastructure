@@ -306,3 +306,52 @@ Session April 5 2026 Phase 7D Complete
 - Fixed Parse File for direct /update extraction
 - Gilgamesh can now search the web for real-time information
 - Memory, web search, and /update all verified working
+
+
+
+### 2026-04-05
+Date: April 6, 2026
+Phase: 7D — Gilgamesh Enhancements
+TOPICS DISCUSSED
+
+Fixed Save Cost node table column mismatch error
+Fixed Save Assistant Message for web search responses
+Implemented smart routing with Haiku 4.5 and Sonnet 4
+Added Obsidian phase to roadmap with Dataview subscription tracker
+
+DECISIONS MADE
+
+Obsidian phase planned with Dataview subscription tracker from Fizder gist
+Smart routing uses keyword pattern matching, no extra API calls
+Haiku model: claude-haiku-4-5-20251001
+Sonnet model: claude-sonnet-4-20250514
+
+PHASE 7D COMPLETED
+
+Added Extract Response Code node to handle web search multi-block responses
+Recreated gilgamesh_costs table to fix schema caching bug
+Added Route Model Code node for smart routing
+Simple patterns like hi, hello, thanks, help, status, ping route to Haiku 4.5
+Complex queries route to Sonnet 4
+Cost tracking operational in gilgamesh_costs data table
+
+WORKFLOW STRUCTURE
+Telegram Trigger, Get rows, Format Messages, Route Model, HTTP Request, Save User Message, Extract Response, Save Assistant Message, Save Cost, IF, Send Telegram
+KEY LEARNINGS
+
+n8n Data Tables schema caching bug can cause no column named errors even when columns exist. Fix by deleting and recreating the table.
+Claude API web search responses have multiple content blocks. Extract all text blocks by filtering for type equals text.
+Correct Haiku 4.5 model ID is claude-haiku-4-5-20251001
+
+ERRORS AND RESOLUTIONS
+
+SQLITE ERROR no column named model: Recreated gilgamesh_costs table
+404 model not found: Fixed model ID to claude-haiku-4-5-20251001
+Partial response capture: Added Extract Response node
+
+ACTION ITEMS
+
+Push updated AI-CONTEXT.md to GitHub
+Update roadmap.md with Phase 7D complete
+Future: Obsidian setup with subscription tracker
+Future: Add Cloudflare Access to n8n for security
