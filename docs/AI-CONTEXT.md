@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** March 13, 2026
+> **Last Updated:** April 7, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Phase 7A complete (Backup Strategy). Hybrid backup system operational with NFS for small containers and local storage for large containers. All 10 containers backed up automatically.
+**Current Status:** Phase 7D complete (Gilgamesh AI Agent). Telegram-based AI assistant with conversation memory, smart routing, cost tracking, and web search. n8n secured with Cloudflare Access.
 
 ---
 
@@ -47,6 +47,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 - **Don't use multiple-choice widgets during deployment** — Just give me the instructions
 - **Be direct** — Tell me if my idea is bad and suggest alternatives
 - **It's okay to say "I don't know"** — I prefer honesty over guessing
+- **Make recommendations directly** — No re-asking confirmed decisions, single confirmation then proceed
 
 ### Naming Conventions
 
@@ -57,14 +58,20 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 
 ## 🖥️ Hardware Inventory
 
-| Device           | Hostname | Specs                           | IP Address     | Role                                 |
-|------------------|----------|---------------------------------|----------------|--------------------------------------|
-| Proxmox Server   | Kuromoon | Ryzen 5 5600X, 32GB RAM         | 192.168.10.5   | Hypervisor                           |
-| pfSense Firewall | —        | AC8F Mini PC, Intel N100        | 192.168.10.1   | Router, Firewall                     |
-| Managed Switch   | —        | TP-Link TL-SG108E               | 192.168.1.20   | Layer 2, VLANs                       |
-| NAS              | Kinmoon  | UGREEN DXP2800, 3.6TB WD Purple | 192.168.10.15  | Backups (NFS)                        |
-| DNS Server       | —        | Raspberry Pi 4                  | 192.168.30.10  | Pi-hole                              |
-| Gaming PC        | Minimoon | Ryzen 7 7800X3D                 | 192.168.20.101 | Personal + Tailscale (100.106.109.4) |
+| Device           | Hostname | Specs                                    | IP Address     | Role                                 |
+|------------------|----------|------------------------------------------|----------------|--------------------------------------|
+| Proxmox Server   | Kuromoon | Ryzen 5 5600X, 32GB RAM, RX 6700 XT 12GB | 192.168.10.5   | Hypervisor                           |
+| pfSense Firewall | —        | AC8F Mini PC, Intel N100                 | 192.168.10.1   | Router, Firewall                     |
+| Managed Switch   | —        | TP-Link TL-SG108E                        | 192.168.1.20   | Layer 2, VLANs                       |
+| NAS              | Kinmoon  | UGREEN DXP2800, 3.6TB WD Purple          | 192.168.10.15  | Backups (SMB target: kinmoon-smb)    |
+| DNS Server       | —        | Raspberry Pi 4                           | 192.168.30.10  | Pi-hole (~489K domains blocked)      |
+| Gaming PC        | Minimoon | Ryzen 7 7800X3D, RX 9070 XT 16GB         | 192.168.20.101 | **Gaming only — never homelab**      |
+| WiFi AP          | —        | TP-Link EAP610                           | TBD            | Purchased, pending setup             |
+
+### GPU Notes (Kuromoon)
+- RX 6700 XT in IOMMU Group 18, audio in Group 19
+- Earmarked for Ollama/ROCm AI inference (Phase 11)
+- Idle baseline: CPU 48.5°C, GPU edge 46°C, GPU 5W with zero-RPM fan
 
 ---
 
@@ -98,18 +105,54 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 ## 📦 Container Inventory (Proxmox LXC)
 
-| CTID | Name                    | IP             | Autostart | Boot Order | Backup Target | Status    |
-|------|-------------------------|----------------|-----------|------------|---------------|-----------|
-| 201  | nginx-proxy-manager     | 192.168.30.201 | ✅         | 1          | kinmoon-nfs   | ✅ Running |
-| 202  | monitoring-prometheus   | 192.168.30.202 | ✅         | 3          | kinmoon-nfs   | ✅ Running |
-| 203  | monitoring-grafana      | 192.168.30.203 | ✅         | 6          | kinmoon-nfs   | ✅ Running |
-| 204  | monitoring-loki         | 192.168.30.204 | ✅         | 4          | kinmoon-nfs   | ✅ Running |
-| 205  | monitoring-alertmanager | 192.168.30.205 | ✅         | 5          | kinmoon-nfs   | ✅ Running |
-| 206  | monitoring-uptime       | 192.168.30.206 | ✅         | 7          | kinmoon-nfs   | ✅ Running |
-| 207  | network-ddns            | 192.168.30.207 | ✅         | 2          | kinmoon-nfs   | ✅ Running |
-| 220  | nextcloud               | 192.168.30.220 | ✅         | 8          | data-storage  | ✅ Running |
-| 300  | gaming-panel            | 192.168.30.210 | ✅         | 9          | kinmoon-nfs   | ✅ Running |
-| 302  | gaming-wings-1          | 192.168.30.212 | ✅         | 10         | data-storage  | ✅ Running |
+| CTID | Name                    | IP             | Subdomain                   | Autostart | Status    |
+|------|-------------------------|----------------|-----------------------------|-----------|-----------|
+| 201  | nginx-proxy-manager     | 192.168.30.201 | —                           | ✅        | ✅ Running |
+| 202  | monitoring-prometheus   | 192.168.30.202 | —                           | ✅        | ✅ Running |
+| 203  | monitoring-grafana      | 192.168.30.203 | grafana.najhin-gaming.com   | ✅        | ✅ Running |
+| 204  | monitoring-loki         | 192.168.30.204 | —                           | ✅        | ✅ Running |
+| 205  | monitoring-alertmanager | 192.168.30.205 | —                           | ✅        | ✅ Running |
+| 206  | monitoring-uptime       | 192.168.30.206 | —                           | ✅        | ✅ Running |
+| 207  | network-ddns            | 192.168.30.207 | —                           | ✅        | ✅ Running |
+| 208  | dashboard-homepage      | 192.168.30.208 | home.najhin-gaming.com      | ✅        | ✅ Running |
+| 211  | automation-n8n          | 192.168.30.211 | n8n.najhin-gaming.com       | ✅        | ✅ Running |
+| 220  | nextcloud-hub           | 192.168.30.220 | cloud.najhin-gaming.com     | ✅        | ✅ Running |
+| 300  | gaming-panel            | 192.168.30.210 | —                           | ✅        | ✅ Running |
+| 302  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅      | ✅ Running |
+
+**Total: 12 LXC containers, all on VLAN 30, all autostart enabled**
+
+---
+
+## 🤖 Gilgamesh AI Agent (Phase 7C/7D)
+
+### Architecture
+```
+Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
+                                     ↓
+                              Memory (n8n Data Tables)
+                                     ↓
+                              /update → Nextcloud → GitHub
+```
+
+### Features
+- **Conversation memory:** Last 20 messages stored in n8n Data Tables
+- **Smart routing:** Simple inputs → Haiku 4.5, complex queries → Sonnet 4
+- **Web search:** Real-time information via Claude's web_search tool
+- **Cost tracking:** Token usage logged to gilgamesh_costs table
+- **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
+
+### Technical Details
+| Component | Value |
+|-----------|-------|
+| Telegram Bot | @JhinGilgamesh_bot |
+| Chat ID | 510832696 |
+| Haiku Model | claude-haiku-4-5-20251001 |
+| Sonnet Model | claude-sonnet-4-20250514 |
+| n8n Container | CT 211, 192.168.30.211 |
+
+### Known Constraint
+Telegram messages must be **plain text only** — code blocks, backticks, and complex formatting break JSON parsing in the Claude API request body.
 
 ---
 
@@ -119,41 +162,55 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 | Job              | Schedule | Storage                  | Containers                             | Retention                    |
 |------------------|----------|--------------------------|----------------------------------------|------------------------------|
-| Small Containers | 02:00    | kinmoon-nfs (NAS)        | 201, 202, 203, 204, 205, 206, 207, 300 | 7 daily, 4 weekly, 2 monthly |
+| Small Containers | 02:00    | kinmoon-smb (NAS)        | 201, 202, 203, 204, 205, 206, 207, 300 | 7 daily, 4 weekly, 2 monthly |
 | Large Containers | 02:30    | data-storage (Local HDD) | 220, 302                               | 7 daily, 4 weekly, 2 monthly |
 
 ### Storage
 
 | Name         | Type       | Protocol | Capacity | Purpose                 |
 |--------------|------------|----------|----------|-------------------------|
-| kinmoon-nfs  | NAS        | NFS v3   | 3.6 TB   | Small container backups |
+| kinmoon-smb  | NAS        | SMB/CIFS | 3.6 TB   | Small container backups |
 | data-storage | Local HDD  | Direct   | 7.2 TB   | Large container backups |
 | local-lvm    | Local NVMe | LVM-Thin | 137 GB   | Container root disks    |
 | vmpool-fast  | Local NVMe | ZFS      | 899 GB   | Fast container storage  |
 
-### Why Hybrid?
+---
 
-- **UGREEN NAS limitation:** SMB/CIFS caused kernel crashes; NFS works but fails on sustained large writes (>10GB)
-- **Solution:** Small containers → NFS, Large containers (Nextcloud 17GB, Wings 12GB) → Local storage
+## 🔒 Security Architecture
+
+| Layer           | Implementation                                        |
+|-----------------|-------------------------------------------------------|
+| Perimeter       | ISP Router → pfSense firewall                         |
+| Segmentation    | 5 VLANs with enforced firewall rules                  |
+| DNS             | Pi-hole ad/tracker blocking (~489K domains)           |
+| VPN             | Tailscale (subnet router on pfSense, primary access)  |
+| External Auth   | Cloudflare Access (email OTP) for Grafana and n8n     |
+| External Access | Cloudflare Tunnel for Nextcloud                       |
+| Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)         |
+| Backup          | Automated daily backups with 7/4/2 retention          |
 
 ---
 
 ## 📋 Project Phase History
 
-| Phase  | Title                                                     | Status         | Completed        |
-|--------|-----------------------------------------------------------|----------------|------------------|
-| 1      | Proxmox VE Installation                                   | ✅ Complete     | Jan 2026         |
-| 2      | pfSense Firewall & VLAN Setup                             | ✅ Complete     | Jan 2026         |
-| 3      | Core Services (Pi-hole, NPM, Tailscale, DDNS)             | ✅ Complete     | Jan 2026         |
-| 4      | External Access & SSL                                     | ✅ Complete     | Feb 2026         |
-| 5      | Monitoring Stack                                          | ✅ Complete     | Feb 2026         |
-| 6A-6D  | Gaming Platform (Pterodactyl, Terraria)                   | ✅ Complete     | Feb 2026         |
-| 9      | NAS Deployment (Kinmoon)                                  | ✅ Complete     | Mar 3, 2026      |
-| 6F     | Infrastructure Audit, VLAN Migration & Firewall Hardening | ✅ Complete     | Mar 9, 2026      |
-| 7      | Nextcloud Deployment                                      | ✅ Complete     | Mar 8, 2026      |
-| **7A** | **Backup Strategy**                                       | ✅ **Complete** | **Mar 13, 2026** |
-| 6E     | Homepage Dashboard                                        | 📋 Planned     | —                |
-| 7B     | n8n Workflow Automation                                   | 📋 Planned     | —                |
+| Phase   | Title                                                     | Status         | Completed        |
+|---------|-----------------------------------------------------------|----------------|------------------|
+| 1       | Proxmox VE Installation                                   | ✅ Complete    | Jan 2026         |
+| 2       | pfSense Firewall & VLAN Setup                             | ✅ Complete    | Jan 2026         |
+| 3       | Core Services (Pi-hole, NPM, Tailscale, DDNS)             | ✅ Complete    | Jan 2026         |
+| 4       | External Access & SSL                                     | ✅ Complete    | Feb 2026         |
+| 5       | Monitoring Stack                                          | ✅ Complete    | Feb 2026         |
+| 6A-6D   | Gaming Platform (Pterodactyl, Terraria, Minecraft)        | ✅ Complete    | Feb 2026         |
+| 6E      | Homepage Dashboard                                        | ✅ Complete    | Mar 2026         |
+| 6F      | Infrastructure Audit, VLAN Migration & Firewall Hardening | ✅ Complete    | Mar 9, 2026      |
+| 7       | Nextcloud Deployment                                      | ✅ Complete    | Mar 8, 2026      |
+| 7A      | Backup Strategy                                           | ✅ Complete    | Mar 13, 2026     |
+| 7B      | n8n Workflow Automation                                   | ✅ Complete    | Apr 2, 2026      |
+| 7C      | Gilgamesh Telegram Bot + GitHub Integration               | ✅ Complete    | Apr 2, 2026      |
+| **7D**  | **Gilgamesh Enhancements (Memory, Routing, Web Search)**  | ✅ **Complete**| **Apr 6, 2026**  |
+| 7D-Sec  | Cloudflare Access for n8n                                 | ✅ Complete    | Apr 7, 2026      |
+| 9       | NAS Deployment (Kinmoon)                                  | ✅ Complete    | Mar 3, 2026      |
+| 11      | Ollama + ROCm on Kuromoon RX 6700 XT                      | 📋 Planned     | —                |
 
 ---
 
@@ -176,30 +233,27 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | Tailscale ping failing           | Normal — use `tailscale ping` instead of ICMP |
 | Blocked traffic still works      | Disconnect Tailscale to test local firewall   |
 
-### Backup Strategy (Phase 7A)
+### Backup Strategy
 
 | Issue                        | Resolution                                            |
 |------------------------------|-------------------------------------------------------|
-| SMB/CIFS kernel crashes      | Switch to NFS protocol                                |
+| SMB/CIFS kernel crashes      | Switch to NFS protocol (later switched back to SMB)   |
 | NFS permission denied        | Change squash to "Map all users to admin"             |
 | Large file I/O errors on NAS | Hybrid approach — large containers to local storage   |
 | ZFS snapshot busy            | Kill stuck processes or reboot, then destroy snapshot |
 | Container locked (backup)    | `pct unlock <CTID>`                                   |
 
----
+### n8n & Gilgamesh
 
-## 🔒 Security Architecture
-
-| Layer           | Implementation                                   |
-|-----------------|--------------------------------------------------|
-| Perimeter       | ISP Router → pfSense firewall                    |
-| Segmentation    | 5 VLANs with enforced firewall rules             |
-| DNS             | Pi-hole ad/tracker blocking                      |
-| VPN             | Tailscale (subnet router on pfSense + Gaming PC) |
-| External Auth   | Cloudflare Access (email OTP) for Grafana        |
-| External Access | Cloudflare Tunnel for Nextcloud                  |
-| Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)    |
-| Backup          | Automated daily backups with 7/4/2 retention     |
+| Issue                                | Resolution                                                      |
+|--------------------------------------|-----------------------------------------------------------------|
+| n8n Data Tables schema caching bug   | Delete and recreate the table entirely                          |
+| Claude API 404 model not found       | Use exact model ID: `claude-haiku-4-5-20251001`                 |
+| Web search partial response capture  | Add Extract Response Code node, filter by `type === "text"`     |
+| Expression scoping issues            | Use Code node with `this.helpers.httpRequest`, reference `$json`|
+| NFS fails for LXC backups            | UID namespace mapping (100000-165536); use SMB instead          |
+| pfSense rule not working             | Place new rules BEFORE RFC1918 block rules                      |
+| n8n GitHub credential 401            | User field (`muzakkir97`) must be populated                     |
 
 ---
 
@@ -207,151 +261,59 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 | Task                                                | Priority |
 |-----------------------------------------------------|----------|
-| WiFi Access Point for VLAN 20 (phone Pi-hole)       | Medium   |
+| Obsidian setup with Dataview subscription tracker   | High     |
 | Switch management IP (192.168.1.20 → 192.168.10.20) | Medium   |
-| Remove legacy LAN interface                         | Medium   |
-| Homepage Dashboard (Phase 6E)                       | Medium   |
+| WiFi Access Point setup (EAP610 purchased)          | Medium   |
+| Section-aware merge logic for AI-CONTEXT.md         | Low      |
 | Off-site backup (Backblaze B2)                      | Low      |
 | Nextcloud 2FA (TOTP)                                | Low      |
+| Phase 11: Ollama + ROCm local LLM inference         | Deferred |
+| Fedora dual-boot on Minimoon (kernel 6.12+ for RDNA 4) | Deferred |
+| Old P400S build repurpose (Z270E + i7-7700K)        | Deferred |
 
 ---
 
 ## 📝 Session Log (Recent)
 
+### 2026-04-06
+Test session log ordering
+- Testing new merge logic
+- New entries should appear at top of Session Log
+
+
+### April 7, 2026
+- Added Cloudflare Access protection to n8n (email OTP)
+- n8n now secured same as Grafana
+- Updated AI-CONTEXT.md with consolidated state
+
+### April 6, 2026
+- Completed Phase 7D (Gilgamesh Enhancements)
+- Fixed Save Cost node — recreated gilgamesh_costs table
+- Fixed Save Assistant Message — Extract Response node for web search
+- Implemented smart routing: Haiku 4.5 for simple, Sonnet 4 for complex
+- Added Obsidian phase to roadmap
+
+### April 5, 2026
+- Implemented conversation memory using n8n Data Tables
+- Memory stores last 20 messages (role, content, timestamp)
+- Added web search capability to Gilgamesh
+- Fixed HTTP Request JSON formatting, If node routing, Send text message
+
+### April 4, 2026
+- Planned Gilgamesh upgrade (MCP evaluation, security model)
+- Decided: Keep Claude Pro + upgrade Gilgamesh with API
+- Phase 7D added to roadmap
+
+### April 2, 2026
+- Completed Phase 7C: Gilgamesh Telegram bot
+- Created workflow: Telegram → Claude → Nextcloud → GitHub
+- /update command working for context sync
+
 ### March 16, 2026
-
-- Completed Phase 7A fully (pfSense + Pi-hole backups done)
-- Downloaded pfSense config XML to Gaming PC + Nextcloud
-- Downloaded Pi-hole Teleporter backup to Gaming PC + Nextcloud
-- Enhanced Pi-hole blocklists: 81K → 488K domains (6x increase)
-- Added 3 new blocklists: Easyprivacy, AdguardDNS, Prigent-Malware
-- Investigated WiFi options for phone Pi-hole access
-- Added WiFi Access Point to roadmap (TP-Link EAP225 recommended)
-
-### March 13, 2026
-
-- Completed Phase 7A (Backup Strategy)
-- Discovered SMB/CIFS kernel instability during large backups
-- Switched NAS backup protocol from SMB to NFS
-- Fixed NFS permission issues (squash settings)
-- Discovered NAS limitations with sustained large writes
-- Implemented hybrid backup: small containers → NFS, large → local
-- Created two backup jobs with proper retention (7/4/2)
-- Tested and verified all containers backup successfully
-- Removed disabled SMB storage
-
-### March 9, 2026
-
-- Completed firewall hardening (Phase 6F final part)
-- Created/updated firewall aliases
-- Implemented proper inter-VLAN rules
-- Installed Tailscale on Gaming PC for admin access
-
-### March 8, 2026
-
-- Deployed Nextcloud (CT 220) with LAMP stack
-- Configured Cloudflare Tunnel for external access
-- Fixed Uptime Kuma monitors
-- Configured container autostart with boot order
+- Completed Phase 7A fully (pfSense + Pi-hole backups)
+- Enhanced Pi-hole blocklists: 81K → 489K domains
+- Purchased TP-Link EAP610 WiFi AP
 
 ---
 
-*Last updated: March 16, 2026 — Update this file at the end of each session before pushing to GitHub*
-
-### April 2, 2026
-
-- Phase 7C: Built Telegram agent bot (Gilgamesh)
-- Connected Claude Sonnet 4 API to n8n
-- Created workflow: Telegram → Claude → Parse → Nextcloud
-- Implemented append logic to prevent file overwrites
-- April 2, 2026: Completed Phase 7C-2 - GitHub push integration in Telegram Agent workflow
-- Full pipeline working: Telegram to Claude to Nextcloud to GitHub
-- April 2, 2026: Completed Phase 7C-2 - GitHub push integration in Telegram Agent workflow
-- Full pipeline working: Telegram to Claude to Nextcloud to GitHub
-
-**April 4 2026 - Gilgamesh Upgrade Planning**
-- Discussed MCP benefits and security risks
-- Designed tiered permission model with Telegram 2FA
-- Compared MCP vs OpenClaw vs Claude Code vs Clawdbot
-- OpenClaw rejected due to security risk
-- Claude Code has no memory so not a replacement
-- Final decision: keep Claude Pro plus upgrade Gilgamesh
-- Upgrade includes smart routing and SQLite memory and cost tracking
-- Adding homelab commands: status, restart, metrics
-- Phase 7D added to roadmap
-- Bug noted: Gilgamesh breaks on special characters
-
-
-### 2026-04-04
-Session April 5 2026 Phase 7D Implementation
-- Implemented conversation memory using n8n Data Tables
-- Memory stores last 20 messages (role, content, timestamp)
-- Fixed HTTP Request JSON formatting for Claude API
-- Fixed If node routing (checks for /update command)
-- Fixed Send a text message node to return Claude response
-- Fixed Parse File to extract update content directly
-- Smart routing temporarily disabled (Sonnet only for now)
-- Save Cost node disabled pending column name fix
-- Gilgamesh now remembers context across messages
-- Memory system verified working with name recall test
-
-
-
-### 2026-04-04
-Session April 5 2026 Phase 7D Complete
-- Upgraded to Claude Sonnet 4.6 (latest model)
-- Added web search capability (web_search tool)
-- Conversation memory working (n8n Data Tables, 20 messages)
-- Fixed workflow routing (If node, Send text message)
-- Fixed Parse File for direct /update extraction
-- Gilgamesh can now search the web for real-time information
-- Memory, web search, and /update all verified working
-
-
-
-### 2026-04-05
-Date: April 6, 2026
-Phase: 7D — Gilgamesh Enhancements
-TOPICS DISCUSSED
-
-Fixed Save Cost node table column mismatch error
-Fixed Save Assistant Message for web search responses
-Implemented smart routing with Haiku 4.5 and Sonnet 4
-Added Obsidian phase to roadmap with Dataview subscription tracker
-
-DECISIONS MADE
-
-Obsidian phase planned with Dataview subscription tracker from Fizder gist
-Smart routing uses keyword pattern matching, no extra API calls
-Haiku model: claude-haiku-4-5-20251001
-Sonnet model: claude-sonnet-4-20250514
-
-PHASE 7D COMPLETED
-
-Added Extract Response Code node to handle web search multi-block responses
-Recreated gilgamesh_costs table to fix schema caching bug
-Added Route Model Code node for smart routing
-Simple patterns like hi, hello, thanks, help, status, ping route to Haiku 4.5
-Complex queries route to Sonnet 4
-Cost tracking operational in gilgamesh_costs data table
-
-WORKFLOW STRUCTURE
-Telegram Trigger, Get rows, Format Messages, Route Model, HTTP Request, Save User Message, Extract Response, Save Assistant Message, Save Cost, IF, Send Telegram
-KEY LEARNINGS
-
-n8n Data Tables schema caching bug can cause no column named errors even when columns exist. Fix by deleting and recreating the table.
-Claude API web search responses have multiple content blocks. Extract all text blocks by filtering for type equals text.
-Correct Haiku 4.5 model ID is claude-haiku-4-5-20251001
-
-ERRORS AND RESOLUTIONS
-
-SQLITE ERROR no column named model: Recreated gilgamesh_costs table
-404 model not found: Fixed model ID to claude-haiku-4-5-20251001
-Partial response capture: Added Extract Response node
-
-ACTION ITEMS
-
-Push updated AI-CONTEXT.md to GitHub
-Update roadmap.md with Phase 7D complete
-Future: Obsidian setup with subscription tracker
-Future: Add Cloudflare Access to n8n for security
+*Last updated: April 7, 2026 — Update this file at the end of each session before pushing to GitHub*
