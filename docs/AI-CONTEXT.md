@@ -275,11 +275,100 @@ Telegram messages must be **plain text only** — code blocks, backticks, and co
 
 ## 📝 Session Log (Recent)
 
+### April 7, 2026
+Date: April 7, 2026
+Phase: Phase 7E - Gilgamesh Menu System
+Topics Discussed
+
+Expanded n8n workflow ideas master list (Homelab, Finance, HR, WhatsApp, AI-powered, etc.)
+Malaysia SME market potential for n8n automation services
+Built inline keyboard button menu system for Gilgamesh
+Proxmox API integration for container status
+
+What Was Built
+
+Telegram inline keyboard menu system with nested navigation
+Main Menu with 5 categories: Homelab, Gaming, Gilgamesh, Tools, Help
+Homelab submenu with Status, Metrics, Temps, Storage, Back buttons
+Callback Router to handle button presses
+Proxmox API integration with new token (root@pam!gilgamesh)
+Status action that queries all LXC containers and displays status/RAM
+Edit message functionality (menus update in place instead of sending new messages)
+
+Technical Details
+
+Telegram Trigger configured for both Message and Callback Query
+Main Switch routes: Callback, Menu, Update, Fallback
+Callback Router routes: Homelab, Gaming, Gilgamesh, Tools, Help, Back, Status, Fallback
+Proxmox API URL: https://192.168.10.5:8006/api2/json/nodes/muzakkir/lxc
+Proxmox node name is "muzakkir" (not kuromoon)
+Answer Callback node currently deactivated (was breaking data flow)
+Expression for multi-line text: {{ "Line1\n\nLine2" }}
+Expression for conditional chat ID: {{ $json.callback_query ? $json.callback_query.message.chat.id : $json.message.chat.id }}
+
+Key Lessons Learned
+
+Telegram allows only ONE webhook per bot - must handle both messages and callbacks in same trigger
+Answer Callback node transforms data and loses original callback_query - bypass it or restructure flow
+Use "Edit a text message" instead of "Send" for submenu navigation (cleaner UX)
+n8n Switch node needs "Convert types where required" enabled when checking optional fields
+Proxmox API requires: Header Auth with "Authorization: PVEAPIToken=user@realm!token=secret"
+Enable "Ignore SSL Issues" for self-signed Proxmox certificate
+
+Changes to AI-CONTEXT.md
+Add to Current State section:
+
+Phase 7E: Gilgamesh Menu System (in progress)
+Proxmox API token created: root@pam!gilgamesh
+Proxmox node name: muzakkir (not kuromoon)
+
+Add to Gilgamesh section:
+
+Inline keyboard menu system implemented
+Main menu categories: Homelab, Gaming, Gilgamesh, Tools, Help
+Homelab submenu: Status (working), Metrics, Temps, Storage (pending)
+Status action queries Proxmox API and displays all container states
+
+Pending Tasks
+
+Build remaining Homelab actions: Metrics, Temps, Storage
+Build Gaming submenu and actions
+Build Gilgamesh submenu: Memory info, API costs, Clear memory
+Build Tools submenu: DNS stats, Uptime, Alerts
+Build Help action
+Re-enable Answer Callback (optional - removes button loading spinner)
+Consider renaming Proxmox node from "muzakkir" to "kuromoon" (low priority)
+
+Workflow Ideas Documented
+
+Full master list of n8n workflows compiled
+Malaysia SME market analysis with pricing (RM 1,500 - 15,000 range)
+High potential: WhatsApp lead auto-reply, Invoice reminders, HR onboarding, AI customer support
+
+
 ### April 6, 2026
 Fixed Gilgamesh update workflow
 - Added Cloudflare Access bypass for webhook paths
 - Fixed session log date format to match existing entries
 - New entries now insert at top of Session Log section
+
+
+### 2026-04-06
+Test session log ordering April 7
+- Testing new merge logic
+- Entry should appear at top of Session Log section
+
+
+### 2026-04-06
+Test session log ordering
+- Testing new merge logic
+- New entries should appear at top of Session Log
+
+
+### 2026-04-06
+Test session log ordering
+- Testing new merge logic
+- New entries should appear at top of Session Log
 
 
 ### April 7, 2026
