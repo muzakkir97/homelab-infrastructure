@@ -275,23 +275,6 @@ Telegram messages must be **plain text only** — code blocks, backticks, and co
 
 ## 📝 Session Log (Recent)
 
-### 2026-04-06
-Test session log ordering April 7
-- Testing new merge logic
-- Entry should appear at top of Session Log section
-
-
-### 2026-04-06
-Test session log ordering
-- Testing new merge logic
-- New entries should appear at top of Session Log
-
-
-### 2026-04-06
-Test session log ordering
-- Testing new merge logic
-- New entries should appear at top of Session Log
-
 
 ### April 7, 2026
 - Added Cloudflare Access protection to n8n (email OTP)
