@@ -281,6 +281,12 @@ Test session log ordering
 - New entries should appear at top of Session Log
 
 
+### 2026-04-06
+Test session log ordering
+- Testing new merge logic
+- New entries should appear at top of Session Log
+
+
 ### April 7, 2026
 - Added Cloudflare Access protection to n8n (email OTP)
 - n8n now secured same as Grafana
