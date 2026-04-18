@@ -276,6 +276,12 @@ Telegram messages must be **plain text only** — code blocks, backticks, and co
 ## 📝 Session Log (Recent)
 
 ### April 18, 2026
+Phase 13 continued - Lessons and Pending
+Key Lessons: New LXC needs nameserver 192.168.30.10 fix before apt. Install lsb-release before HashiCorp repo. Hardcode amd64 and bookworm in repo entry. Add disable_mlock true for LXC. Use vault login not export for token auth.
+Pending: Clear Notepad secrets. Setup Bitwarden or Vaultwarden. Clean up duplicate Cloudflare tokens. Update Cloudflare Access app icons for all 6 apps. Future: integrate Vault into n8n Gilgamesh workflow. Add CT 213 vault 192.168.30.213 to container inventory in AI-CONTEXT.md.
+
+
+### April 18, 2026
 Date: April 18, 2026 Phase: Phase 13 - HashiCorp Vault
 Topics Discussed: Deployed HashiCorp Vault CT 213 on VLAN 30. Resolved LXC issues: template filename, nesting, DNS fix, mlock error. Configured NPM reverse proxy and Cloudflare Access email OTP. Initialized Vault 5 unseal keys threshold 3. Created homelab policy and non-root token. Enabled KV secrets engine at kv/. Migrated secrets from Notepad to Vault.
 What Was Built: CT 213 Vault v2.0.0 file storage backend disable_mlock true. Secrets stored: kv/gilgamesh (claude-api-key, telegram-bot-token), kv/cloudflare (global-api-key), kv/proxmox (api-token). vault.najhin-gaming.com behind Cloudflare Access email OTP.
