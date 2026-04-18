@@ -1,174 +1,269 @@
-# Changelog
+# 📝 Changelog
 
-> **Format:** Newest first
-
----
-
-## 2026-03-10 — CT 206 (Uptime Kuma) Resource Upgrade
-
-### Changes Made
-- Increased CT 206 CPU cores from 1 to 2
-- Increased CT 206 memory from 512MB to 768MB
-- Resolved recurring high CPU alerts every 2 hours
-
-### Root Cause
-Single-core container was overwhelmed by periodic maintenance tasks (database cleanup, certificate checks). Node.js garbage collection combined with kernel context-switching caused 100% system CPU spikes.
-
-### Resources After Fix
-| Setting | Before | After |
-|---------|--------|-------|
-| CPU Cores | 1 | 2 |
-| Memory | 512 MB | 768 MB |
+All notable changes to the homelab infrastructure project.
 
 ---
 
-## 2026-03-09 — Phase 6F: Firewall Hardening
+## [April 14, 2026] - Documentation Update
 
-### Changes Made
-- Audited all pfSense firewall rules across 10 interfaces
-- Created firewall aliases for cleaner rule management:
-  - IP: RFC1918, DNS_SERVERS, PROXMOX, Monitoring_Servers
-  - Ports: SERVICE_PORTS, GAME_PORTS, MONITORING_PORTS
-- Replaced "allow-all (temporary)" rules with proper inter-VLAN rules:
-  - VLAN10_MGMT: 4 rules (DNS, VLAN30 access, RFC1918 block, internet)
-  - VLAN20_MAIN: 6 rules (gateway, DNS, services, games, RFC1918 block, internet)
-  - VLAN30_SERVICES: 5 rules (DNS, Proxmox metrics, intra-VLAN, RFC1918 block, internet)
-  - VLAN40_DMZ: 3 rules (DNS, RFC1918 block, internet)
-  - VLAN50_MALWARE: 0 rules (air-gapped by design)
-- Installed Tailscale on Gaming PC for secure admin access
-- Fixed LAN DNS rule (pointed to wrong IP 192.168.20.10 → DNS_SERVERS alias)
-- Fixed Monitoring_Servers alias (had old VLAN 20 IPs)
-- Fixed MONITORING_PORTS alias (removed DNS port 53)
-
-### Security Improvements
-| Before | After |
-|--------|-------|
-| All VLANs allow-all | Explicit rules per VLAN |
-| Client → Management open | Client → Management blocked |
-| No lateral movement prevention | RFC1918 blocking on all VLANs |
-| Admin access from any VLAN | Admin access via Tailscale only |
-
-### Issues Resolved
-- Internet loss after VLAN20 rules → Fixed Source from "address" to "subnets"
-- Same issue on all VLANs → Changed all to use "subnets"
-- LAN DNS rule wrong IP → Changed to DNS_SERVERS alias
+### Changed
+- Updated README.md with current project state (16 phases complete)
+- Updated current-state.md with all 12 containers
+- Added ROADMAP.md with comprehensive phase planning
+- Updated changelog.md with missing entries
 
 ---
 
-## 2026-03-08 — Phase 7: Nextcloud Deployment
+## [April 7, 2026] - Phase 7D-Sec: Cloudflare Access for n8n
 
-### Changes Made
-- Created CT 220 (nextcloud) on VLAN 30 at 192.168.30.220
-- Installed LAMP stack: Apache 2.4.66, PHP 8.2.30, MariaDB 10.11
-- Deployed Nextcloud Hub 26 Winter (33.0.0)
-- Configured PHP with APCu memcache and OPcache optimization
-- Installed Cloudflare Tunnel (cloudflared 2026.2.0) for external access
-- External URL: https://cloud.najhin-gaming.com
-- Installed apps: Calendar, Contacts, Mail, Notes
-- Fixed Uptime Kuma monitors (Grafana SSL, Proxmox SSL, Nextcloud endpoint)
-- Configured container autostart with boot order for all 10 containers
-- Fixed Pi-hole node_exporter (prometheus-node-exporter wasn't installed)
-- Masked smartmontools on Pi-hole (not compatible with SD card)
+### Added
+- Cloudflare Access protection for n8n (email OTP)
+- n8n now secured same as Grafana
+- Updated AI-CONTEXT.md with consolidated state
 
-### Key Decisions
-- Cloudflare Tunnel instead of port forwarding (simpler, no ISP router changes)
-- Removed Cloudflare Access for Nextcloud (incompatible with mobile app)
-- Using Nextcloud built-in brute-force protection instead
-
-### New Container
-| CTID | Name | IP | Purpose |
-|------|------|----|---------|
-| 220 | nextcloud | 192.168.30.220 | Cloud storage (Google Drive replacement) |
+### Security
+- n8n.najhin-gaming.com now requires email OTP authentication
+- Matches existing Grafana security model
 
 ---
 
-## 2026-03-07 — Phase 6F: VLAN Migration Complete
+## [April 6, 2026] - Phase 7D: Gilgamesh Enhancements Complete
 
-### Changes Made
-- Migrated all 9 containers from old IPs to VLAN 30 (192.168.30.x)
-- Updated Proxmox container network configurations
-- Updated pfSense DNS to point to new Pi-hole IP (192.168.30.10)
-- Updated all NPM proxy hosts with new backend IPs
-- Updated Prometheus scrape targets
-- Updated Uptime Kuma monitors
-- Verified Tailscale VPN access working
+### Added
+- **Conversation memory** — Last 20 messages stored in n8n Data Tables
+- **Smart routing** — Haiku 4.5 for simple queries, Sonnet 4 for complex
+- **Web search** — Real-time information via Claude web_search tool
+- **Cost tracking** — Token usage logged to gilgamesh_costs table
 
-### IP Changes
-| Container | Old IP | New IP |
-|-----------|--------|--------|
-| nginx-proxy-manager | 192.168.30.10 | 192.168.30.201 |
-| monitoring-prometheus | 192.168.20.11 | 192.168.30.202 |
-| monitoring-grafana | 192.168.20.12 | 192.168.30.203 |
-| monitoring-loki | 192.168.20.x | 192.168.30.204 |
-| monitoring-alertmanager | 192.168.20.14 | 192.168.30.205 |
-| monitoring-uptime | 192.168.20.x | 192.168.30.206 |
-| network-ddns | 192.168.20.x | 192.168.30.207 |
-| gaming-panel | 192.168.50.10 | 192.168.30.210 |
-| gaming-wings-1 | 192.168.50.12 | 192.168.30.212 |
+### Fixed
+- Save Cost node — Recreated gilgamesh_costs table (n8n schema caching bug)
+- Save Assistant Message — Added Extract Response node for web search multi-block responses
+
+### Technical
+- Model IDs: `claude-haiku-4-5-20251001`, `claude-sonnet-4-20250514`
+- Memory retention: 20 messages per conversation
+- Cost logging: Input tokens, output tokens, model used, timestamp
 
 ---
 
-## 2026-03-05 — Phase 6F VLAN Restructure (Partial)
+## [April 5, 2026] - Gilgamesh Memory & Web Search
 
-### Changes Made
-- Deleted old VLANs with incorrect names from pfSense
-- Created new VLANs: VLAN10_MGMT, VLAN20_MAIN, VLAN30_SERVICES, VLAN40_DMZ, VLAN50_MALWARE
-- Configured DHCP for VLANs 10, 20, 30, 40 (disabled on VLAN 50)
-- Created temporary allow-all firewall rules
-- Updated switch VLAN configuration (port 4 → VLAN 10, port 5 → VLAN 30)
-- Moved Proxmox from 192.168.1.5 to 192.168.10.5 (VLAN 10)
-- Created vmbr0.10 subinterface for management
+### Added
+- Conversation memory using n8n Data Tables
+- Web search capability via Claude API
+- Memory stores role, content, timestamp per message
 
----
-
-## 2026-03-05 — Phase 6F Security Fixes
-
-### Changes Made
-- Deleted admin DNS records from Cloudflare (proxmox, pihole, npm, wildcard)
-- Deleted orphaned "Proxmox" Cloudflare Access application
-- Verified only Grafana proxy host exists in NPM
+### Fixed
+- HTTP Request JSON formatting issues
+- If node routing for model selection
+- Send text message node configuration
 
 ---
 
-## 2026-03-03 — Phase 9 NAS Deployment
+## [April 2, 2026] - Phase 7C: Gilgamesh Telegram Bot
 
-### Changes Made
-- Set up UGREEN DXP2800 NAS "Kinmoon"
-- Created 3.6TB storage pool (WD Purple 4TB)
-- Created SMB share: proxmox-backups
-- Added Proxmox storage: kinmoon-smb
-- Tested backup of CT 201
+### Added
+- **Gilgamesh AI Agent** — Telegram bot @JhinGilgamesh_bot
+- n8n workflow: Telegram → Claude API → Response
+- `/update` command for context synchronization
+- GitHub integration for AI-CONTEXT.md updates
+- Nextcloud integration for backup storage
 
-### Issues Resolved
-- NFS permission denied → switched to SMB
-- NAS I/O errors → reboot after pool creation
-
----
-
-## 2026-02 — Phase 6A-6D Gaming Platform
-
-- Deployed Pterodactyl Panel (CT 300)
-- Deployed Pterodactyl Wings (CT 302)
-- Set up Terraria server with tModLoader + Calamity
-- Configured game server port forwarding
+### Technical
+- Chat ID: 510832696
+- Workflow: Telegram Agent on CT 211
+- Claude API integration with system prompt
 
 ---
 
-## 2026-02 — Phase 5 Monitoring Stack
+## [April 2, 2026] - Phase 7B: n8n Workflow Automation
 
-- Deployed Prometheus (CT 202), Grafana (CT 203), Loki (CT 204)
-- Deployed Alertmanager (CT 205), Uptime Kuma (CT 206)
-- Configured Telegram + Discord alert channels
+### Added
+- **CT 211** (automation-n8n) — n8n workflow automation platform
+- Subdomain: n8n.najhin-gaming.com
+- Nginx Proxy Manager configuration
+- Initial workflow templates
 
----
-
-## 2026-01 — Phases 1-4 Foundation
-
-- Proxmox VE bare-metal installation
-- pfSense firewall setup with VLANs
-- Core services: Pi-hole, NPM, Tailscale, DDNS
-- External access with SSL via Cloudflare
+### Technical
+- Container: LXC on VLAN 30
+- IP: 192.168.30.211
+- Storage: 20GB on vmpool-fast
 
 ---
 
-*This file is append-only. Add new entries at the top.*
+## [March 16, 2026] - Phase 7A Completion & Pi-hole Enhancement
+
+### Completed
+- Phase 7A fully complete (pfSense + Pi-hole backups added)
+- Enhanced Pi-hole blocklists: 81K → 489K domains blocked
+
+### Added
+- Purchased TP-Link EAP610 WiFi AP (pending setup)
+
+---
+
+## [March 13, 2026] - Phase 7A: Backup Strategy
+
+### Added
+- Automated backup jobs for all containers
+- Two-tier backup strategy:
+  - Small containers → kinmoon-smb (NAS)
+  - Large containers → data-storage (local HDD)
+- Retention policy: 7 daily, 4 weekly, 2 monthly
+
+### Technical
+- Schedule: 02:00 (small), 02:30 (large)
+- Protocol: SMB/CIFS for NAS (NFS had UID mapping issues)
+
+---
+
+## [March 10, 2026] - Documentation Update
+
+### Changed
+- Updated roadmap.md with Phase 7A planning
+- Updated service-catalog.md
+- Updated current-state.md
+
+---
+
+## [March 9, 2026] - Phase 6F: Infrastructure Audit & Hardening
+
+### Security
+- Comprehensive firewall rule audit
+- VLAN isolation verification
+- pfSense rule ordering corrected (before RFC1918 block)
+- SERVICE_PORTS alias updated with monitoring ports
+
+### Fixed
+- VLAN10_MGMT rule for pfSense WebUI access (TCP 443)
+- Inter-VLAN routing verification
+
+---
+
+## [March 8, 2026] - Phase 7: Nextcloud Deployment
+
+### Added
+- **CT 220** (nextcloud-hub) — Nextcloud file sync & storage
+- Subdomain: cloud.najhin-gaming.com
+- Cloudflare Tunnel for external access
+- SSL via Nginx Proxy Manager
+
+### Technical
+- Container: LXC on VLAN 30
+- IP: 192.168.30.220
+- Storage: 100GB on vmpool-fast
+
+---
+
+## [March 3, 2026] - Phase 9: NAS Deployment
+
+### Added
+- **Kinmoon** — UGREEN DXP2800 NAS deployed
+- 3.6TB WD Purple storage
+- SMB/CIFS share for Proxmox backups
+- Storage ID: kinmoon-smb
+
+### Technical
+- IP: 192.168.10.15 (VLAN 10)
+- Protocol: SMB/CIFS (NFS had LXC UID mapping issues)
+
+---
+
+## [March 2026] - Phase 6E: Homepage Dashboard
+
+### Added
+- **CT 208** (dashboard-homepage) — gethomepage.dev dashboard
+- Subdomain: home.najhin-gaming.com
+- Widgets: Proxmox, Pi-hole, Uptime Kuma, Prometheus, weather, game servers
+
+### Technical
+- Container: LXC on VLAN 30
+- IP: 192.168.30.208
+
+---
+
+## [February 2026] - Phase 6A-6D: Gaming Platform
+
+### Added
+- **CT 300** (gaming-panel) — Pterodactyl Panel
+- **CT 302** (gaming-wings-1) — Pterodactyl Wings node
+- Terraria server (terraria.najhin-gaming.com)
+- Minecraft server (mc.najhin-gaming.com)
+
+### Technical
+- DNS: Cloudflare DNS-only mode (not proxied) for game servers
+- Double NAT port forwarding configured
+
+---
+
+## [February 2026] - Phase 5: Monitoring Stack
+
+### Added
+- **CT 202** (monitoring-prometheus) — Metrics collection
+- **CT 203** (monitoring-grafana) — Dashboards & visualization
+- **CT 204** (monitoring-loki) — Log aggregation
+- **CT 205** (monitoring-alertmanager) — Alert routing
+- **CT 206** (monitoring-uptime) — Uptime Kuma
+- Cloudflare Access for Grafana (email OTP)
+- 13 alert rules configured
+- Telegram + Discord alert routing
+
+---
+
+## [February 2026] - Phase 4: External Access & SSL
+
+### Added
+- Cloudflare Tunnel configuration
+- SSL certificates via Let's Encrypt (NPM)
+- Cloudflare Access (email OTP) setup
+
+---
+
+## [January 2026] - Phase 3: Core Services
+
+### Added
+- **CT 201** (nginx-proxy-manager) — Reverse proxy
+- **CT 207** (network-ddns) — Dynamic DNS
+- Pi-hole deployment on Raspberry Pi 4
+- Tailscale subnet router on pfSense
+
+---
+
+## [January 2026] - Phase 2: pfSense & VLANs
+
+### Added
+- pfSense firewall on AC8F Mini PC
+- 5 VLAN configuration (10, 20, 30, 40, 50)
+- 802.1Q trunk to TP-Link switch
+- Inter-VLAN routing with firewall rules
+
+### Lessons Learned
+- Proxmox needs `bridge-vids 2-4094` for VLAN passing
+- Pi-hole requires "ALL" listening mode for multi-VLAN
+- Place rules BEFORE RFC1918 block in pfSense
+
+---
+
+## [January 2026] - Phase 1: Proxmox VE Installation
+
+### Added
+- Proxmox VE 8.x installation on Kuromoon
+- ZFS mirror on NVMe drives (vmpool-fast)
+- LVM-thin storage (local-lvm)
+- First Ubuntu Server VM for testing
+
+### Hardware
+- Ryzen 5 5600X, 32GB DDR4
+- 2x 1TB NVMe (ZFS mirror)
+- RX 6700 XT 12GB (for future AI workloads)
+
+---
+
+## Legend
+
+- **Added** — New features or components
+- **Changed** — Changes to existing functionality
+- **Fixed** — Bug fixes
+- **Security** — Security-related changes
+- **Technical** — Technical details and specifications
+- **Lessons Learned** — Knowledge gained from troubleshooting

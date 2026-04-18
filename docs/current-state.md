@@ -1,176 +1,191 @@
-# Current State (Verified)
+# 📊 Current Infrastructure State
 
-> **Last Verified:** March 10, 2026  
-> **Status:** Phase 6F complete (including firewall hardening), all services operational
-
----
-
-## Network Configuration
-
-### VLAN Structure
-
-| VLAN ID | Name | Subnet | Gateway | DHCP Range | Status |
-|---------|------|--------|---------|------------|--------|
-| 10 | VLAN10_MGMT | 192.168.10.0/24 | 192.168.10.1 | .100-.200 | ✅ Active |
-| 20 | VLAN20_MAIN | 192.168.20.0/24 | 192.168.20.1 | .100-.200 | ✅ Active |
-| 30 | VLAN30_SERVICES | 192.168.30.0/24 | 192.168.30.1 | .100-.200 | ✅ Active |
-| 40 | VLAN40_DMZ | 192.168.40.0/24 | 192.168.40.1 | .100-.200 | ✅ Active |
-| 50 | VLAN50_MALWARE | 192.168.50.0/24 | 192.168.50.1 | None | ✅ Active |
-| — | LAN (legacy) | 192.168.1.0/24 | 192.168.1.1 | None | ⚠️ To be removed |
-
-### DNS Architecture
-
-**Flow:** Clients → pfSense (VLAN Gateway) → Pi-hole (192.168.30.10) → Cloudflare (1.1.1.1)
-
-- pfSense DNS Resolver enabled with Forwarding Mode
-- DHCP assigns VLAN gateway IP as DNS server
-- pfSense forwards all queries to Pi-hole
-
-### pfSense Interfaces
-
-| Interface | IP Address | Description |
-|-----------|------------|-------------|
-| WAN | DHCP from ISP | ISP connection |
-| LAN | 192.168.1.1/24 | Legacy (to be removed) |
-| VLAN10_MGMT | 192.168.10.1/24 | Management |
-| VLAN20_MAIN | 192.168.20.1/24 | Client devices |
-| VLAN30_SERVICES | 192.168.30.1/24 | All services |
-| VLAN40_DMZ | 192.168.40.1/24 | Public-facing |
-| VLAN50_MALWARE | 192.168.50.1/24 | Isolated sandbox |
-| Tailscale | 100.110.165.45 | VPN subnet router |
-
-### pfSense Firewall Rules (Hardened)
-
-| Interface | Rules | Policy |
-|-----------|-------|--------|
-| VLAN10_MGMT | 4 | DNS → VLAN30 services → Block RFC1918 → Internet |
-| VLAN20_MAIN | 6 | Gateway → DNS → Services → Games → Block RFC1918 → Internet |
-| VLAN30_SERVICES | 5 | DNS → Proxmox metrics → Intra-VLAN → Block RFC1918 → Internet |
-| VLAN40_DMZ | 3 | DNS → Block RFC1918 → Internet |
-| VLAN50_MALWARE | 0 | Implicit deny (air-gapped) |
-| Tailscale | 2 | Full access + pfSense WebUI |
-
-### pfSense Firewall Aliases
-
-| Alias | Type | Values |
-|-------|------|--------|
-| RFC1918 | Network | 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 |
-| DNS_SERVERS | Host | 192.168.30.10 |
-| PROXMOX | Host | 192.168.10.5 |
-| Monitoring_Servers | Host | 192.168.30.202-206 |
-| SERVICE_PORTS | Port | 80, 443, 3000, 3001, 8443 |
-| GAME_PORTS | Port | 7777, 25565, 25570 |
-| MONITORING_PORTS | Port | 8006, 9100 |
-
-### pfSense NAT Port Forward Rules
-
-| Description | Dest Port | NAT IP | NAT Port | Status |
-|-------------|-----------|--------|----------|--------|
-| Terraria Calamity Server | 7777 | 192.168.30.212 | 7777 | ✅ Active |
-| Minecraft Server | 25565 | 192.168.30.212 | 25570 | ✅ Active |
-| HTTPS to NPM | 443 | 192.168.30.201 | 443 | ✅ Active |
-| HTTP to NPM | 80 | 192.168.30.201 | 80 | ✅ Active |
-
-### Switch Configuration (TP-Link TL-SG108E)
-
-| Port | Device | VLAN Mode | PVID |
-|------|--------|-----------|------|
-| 1 | pfSense | Trunk | 1 |
-| 2 | Proxmox | Trunk | 1 |
-| 3 | Work Laptop | Access | 20 |
-| 4 | Gaming PC | Access | 20 |
-| 5 | Pi-hole | Access | 30 |
-| 6 | NAS | Access | 10 |
+> **Last Updated:** April 14, 2026  
+> **Status:** All systems operational
 
 ---
 
-## Device Inventory
+## 🖥️ Hardware Status
 
-### Infrastructure Devices
-
-| Device | IP Address | VLAN | Status |
-|--------|------------|------|--------|
-| Proxmox Server (Ryzen 5600X, 32GB) | 192.168.10.5 | 10 | ✅ Online |
-| pfSense (AC8F N100) | 192.168.10.1 | 10 | ✅ Online |
-| TP-Link TL-SG108E Switch | 192.168.1.20 | LAN | ✅ Online |
-| UGREEN NAS (Kinmoon) | 192.168.10.15 | 10 | ✅ Online |
-| Raspberry Pi 4 (Pi-hole) | 192.168.30.10 | 30 | ✅ Online |
-
-### Client Devices
-
-| Device | IP Address | VLAN | Tailscale IP |
-|--------|------------|------|--------------|
-| Gaming PC (Minimoon) | 192.168.20.101 | 20 | 100.106.109.4 |
-| Work Laptop | DHCP | 20 | — |
+| Device | Hostname | IP | Status | Notes |
+|--------|----------|-----|--------|-------|
+| Proxmox Server | Kuromoon | 192.168.10.5 | 🟢 Online | Primary hypervisor |
+| pfSense Firewall | — | 192.168.10.1 | 🟢 Online | Router + Firewall |
+| Managed Switch | — | 192.168.1.20 | 🟢 Online | Pending IP migration to 192.168.10.20 |
+| NAS | Kinmoon | 192.168.10.15 | 🟢 Online | Backup target |
+| Pi-hole DNS | — | 192.168.30.10 | 🟢 Online | ~489K domains blocked |
+| Gaming PC | Minimoon | 192.168.20.101 | — | Gaming only, not monitored |
 
 ---
 
-## Container Inventory
+## 📦 Container Inventory (Proxmox LXC)
 
-| CTID | Name | IP Address | VLAN | Cores | RAM | Autostart | Boot Order | Status |
-|------|------|------------|------|-------|-----|-----------|------------|--------|
-| 201 | nginx-proxy-manager | 192.168.30.201 | 30 | 1 | 512MB | ✅ | 1 | ✅ Running |
-| 202 | monitoring-prometheus | 192.168.30.202 | 30 | 1 | 1GB | ✅ | 3 | ✅ Running |
-| 203 | monitoring-grafana | 192.168.30.203 | 30 | 1 | 512MB | ✅ | 6 | ✅ Running |
-| 204 | monitoring-loki | 192.168.30.204 | 30 | 1 | 1GB | ✅ | 4 | ✅ Running |
-| 205 | monitoring-alertmanager | 192.168.30.205 | 30 | 1 | 512MB | ✅ | 5 | ✅ Running |
-| 206 | monitoring-uptime | 192.168.30.206 | 30 | **2** | **768MB** | ✅ | 7 | ✅ Running |
-| 207 | network-ddns | 192.168.30.207 | 30 | 1 | 256MB | ✅ | 2 | ✅ Running |
-| 220 | nextcloud | 192.168.30.220 | 30 | 2 | 4GB | ✅ | 8 | ✅ Running |
-| 300 | gaming-panel | 192.168.30.210 | 30 | 2 | 2GB | ✅ | 9 | ✅ Running |
-| 302 | gaming-wings-1 | 192.168.30.212 | 30 | 2 | 10GB | ✅ | 10 | ✅ Running |
+All containers on **VLAN 30** (192.168.30.0/24) with **autostart enabled**.
 
-> **Note:** CT 206 (monitoring-uptime) upgraded from 1 core/512MB to 2 cores/768MB on March 10, 2026 to resolve high CPU alerts during periodic maintenance tasks.
+| CTID | Name | IP | CPU | RAM | Disk | Status |
+|------|------|-----|-----|-----|------|--------|
+| 201 | nginx-proxy-manager | 192.168.30.201 | 1 | 512MB | 8GB | 🟢 Running |
+| 202 | monitoring-prometheus | 192.168.30.202 | 2 | 1GB | 20GB | 🟢 Running |
+| 203 | monitoring-grafana | 192.168.30.203 | 1 | 512MB | 10GB | 🟢 Running |
+| 204 | monitoring-loki | 192.168.30.204 | 2 | 1GB | 50GB | 🟢 Running |
+| 205 | monitoring-alertmanager | 192.168.30.205 | 1 | 256MB | 8GB | 🟢 Running |
+| 206 | monitoring-uptime | 192.168.30.206 | 1 | 512MB | 8GB | 🟢 Running |
+| 207 | network-ddns | 192.168.30.207 | 1 | 256MB | 4GB | 🟢 Running |
+| 208 | dashboard-homepage | 192.168.30.208 | 1 | 512MB | 8GB | 🟢 Running |
+| 211 | automation-n8n | 192.168.30.211 | 2 | 2GB | 20GB | 🟢 Running |
+| 220 | nextcloud-hub | 192.168.30.220 | 2 | 4GB | 100GB | 🟢 Running |
+| 300 | gaming-panel | 192.168.30.210 | 2 | 2GB | 20GB | 🟢 Running |
+| 302 | gaming-wings-1 | 192.168.30.212 | 4 | 8GB | 50GB | 🟢 Running |
 
----
-
-## External Services
-
-| Service | Details | Status |
-|---------|---------|--------|
-| Cloudflare DNS | grafana, cloud, panel (proxied), mc/terraria (DNS only) | ✅ Active |
-| Cloudflare Access | Grafana (email OTP) | ✅ Active |
-| Cloudflare Tunnel | homelab-tunnel → Nextcloud (cloud.najhin-gaming.com) | ✅ Active |
-| Tailscale | pfSense (100.110.165.45) + Gaming PC (100.106.109.4) | ✅ Active |
+**Total: 12 containers**
 
 ---
 
-## Uptime Kuma Monitors
+## 🌐 Network Configuration
 
-| Monitor | Target | Status |
-|---------|--------|--------|
-| Alertmanager | http://192.168.30.205:9093 | ✅ UP |
-| Grafana | http://192.168.30.203:3000 | ✅ UP |
-| NextCloud | http://192.168.30.220/status.php | ✅ UP |
-| Pi-hole | http://192.168.30.10 | ✅ UP |
-| Prometheus | http://192.168.30.202:9090 | ✅ UP |
-| Proxmox | https://192.168.10.5:8006 (ignore SSL) | ✅ UP |
+### VLAN Summary
 
----
+| VLAN | Name | Subnet | Gateway | Devices |
+|------|------|--------|---------|---------|
+| 10 | VLAN10_MGMT | 192.168.10.0/24 | 192.168.10.1 | Kuromoon, pfSense, Kinmoon |
+| 20 | VLAN20_MAIN | 192.168.20.0/24 | 192.168.20.1 | Minimoon, clients |
+| 30 | VLAN30_SERVICES | 192.168.30.0/24 | 192.168.30.1 | All containers, Pi-hole |
+| 40 | VLAN40_DMZ | 192.168.40.0/24 | 192.168.40.1 | (Future use) |
+| 50 | VLAN50_MALWARE | 192.168.50.0/24 | 192.168.50.1 | (Air-gapped, future use) |
 
-## Inter-VLAN Access Matrix
+### DNS Configuration
 
-| From → To | VLAN 10 | VLAN 20 | VLAN 30 | VLAN 40 | VLAN 50 | Internet |
-|-----------|---------|---------|---------|---------|---------|----------|
-| VLAN 10 | ✅ | ❌ | ✅ Limited | ❌ | ❌ | ✅ |
-| VLAN 20 | ❌ | ✅ | ✅ Limited | ❌ | ❌ | ✅ |
-| VLAN 30 | ✅ Metrics | ❌ | ✅ | ❌ | ❌ | ✅ |
-| VLAN 40 | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
-| VLAN 50 | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
-| Tailscale | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+- **Primary DNS:** Pi-hole (192.168.30.10)
+- **Upstream:** Cloudflare (1.1.1.1, 1.0.0.1)
+- **Domains Blocked:** ~489,000
+- **Listening Mode:** ALL (for multi-VLAN support)
 
 ---
 
-## Pending Changes
+## 🔗 External Access
 
-| Item | Current | Target | Priority |
-|------|---------|--------|----------|
-| Backup strategy | Not implemented | Phase 7A | High |
-| Switch management IP | 192.168.1.20 | 192.168.10.20 | Medium |
-| Legacy LAN | Active | Remove | Medium |
-| Nextcloud 2FA | Disabled | TOTP enabled | Low |
-| Nextcloud data → NAS | Local disk | NAS mount | Low |
+### Subdomains (via Cloudflare)
+
+| Subdomain | Target | Protection | Status |
+|-----------|--------|------------|--------|
+| home.najhin-gaming.com | CT 208 (Homepage) | None | 🟢 Active |
+| grafana.najhin-gaming.com | CT 203 (Grafana) | Cloudflare Access (email OTP) | 🟢 Active |
+| n8n.najhin-gaming.com | CT 211 (n8n) | Cloudflare Access (email OTP) | 🟢 Active |
+| cloud.najhin-gaming.com | CT 220 (Nextcloud) | Cloudflare Tunnel | 🟢 Active |
+| terraria.najhin-gaming.com | CT 302 (Game Server) | DNS Only (no proxy) | 🟢 Active |
+| mc.najhin-gaming.com | CT 302 (Game Server) | DNS Only (no proxy) | 🟢 Active |
+
+### Remote Access
+
+| Method | Status | Use Case |
+|--------|--------|----------|
+| Tailscale | 🟢 Active | Primary remote access (subnet router on pfSense) |
+| Cloudflare Tunnel | 🟢 Active | Nextcloud external access |
+| Cloudflare Access | 🟢 Active | Grafana, n8n authentication |
 
 ---
 
-*Last updated: March 10, 2026*
+## 📊 Monitoring Status
+
+### Prometheus Targets
+
+| Target | Endpoint | Status |
+|--------|----------|--------|
+| Proxmox (Kuromoon) | 192.168.10.5:9100 | 🟢 UP |
+| pfSense | 192.168.10.1:9100 | 🟢 UP |
+| Pi-hole | 192.168.30.10:9100 | 🟢 UP |
+| All containers | 192.168.30.x:9100 | 🟢 UP |
+
+### Alertmanager Routes
+
+| Severity | Destination | Timing |
+|----------|-------------|--------|
+| Critical | Telegram | Immediate |
+| Warning | Discord | During work hours |
+
+### Alert Rules (13 total)
+
+- Host availability
+- CPU usage > 80%
+- Memory usage > 85%
+- Disk usage > 80%
+- Service health checks
+
+---
+
+## 💾 Backup Status
+
+### Backup Jobs
+
+| Job | Schedule | Target | Last Run | Status |
+|-----|----------|--------|----------|--------|
+| Small Containers | 02:00 daily | kinmoon-smb | — | 🟢 Scheduled |
+| Large Containers | 02:30 daily | data-storage | — | 🟢 Scheduled |
+
+### Retention Policy
+
+- **Daily:** 7 backups
+- **Weekly:** 4 backups
+- **Monthly:** 2 backups
+
+### Storage Usage
+
+| Storage | Used | Total | % Used |
+|---------|------|-------|--------|
+| local-lvm | — | 137 GB | — |
+| vmpool-fast | — | 899 GB | — |
+| kinmoon-smb | — | 3.6 TB | — |
+| data-storage | — | 7.2 TB | — |
+
+---
+
+## 🤖 Gilgamesh AI Agent Status
+
+| Component | Status | Details |
+|-----------|--------|---------|
+| Telegram Bot | 🟢 Active | @JhinGilgamesh_bot |
+| n8n Workflow | 🟢 Running | CT 211 |
+| Conversation Memory | 🟢 Working | Last 20 messages |
+| Smart Routing | 🟢 Working | Haiku (simple) / Sonnet (complex) |
+| Web Search | 🟢 Working | Claude web_search tool |
+| Cost Tracking | 🟢 Working | gilgamesh_costs table |
+| /update Command | 🟢 Working | Syncs to Nextcloud + GitHub |
+| Inline Keyboard Menu | 🔄 In Progress | Status submenu working |
+
+---
+
+## 🎮 Game Servers Status
+
+| Server | Game | IP:Port | Status |
+|--------|------|---------|--------|
+| Terraria | Terraria | terraria.najhin-gaming.com:7777 | 🟢 Online |
+| Minecraft | Minecraft Java | mc.najhin-gaming.com:25565 | 🟢 Online |
+
+Managed via **Pterodactyl Panel** (CT 300) + **Wings** (CT 302).
+
+---
+
+## 🔧 Pending Tasks
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Switch IP migration (192.168.1.20 → 192.168.10.20) | Medium | Requires physical access |
+| Remove legacy LAN (192.168.1.0/24) | Medium | After switch migration |
+| WiFi AP setup (EAP610) | Medium | Hardware purchased |
+| Homepage security (Cloudflare Access) | Low | Currently unprotected |
+
+---
+
+## 📈 System Health Summary
+
+| Metric | Status |
+|--------|--------|
+| **All Containers** | 🟢 12/12 Running |
+| **Monitoring** | 🟢 All targets UP |
+| **Backups** | 🟢 Scheduled |
+| **External Access** | 🟢 All subdomains active |
+| **Security** | 🟢 Cloudflare Access on sensitive services |
+
+---
+
+*Last verified: April 14, 2026*
