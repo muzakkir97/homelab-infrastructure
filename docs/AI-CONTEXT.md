@@ -275,6 +275,10 @@ Telegram messages must be **plain text only** — code blocks, backticks, and co
 
 ## 📝 Session Log (Recent)
 
+### April 18, 2026
+Phase 13 HashiCorp Vault complete April 18 2026. CT 213 deployed on VLAN 30 at 192.168.30.213. Vault v2.0.0 installed with file storage backend, disable_mlock true for LXC compatibility. Initialized with 5 unseal keys threshold 3. KV secrets engine at kv/ path. Secrets stored: kv/gilgamesh (claude-api-key, telegram-bot-token), kv/cloudflare (global-api-key), kv/proxmox (api-token). Homelab policy created covering kv/* and secret/*. Non-root homelab token created for daily use. NPM reverse proxy configured for vault.najhin-gaming.com. Cloudflare Access email OTP protection added. Pending: clear Notepad secrets, Bitwarden setup, Cloudflare token cleanup, update Access app icons, future Vault integration with n8n Gilgamesh.
+
+
 ### April 7, 2026
 Date: April 7, 2026
 Phase: Phase 7E - Gilgamesh Menu System
