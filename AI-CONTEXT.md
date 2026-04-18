@@ -348,19 +348,21 @@ Topics Discussed
 
 Deployed Vaultwarden (CT 214, 192.168.30.214, passwords.najhin-gaming.com)
 Full secrets audit across all 14 containers
-Migrated all API keys to HashiCorp Vault kv/
-Stored all service logins and API keys in Vaultwarden
-Cleaned up duplicate Cloudflare API tokens (9 → 3)
-Cleaned up duplicate n8n GitHub credentials (3 → 1)
-Generated new GitHub PAT (fine-grained, n8n-gilgamesh)
-Fixed /update workflow Nextcloud 404 and GitHub 404 errors
+Migrated all API keys to HashiCorp Vault kv/ (8 paths total)
+Stored all service logins and API keys in Vaultwarden (~23 entries)
+Cleaned up duplicate Cloudflare API tokens (9 to 3)
+Cleaned up duplicate n8n GitHub credentials (3 to 1)
+Generated new GitHub PAT (fine-grained, n8n-gilgamesh, Contents read/write)
+Fixed /update workflow — Nextcloud 404 and GitHub 404 (removed /docs from paths)
+Deleted old docs/AI-CONTEXT.md from GitHub
 Deleted plaintext notepad secrets file
 
 Decisions Made
 
-Vaultwarden for personal password reference, Vault for machine secrets — both store API keys
-Cloudflare Access app icons skipped (not easily customizable)
+Vaultwarden for personal password reference, Vault for machine secrets — API keys stored in both
+Cloudflare Access app icons skipped (UI doesn't support custom icons easily)
 GitHub PAT set with fine-grained permissions (Contents read/write, homelab-infrastructure repo only)
+Google Sign-In services (Anthropic, Tailscale) stored with "Google Sign-In" as password field
 
 Changes to AI-CONTEXT.md
 
@@ -368,20 +370,20 @@ Add CT 214 password-vaultwarden to container inventory (192.168.30.214, password
 Update container count from 13 to 14
 Update Vault kv/ paths: add alertmanager, github, nextcloud, n8n, pihole (total 8)
 Add Vaultwarden to security architecture section
-Add Phase 23 to phase history as complete
+Add Phase 23 to phase history as complete (Apr 18, 2026)
 Update Cloudflare Access to 7 apps (add Vaultwarden)
 Update SERVICE_PORTS alias: add 8080
-Move "Set up Vaultwarden" and "Clear plaintext secrets" from pending to done
-Add "Clean up duplicate Cloudflare API tokens" as done
+Move pending tasks to done: Vaultwarden setup, clear plaintext secrets, clean up Cloudflare tokens
 Update backup job: CT 214 added to small containers job
 Note: /update workflow paths fixed (removed /docs from Nextcloud fetch and GitHub push)
+Note: AI-CONTEXT.md now lives at repo root, not docs/
 
 Changes to Other Docs
 
 roadmap.md: Phase 23 moved from planned to complete (Apr 18, 2026)
 service-catalog.md: Add Vaultwarden entry
 changelog.md: Add Phase 23 entry
-troubleshoot.md: Add entries for Vault HTTPS vs HTTP error, n8n encryption key location (Docker volume)
+troubleshoot.md: Add entries for Vault HTTPS vs HTTP error, n8n encryption key location, /update path fixes
 
 Errors & Resolutions
 
@@ -389,15 +391,14 @@ Vault CLI HTTPS error: Set export VAULT_ADDR='http://127.0.0.1:8200' before vaul
 n8n encryption key not in .env: Found inside Docker volume via docker exec n8n cat /home/node/.n8n/config
 /update Nextcloud 404: AI-CONTEXT.md moved from docs/ to root — updated Fetch Current File node path
 /update GitHub 404: Prepare GitHub Push node had hardcoded /docs path — removed /docs
-GitHub PAT hardcoded in Prepare GitHub Push node — updated to new token
+Push to Github SHA mismatch: URL still had /docs — updated to root path
+GitHub PAT was hardcoded in Prepare GitHub Push code node — updated to new token
 
 Action Items
 
- Install Bitwarden app on phone and configure server URL to passwords.najhin-gaming.com
- Update hardcoded PAT in Prepare GitHub Push node to use n8n credential instead (future improvement)
- Update Cloudflare Access app icons when UI supports it
- Delete old GitHub PAT from GitHub if not already done
- Push updated AI-CONTEXT.md to GitHub via /update
+ Install Bitwarden app on phone, set server URL to passwords.najhin-gaming.com
+ Update hardcoded PAT in Prepare GitHub Push to use n8n credential instead (future improvement)
+ Push updated AI-CONTEXT.md with all Phase 23 changes
 
 
 ### April 18, 2026
