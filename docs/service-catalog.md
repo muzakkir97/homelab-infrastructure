@@ -1,128 +1,387 @@
-# Service Catalog
+# 🗂️ Service Catalog
 
-> **Last Updated:** March 9, 2026
-
----
-
-## Core Infrastructure
-
-| Service | Type | Target IP | Port | Role |
-|---------|------|-----------|------|------|
-| pfSense | Dedicated hardware (N100) | 192.168.10.1 | 443 | Firewall, Router, DHCP, NAT |
-| Pi-hole | Bare metal (RPi4) | 192.168.30.10 | 80 | DNS filtering, ad blocking |
-| Nginx Proxy Manager | LXC (CT 201) | 192.168.30.201 | 80/443/81 | Reverse proxy, SSL termination |
-| Tailscale | On pfSense + Gaming PC | 100.110.165.45 | — | VPN subnet router |
-| Cloudflare DDNS | LXC (CT 207) | 192.168.30.207 | — | Dynamic DNS updates |
-
-## Monitoring Stack
-
-| Service | CTID | Target IP | Port | Role |
-|---------|------|-----------|------|------|
-| Prometheus | 202 | 192.168.30.202 | 9090 | Metrics collection |
-| Grafana | 203 | 192.168.30.203 | 3000 | Dashboards (external via CF Access) |
-| Loki | 204 | 192.168.30.204 | 3100 | Log aggregation |
-| Alertmanager | 205 | 192.168.30.205 | 9093 | Alert routing (Telegram + Discord) |
-| Uptime Kuma | 206 | 192.168.30.206 | 3001 | Service availability monitoring |
-
-## Productivity
-
-| Service | CTID | Target IP | Port | Role |
-|---------|------|-----------|------|------|
-| Nextcloud | 220 | 192.168.30.220 | 80 | Cloud storage, calendar, contacts |
-
-## Gaming Platform
-
-| Service | CTID | Target IP | Port | Role |
-|---------|------|-----------|------|------|
-| Pterodactyl Panel | 300 | 192.168.30.210 | 443 | Game server management UI |
-| Pterodactyl Wings | 302 | 192.168.30.212 | — | Game server daemon (10GB RAM) |
-| Terraria (Calamity) | via Wings | — | 7777 | Game server |
-| Minecraft | via Wings | — | 25570 | Game server |
-
-## Storage
-
-| ID | Type | Server | Content |
-|----|------|--------|---------|
-| local | Directory | /var/lib/vz | ISOs, templates |
-| local-lvm | LVM-Thin | pve/data | VM/CT disks |
-| kinmoon-smb | SMB/CIFS | 192.168.10.15 | Backups |
-
-## External Services
-
-| Service | Type | Endpoint | Purpose |
-|---------|------|----------|---------|
-| Cloudflare Tunnel | homelab-tunnel | cloud.najhin-gaming.com → localhost:80 | Nextcloud external access |
-| Cloudflare Access | — | grafana.najhin-gaming.com | Zero-trust auth (email OTP) |
-| Let's Encrypt | DNS-01 | — | SSL certificates via Cloudflare |
-
-## pfSense Firewall Aliases
-
-### IP Aliases
-
-| Alias | Type | Values | Purpose |
-|-------|------|--------|---------|
-| RFC1918 | Network | 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 | Block private networks |
-| DNS_SERVERS | Host | 192.168.30.10 | Pi-hole |
-| PROXMOX | Host | 192.168.10.5 | Proxmox server |
-| Monitoring_Servers | Host | 192.168.30.202-206 | Monitoring stack |
-
-### Port Aliases
-
-| Alias | Type | Values | Purpose |
-|-------|------|--------|---------|
-| SERVICE_PORTS | Port | 80, 443, 3000, 3001, 8443 | Web services |
-| GAME_PORTS | Port | 7777, 25565, 25570 | Game servers |
-| MONITORING_PORTS | Port | 8006, 9100 | Proxmox + Node Exporter |
-
-## Service Dependencies
-
-```
-Internet → Cloudflare DNS → NPM → Grafana
-                               → Pterodactyl Panel → Wings → Game Servers
-
-Internet → Cloudflare Tunnel → Nextcloud (CT 220)
-
-pfSense → Pi-hole (DNS) → All containers
-
-Prometheus → Node exporters (all CTs + Pi-hole) → Alertmanager → Telegram / Discord
-Loki → Grafana
-
-Proxmox → Kinmoon NAS (backups)
-
-Tailscale → pfSense (subnet router) → All VLANs (admin bypass)
-```
-
-## Port Reference
-
-| Port | Service |
-|------|---------|
-| 80/443 | HTTP/HTTPS |
-| 81 | NPM Admin |
-| 3000 | Grafana |
-| 3001 | Uptime Kuma |
-| 3100 | Loki |
-| 7777 | Terraria |
-| 8006 | Proxmox |
-| 9090 | Prometheus |
-| 9093 | Alertmanager |
-| 9100 | Node Exporter |
-| 25570 | Minecraft |
-
-## Container Boot Order
-
-| Order | CTID | Name | Reason |
-|-------|------|------|--------|
-| 1 | 201 | nginx-proxy-manager | Reverse proxy first |
-| 2 | 207 | network-ddns | DNS updates |
-| 3 | 202 | monitoring-prometheus | Metrics collection |
-| 4 | 204 | monitoring-loki | Log aggregation |
-| 5 | 205 | monitoring-alertmanager | Alert routing |
-| 6 | 203 | monitoring-grafana | Dashboards (needs Prometheus/Loki) |
-| 7 | 206 | monitoring-uptime | Service monitoring |
-| 8 | 220 | nextcloud | Cloud storage |
-| 9 | 300 | gaming-panel | Game management |
-| 10 | 302 | gaming-wings-1 | Game servers (needs Panel) |
+> Complete inventory of all services running in the homelab infrastructure.  
+> **Last Updated:** April 14, 2026
 
 ---
 
-*Last updated: March 9, 2026*
+## 📊 Service Overview
+
+| Category | Services | Containers |
+|----------|----------|------------|
+| Reverse Proxy & SSL | 1 | CT 201 |
+| Monitoring & Observability | 5 | CT 202-206 |
+| Network Services | 2 | CT 207, Pi-hole |
+| Dashboard | 1 | CT 208 |
+| Automation & AI | 1 | CT 211 |
+| File Storage | 1 | CT 220 |
+| Gaming | 2 | CT 300, 302 |
+| **Total** | **13** | **12 containers + 1 Pi** |
+
+---
+
+## 🔀 Reverse Proxy & SSL
+
+### Nginx Proxy Manager (CT 201)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 201 |
+| **Hostname** | nginx-proxy-manager |
+| **IP Address** | 192.168.30.201 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | Reverse proxy, SSL termination |
+| **Web UI** | http://192.168.30.201:81 |
+| **Upstream** | All web services |
+
+**Proxy Hosts Configured:**
+- grafana.najhin-gaming.com → CT 203:3000
+- n8n.najhin-gaming.com → CT 211:5678
+- cloud.najhin-gaming.com → CT 220:80
+- home.najhin-gaming.com → CT 208:3000
+
+---
+
+## 📈 Monitoring & Observability
+
+### Prometheus (CT 202)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 202 |
+| **Hostname** | monitoring-prometheus |
+| **IP Address** | 192.168.30.202 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | Metrics collection & storage |
+| **Port** | 9090 |
+| **Retention** | 30 days |
+
+**Scrape Targets:**
+- Proxmox (Kuromoon): 192.168.10.5:9100
+- pfSense: 192.168.10.1:9100
+- Pi-hole: 192.168.30.10:9100
+- All containers: 192.168.30.x:9100
+
+---
+
+### Grafana (CT 203)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 203 |
+| **Hostname** | monitoring-grafana |
+| **IP Address** | 192.168.30.203 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | Dashboards & visualization |
+| **Port** | 3000 |
+| **External URL** | grafana.najhin-gaming.com |
+| **Authentication** | Cloudflare Access (email OTP) |
+
+**Data Sources:**
+- Prometheus (metrics)
+- Loki (logs)
+
+---
+
+### Loki (CT 204)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 204 |
+| **Hostname** | monitoring-loki |
+| **IP Address** | 192.168.30.204 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | Log aggregation |
+| **Port** | 3100 |
+| **Retention** | 14 days |
+
+**Log Sources:**
+- Promtail agents on all hosts
+- Syslog, auth logs, application logs
+
+---
+
+### Alertmanager (CT 205)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 205 |
+| **Hostname** | monitoring-alertmanager |
+| **IP Address** | 192.168.30.205 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | Alert routing & notifications |
+| **Port** | 9093 |
+
+**Alert Routes:**
+| Severity | Destination | Timing |
+|----------|-------------|--------|
+| Critical | Telegram | Immediate |
+| Warning | Discord | Work hours |
+
+**Alert Rules:** 13 rules covering host availability, CPU, memory, disk, service health.
+
+---
+
+### Uptime Kuma (CT 206)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 206 |
+| **Hostname** | monitoring-uptime |
+| **IP Address** | 192.168.30.206 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | Service availability monitoring |
+| **Port** | 3001 |
+
+**Monitors:**
+- All external subdomains (HTTP)
+- Internal services (TCP/HTTP)
+- Game servers (TCP)
+
+---
+
+## 🌐 Network Services
+
+### DDNS (CT 207)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 207 |
+| **Hostname** | network-ddns |
+| **IP Address** | 192.168.30.207 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | Dynamic DNS updates |
+| **Provider** | Cloudflare |
+
+---
+
+### Pi-hole (Raspberry Pi 4)
+
+| Property | Value |
+|----------|-------|
+| **Hardware** | Raspberry Pi 4 8GB |
+| **IP Address** | 192.168.30.10 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | DNS filtering & ad blocking |
+| **Port** | 53 (DNS), 80 (Web UI) |
+| **Domains Blocked** | ~489,000 |
+| **Listening Mode** | ALL (multi-VLAN support) |
+
+**Upstream DNS:** Cloudflare (1.1.1.1, 1.0.0.1)
+
+---
+
+## 🏠 Dashboard
+
+### Homepage (CT 208)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 208 |
+| **Hostname** | dashboard-homepage |
+| **IP Address** | 192.168.30.208 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | Homelab dashboard |
+| **Software** | gethomepage.dev |
+| **Port** | 3000 |
+| **External URL** | home.najhin-gaming.com |
+
+**Widgets:**
+- Proxmox cluster status
+- Pi-hole statistics
+- Uptime Kuma monitors
+- Prometheus metrics
+- Weather (Petaling Jaya)
+- Game server status
+
+---
+
+## 🤖 Automation & AI
+
+### n8n (CT 211)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 211 |
+| **Hostname** | automation-n8n |
+| **IP Address** | 192.168.30.211 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | Workflow automation |
+| **Software** | n8n |
+| **Port** | 5678 |
+| **External URL** | n8n.najhin-gaming.com |
+| **Authentication** | Cloudflare Access (email OTP) |
+
+**Key Workflows:**
+| Workflow | Purpose |
+|----------|---------|
+| Telegram Agent | Gilgamesh AI bot |
+| GitHub Sync | AI-CONTEXT.md updates |
+
+**Gilgamesh Features:**
+- Conversation memory (20 messages)
+- Smart routing (Haiku/Sonnet)
+- Web search capability
+- Cost tracking
+- /update command for context sync
+
+---
+
+## 📁 File Storage
+
+### Nextcloud (CT 220)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 220 |
+| **Hostname** | nextcloud-hub |
+| **IP Address** | 192.168.30.220 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | File sync & storage |
+| **Software** | Nextcloud |
+| **Port** | 80 |
+| **External URL** | cloud.najhin-gaming.com |
+| **External Access** | Cloudflare Tunnel |
+| **Storage** | 100GB (vmpool-fast) |
+
+**Features:**
+- File synchronization
+- AI-CONTEXT.md backup location
+- WebDAV access
+
+---
+
+## 🎮 Gaming
+
+### Pterodactyl Panel (CT 300)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 300 |
+| **Hostname** | gaming-panel |
+| **IP Address** | 192.168.30.210 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | Game server management |
+| **Software** | Pterodactyl Panel |
+| **Port** | 80 |
+
+---
+
+### Pterodactyl Wings (CT 302)
+
+| Property | Value |
+|----------|-------|
+| **Container ID** | 302 |
+| **Hostname** | gaming-wings-1 |
+| **IP Address** | 192.168.30.212 |
+| **VLAN** | 30 (Services) |
+| **Purpose** | Game server execution |
+| **Software** | Pterodactyl Wings |
+
+**Game Servers:**
+| Game | Subdomain | Port |
+|------|-----------|------|
+| Terraria | terraria.najhin-gaming.com | 7777 |
+| Minecraft | mc.najhin-gaming.com | 25565 |
+
+**Note:** Game server DNS uses "DNS only" mode (grey cloud), not proxied.
+
+---
+
+## 🔐 Security Services
+
+### Cloudflare Access
+
+| Service | Protection | Method |
+|---------|------------|--------|
+| Grafana | ✅ Protected | Email OTP |
+| n8n | ✅ Protected | Email OTP |
+| Homepage | ❌ Unprotected | — |
+| Nextcloud | ✅ Protected | Cloudflare Tunnel |
+
+### Tailscale
+
+| Property | Value |
+|----------|-------|
+| **Subnet Router** | pfSense |
+| **Networks Exposed** | 192.168.10.0/24, 192.168.20.0/24, 192.168.30.0/24 |
+| **Purpose** | Primary remote access |
+
+---
+
+## 💾 Storage Services
+
+### Kinmoon NAS
+
+| Property | Value |
+|----------|-------|
+| **Hardware** | UGREEN DXP2800 |
+| **IP Address** | 192.168.10.15 |
+| **VLAN** | 10 (Management) |
+| **Capacity** | 3.6 TB (WD Purple) |
+| **Protocol** | SMB/CIFS |
+| **Proxmox Storage ID** | kinmoon-smb |
+| **Purpose** | Container backups |
+
+---
+
+## 📋 Port Reference
+
+### Internal Ports
+
+| Port | Service | Container |
+|------|---------|-----------|
+| 53 | Pi-hole DNS | Pi (Raspberry Pi) |
+| 80 | Various web UIs | Multiple |
+| 81 | NPM Admin | CT 201 |
+| 3000 | Grafana / Homepage | CT 203 / CT 208 |
+| 3001 | Uptime Kuma | CT 206 |
+| 3100 | Loki | CT 204 |
+| 5678 | n8n | CT 211 |
+| 9090 | Prometheus | CT 202 |
+| 9093 | Alertmanager | CT 205 |
+| 9100 | Node Exporter | All hosts |
+
+### External Ports (Port Forwarded)
+
+| Port | Service | Destination |
+|------|---------|-------------|
+| 7777 | Terraria | CT 302 |
+| 25565 | Minecraft | CT 302 |
+
+---
+
+## 🔄 Service Dependencies
+
+```
+                    ┌─────────────┐
+                    │   Pi-hole   │ DNS for all
+                    │ (Pi 4)      │
+                    └──────┬──────┘
+                           │
+              ┌────────────┼────────────┐
+              │            │            │
+              ▼            ▼            ▼
+        ┌──────────┐ ┌──────────┐ ┌──────────┐
+        │   NPM    │ │ Prometheus│ │  n8n     │
+        │ (CT 201) │ │ (CT 202) │ │ (CT 211) │
+        └────┬─────┘ └────┬─────┘ └────┬─────┘
+             │            │            │
+             │      ┌─────┴─────┐      │
+             │      ▼           ▼      │
+             │ ┌────────┐ ┌────────┐   │
+             │ │ Grafana│ │  Loki  │   │
+             │ │(CT 203)│ │(CT 204)│   │
+             │ └────────┘ └────────┘   │
+             │                         │
+             ▼                         ▼
+    ┌─────────────────┐      ┌─────────────────┐
+    │  All Web UIs    │      │   Gilgamesh     │
+    │  (via reverse   │      │   (via Claude   │
+    │   proxy)        │      │    API)         │
+    └─────────────────┘      └─────────────────┘
+```
+
+---
+
+*Last Updated: April 14, 2026*

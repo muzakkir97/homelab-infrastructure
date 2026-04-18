@@ -1,139 +1,209 @@
-# 🏗️ Homelab Infrastructure Project
+# 🏠 Enterprise Homelab Infrastructure
 
-> Enterprise-grade homelab built for learning cloud engineering, cybersecurity, and infrastructure management
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen)](https://github.com/muzakkir97/homelab-infrastructure)
+[![Phases](https://img.shields.io/badge/Phases-16%20Complete-blue)](https://github.com/muzakkir97/homelab-infrastructure)
+[![Containers](https://img.shields.io/badge/Containers-12%20Running-orange)](https://github.com/muzakkir97/homelab-infrastructure)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
-[![Status](https://img.shields.io/badge/Status-Active-success)](/)
-[![Proxmox](https://img.shields.io/badge/Proxmox-VE%208.x-orange)](/)
-[![Phase](https://img.shields.io/badge/Phase-6F%20Complete-green)](/)
-[![Containers](https://img.shields.io/badge/Containers-10%20LXC-blue)](/)
-[![VLANs](https://img.shields.io/badge/VLANs-5%20Segments-purple)](/)
-[![Firewall](https://img.shields.io/badge/Firewall-Hardened-red)](/)
+> Building enterprise-grade infrastructure at home for learning, portfolio development, and career transition to Cloud Engineering / DevOps.
+
+**[📋 Roadmap](ROADMAP.md)** • **[📖 Documentation](docs/)** • **[🤖 Gilgamesh AI](#-gilgamesh-ai-agent)** • **[🌐 Architecture](#-network-architecture)**
+
+---
+
+## 🎯 Project Goals
+
+| Goal | Status |
+|------|--------|
+| Enterprise virtualization with Proxmox VE | ✅ Complete |
+| Network segmentation with VLANs & pfSense | ✅ Complete |
+| Full monitoring stack (Prometheus, Grafana, Loki) | ✅ Complete |
+| Self-hosted services (Nextcloud, game servers) | ✅ Complete |
+| AI-powered automation (Gilgamesh bot) | ✅ Complete |
+| Security lab for malware analysis | 📋 Planned |
+| Local LLM inference (Ollama + ROCm) | 📋 Planned |
 
 ---
 
 ## 👤 About Me
 
-**Name**: Muzakkir Kholil  
-**Role**: Customer Service Engineer @ F-Secure  
-**Location**: Petaling Jaya, Malaysia  
-**Domain**: [najhin-gaming.com](https://najhin-gaming.com)  
-**Goal**: Cloud Engineering / DevOps career transition
+| | |
+|---|---|
+| **Name** | Muzakkir Kholil |
+| **Current Role** | Customer Service Engineer @ F-Secure |
+| **Target Role** | Infrastructure / Cloud Engineering |
+| **Location** | Petaling Jaya, Selangor, Malaysia |
+| **Domain** | [najhin-gaming.com](https://najhin-gaming.com) |
 
-Building this homelab to develop hands-on skills in virtualization, networking, monitoring, automation, and cybersecurity — all documented as a living portfolio.
-
----
-
-## 📋 What This Project Demonstrates
-
-- **Network Segmentation** — 5 VLANs with router-on-a-stick topology via pfSense
-- **Firewall Hardening** — Proper inter-VLAN rules with RFC1918 blocking (no allow-all!)
-- **Infrastructure Monitoring** — Full Prometheus + Grafana + Loki + Alertmanager stack
-- **Reverse Proxy & SSL** — Nginx Proxy Manager with Let's Encrypt via Cloudflare DNS-01
-- **Cloud Storage** — Self-hosted Nextcloud with Cloudflare Tunnel for external access
-- **Game Server Hosting** — Pterodactyl Panel + Wings managing Terraria & Minecraft servers
-- **Remote Access** — Tailscale VPN (subnet router on pfSense) + Cloudflare Zero Trust
-- **Backup & Storage** — NAS-backed container backups via SMB
-- **Security Practices** — No admin interfaces exposed, admin access via Tailscale only
+I'm documenting my journey from customer service to infrastructure engineering through hands-on learning. This homelab serves as both a learning environment and a professional portfolio.
 
 ---
 
-## 🖥️ Hardware
-
-| Component | Specification |
-|-----------|---------------|
-| **Server** | AMD Ryzen 5 5600X · 32GB DDR4 · Proxmox VE |
-| **Firewall** | AC8F Mini PC · Intel N100 · pfSense 2.7.2 |
-| **Switch** | TP-Link TL-SG108E · 8-port managed · 802.1Q |
-| **NAS** | UGREEN DXP2800 "Kinmoon" · 3.6TB WD Purple |
-| **DNS** | Raspberry Pi 4 · Pi-hole v6.3 |
-| **ISP** | 600 Mbps / 200 Mbps (Time Internet) |
-
----
-
-## 🌐 Network Architecture
+## 🏗️ Architecture Overview
 
 ```
-                    ┌─────────────┐
-                    │   Internet  │
-                    └──────┬──────┘
-                           │
-                    ┌──────┴──────┐
-                    │ ISP Router  │
-                    │192.168.100.1│
-                    └──────┬──────┘
-                           │
-                    ┌──────┴──────┐
-                    │  pfSense    │
-                    │  (N100)     │
-                    │Router-on-   │
-                    │  a-Stick    │
-                    └──────┬──────┘
-                           │ 802.1Q Trunk
-                    ┌──────┴──────┐
-                    │ TP-Link     │
-                    │ TL-SG108E   │
-                    └──────┬──────┘
-           ┌───────┬───────┼───────┬───────┐
-           │       │       │       │       │
-        VLAN10  VLAN20  VLAN30  VLAN40  VLAN50
-         Mgmt   Main   Services  DMZ   Malware
+Internet
+    │
+    ▼
+┌─────────────────┐
+│   ISP Router    │ 192.168.100.1
+│  (Bridge Mode)  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│    pfSense      │ 192.168.10.1 (VLAN 10 Gateway)
+│  AC8F Mini PC   │ Firewall, Router, Tailscale
+└────────┬────────┘
+         │ 802.1Q Trunk
+         ▼
+┌─────────────────┐
+│  TP-Link Switch │ TL-SG108E (Managed)
+│    8-Port       │ VLAN Tagging
+└────────┬────────┘
+         │
+    ┌────┴────┬──────────┬──────────┬──────────┐
+    │         │          │          │          │
+ VLAN 10   VLAN 20   VLAN 30    VLAN 40    VLAN 50
+  Mgmt      Main    Services     DMZ      Malware
 ```
 
 ### VLAN Design
 
-| VLAN | Name | Subnet | Purpose | Security |
-|------|------|--------|---------|----------|
-| 10 | Management | 192.168.10.0/24 | Proxmox, pfSense, NAS | Highest — Tailscale only |
-| 20 | Main Network | 192.168.20.0/24 | Client devices | Medium — trusted users |
-| 30 | Services | 192.168.30.0/24 | All hosted services | Medium — controlled |
-| 40 | DMZ | 192.168.40.0/24 | Future public-facing | Low trust |
-| 50 | Malware Lab | 192.168.50.0/24 | Security research | Air-gapped — isolated |
-
-### Inter-VLAN Access (Enforced)
-
-| From → To | Status | Method |
-|-----------|--------|--------|
-| VLAN 20 → VLAN 10 | ❌ Blocked | RFC1918 block rule |
-| VLAN 20 → VLAN 30 | ✅ Limited | Specific ports only |
-| VLAN 50 → Anywhere | ❌ Blocked | No rules (air-gapped) |
-| Tailscale → All | ✅ Allowed | Admin VPN bypass |
+| VLAN | Name | Subnet | Purpose |
+|------|------|--------|---------|
+| 10 | VLAN10_MGMT | 192.168.10.0/24 | Infrastructure (Proxmox, pfSense, NAS) |
+| 20 | VLAN20_MAIN | 192.168.20.0/24 | Client devices |
+| 30 | VLAN30_SERVICES | 192.168.30.0/24 | All service containers + Pi-hole |
+| 40 | VLAN40_DMZ | 192.168.40.0/24 | Future public-facing services |
+| 50 | VLAN50_MALWARE | 192.168.50.0/24 | Isolated security lab (air-gapped) |
 
 ---
 
-## 📦 Services & Containers
+## 🖥️ Hardware Inventory
 
-### LXC Containers (Proxmox)
+### Servers & Network
 
-| CTID | Name | Service | IP | Status |
-|------|------|---------|-----|--------|
-| 201 | nginx-proxy-manager | Reverse Proxy & SSL | 192.168.30.201 | ✅ Running |
-| 202 | monitoring-prometheus | Metrics Collection | 192.168.30.202 | ✅ Running |
-| 203 | monitoring-grafana | Dashboards & Viz | 192.168.30.203 | ✅ Running |
-| 204 | monitoring-loki | Log Aggregation | 192.168.30.204 | ✅ Running |
-| 205 | monitoring-alertmanager | Alert Routing | 192.168.30.205 | ✅ Running |
-| 206 | monitoring-uptime | Uptime Kuma | 192.168.30.206 | ✅ Running |
-| 207 | network-ddns | Cloudflare DDNS | 192.168.30.207 | ✅ Running |
-| 220 | nextcloud | Cloud Storage | 192.168.30.220 | ✅ Running |
-| 300 | gaming-panel | Pterodactyl Panel | 192.168.30.210 | ✅ Running |
-| 302 | gaming-wings-1 | Pterodactyl Wings | 192.168.30.212 | ✅ Running |
+| Device | Hostname | Specs | Role |
+|--------|----------|-------|------|
+| **Proxmox Server** | Kuromoon | Ryzen 5 5600X, 32GB RAM, RX 6700 XT 12GB, ZFS NVMe mirror | Hypervisor |
+| **pfSense Firewall** | — | AC8F Mini PC, Intel N100 | Router, Firewall |
+| **Managed Switch** | — | TP-Link TL-SG108E | Layer 2, VLANs |
+| **NAS** | Kinmoon | UGREEN DXP2800, 3.6TB WD Purple | Backups (SMB) |
+| **DNS Server** | — | Raspberry Pi 4 | Pi-hole (~489K domains blocked) |
+| **Gaming PC** | Minimoon | Ryzen 7 7800X3D, RX 9070 XT | Gaming only (not homelab) |
 
-### Physical Devices
+### Storage Architecture
 
-| Device | Role | IP | Status |
-|--------|------|-----|--------|
-| Proxmox Server | Hypervisor | 192.168.10.5 | ✅ Online |
-| pfSense | Firewall/Router | 192.168.10.1 | ✅ Online |
-| Pi-hole (RPi4) | DNS Filtering | 192.168.30.10 | ✅ Online |
-| Kinmoon NAS | Backup Storage | 192.168.10.15 | ✅ Online |
-| TP-Link Switch | Layer 2 | 192.168.1.20 | ✅ Online |
+| Pool | Type | Size | Purpose |
+|------|------|------|---------|
+| local-lvm | NVMe LVM-Thin | 137 GB | Container root disks |
+| vmpool-fast | NVMe ZFS | 899 GB | Fast container storage |
+| kinmoon-smb | NAS SMB/CIFS | 3.6 TB | Small container backups |
+| data-storage | Local HDD | 7.2 TB | Large container backups |
 
-### External Services
+---
 
-| Service | Purpose |
-|---------|---------|
-| Cloudflare | DNS, CDN, Zero Trust Access, Tunnel |
-| Tailscale | VPN (subnet router on pfSense) |
-| Let's Encrypt | SSL certificates (DNS-01 via Cloudflare) |
+## 📦 Container Inventory
+
+All containers run on **Proxmox VE** as **LXC containers** on **VLAN 30** (192.168.30.0/24).
+
+| CTID | Name | IP | Subdomain | Purpose |
+|------|------|-----|-----------|---------|
+| 201 | nginx-proxy-manager | 192.168.30.201 | — | Reverse proxy, SSL |
+| 202 | monitoring-prometheus | 192.168.30.202 | — | Metrics collection |
+| 203 | monitoring-grafana | 192.168.30.203 | grafana.najhin-gaming.com | Dashboards |
+| 204 | monitoring-loki | 192.168.30.204 | — | Log aggregation |
+| 205 | monitoring-alertmanager | 192.168.30.205 | — | Alert routing |
+| 206 | monitoring-uptime | 192.168.30.206 | — | Uptime Kuma |
+| 207 | network-ddns | 192.168.30.207 | — | Dynamic DNS |
+| 208 | dashboard-homepage | 192.168.30.208 | home.najhin-gaming.com | Homepage dashboard |
+| 211 | automation-n8n | 192.168.30.211 | n8n.najhin-gaming.com | Workflow automation |
+| 220 | nextcloud-hub | 192.168.30.220 | cloud.najhin-gaming.com | File sync & storage |
+| 300 | gaming-panel | 192.168.30.210 | — | Pterodactyl Panel |
+| 302 | gaming-wings-1 | 192.168.30.212 | terraria/mc.najhin-gaming.com | Game servers |
+
+**Total: 12 LXC containers, all autostart enabled**
+
+---
+
+## 🤖 Gilgamesh AI Agent
+
+The crown jewel of this homelab — a custom AI assistant running on n8n.
+
+```
+Telegram (@JhinGilgamesh_bot)
+         │
+         ▼
+┌─────────────────┐
+│      n8n        │ Workflow automation
+│   (CT 211)      │
+└────────┬────────┘
+         │
+    ┌────┴────┐
+    ▼         ▼
+┌────────┐ ┌────────┐
+│ Haiku  │ │ Sonnet │  Smart routing based on query complexity
+│ (fast) │ │(complex)│
+└────────┘ └────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Memory System   │ Last 20 messages stored
+│ Cost Tracking   │ Token usage logged
+│ Web Search      │ Real-time information
+└─────────────────┘
+         │
+         ▼
+    /update command
+         │
+    ┌────┴────┐
+    ▼         ▼
+Nextcloud   GitHub
+ (backup)   (sync)
+```
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| **Conversation Memory** | Remembers last 20 messages per session |
+| **Smart Routing** | Simple queries → Haiku (fast), Complex → Sonnet (powerful) |
+| **Web Search** | Real-time information via Claude's web_search tool |
+| **Cost Tracking** | Logs token usage to database |
+| **Context Sync** | `/update` command pushes summaries to GitHub |
+| **Inline Menus** | Telegram keyboard for homelab status (in progress) |
+
+---
+
+## 📊 Monitoring Stack
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Grafana (CT 203)                     │
+│              grafana.najhin-gaming.com                  │
+│           Protected by Cloudflare Access                │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+          ┌───────────────┼───────────────┐
+          ▼               ▼               ▼
+    ┌──────────┐    ┌──────────┐    ┌──────────┐
+    │Prometheus│    │   Loki   │    │Alertmgr  │
+    │ (CT 202) │    │ (CT 204) │    │ (CT 205) │
+    │ Metrics  │    │   Logs   │    │  Alerts  │
+    └──────────┘    └──────────┘    └──────────┘
+          │               │               │
+          └───────────────┴───────────────┘
+                          │
+                   Node Exporters
+                   (All hosts)
+```
+
+### Alerting
+
+- **Critical alerts** → Telegram (immediate)
+- **Warning alerts** → Discord (review during work hours)
+- **13 alert rules** covering host availability, CPU, memory, disk, service health
 
 ---
 
@@ -141,103 +211,137 @@ Building this homelab to develop hands-on skills in virtualization, networking, 
 
 | Layer | Implementation |
 |-------|----------------|
-| Perimeter | ISP router → pfSense firewall |
-| Network | 5 VLAN segments with enforced firewall rules |
-| Lateral Movement | RFC1918 blocking on all VLANs |
-| DNS | Pi-hole ad/tracker blocking |
-| Access | Tailscale VPN + Cloudflare Access (Zero Trust) |
-| Transport | TLS everywhere via NPM + Let's Encrypt |
-| Monitoring | Prometheus + Alertmanager (Telegram & Discord) |
-| Logging | Loki + Promtail centralized log aggregation |
-
-**Key security decisions:**
-- No admin interfaces (Proxmox, pfSense, Pi-hole) exposed to internet
-- Admin access via Tailscale VPN only (VLAN 20 blocked from VLAN 10)
-- All external access via Cloudflare Access with email OTP or Cloudflare Tunnel
-- VLAN 50 (Malware Lab) completely air-gapped — no routing, no DHCP
-- Firewall aliases for cleaner rule management (RFC1918, SERVICE_PORTS, etc.)
+| **Perimeter** | ISP Router → pfSense firewall |
+| **Segmentation** | 5 VLANs with enforced firewall rules |
+| **DNS Filtering** | Pi-hole (~489K domains blocked) |
+| **Remote Access** | Tailscale (primary), Cloudflare Tunnel (backup) |
+| **Service Auth** | Cloudflare Access (email OTP) for Grafana, n8n |
+| **Backups** | Automated daily with 7/4/2 retention (daily/weekly/monthly) |
 
 ---
 
-## 🗺️ Project Phases
+## 💾 Backup Strategy
+
+| Job | Schedule | Target | Containers | Retention |
+|-----|----------|--------|------------|-----------|
+| Small Containers | 02:00 daily | kinmoon-smb (NAS) | 201-207, 300 | 7 daily, 4 weekly, 2 monthly |
+| Large Containers | 02:30 daily | data-storage (Local) | 220, 302 | 7 daily, 4 weekly, 2 monthly |
+
+---
+
+## 📋 Project Phases
 
 ### Completed ✅
 
-| Phase | Description | Date |
-|-------|-------------|------|
-| 1 | Proxmox VE bare-metal installation | Jan 2026 |
-| 2 | pfSense firewall & initial VLAN setup | Jan 2026 |
-| 3 | Core services (Pi-hole, NPM, Tailscale, DDNS) | Jan 2026 |
-| 4 | External access & SSL (Cloudflare, Let's Encrypt) | Feb 2026 |
-| 5 | Monitoring stack (Prometheus, Grafana, Loki, Alertmanager, Uptime Kuma) | Feb 2026 |
-| 6A-6D | Gaming platform (Pterodactyl Panel + Wings, Terraria) | Feb 2026 |
-| 9 | NAS deployment (UGREEN DXP2800, SMB backups) | Mar 2026 |
-| 6F | Infrastructure Audit, VLAN Migration & Firewall Hardening | Mar 2026 |
-| 7 | Nextcloud deployment with Cloudflare Tunnel | Mar 2026 |
+| Phase | Title | Completed |
+|-------|-------|-----------|
+| 1 | Proxmox VE Installation | Jan 2026 |
+| 2 | pfSense Firewall & VLAN Setup | Jan 2026 |
+| 3 | Core Services (Pi-hole, NPM, Tailscale) | Jan 2026 |
+| 4 | External Access & SSL | Feb 2026 |
+| 5 | Monitoring Stack | Feb 2026 |
+| 6A-6D | Gaming Platform (Pterodactyl) | Feb 2026 |
+| 6E | Homepage Dashboard | Mar 2026 |
+| 6F | Infrastructure Audit & Hardening | Mar 9, 2026 |
+| 7 | Nextcloud Deployment | Mar 8, 2026 |
+| 7A | Backup Strategy | Mar 13, 2026 |
+| 7B | n8n Workflow Automation | Apr 2, 2026 |
+| 7C | Gilgamesh Telegram Bot | Apr 2, 2026 |
+| 7D | Gilgamesh Enhancements | Apr 6, 2026 |
+| 7D-Sec | Cloudflare Access for n8n | Apr 7, 2026 |
+| 9 | NAS Deployment (Kinmoon) | Mar 3, 2026 |
+
+### In Progress 🔄
+
+| Phase | Title | Status |
+|-------|-------|--------|
+| 7D-Menu | Gilgamesh Inline Keyboard Menu | In Progress |
 
 ### Planned 📋
 
-| Phase | Description | Priority |
-|-------|-------------|----------|
-| 7A | Backup strategy (scheduled, rotation, recovery testing) | High |
-| 6E | Homepage Dashboard (gethomepage.dev) | Medium |
-| 7B | n8n workflow automation (Discord/Telegram bots, GitHub sync) | Medium |
-| 7C | AI Agent deployment (OpenClaw, portfolio documentation) | Low |
-| 8 | Gaming expansion (Minecraft, Project Zomboid) | Low |
+| Phase | Title | Priority |
+|-------|-------|----------|
+| 7E | Pain Point Scraper (AI Vision) | High |
+| 11 | Ollama + ROCm (Local LLM) | High |
+| 10 | Malware Lab + Blue Team AI | Medium |
+| 16 | Kubernetes (k3s) | Medium |
+
+**See [ROADMAP.md](ROADMAP.md) for the complete roadmap with 34 planned phases.**
 
 ---
 
-## 📊 Architecture Decision Records
+## 🎓 Skills Demonstrated
 
-| ADR | Decision | Rationale |
-|-----|----------|-----------|
-| 001 | LXC over VMs | 32GB RAM constraint; LXC uses ~256-512MB vs VM 2-4GB |
-| 002 | One container per service | Mirrors microservices; independent backup/update/firewall |
-| 003 | Router-on-a-stick | Cost-effective; single managed switch handles L2 |
-| 004 | Gaming on VLAN 30 | Reduces complexity; same access patterns as other services |
-| 005 | Cloudflare for external | DDoS protection, SSL termination, Zero Trust (free tier) |
-| 006 | Tailscale for admin | No exposed SSH; WireGuard-based; works through NAT |
-| 007 | Cloudflare Tunnel for Nextcloud | No port forwarding needed; mobile app compatible |
-| 008 | RFC1918 blocking | Prevents lateral movement between VLANs |
-
----
-
-## 📂 Documentation
-
-Detailed documentation is maintained in the [`docs/`](./docs/) folder:
-
-| File | Purpose |
-|------|---------|
-| `AI-CONTEXT.md` | Full project context for AI assistants |
-| `current-state.md` | Verified live infrastructure (source of truth) |
-| `architecture.md` | Target design, ADRs, network diagrams |
-| `roadmap.md` | Phase status, timeline, ideas backlog |
-| `service-catalog.md` | All services with ports, configs, dependencies |
-| `troubleshoot.md` | Past issues and resolutions |
-| `changelog.md` | Version history of all changes |
-| `homelab-audit-report.md` | Infrastructure audit findings |
-| `phase-6f-firewall-hardening.md` | Firewall hardening documentation |
+| Category | Technologies |
+|----------|--------------|
+| **Virtualization** | Proxmox VE, LXC, KVM, ZFS |
+| **Networking** | pfSense, VLANs, 802.1Q, Firewall Rules |
+| **Monitoring** | Prometheus, Grafana, Loki, Alertmanager |
+| **Automation** | n8n, Bash scripting, Claude API |
+| **Security** | Cloudflare Access, Tailscale, Network Segmentation |
+| **Containers** | Docker, LXC, Nginx Proxy Manager |
+| **Cloud Services** | Cloudflare (Tunnel, Access, DNS), GitHub |
 
 ---
 
-## 🛠️ Key Lessons Learned
+## 📚 Documentation
 
-1. **"subnets" vs "address" in pfSense** — Use "subnets" for device traffic rules, "address" only for gateway-specific rules
-2. **VLAN-aware bridges need subinterfaces** — Proxmox management IP must be on `vmbr0.XX`, not the base bridge
-3. **SMB over NFS for LXC backups** — NFS can't handle LXC user namespace UID mapping
-4. **DNS-01 over HTTP-01 for SSL** — Cloudflare proxy interferes with HTTP-01 challenges
-5. **Cloudflare Access blocks mobile apps** — Use Cloudflare Tunnel instead for app-compatible services
-6. **Tailscale bypasses local firewall** — Traffic via Tailscale uses Tailscale interface rules
-7. **Test firewall with VPN off** — Disconnect Tailscale to verify local blocking works
+### Phase Documentation
+
+```
+docs/
+├── phase-1-proxmox/
+├── phase-2-pfsense-vlans/
+├── phase-3-core-services/
+├── phase-4-external-access/
+├── phase-5-monitoring/
+├── phase-6-gaming/
+├── phase-7-nextcloud/
+├── phase-7a-backup/
+├── phase-7b-n8n/
+├── phase-7c-gilgamesh/
+├── phase-7d-gilgamesh-enhancements/
+└── ...
+```
+
+### Key Documents
+
+- **[AI-CONTEXT.md](AI-CONTEXT.md)** — Master context document (source of truth)
+- **[ROADMAP.md](ROADMAP.md)** — Complete project roadmap
+- **[current-state.md](docs/current-state.md)** — Live infrastructure state
+- **[troubleshoot.md](docs/troubleshoot.md)** — Error resolutions & lessons learned
 
 ---
 
-## 📫 Connect
+## 🔮 Long-Term Vision
 
-- **LinkedIn**: [linkedin.com/in/muzakkir-kholil](https://www.linkedin.com/in/muzakkir-kholil/)
-- **GitHub**: [github.com/muzakkir97](https://github.com/muzakkir97)
-- **Domain**: [najhin-gaming.com](https://najhin-gaming.com)
+```
+Year 1-2:   Foundation — Complete homelab, build portfolio, first clients
+Year 3-4:   Growth — Stable side income (RM 3,000/month target)
+Year 5-7:   Transition — Replace day job income, location independent
+Year 8-10:  Lifestyle — Move to Bachok, Kelantan, run business remotely
+```
 
 ---
 
-*Last updated: March 9, 2026 — Phase 6F Complete (Firewall Hardening)*
+## 📞 Contact
+
+| Platform | Link |
+|----------|------|
+| **GitHub** | [@muzakkir97](https://github.com/muzakkir97) |
+| **LinkedIn** | [muzakkir-kholil](https://linkedin.com/in/muzakkir-kholil) |
+| **Domain** | [najhin-gaming.com](https://najhin-gaming.com) |
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License — see [LICENSE](LICENSE) for details.
+
+Documentation and configurations are provided as-is for educational purposes.
+
+---
+
+**Last Updated:** April 14, 2026  
+**Current Phase:** 7D-Menu (Gilgamesh Inline Keyboard Menu)  
+**Next Phase:** 7E (Pain Point Scraper)
