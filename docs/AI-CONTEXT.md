@@ -276,7 +276,17 @@ Telegram messages must be **plain text only** — code blocks, backticks, and co
 ## 📝 Session Log (Recent)
 
 ### April 18, 2026
+Date: April 18, 2026 Phase: Phase 13 - HashiCorp Vault
+Topics Discussed: Deployed HashiCorp Vault CT 213 on VLAN 30. Resolved LXC issues: template filename, nesting, DNS fix, mlock error. Configured NPM reverse proxy and Cloudflare Access email OTP. Initialized Vault 5 unseal keys threshold 3. Created homelab policy and non-root token. Enabled KV secrets engine at kv/. Migrated secrets from Notepad to Vault.
+What Was Built: CT 213 Vault v2.0.0 file storage backend disable_mlock true. Secrets stored: kv/gilgamesh (claude-api-key, telegram-bot-token), kv/cloudflare (global-api-key), kv/proxmox (api-token). vault.najhin-gaming.com behind Cloudflare Access email OTP.
+
+
+### April 18, 2026
 Date: April 18, 2026 Phase: Phase 13 - HashiCorp Vault Topics Discussed: Deployed HashiCorp Vault CT 213 on VLAN 30. Resolved LXC issues including template filename, nesting, DNS fix, mlock error, locale warnings. Configured NPM reverse proxy and Cloudflare Access email OTP. Initialized Vault with 5 unseal keys threshold 3. Created homelab policy and non-root token. Enabled KV secrets engine at kv/. Migrated secrets from plaintext Notepad to Vault. Discussed Bitwarden for personal passwords. What Was Built: CT 213 Vault v2.0.0 with file storage backend and disable_mlock true. KV engine at kv/ with secrets kv/gilgamesh (claude-api-key, telegram-bot-token), kv/cloudflare (global-api-key), kv/proxmox (api-token). Homelab policy covering kv/* and secret/*. vault.najhin-gaming.com accessible behind Cloudflare Access. Technical Details: vault.hcl uses disable_mlock true, storage file at /opt/vault/data, listener on 0.0.0.0:8200 tls_disable true. KV engine path is kv/ not secret/. Use vault login to authenticate in shell to avoid non-printable token issues. Key Lessons Learned: New LXC needs echo nameserver 192.168.30.10 > /etc/resolv.conf before apt. Install lsb-release before HashiCorp repo setup. Hardcode amd64 and bookworm in repo entry. Add disable_mlock true for LXC. Use vault login not export for token auth. Changes to AI-CONTEXT.md: Add CT 213 vault 192.168.30.213 vault.najhin-gaming.com to container inventory. Update Phase 13 to complete April 18 2026. Update secrets management to reflect Vault storage. Pending Tasks: Clear Notepad secrets. Setup Bitwarden or Vaultwarden. Clean up duplicate Cloudflare API tokens. Update Cloudflare Access app icons for all 6 apps. Future: integrate Vault into n8n Gilgamesh workflow.
+
+
+### April 18, 2026
+Phase 13 HashiCorp Vault complete April 18 2026. CT 213 deployed on VLAN 30 at 192.168.30.213. Vault v2.0.0 installed with file storage backend, disable_mlock true for LXC compatibility. Initialized with 5 unseal keys threshold 3. KV secrets engine at kv/ path. Secrets stored: kv/gilgamesh (claude-api-key, telegram-bot-token), kv/cloudflare (global-api-key), kv/proxmox (api-token). Homelab policy created covering kv/* and secret/*. Non-root homelab token created for daily use. NPM reverse proxy configured for vault.najhin-gaming.com. Cloudflare Access email OTP protection added. Pending: clear Notepad secrets, Bitwarden setup, Cloudflare token cleanup, update Access app icons, future Vault integration with n8n Gilgamesh.
 
 
 ### April 7, 2026
