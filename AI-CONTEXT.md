@@ -288,30 +288,117 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 
 ---
 
+## 🤖 Bots & Integrations
+
+| Bot | Platform | Source | Status | Purpose |
+|-----|----------|--------|--------|---------|
+| @JhinGilgamesh_bot | Telegram | n8n CT 211 | ✅ Active | Personal AI agent — chat, homelab control, /update |
+| Homelab Alerts | Telegram | Alertmanager CT 205 | ✅ Active | Critical alerts (host down, high CPU/memory/disk) |
+| Homelab Alerts | Discord webhook | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel |
+
+**Planned:** Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n.
+
+---
+
 ## ❓ Pending Tasks
 
-| Task                                                         | Priority |
-|--------------------------------------------------------------|----------|
-| Clear plaintext secrets from Notepad                         | High     |
-| Set up Bitwarden or self-hosted Vaultwarden LXC              | High     |
-| Clean up duplicate Cloudflare API tokens                     | High     |
-| Update Cloudflare Access app icons (all 6 apps)              | Medium   |
-| Obsidian setup with Dataview subscription tracker            | High     |
-| Complete Gilgamesh menu submenus (Metrics, Temps, Storage, Gaming, Gilgamesh, Tools, Help) | Medium |
-| /update workflow redesign — file-based approach via Nextcloud | Medium  |
-| Switch management IP (192.168.1.20 → 192.168.10.20)         | Medium   |
-| WiFi Access Point setup (EAP610 purchased)                   | Medium   |
-| Integrate Vault secrets into n8n Gilgamesh workflow          | Medium   |
-| Homepage security (Cloudflare Access)                        | Low      |
-| Off-site backup (Backblaze B2)                               | Low      |
-| Nextcloud 2FA (TOTP)                                         | Low      |
-| Phase 11: Ollama + ROCm local LLM inference                  | Deferred |
-| Fedora dual-boot on Minimoon (kernel 6.12+ for RDNA 4)       | Deferred |
-| Old P400S build repurpose (Z270E + i7-7700K)                 | Deferred |
+### Immediate
+| Task | Priority |
+|------|----------|
+| Clear plaintext secrets from Notepad | High |
+| Set up Vaultwarden LXC (password manager) | High |
+| Clean up duplicate Cloudflare API tokens | High |
+| Update Cloudflare Access app icons (all 6 apps) | Medium |
+
+### Gilgamesh
+| Task | Priority |
+|------|----------|
+| Complete menu submenus (Metrics, Temps, Storage, Gaming, Gilgamesh, Tools, Help) | Medium |
+| /update redesign — file attachment via Telegram, push to GitHub + Nextcloud | Medium |
+| Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram) | Medium |
+| Integrate Vault secrets into n8n Gilgamesh workflow | Medium |
+
+### Infrastructure
+| Task | Priority |
+|------|----------|
+| Migrate Alertmanager alerts through n8n (central notification hub) | Medium |
+| Switch management IP (192.168.1.20 → 192.168.10.20) | Medium |
+| Remove legacy LAN 192.168.1.0/24 (after switch migration) | Medium |
+| WiFi Access Point setup (EAP610 purchased) | Medium |
+| Homepage security (Cloudflare Access) | Low |
+| Off-site backup (Backblaze B2) | Low |
+| Nextcloud 2FA (TOTP) | Low |
+
+### Deferred
+| Task | Priority |
+|------|----------|
+| Phase 11: Ollama + ROCm local LLM inference (RX 6700 XT) | Deferred |
+| Fedora dual-boot on Minimoon (kernel 6.12+ for RDNA 4) | Deferred |
+| Old P400S build repurpose (Z270E + i7-7700K) | Deferred |
+| Claude Project auto-sync — revisit if Anthropic releases Project Files API | Deferred |
 
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 18, 2026
+Date: April 18, 2026
+Phase: Phase 23 — Vaultwarden + Secrets Audit & Cleanup
+Topics Discussed
+
+Deployed Vaultwarden (CT 214, 192.168.30.214, passwords.najhin-gaming.com)
+Full secrets audit across all 14 containers
+Migrated all API keys to HashiCorp Vault kv/
+Stored all service logins and API keys in Vaultwarden
+Cleaned up duplicate Cloudflare API tokens (9 → 3)
+Cleaned up duplicate n8n GitHub credentials (3 → 1)
+Generated new GitHub PAT (fine-grained, n8n-gilgamesh)
+Fixed /update workflow Nextcloud 404 and GitHub 404 errors
+Deleted plaintext notepad secrets file
+
+Decisions Made
+
+Vaultwarden for personal password reference, Vault for machine secrets — both store API keys
+Cloudflare Access app icons skipped (not easily customizable)
+GitHub PAT set with fine-grained permissions (Contents read/write, homelab-infrastructure repo only)
+
+Changes to AI-CONTEXT.md
+
+Add CT 214 password-vaultwarden to container inventory (192.168.30.214, passwords.najhin-gaming.com)
+Update container count from 13 to 14
+Update Vault kv/ paths: add alertmanager, github, nextcloud, n8n, pihole (total 8)
+Add Vaultwarden to security architecture section
+Add Phase 23 to phase history as complete
+Update Cloudflare Access to 7 apps (add Vaultwarden)
+Update SERVICE_PORTS alias: add 8080
+Move "Set up Vaultwarden" and "Clear plaintext secrets" from pending to done
+Add "Clean up duplicate Cloudflare API tokens" as done
+Update backup job: CT 214 added to small containers job
+Note: /update workflow paths fixed (removed /docs from Nextcloud fetch and GitHub push)
+
+Changes to Other Docs
+
+roadmap.md: Phase 23 moved from planned to complete (Apr 18, 2026)
+service-catalog.md: Add Vaultwarden entry
+changelog.md: Add Phase 23 entry
+troubleshoot.md: Add entries for Vault HTTPS vs HTTP error, n8n encryption key location (Docker volume)
+
+Errors & Resolutions
+
+Vault CLI HTTPS error: Set export VAULT_ADDR='http://127.0.0.1:8200' before vault commands
+n8n encryption key not in .env: Found inside Docker volume via docker exec n8n cat /home/node/.n8n/config
+/update Nextcloud 404: AI-CONTEXT.md moved from docs/ to root — updated Fetch Current File node path
+/update GitHub 404: Prepare GitHub Push node had hardcoded /docs path — removed /docs
+GitHub PAT hardcoded in Prepare GitHub Push node — updated to new token
+
+Action Items
+
+ Install Bitwarden app on phone and configure server URL to passwords.najhin-gaming.com
+ Update hardcoded PAT in Prepare GitHub Push node to use n8n credential instead (future improvement)
+ Update Cloudflare Access app icons when UI supports it
+ Delete old GitHub PAT from GitHub if not already done
+ Push updated AI-CONTEXT.md to GitHub via /update
+
 
 ### April 18, 2026
 - Deployed HashiCorp Vault as Phase 13 (CT 213, 192.168.30.213)
@@ -324,6 +411,13 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 - NPM reverse proxy configured for vault.najhin-gaming.com
 - Cloudflare Access email OTP protection added (6th protected app)
 - Identified /update command issue: session log accumulating duplicate entries in mixed formats — full rewrite of AI-CONTEXT.md performed
+- Discussed and planned Gilgamesh /update redesign (file attachment via Telegram)
+- Confirmed Discord/Telegram alerts come from Alertmanager CT 205, not n8n
+- Planned migration of Alertmanager alerts through n8n as central notification hub
+- Planned Gilgamesh web chat UI on homepage with shared memory
+- Researched and planned new services: Gitea, Ansible, Authentik, Coolify, Open WebUI, Headscale, Immich, Jellyfin, Portainer, k3s, Paperless-ngx, Postiz, Karakeep, Vaultwarden, SigNoz, Wazuh
+- Planned Windows 11 VM and macOS VM on Kuromoon (testing only)
+- Created new repo files: ROADMAP.md (updated), n8n-workflows.md (new)
 
 ### April 7, 2026
 - Built Gilgamesh inline keyboard menu system (Phase 7D-Menu)
