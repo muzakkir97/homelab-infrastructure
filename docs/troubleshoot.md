@@ -4,6 +4,107 @@
 
 ---
 
+## 2026-04-19 — Documentation Pipeline Template Literal Syntax Error
+
+**Symptoms:** n8n Documentation Pipeline - Sync Docs workflow failing with JavaScript syntax error when processing AI-CONTEXT.md content containing backticks.
+
+**Root Cause:** AI-CONTEXT.md contains code blocks with backticks which break JavaScript template literal syntax when using `${variableName}` interpolation. Template literals are delimited by backticks, so internal backticks cause parsing errors.
+
+**Resolution:** Replaced template literal string interpolation with string concatenation in the Code node:
+```javascript
+// Before (failing):
+const content = `${aiContextContent}`;
+
+// After (working):
+const content = '' + aiContextContent;
+```
+
+**Lesson:** When processing file content that may contain backticks, avoid JavaScript template literals. Use string concatenation or other methods that don't conflict with backtick syntax.
+
+---
+
+## 2026-04-19 — n8n Switch Node Routing Miss for /sync-docs
+
+**Symptoms:** /sync-docs command not triggering the correct workflow route in Telegram Agent Switch node, falling through to default case.
+
+**Root Cause:** Switch node expression format inconsistency. Other commands used `$json.message?.text?.startsWith('/command')` but /sync-docs rule was missing optional chaining operator.
+
+**Resolution:** Updated Switch node expression to match other patterns:
+```javascript
+// Before (not working):
+$json.message.text.startsWith('/sync-docs')
+
+// After (working):
+$json.message?.text?.startsWith('/sync-docs')
+```
+
+**Lesson:** Maintain consistent expression patterns in Switch nodes. Optional chaining (`?.`) prevents errors when properties might be undefined and ensures reliable routing.
+
+---
+
+## 2026-04-19 — Telegram Node Bad Request in Documentation Pipeline
+
+**Symptoms:** n8n Telegram node returning "Bad Request" error when trying to send confirmation messages for /update and /sync-docs commands.
+
+**Root Cause:** n8n's built-in Telegram node had inconsistent behavior with message formatting and API calls in this specific workflow context.
+
+**Resolution:** Replaced n8n Telegram node with direct HTTP Request node using Telegram Bot API:
+```http
+POST https://api.telegram.org/bot[BOT_TOKEN]/sendMessage
+Content-Type: application/json
+
+{
+  "chat_id": "518832696",
+  "text": "✅ Documentation pipeline triggered successfully"
+}
+```
+
+**Lesson:** For critical workflows, direct HTTP API calls can be more reliable than abstracted nodes. The Telegram Bot API is straightforward and provides better error visibility.
+
+---
+
+## 2026-04-19 — Telegram Chat ID Incorrect (510832696 vs 518832696)
+
+**Symptoms:** Telegram confirmation messages showing "chat not found" error when trying to send acknowledgments for pipeline commands.
+
+**Root Cause:** Chat ID was incorrectly stored as 510832696 in the AI-CONTEXT.md document and workflow configuration. The correct Chat ID is 518832696.
+
+**Resolution:** Updated Chat ID in both AI-CONTEXT.md documentation and all n8n workflow configurations to use 518832696.
+
+**Verification:** Send test message via Telegram Bot API to confirm correct chat ID:
+```bash
+curl -X POST "https://api.telegram.org/bot[TOKEN]/sendMessage" \
+     -H "Content-Type: application/json" \
+     -d '{"chat_id":"518832696","text":"Test"}'
+```
+
+**Lesson:** Always verify Chat IDs when setting up Telegram integrations. Chat IDs can be obtained by messaging the bot and checking webhook logs or using `getUpdates` API endpoint.
+
+---
+
+## 2026-04-19 — Nextcloud Push 401 Unauthorized in Documentation Pipeline
+
+**Symptoms:** Documentation Pipeline failing at Nextcloud push step with 401 Unauthorized error when trying to upload updated files.
+
+**Root Cause:** App password stored in Vaultwarden for Nextcloud integration was incorrect or outdated. The password field contained the wrong credential.
+
+**Resolution:** Generated new Nextcloud app password specifically for n8n documentation pipeline:
+1. Nextcloud → Settings → Personal → Security → App passwords
+2. Created new password named "n8n-doc-pipeline"
+3. Updated n8n workflow HTTP Request node with new password
+4. Stored correct password in Vaultwarden for reference
+
+**Verification:** Test authentication manually:
+```bash
+curl -u username:app_password -X PUT \
+     https://cloud.najhin-gaming.com/remote.php/dav/files/username/test.txt \
+     --data "test content"
+```
+
+**Lesson:** App passwords are specific to applications and can expire or be revoked. Always test authentication separately when troubleshooting 401 errors, and maintain accurate password records.
+
+---
+
 ## 2026-03-10 — Uptime Kuma (CT 206) High CPU Alerts Every 2 Hours
 
 **Symptoms:** Discord alerts "WARNING: High CPU usage on 192.168.30.206:9100" showing 94-97% CPU. Alerts repeated every ~2 hours.
