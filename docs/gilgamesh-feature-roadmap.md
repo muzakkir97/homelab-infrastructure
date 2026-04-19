@@ -1,571 +1,443 @@
-# 🤖 Gilgamesh Feature Roadmap
+# Gilgamesh AI Agent - Feature Roadmap
 
-> **Last Updated:** April 14, 2026  
-> **Current Version:** 1.0 (Phase 7D Complete)  
-> **Platform:** n8n + Claude API + Telegram
+> **Last Updated:** December 19, 2024  
+> **Bot Handle:** @JhinGilgamesh_bot  
+> **Platform:** Telegram + n8n + Claude API  
+> **Version:** Phase 7D with Menu System
 
----
+## Overview
 
-## 📋 Overview
+Gilgamesh is a conversational AI agent designed specifically for homelab infrastructure management and personal assistance. Built on n8n workflow automation, it integrates with Claude API for natural language processing and maintains persistent memory through n8n Data Tables.
 
-Gilgamesh is a custom AI-powered Telegram bot for homelab management and personal assistance. This document tracks planned features, enhancements, and the development roadmap.
-
----
-
-## ✅ Current Features (v1.0)
-
-| Feature | Status | Phase |
-|---------|--------|-------|
-| Basic conversation | ✅ Complete | 7C |
-| Claude API integration | ✅ Complete | 7C |
-| /update command (GitHub + Nextcloud sync) | ✅ Complete | 7C |
-| Conversation memory (last 20 messages) | ✅ Complete | 7D |
-| Smart routing (Haiku/Sonnet) | ✅ Complete | 7D |
-| Web search capability | ✅ Complete | 7D |
-| Cost/token tracking | ✅ Complete | 7D |
-| Cloudflare Access protection | ✅ Complete | 7D-Sec |
-
----
-
-## 🔄 In Progress
-
-### Phase 7D-Menu: Inline Keyboard Menu System
-
-**Status:** 🔄 In Progress  
-**Estimated:** 3-4 hours remaining
-
-Build a nested Telegram inline keyboard menu for quick homelab actions without typing commands.
-
-#### Menu Structure
+### Architecture Flow
 
 ```
-🏠 Main Menu
-├── 🖥️ Homelab
-│   ├── 📊 Status (container list)
-│   ├── 📈 Metrics (CPU/RAM/Disk)
-│   ├── 🌡️ Temps (hardware temps)
-│   ├── 💾 Storage (disk usage)
-│   └── ⬅️ Back
-├── 🎮 Gaming
-│   ├── 🟢 Server Status
-│   ├── 👥 Players Online
-│   └── ⬅️ Back
-├── 🤖 Gilgamesh
-│   ├── 💰 Cost Summary
-│   ├── 🧠 Memory Status
-│   ├── 🗑️ Clear Memory
-│   └── ⬅️ Back
-├── 🛠️ Tools
-│   ├── 🌐 Speedtest
-│   ├── 🔔 Test Alert
-│   └── ⬅️ Back
-└── ❓ Help
+Telegram User (@JhinGilgamesh_bot)
+    ↓
+n8n Webhook Trigger (CT 211: automation-n8n)
+    ↓
+Memory Retrieval (Data Tables: gilgamesh_memory)
+    ↓ 
+Smart Routing Decision (Haiku vs Sonnet)
+    ↓
+Claude API Request (with conversation context)
+    ↓
+Response Processing & Memory Update
+    ↓
+Telegram Response (text + inline keyboard)
 ```
 
-#### Current Implementation
+## Current Features (✅ Working)
 
-| Component | Status |
-|-----------|--------|
-| Main Menu (send) | ✅ Done |
-| Main Menu (edit) | ✅ Done |
-| Homelab submenu | ✅ Done |
-| Status action (Proxmox API) | ✅ Done |
-| Gaming submenu | 📋 Pending |
-| Gilgamesh submenu | 📋 Pending |
-| Tools submenu | 📋 Pending |
-| Help submenu | 📋 Pending |
-| Metrics action | 📋 Pending |
-| Temps action | 📋 Pending |
-| Storage action | 📋 Pending |
+### Core Conversational AI
 
-#### Technical Notes
+| Feature | Status | Details |
+|---------|--------|---------|
+| **Natural Language Chat** | ✅ Working | Full conversational AI via Claude API |
+| **Conversation Memory** | ✅ Working | Last 20 messages stored in n8n Data Tables |
+| **Smart Model Routing** | ✅ Working | Simple queries → Haiku 4.5, Complex → Sonnet 4 |
+| **Web Search Integration** | ✅ Working | Real-time information via Claude's web_search tool |
+| **Cost Tracking** | ✅ Working | Token usage logged to gilgamesh_costs table |
+| **Multi-Update Type Support** | ✅ Working | Handles both messages and callback queries |
 
-- Single webhook constraint: All interactions in one workflow
-- Use Edit Message (not Send) for submenu navigation
-- Answer Callback removed (strips callback data)
-- Proxmox API: 192.168.10.5:8006, token root@pam!gilgamesh
+### Technical Specifications
 
----
+| Component | Current Implementation |
+|-----------|----------------------|
+| **Telegram Bot Token** | Configured in n8n credentials |
+| **Chat ID** | 510832696 (single user) |
+| **Haiku Model** | claude-haiku-4-5-20251001 |
+| **Sonnet Model** | claude-sonnet-4-20250514 |
+| **Memory Storage** | n8n Data Tables (gilgamesh_memory) |
+| **Cost Tracking** | n8n Data Tables (gilgamesh_costs) |
+| **Hosting** | CT 211 (automation-n8n) |
 
-## 📋 Planned Features
+### Smart Routing Logic
 
-### Phase 7D-Cmds: Additional Commands
-
-**Priority:** 🟡 Medium  
-**Estimated:** 4-6 hours
-
-| Command | Purpose | API Required |
-|---------|---------|--------------|
-| /temps | Show hardware temperatures | Proxmox API |
-| /storage | Show disk usage | Proxmox API |
-| /alerts | Show active alerts | Alertmanager API |
-| /logs [service] | Recent logs | Loki API |
-| /backup | Backup status | Proxmox API |
-| /speedtest | Network speed test | speedtest-cli |
-| /wake [device] | Wake-on-LAN | Local script |
-| /cost | Token usage summary | n8n Data Table |
-| /memory | Show memory status | n8n Data Table |
-| /clear | Clear conversation memory | n8n Data Table |
-| /help | List all commands | Static text |
-
----
-
-### Phase 7D-Proactive: Proactive Alerts
-
-**Priority:** 🟡 Medium  
-**Estimated:** 3-4 hours
-
-Gilgamesh messages YOU when issues arise (instead of waiting for you to ask).
-
-#### Triggers
-
-| Trigger | Threshold | Action |
-|---------|-----------|--------|
-| Container down | Any container stops | Immediate alert |
-| High CPU | >90% for 5 minutes | Warning message |
-| High Memory | >85% for 5 minutes | Warning message |
-| Disk Space | >80% usage | Daily warning |
-| Backup failure | Job fails | Immediate alert |
-| SSL expiry | <14 days | Daily warning |
-
-#### Implementation
-
+**Routing Decision Tree:**
 ```
-Alertmanager → Webhook → n8n → Gilgamesh → Telegram
+User Message Length & Complexity
+├── Simple (< 50 chars, basic questions)
+│   └── Route to Haiku 4.5 ($0.003/1k tokens)
+├── Medium (50-200 chars, specific queries)  
+│   └── Route to Haiku 4.5 (cost-optimized)
+└── Complex (> 200 chars, detailed requests)
+    └── Route to Sonnet 4 ($0.015/1k tokens)
 ```
 
-- Configure Alertmanager webhook receiver
-- n8n workflow receives alert JSON
-- Format friendly message
-- Send via Gilgamesh Telegram
+**Override Conditions:**
+- Web search required → Always Sonnet 4
+- Homelab API calls → Always Sonnet 4  
+- Code generation → Always Sonnet 4
+- Analysis/reasoning → Always Sonnet 4
 
----
+### Memory System Architecture
 
-### Phase 7D-Daily: Daily Summary
+**Data Tables Structure:**
 
-**Priority:** 🟡 Medium  
-**Estimated:** 2-3 hours
+**gilgamesh_memory:**
+| Field | Type | Purpose |
+|-------|------|---------|
+| id | Integer | Unique message ID |
+| timestamp | Datetime | Message timestamp |
+| role | String | 'user' or 'assistant' |
+| content | Text | Message content |
+| model_used | String | Which Claude model processed |
 
-Automated morning summary message sent to Telegram.
+**gilgamesh_costs:**
+| Field | Type | Purpose |
+|-------|------|---------|
+| id | Integer | Unique cost entry ID |
+| timestamp | Datetime | Request timestamp |
+| model | String | Claude model used |
+| input_tokens | Integer | Tokens sent to model |
+| output_tokens | Integer | Tokens received |
+| cost_usd | Float | Calculated cost in USD |
 
-#### Daily Summary Contents
+**Memory Management:**
+- Maintains rolling 20-message window
+- Older messages automatically pruned
+- Context preserved across conversations
+- No conversation state loss on n8n restart
 
-```
-☀️ Good morning! Here's your homelab status:
+## Inline Keyboard Menu System
 
-🖥️ Containers: 12/12 running
-💾 Storage: 45% used (vmpool-fast), 23% (kinmoon-smb)  
-📊 24h Stats: CPU avg 12%, RAM avg 45%
-🎮 Game Servers: Terraria ✅, Minecraft ✅
-🔔 Alerts: 0 active
-💰 Yesterday's AI cost: $0.03 (142 requests)
-
-Have a great day! 🚀
-```
-
-#### Schedule
-
-- Time: 07:00 MYT (Malaysia Time)
-- Trigger: n8n Cron node
-- Skip weekends: Optional setting
-
----
-
-### Phase 7E: Pain Point Scraper (AI Vision)
-
-**Priority:** 🟢 High  
-**Estimated:** 4-6 hours  
-**Cost:** ~RM 2-5/month API
-
-Use Claude Vision to extract business opportunities from social media complaints.
-
-#### Workflow
+### Main Menu Structure
 
 ```
-📱 You screenshot a complaint (Reddit/FB/X)
-         │
-         ▼
-📤 Send to Gilgamesh via Telegram
-         │
-         ▼
-🤖 Claude Vision analyzes image:
-   - Extract text
-   - Identify pain point
-   - Categorize (tech/service/product)
-   - Suggest business angle
-         │
-         ▼
-💾 Store in n8n Data Table:
-   - Source platform
-   - Pain point summary
-   - Category tags
-   - Business opportunity
-   - Timestamp
-         │
-         ▼
-📊 Weekly summary of top pain points
+🏠 Homelab | 🎮 Gaming | 🤖 Gilgamesh | 🛠️ Tools | ❓ Help
 ```
 
-#### Data Table: `pain_points`
+### Menu Implementation Status
 
-| Column | Type | Purpose |
-|--------|------|---------|
-| id | Auto | Primary key |
-| source | String | Platform (Reddit, FB, X) |
-| screenshot_url | String | Telegram file URL |
-| extracted_text | String | OCR'd text |
-| pain_point | String | Core complaint |
-| category | String | Tech, Service, Product |
-| business_angle | String | Opportunity description |
-| sentiment | String | Angry, Frustrated, Confused |
-| timestamp | DateTime | When captured |
+| Menu Level | Feature | Status | Description |
+|------------|---------|---------|-------------|
+| **Main Menu** | Root Menu | ✅ Working | 5-button layout with category icons |
+| **Homelab** | Status Check | ✅ Working | Proxmox API integration, container states |
+| **Homelab** | Metrics Dashboard | 📋 Pending | CPU, memory, disk usage graphs |
+| **Homelab** | Temperature Monitor | 📋 Pending | Hardware temperature readings |
+| **Homelab** | Storage Overview | 📋 Pending | ZFS, LVM, NAS storage status |
+| **Gaming** | Server Status | 📋 Pending | Terraria, Minecraft, Windrose status |
+| **Gaming** | Player Counts | 📋 Pending | Active players across game servers |
+| **Gaming** | Server Controls | 📋 Pending | Start/stop/restart game servers |
+| **Gilgamesh** | Memory Stats | 📋 Pending | Conversation count, memory usage |
+| **Gilgamesh** | Cost Analytics | 📋 Pending | Token usage, API costs breakdown |
+| **Gilgamesh** | Model Selection | 📋 Pending | Force Haiku/Sonnet for session |
+| **Tools** | Quick Commands | 📋 Pending | Common administrative shortcuts |
+| **Tools** | Documentation | 📋 Pending | Link to GitHub docs, quick refs |
+| **Tools** | System Shortcuts | 📋 Pending | Container restart, backup status |
+| **Help** | Command List | 📋 Pending | All available commands and usage |
+| **Help** | Tutorial Mode | 📋 Pending | Interactive homelab learning |
 
----
+### Working Features Detail
 
-### Phase 7L: Ollama Hybrid Routing
+**Homelab → Status (✅ Working):**
+- Queries Proxmox API via HTTP request
+- Authentication: `root@pam!gilgamesh` token
+- Returns all container states (running/stopped)
+- Node name: `muzakkir` (not kuromoon)
+- Response format: Clean, tabulated container list
 
-**Priority:** 🟡 Medium  
-**Estimated:** 1 day  
-**Dependency:** Phase 11 (Ollama deployment)
+**Menu Navigation:**
+- Callback query handling without Answer Callback node
+- Inline keyboard updates after button press
+- Seamless menu transitions
+- Back/Home button support
 
-Route queries between local Ollama and Claude API for cost optimization.
+## Slash Commands
 
-#### Routing Logic
+### Current Slash Commands
 
+| Command | Status | Purpose | Implementation |
+|---------|---------|---------|----------------|
+| **/start** | ✅ Working | Initialize bot, show main menu | Telegram built-in |
+| **/update** | ✅ Working | Push session summary to GitHub | n8n workflow trigger |
+| **/sync-docs** | 📋 Planned | Sync documentation pipeline | Future n8n workflow |
+| **/status** | 📋 Planned | Quick homelab status check | Proxmox API shortcut |
+| **/costs** | 📋 Planned | Show API usage and costs | Query gilgamesh_costs table |
+| **/clear** | 📋 Planned | Clear conversation memory | Truncate memory table |
+| **/backup** | 📋 Planned | Check backup job status | Parse Proxmox backup logs |
+| **/alerts** | 📋 Planned | Show active alerts | Query Alertmanager API |
+
+### Documentation Pipeline Commands
+
+**/update Command Flow:**
 ```
-┌─────────────────┐
-│  User Message   │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Complexity     │
-│  Assessment     │
-└────────┬────────┘
-         │
-    ┌────┴────┬────────────┐
-    │         │            │
-    ▼         ▼            ▼
- Simple    Medium      Complex
-    │         │            │
-    ▼         ▼            ▼
-┌────────┐ ┌────────┐ ┌────────┐
-│ Ollama │ │ Haiku  │ │ Sonnet │
-│ (free) │ │ (cheap)│ │ (best) │
-│ 7B     │ │        │ │        │
-└────────┘ └────────┘ └────────┘
-```
-
-#### Model Allocation
-
-| Complexity | Examples | Model | Cost |
-|------------|----------|-------|------|
-| Simple | Greetings, time, basic Q&A | Ollama 7B | Free |
-| Medium | Summaries, explanations | Haiku | ~$0.001 |
-| Complex | Technical, analysis, code | Sonnet | ~$0.01 |
-
----
-
-### Phase 7H: Obsidian + claude-obsidian (Second Brain)
-
-**Priority:** 🟢 High  
-**Estimated:** 1 day  
-**Dependency:** None
-
-Full "second brain" setup using Obsidian with claude-obsidian plugin.
-
-#### What claude-obsidian Does
-
-| Feature | Description |
-|---------|-------------|
-| `/wiki` | Initialize vault structure (concepts, sources, entities, sessions) |
-| `/save` | After conversation, extract key ideas → wiki pages with wikilinks |
-| `/autoresearch` | 3-5 rounds of web research → structured wiki with citations |
-| `/canvas` | Create visual knowledge graphs from vault content |
-| `ingest` | Drop PDF/URL/transcript → 8-15 interconnected wiki pages |
-
-#### Vault Structure
-
-```
-obsidian-vault/
-├── wiki/
-│   ├── concepts/       (frameworks, patterns, ideas)
-│   ├── sources/        (ingested documents)
-│   ├── entities/       (people, tools, organizations)
-│   ├── sessions/       (saved conversations)
-│   ├── log.md          (operation history)
-│   ├── index.md        (one-line summary per page)
-│   └── hot.md          (session context cache, ~500 words)
-├── gilgamesh/
-│   ├── sessions/       (Telegram session summaries)
-│   └── costs/          (monthly cost tracking)
-├── homelab/
-│   └── AI-CONTEXT.md   (master context document)
-└── .raw/               (original source files, never modified)
+User: /update
+    ↓
+n8n: Generate session summary via Claude
+    ↓ 
+n8n: Append to AI-CONTEXT.md session log
+    ↓
+n8n: Push to Nextcloud (cloud.najhin-gaming.com)
+    ↓
+n8n: Commit to GitHub (homelab-infrastructure)
+    ↓
+Telegram: Confirmation message
 ```
 
-#### Why This Replaces RAG (Phase 7M)
+**Current /update Implementation:**
+- ✅ Session summary generation
+- ✅ AI-CONTEXT.md appending  
+- ✅ Nextcloud file update
+- ✅ GitHub repository sync
+- ❌ Section-aware merging (appends to Session Log only)
 
-| Traditional RAG | claude-obsidian |
-|-----------------|-----------------|
-| Embeddings + vector DB | Index.md + hot.md (text-based) |
-| Complex infrastructure | Just files in a folder |
-| Query → retrieve → generate | Query → scan index → load relevant pages |
-| Separate from notes | IS your notes |
+**/sync-docs (Planned):**
+- Bidirectional sync between Nextcloud and GitHub
+- Full documentation pipeline trigger
+- Version conflict resolution
+- Multiple file format support
 
-#### Setup Steps
+## Integration Architecture
 
-1. Install Obsidian on desktop/mobile
-2. Create vault in Nextcloud (cloud.najhin-gaming.com)
-3. Install Claude Code CLI
-4. Install claude-obsidian plugin
-5. Run `/wiki` to initialize structure
-6. Migrate AI-CONTEXT.md to vault
-7. Test `/save`, `/autoresearch`, `/canvas`
+### Proxmox API Integration
 
----
+**Connection Details:**
+- **Endpoint:** https://192.168.10.5:8006/api2/json
+- **Authentication:** Token (root@pam!gilgamesh)
+- **Node Name:** muzakkir (critical - not kuromoon)
+- **SSL Verification:** Disabled (self-signed certificate)
 
-### Phase 7H-Gil: Gilgamesh → Obsidian Integration
+**Current API Calls:**
+- **Container Status:** `/nodes/muzakkir/lxc` - List all LXC containers
+- **Node Status:** `/nodes/muzakkir/status` - System resources
 
-**Priority:** 🟢 High  
-**Estimated:** 3-4 hours  
-**Dependency:** Phase 7H
+**Planned API Integration:**
+- Container control (start/stop/restart)
+- Resource monitoring (CPU, RAM, disk)
+- Backup job status queries
+- Storage pool monitoring
+- Network statistics
 
-Connect Gilgamesh (Telegram/n8n) to write session summaries directly to Obsidian vault.
+### GitHub Integration
 
-#### Architecture
+**Repository:** homelab-infrastructure
+**Branch:** main
+**Credentials:** Fine-grained PAT (muzakkir97)
 
-```
-Telegram (Gilgamesh)
-         │
-         ▼
-┌─────────────────┐
-│      n8n        │
-│   (CT 211)      │
-└────────┬────────┘
-         │
-    ┌────┴────┐
-    │         │
-    ▼         ▼
-┌────────┐ ┌────────────────┐
-│n8n Data│ │ Nextcloud      │
-│Tables  │ │ WebDAV         │
-│(live)  │ │ (persistent)   │
-└────────┘ └────────┬───────┘
-                    │
-                    ▼
-           ┌────────────────┐
-           │ Obsidian Vault │
-           │ gilgamesh/     │
-           │ sessions/      │
-           └────────────────┘
-                    │
-                    ▼
-           claude-obsidian
-           indexes & links
-```
+**Current Operations:**
+- ✅ File updates (AI-CONTEXT.md)
+- ✅ Commit with automated messages
+- ✅ Push to remote repository
 
-#### Data Split (Hybrid Approach)
+**Planned Operations:**
+- Multi-file documentation updates
+- Branch management for different docs
+- Pull request automation
+- Release tagging for major phases
 
-| Data Type | Storage | Why |
-|-----------|---------|-----|
-| Last 20 messages | n8n Data Tables | Fast retrieval for live context |
-| Cost tracking | n8n Data Tables | Structured queries |
-| Session summaries | Obsidian | Searchable, compounding knowledge |
-| Decisions & learnings | Obsidian | Wiki links, cross-references |
-| AI-CONTEXT.md | Obsidian | Single source of truth |
+### Nextcloud Integration
 
-#### n8n → Obsidian via WebDAV
+**Server:** cloud.najhin-gaming.com
+**Path:** /AI-CONTEXT.md (root directory)
+**Protocol:** WebDAV
 
-```javascript
-// Save session summary to Obsidian via Nextcloud
-const date = new Date().toISOString().split('T')[0];
-const filename = `gilgamesh/sessions/${date}-session.md`;
+**Current Operations:**
+- ✅ File content updates
+- ✅ WebDAV PUT operations
+- ✅ Conflict detection
 
-const content = `---
-date: ${date}
-tokens: ${inputTokens + outputTokens}
-model: ${model}
-tags: [gilgamesh, session]
----
+**Planned Operations:**
+- Multiple file management
+- Directory structure sync
+- Version history preservation
+- Automated backups of documentation
 
-## Session Summary
+### Claude API Integration
 
-${summary}
+**Provider:** Anthropic Claude API
+**Models:** Haiku 4.5, Sonnet 4
+**Features:** Conversation, web_search tool
 
-## Key Decisions
-
-${decisions}
-
-## Links
-
-- [[AI-CONTEXT]]
-- [[homelab-infrastructure]]
-`;
-
-await this.helpers.httpRequest({
-  method: 'PUT',
-  url: `https://cloud.najhin-gaming.com/remote.php/dav/files/user/Obsidian/${filename}`,
-  body: content,
-  headers: {
-    'Authorization': 'Basic ...',
-    'Content-Type': 'text/markdown'
-  }
-});
-```
-
----
-
-### Phase 7N-Gil: Image Analysis
-
-**Priority:** 🟡 Medium  
-**Estimated:** 2-3 hours
-
-Send screenshots to Gilgamesh for analysis.
-
-#### Use Cases
-
-- Error screenshot → Explanation + fix
-- Dashboard screenshot → Summary
-- Config screenshot → Validation
-- Network diagram → Analysis
-
-#### Implementation
-
-```javascript
-// Check if message contains photo
-if ($json.message.photo) {
-  const photoId = $json.message.photo.slice(-1)[0].file_id;
-  // Download via Telegram API
-  // Convert to base64
-  // Send to Claude Vision API
+**Request Structure:**
+```json
+{
+  "model": "claude-haiku-4-5-20251001",
+  "max_tokens": 4000,
+  "temperature": 0.7,
+  "messages": [
+    {"role": "system", "content": "Homelab AI context..."},
+    {"role": "user", "content": "User message"},
+    {"role": "assistant", "content": "Previous response"},
+    {"role": "user", "content": "Latest message"}
+  ],
+  "tools": [
+    {
+      "name": "web_search", 
+      "description": "Search the web for current information"
+    }
+  ]
 }
 ```
 
+**Response Handling:**
+- Text content extraction from API response
+- Tool usage detection and processing
+- Token counting for cost tracking
+- Error handling for API failures
+
+## Planned Features (📋 Roadmap)
+
+### Phase 1: Menu System Completion
+
+**Timeline:** Q1 2025
+**Priority:** High
+
+| Feature | Description | Technical Requirements |
+|---------|-------------|------------------------|
+| **Metrics Dashboard** | CPU, memory, disk graphs via Grafana API | Grafana API integration, image generation |
+| **Temperature Monitor** | Hardware temperature readings | Proxmox sensor API, alert thresholds |
+| **Storage Overview** | ZFS pools, LVM usage, NAS status | Multiple API endpoints, data aggregation |
+| **Gaming Server Status** | Terraria, Minecraft, Windrose status | Docker API, game-specific queries |
+
+### Phase 2: Proactive Intelligence
+
+**Timeline:** Q2 2025
+**Priority:** High
+
+| Feature | Description | Technical Requirements |
+|---------|-------------|------------------------|
+| **Proactive Alerts** | Push notifications for system issues | Alertmanager webhook, alert routing |
+| **Daily Summary Reports** | Automated homelab status summaries | Scheduled n8n workflow, multi-API data |
+| **Predictive Warnings** | Disk space, certificate expiry alerts | Trend analysis, threshold monitoring |
+| **Maintenance Reminders** | Update schedules, backup verification | Calendar integration, task scheduling |
+
+### Phase 3: Advanced Interfaces
+
+**Timeline:** Q3 2025
+**Priority:** Medium
+
+| Feature | Description | Technical Requirements |
+|---------|-------------|------------------------|
+| **Web Chat UI** | Homepage-embedded chat interface | React/Vue frontend, shared memory |
+| **Mobile App** | Native Android/iOS Gilgamesh app | React Native, push notifications |
+| **Voice Interface** | Voice commands via Telegram | Speech-to-text, voice response |
+| **Multi-User Support** | Family member access with permissions | User management, role-based access |
+
+### Phase 4: Hybrid AI Architecture
+
+**Timeline:** Q4 2025
+**Priority:** Medium
+
+| Feature | Description | Technical Requirements |
+|---------|-------------|------------------------|
+| **Ollama Integration** | Local LLM on RX 6700 XT via ROCm | Phase 11 completion, model deployment |
+| **Hybrid Routing** | Local vs Cloud model selection | Latency testing, privacy classification |
+| **Model Switching** | Dynamic model selection based on context | Performance monitoring, cost optimization |
+| **Local Privacy Mode** | Sensitive queries stay on-premises | Data classification, routing rules |
+
+## Technical Constraints & Limitations
+
+### Known Issues
+
+| Issue | Impact | Workaround | Resolution Plan |
+|-------|--------|------------|-----------------|
+| **Plain Text Only** | No code blocks in Telegram responses | Use text formatting alternatives | Investigate Telegram API alternatives |
+| **Single User** | Bot limited to one Telegram account | Use shared account | Implement multi-user authentication |
+| **Memory Limit** | Only 20 message rolling window | Context summarization | Implement conversation archival |
+| **No File Upload** | Cannot process document attachments | Use /update for text content | Plan file handling workflow |
+| **API Rate Limits** | Claude API throttling during high usage | Message queuing | Implement request throttling |
+
+### Architecture Limitations
+
+**n8n Constraints:**
+- Data Tables have schema caching bugs (require recreation)
+- Expression scoping issues require Code nodes
+- Single webhook per bot (all update types)
+- Limited error handling for API failures
+
+**Telegram Constraints:**
+- Message length limits (4096 characters)
+- Inline keyboard button limits (8 per row, 100 total)
+- No native file upload handling in current workflow
+- Single bot token per Telegram account
+
+**API Dependencies:**
+- Claude API availability and pricing changes
+- Proxmox API authentication token expiry
+- GitHub rate limiting on repository operations
+- Nextcloud WebDAV connection reliability
+
+## Security Considerations
+
+### Authentication & Authorization
+
+**Current Security:**
+- Telegram bot token stored in n8n credentials
+- Single authorized user (Chat ID validation)
+- Proxmox API token with limited scope
+- GitHub fine-grained PAT with repository access only
+
+**Security Improvements Planned:**
+- Multi-factor authentication for sensitive operations
+- Role-based access control for different users
+- API token rotation automation
+- Audit logging for all operations
+
+### Data Privacy
+
+**Current Approach:**
+- Conversation data stored locally in n8n
+- No data sent to third parties except Claude API
+- Memory purged after 20 messages
+- Cost data retained for analytics
+
+**Privacy Enhancements:**
+- Option for local-only processing (Ollama)
+- Data retention policy configuration
+- Export/delete personal data functionality
+- Conversation encryption at rest
+
+## Performance & Monitoring
+
+### Current Metrics
+
+| Metric | Current Status | Target |
+|--------|----------------|---------|
+| **Response Time** | ~2-3 seconds | < 2 seconds |
+| **Uptime** | 99%+ (n8n dependent) | 99.9% |
+| **API Costs** | ~$5-10/month | < $15/month |
+| **Memory Usage** | 20 messages max | Configurable |
+
+### Monitoring Implementation
+
+**Current Monitoring:**
+- n8n workflow execution logs
+- Claude API response tracking
+- Cost accumulation in database
+- Basic error alerting via Telegram
+
+**Enhanced Monitoring (Planned):**
+- Grafana dashboard for Gilgamesh metrics
+- Alertmanager integration for failures
+- Performance trend analysis
+- User satisfaction tracking
+
+## Development Workflow
+
+### Current Development Process
+
+1. **Feature Design** - Document in AI-CONTEXT.md
+2. **n8n Workflow Update** - Modify existing workflow nodes
+3. **Testing** - Manual testing via Telegram
+4. **Documentation Update** - Update this roadmap
+5. **Deployment** - n8n auto-saves, immediate deployment
+
+### Planned Improvements
+
+**Version Control:**
+- n8n workflow version control via GitHub
+- Staging environment for testing
+- Automated rollback capability
+- Change approval process
+
+**Testing Framework:**
+- Automated testing of critical workflows
+- Mock API responses for testing
+- Performance regression testing
+- User acceptance testing scenarios
+
 ---
 
-## 🔮 Future Ideas (Backlog)
-
-| Feature | Description | Complexity |
-|---------|-------------|------------|
-| Voice commands | Whisper STT → Gilgamesh → Piper TTS | High |
-| Multi-user support | Different chat IDs, different permissions | Medium |
-| Scheduled reports | Weekly/monthly infrastructure reports | Low |
-| Integration with Home Assistant | Smart home control | Medium |
-| Expense tracking | Track homelab costs over time | Low |
-| Learning mode | Gilgamesh learns from corrections | High |
-| Workflow suggestions | "You often do X, want me to automate?" | High |
-
----
-
-## 📊 Cost Projections
-
-### Current (v1.0)
-
-| Component | Monthly Cost |
-|-----------|--------------|
-| Claude Haiku | ~$1-2 |
-| Claude Sonnet | ~$3-5 |
-| **Total** | **~$4-7** |
-
-### With Vision (v1.1)
-
-| Component | Monthly Cost |
-|-----------|--------------|
-| Claude Haiku | ~$1-2 |
-| Claude Sonnet | ~$3-5 |
-| Claude Vision | ~$2-5 |
-| **Total** | **~$6-12** |
-
-### With Ollama Hybrid (v2.0)
-
-| Component | Monthly Cost |
-|-----------|--------------|
-| Ollama (local) | $0 |
-| Claude Haiku (reduced) | ~$0.50 |
-| Claude Sonnet (complex only) | ~$2-3 |
-| **Total** | **~$2-4** |
-
----
-
-## 🛠️ Technical Stack
-
-| Component | Technology |
-|-----------|------------|
-| **Platform** | n8n (CT 211) |
-| **Messaging** | Telegram Bot API |
-| **AI - Cloud** | Claude API (Haiku, Sonnet) |
-| **AI - Local** | Ollama (planned) |
-| **Memory** | n8n Data Tables |
-| **Vector DB** | ChromaDB (planned) |
-| **Monitoring** | Proxmox API, Prometheus API |
-| **Alerts** | Alertmanager webhooks |
-
----
-
-## 📝 Development Notes
-
-### Key Learnings
-
-1. **Single webhook per bot** — All Telegram interactions must route through one workflow
-2. **Plain text only** — Markdown code blocks break JSON in Telegram messages
-3. **Edit vs Send** — Use Edit Message for menu navigation to update in-place
-4. **Multi-block responses** — Filter Claude responses by `type === "text"`
-5. **n8n schema caching** — Delete and recreate Data Tables if columns change
-
-### API Credentials Required
-
-| Service | Credential Type | Location |
-|---------|-----------------|----------|
-| Telegram | Bot Token | n8n Credentials |
-| Claude | API Key | n8n Credentials |
-| Proxmox | API Token | n8n Credentials |
-| GitHub | Personal Access Token | n8n Credentials |
-| Nextcloud | App Password | n8n Credentials |
-
-### Useful n8n Patterns
-
-```javascript
-// Multi-line text in Telegram
-{{ "Line 1\n\nLine 2" }}
-
-// Filter Claude text blocks
-const text = $json.content
-  .filter(b => b.type === 'text')
-  .map(b => b.text)
-  .join('\n\n');
-
-// Access upstream node data
-const chatId = $('Telegram Trigger').first().json.message.chat.id;
-```
-
----
-
-## 📅 Development Timeline
-
-| Phase | Feature | Target | Status |
-|-------|---------|--------|--------|
-| 7D-Menu | Inline keyboard menus | April 2026 | 🔄 In Progress |
-| 13 | HashiCorp Vault (API keys) | April 2026 | 📋 Next |
-| 7H | Obsidian + claude-obsidian | April 2026 | 📋 Planned |
-| 7H-Gil | Gilgamesh → Obsidian | April 2026 | 📋 Planned |
-| 7D-Cmds | Additional commands | May 2026 | 📋 Planned |
-| 7D-Proactive | Proactive alerts | May 2026 | 📋 Planned |
-| 7D-Daily | Daily summary | May 2026 | 📋 Planned |
-| 7E | Pain point scraper | May 2026 | 📋 Planned |
-| 11 | Ollama deployment | June 2026 | 📋 Planned |
-| 7L | Ollama hybrid routing | June 2026 | 📋 Planned |
-
----
-
-## 🔗 Related Documents
-
-- [Phase 7B: n8n Automation](phase-7b-n8n-automation.md)
-- [Phase 7C: Gilgamesh Bot](phase-7c-gilgamesh-bot.md)
-- [Phase 7D: Gilgamesh Enhancements](phase-7d-gilgamesh-enhancements.md)
-- [Phase 7D-Sec: Cloudflare Access](phase-7d-sec-cloudflare-access.md)
-- [Main Roadmap](../ROADMAP.md)
-
----
-
-*Last Updated: April 14, 2026*
+*This roadmap represents the current state and planned evolution of the Gilgamesh AI agent. Features marked as "Pending" are prioritized based on user needs and technical feasibility.*
