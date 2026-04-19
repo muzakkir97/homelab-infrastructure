@@ -19,6 +19,21 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+## [April 19, 2026] - Phase 58: Windrose Server Deployment
+
+### Added
+- **Windrose dedicated server** deployed via Docker on CT 302
+- Server running at `/opt/windrose` on gaming-wings-1
+- 4 max players, Medium difficulty setting
+- Successfully tested connection with invite code
+
+### Technical
+- Used `indifferentbroccoli/windrose-server-docker` image
+- Deployed alongside existing Pterodactyl game servers
+- Docker Compose deployment on CT 302
+
+---
+
 ## [April 14, 2026] - Documentation Update
 
 ### Changed
