@@ -314,6 +314,8 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 ### Immediate
 | Task | Priority |
 |------|----------|
+| Share Windrose invite code with friends | High |
+| Monitor RAM usage with Windrose running | High |
 | Set up Bitwarden app on phone with passwords.najhin-gaming.com server | High |
 | Update hardcoded PAT in Prepare GitHub Push to use n8n credential instead | Medium |
 | Update Cloudflare Access app icons (all 7 apps) | Medium |
