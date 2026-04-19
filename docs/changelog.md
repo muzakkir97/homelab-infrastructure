@@ -4,6 +4,32 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [April 19, 2026] - Phase 16.1, 16.2, 58: Documentation Pipeline + Windrose Server
+
+#### Added
+- **Documentation Pipeline - Update workflow** (Phase 16.1) — 7 nodes, webhook triggered
+- **Documentation Pipeline - Sync Docs workflow** (Phase 16.2) — 7 nodes, webhook triggered  
+- **Windrose dedicated server** deployed via Docker on CT 302
+- Server running at `/opt/windrose`, 4 max players, Medium difficulty
+- Invite code NAJHINWINDROSE set and tested successfully
+
+#### Technical
+- Pipeline routes: /update (3 files every session), /sync-docs (7 files deployment sessions)
+- Used `indifferentbroccoli/windrose-server-docker` image
+- Wired both pipelines into Telegram Agent via Switch node routes
+- Updated Telegram Chat ID from 510832696 to 518832696 (correction)
+- Created new Nextcloud app password: n8n-doc-pipeline
+
+#### Fixed
+- Nextcloud Push 401: Created new app password for doc pipeline
+- Template literal syntax errors with backticks in AI-CONTEXT.md content
+- Switch node routing for /sync-docs command
+
+#### Removed
+- session-summary.md from GitHub (legacy file no longer needed)
+
+---
+
 ### [December 19, 2024] - Documentation Pipeline Test
 
 #### Technical
