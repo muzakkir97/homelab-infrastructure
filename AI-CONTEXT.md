@@ -237,7 +237,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 | 9       | NAS Deployment (Kinmoon)                                  | ✅ Complete    | Mar 3, 2026      |
 | 13      | HashiCorp Vault — Secrets Manager                         | ✅ Complete    | Apr 18, 2026     |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                     | ✅ Complete    | Apr 18, 2026     |
-| **58**  | **Windrose Server Deployment**                            | ✅ **Complete**| **Apr 19, 2026** |
+| 58      | Windrose Server Deployment                                | ✅ Complete    | Apr 19, 2026     |
 | 11      | Ollama + ROCm on Kuromoon RX 6700 XT                      | 📋 Planned     | —                |
 
 ---
