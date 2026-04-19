@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** December 19, 2024
+> **Last Updated:** April 19, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Phase 58 complete (Windrose Server Deployment). Game server deployed on CT 302 via Docker. 14 LXC containers running.
+**Current Status:** Phase 16.1, 16.2, and 58 complete (Documentation Pipeline + Windrose Server). Game server deployed on CT 302 via Docker. 14 LXC containers running.
 
 ---
 
@@ -123,7 +123,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 ### Gaming Servers (Docker on CT 302)
 - **Terraria** — terraria.najhin-gaming.com
 - **Minecraft** — mc.najhin-gaming.com  
-- **Windrose** — Deployed at /opt/windrose, 4 max players, Medium difficulty
+- **Windrose** — Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE
 
 ---
 
@@ -136,6 +136,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
                               Memory (n8n Data Tables)
                                      ↓
                               /update → Nextcloud → GitHub
+                              /sync-docs → Full Doc Pipeline
 ```
 
 ### Features
@@ -145,18 +146,29 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 - **Cost tracking:** Token usage logged to gilgamesh_costs table
 - **Inline keyboard menu:** Main menu with Homelab, Gaming, Gilgamesh, Tools, Help categories
 - **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
+- **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
 
 ### Technical Details
 
 | Component      | Value                       |
 |----------------|-----------------------------|
 | Telegram Bot   | @JhinGilgamesh_bot          |
-| Chat ID        | 510832696                   |
+| Chat ID        | 518832696                   |
 | Haiku Model    | claude-haiku-4-5-20251001   |
 | Sonnet Model   | claude-sonnet-4-20250514    |
 | n8n Container  | CT 211, 192.168.30.211      |
 | Proxmox API    | root@pam!gilgamesh token    |
 | Proxmox node   | muzakkir (not kuromoon)     |
+
+### n8n Workflows (Count: 7)
+
+| Workflow                    | Purpose                             | Nodes | Trigger         |
+|-----------------------------|-------------------------------------|-------|-----------------|
+| Telegram Agent              | Main bot, menu, commands            | 15    | Telegram        |
+| Documentation Pipeline - Update | Session summary → 3 files     | 7     | Webhook         |
+| Documentation Pipeline - Sync Docs | Full doc regeneration → 7 files | 7  | Webhook         |
+| Update Nextcloud File       | Legacy (unpublished)                | 5     | Webhook         |
+| Push to GitHub              | Legacy (unpublished)                | 4     | Webhook         |
 
 ### Inline Keyboard Menu Status
 
@@ -174,7 +186,39 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 
 ### Known Constraints
 - Telegram messages must be **plain text only** — code blocks, backticks, and complex formatting break JSON parsing in the Claude API request body
-- /update appends to Session Log only — no section-aware merging yet (planned redesign: file-based approach via Nextcloud)
+- /update appends to Session Log only — no section-aware merging yet (handled by new pipeline workflows)
+
+---
+
+## 🔧 Documentation Pipeline (Phase 16.1/16.2)
+
+### Architecture
+```
+Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
+                    ↓
+               Nextcloud + GitHub
+```
+
+### Commands
+
+| Command     | Purpose                                     | Files Updated |
+|-------------|---------------------------------------------|---------------|
+| /update     | Every session - merge summary into docs    | 3 files       |
+| /sync-docs  | Deployment sessions - regenerate all docs  | 7 files       |
+
+### Pipeline Components
+
+| Component    | Details                              |
+|--------------|--------------------------------------|
+| Webhooks     | doc-update, doc-sync                 |
+| Telegram     | Route /update and /sync-docs         |
+| Claude API   | Documentation merging intelligence   |
+| Nextcloud    | File storage via app password        |
+| GitHub       | Version control via API push        |
+
+### File Coverage (sync-docs)
+- AI-CONTEXT.md, changelog.md, troubleshoot.md (from /update)
+- README.md, roadmap.md, current-state.md, service-catalog.md
 
 ---
 
@@ -236,6 +280,8 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 | 7D-Menu | Gilgamesh Inline Keyboard Menu                            | 🔄 In Progress | —                |
 | 9       | NAS Deployment (Kinmoon)                                  | ✅ Complete    | Mar 3, 2026      |
 | 13      | HashiCorp Vault — Secrets Manager                         | ✅ Complete    | Apr 18, 2026     |
+| 16.1    | Documentation Pipeline - Update Workflow                  | ✅ Complete    | Apr 19, 2026     |
+| 16.2    | Documentation Pipeline - Sync Docs Workflow               | ✅ Complete    | Apr 19, 2026     |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                     | ✅ Complete    | Apr 18, 2026     |
 | 58      | Windrose Server Deployment                                | ✅ Complete    | Apr 19, 2026     |
 | 11      | Ollama + ROCm on Kuromoon RX 6700 XT                      | 📋 Planned     | —                |
@@ -301,7 +347,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 
 | Bot | Platform | Source | Status | Purpose |
 |-----|----------|--------|--------|---------|
-| @JhinGilgamesh_bot | Telegram | n8n CT 211 | ✅ Active | Personal AI agent — chat, homelab control, /update |
+| @JhinGilgamesh_bot | Telegram | n8n CT 211 | ✅ Active | Personal AI agent — chat, homelab control, /update, /sync-docs |
 | Homelab Alerts | Telegram | Alertmanager CT 205 | ✅ Active | Critical alerts (host down, high CPU/memory/disk) |
 | Homelab Alerts | Discord webhook | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel |
 
@@ -314,15 +360,19 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 ### Immediate
 | Task | Priority |
 |------|----------|
-| Share Windrose invite code with friends | High |
-| Monitor RAM usage with Windrose running | High |
+| Share Windrose invite code NAJHINWINDROSE with friends | High |
+| Monitor RAM usage with Windrose running on CT 302 | High |
 | Set up Bitwarden app on phone with passwords.najhin-gaming.com server | High |
-| Update hardcoded PAT in Prepare GitHub Push to use n8n credential instead | Medium |
+| Store new Nextcloud app password (n8n-doc-pipeline) in Vaultwarden | High |
+| Delete old disconnected /update nodes from Telegram Agent workflow | Medium |
+| Delete Test SQLite workflow from n8n | Medium |
+| Retire Update Nextcloud File and Push to GitHub workflows (unpublish) | Medium |
 | Update Cloudflare Access app icons (all 7 apps) | Medium |
 
-### Gilgamesh
+### Gilgamesh & Documentation
 | Task | Priority |
 |------|----------|
+| Build Phase 16.3 — Monthly Infrastructure Audit cron workflow | High |
 | Complete menu submenus (Metrics, Temps, Storage, Gaming, Gilgamesh, Tools, Help) | Medium |
 | /update redesign — file attachment via Telegram, push to GitHub + Nextcloud | Medium |
 | Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram) | Medium |
@@ -351,6 +401,60 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 
 ## 📝 Session Log (Recent)
 
+### April 19, 2026
+Date: April 19, 2026
+Phase: Phase 16.1, 16.2, 58 — Documentation Pipeline + Windrose Server
+Topics Discussed
+
+Designed documentation automation pipeline — single session summary input generates 10 docs across GitHub and Nextcloud
+Discussed separating /update (every session, 3 files) from /sync-docs (deployment sessions, 7 files)
+Planned monthly infrastructure audit as separate cron workflow (Phase 16.3)
+Planned gaming platform pipeline (Phases 57-64) — standardized deployment guide, Discord bot, auto-shutdown, status embed, scheduled game nights, update notifications, Grafana dashboard
+Deployed Windrose dedicated server via Docker on CT 302 using indifferentbroccoli/windrose-server-docker image at /opt/windrose
+Built and tested Documentation Pipeline - Update workflow (Phase 16.1) — 7 nodes, webhook triggered
+Built and tested Documentation Pipeline - Sync Docs workflow (Phase 16.2) — 7 nodes, webhook triggered
+Wired both pipelines into Telegram Agent via Switch node routes
+Deleted session-summary.md from GitHub (legacy file)
+Updated roadmap.md with new gaming pipeline phases 57-64 and restructured Phase 16 into sub-phases
+
+Decisions Made
+
+/update for every session (merge 3 files), /sync-docs for deployment sessions only (regenerate 7 files)
+Hardcoded secrets acceptable until Phase 27 (Vault integration)
+Windrose server set to 4 max players, Medium difficulty, invite code NAJHINWINDROSE
+Discord bot for game server management (not Telegram — keeps gaming separate from homelab admin)
+Session-summary.md deleted as legacy file, no longer needed
+Monthly audit report added to pipeline as Phase 16.3
+
+Changes to AI-CONTEXT.md
+
+Add Phase 16.1 and 16.2 as complete (Apr 19, 2026)
+Add Phase 58 as complete (Apr 19, 2026)
+Add Documentation Pipeline - Update workflow to n8n workflows section (7 nodes, webhook doc-update)
+Add Documentation Pipeline - Sync Docs workflow to n8n workflows section (7 nodes, webhook doc-sync)
+Add /sync-docs route to Telegram Agent Switch node
+Add Windrose server to gaming section (Docker on CT 302, /opt/windrose, invite code NAJHINWINDROSE)
+Update Telegram Chat ID from 510832696 to 518832696 (was incorrect)
+Add new Nextcloud app password entry: n8n-doc-pipeline
+Update n8n workflow count from 5 to 7
+
+Errors & Resolutions
+
+Nextcloud Push 401: Password from Vaultwarden was wrong — created new app password n8n-doc-pipeline
+Telegram Send Confirmation chat not found: Chat ID was 510832696 (typo), correct ID is 518832696
+Telegram node bad request: Switched from n8n Telegram node to direct HTTP API call for reliability
+Template literal syntax error in sync-docs: AI-CONTEXT.md contains backticks which break JS template literals — replaced with string concatenation
+Switch node routing miss for /sync-docs: Expression format needed optional chaining to match other rules
+
+Action Items
+
+Delete old disconnected /update nodes from Telegram Agent (after confirming pipeline is stable)
+Delete Test SQLite workflow from n8n
+Retire Update Nextcloud File and Push to GitHub workflows (unpublish)
+Store new Nextcloud app password in Vaultwarden
+Share Windrose invite code with friends
+Monitor Windrose RAM usage on CT 302
+
 ### December 19, 2024
 Date: December 19, 2024
 Phase: Documentation Pipeline Test
@@ -375,35 +479,6 @@ None this session
 Action Items
 
 None - pipeline test successful
-
-### April 19, 2026
-Date: April 19, 2026
-Phase: Phase 58 — Windrose Server Deployment
-Topics Discussed
-
-Deployed Windrose dedicated server via Docker on CT 302
-Used indifferentbroccoli/windrose-server-docker image
-Server running at /opt/windrose on gaming-wings-1
-Invite code set, server confirmed working — connected successfully
-
-Decisions Made
-
-Game servers deployed as Docker Compose on CT 302 alongside Pterodactyl
-Windrose server set to 4 max players, Medium difficulty
-
-Changes to AI-CONTEXT.md
-
-Add Windrose server to gaming section
-Note Docker deployment path /opt/windrose on CT 302
-
-Errors & Resolutions
-
-None this session
-
-Action Items
-
-Share invite code with friends
-Monitor RAM usage with Windrose running
 
 ### April 18, 2026 (Part 2)
 Date: April 18, 2026
@@ -449,4 +524,4 @@ Google Sign-In services (Anthropic, Tailscale) stored with "Google Sign-In" as p
 
 ---
 
-*Last updated: December 19, 2024 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: April 19, 2026 — Update this file at the end of each session before pushing to GitHub*
