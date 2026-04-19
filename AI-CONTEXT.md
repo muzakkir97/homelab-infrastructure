@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** April 18, 2026
+> **Last Updated:** April 19, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Phase 13 complete (HashiCorp Vault). Secrets manager deployed at vault.najhin-gaming.com. API keys migrated from plaintext to Vault KV engine. 13 LXC containers running.
+**Current Status:** Phase 58 complete (Windrose Server Deployment). Game server deployed on CT 302 via Docker. 14 LXC containers running.
 
 ---
 
@@ -113,11 +113,17 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | 208  | dashboard-homepage      | 192.168.30.208 | home.najhin-gaming.com        | ✅        | ✅ Running |
 | 211  | automation-n8n          | 192.168.30.211 | n8n.najhin-gaming.com         | ✅        | ✅ Running |
 | 213  | vault                   | 192.168.30.213 | vault.najhin-gaming.com       | ✅        | ✅ Running |
+| 214  | password-vaultwarden    | 192.168.30.214 | passwords.najhin-gaming.com   | ✅        | ✅ Running |
 | 220  | nextcloud-hub           | 192.168.30.220 | cloud.najhin-gaming.com       | ✅        | ✅ Running |
 | 300  | gaming-panel            | 192.168.30.210 | —                             | ✅        | ✅ Running |
 | 302  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅        | ✅ Running |
 
-**Total: 13 LXC containers, all on VLAN 30, all autostart enabled**
+**Total: 14 LXC containers, all on VLAN 30, all autostart enabled**
+
+### Gaming Servers (Docker on CT 302)
+- **Terraria** — terraria.najhin-gaming.com
+- **Minecraft** — mc.najhin-gaming.com  
+- **Windrose** — Deployed at /opt/windrose, 4 max players, Medium difficulty
 
 ---
 
@@ -176,9 +182,9 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 
 ### Backup Jobs
 
-| Job              | Schedule | Storage                  | Containers                             | Retention                    |
+| Job              | Schedule | Storage                  | Containers                              | Retention                    |
 |------------------|----------|--------------------------|----------------------------------------|------------------------------|
-| Small Containers | 02:00    | kinmoon-smb (NAS)        | 201, 202, 203, 204, 205, 206, 207, 300 | 7 daily, 4 weekly, 2 monthly |
+| Small Containers | 02:00    | kinmoon-smb (NAS)        | 201, 202, 203, 204, 205, 206, 207, 214, 300 | 7 daily, 4 weekly, 2 monthly |
 | Large Containers | 02:30    | data-storage (Local HDD) | 220, 302                               | 7 daily, 4 weekly, 2 monthly |
 
 ### Storage
@@ -200,11 +206,12 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 | Segmentation    | 5 VLANs with enforced firewall rules                                              |
 | DNS             | Pi-hole ad/tracker blocking (~489K domains)                                       |
 | VPN             | Tailscale (subnet router on pfSense, primary access)                              |
-| External Auth   | Cloudflare Access (email OTP) for Grafana, n8n, Vault (6 apps total)             |
+| External Auth   | Cloudflare Access (email OTP) for Grafana, n8n, Vault, Vaultwarden (7 apps total) |
 | External Access | Cloudflare Tunnel for Nextcloud                                                   |
 | Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                    |
 | Backup          | Automated daily backups with 7/4/2 retention                                     |
-| Secrets         | HashiCorp Vault (CT 213, vault.najhin-gaming.com). KV engine at kv/. Secrets: kv/gilgamesh, kv/cloudflare, kv/proxmox |
+| Secrets         | HashiCorp Vault (CT 213, vault.najhin-gaming.com). KV engine at kv/. Secrets: kv/gilgamesh, kv/cloudflare, kv/proxmox, kv/alertmanager, kv/github, kv/nextcloud, kv/n8n, kv/pihole (8 paths total) |
+| Passwords       | Vaultwarden (CT 214, passwords.najhin-gaming.com). Personal password manager with Bitwarden clients. |
 
 ---
 
@@ -228,7 +235,9 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 | 7D-Sec  | Cloudflare Access for n8n                                 | ✅ Complete    | Apr 7, 2026      |
 | 7D-Menu | Gilgamesh Inline Keyboard Menu                            | 🔄 In Progress | —                |
 | 9       | NAS Deployment (Kinmoon)                                  | ✅ Complete    | Mar 3, 2026      |
-| **13**  | **HashiCorp Vault — Secrets Manager**                     | ✅ **Complete**| **Apr 18, 2026** |
+| 13      | HashiCorp Vault — Secrets Manager                         | ✅ Complete    | Apr 18, 2026     |
+| 23      | Vaultwarden + Secrets Audit & Cleanup                     | ✅ Complete    | Apr 18, 2026     |
+| **58**  | **Windrose Server Deployment**                            | ✅ **Complete**| **Apr 19, 2026** |
 | 11      | Ollama + ROCm on Kuromoon RX 6700 XT                      | 📋 Planned     | —                |
 
 ---
@@ -305,10 +314,9 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 ### Immediate
 | Task | Priority |
 |------|----------|
-| Clear plaintext secrets from Notepad | High |
-| Set up Vaultwarden LXC (password manager) | High |
-| Clean up duplicate Cloudflare API tokens | High |
-| Update Cloudflare Access app icons (all 6 apps) | Medium |
+| Set up Bitwarden app on phone with passwords.najhin-gaming.com server | High |
+| Update hardcoded PAT in Prepare GitHub Push to use n8n credential instead | Medium |
+| Update Cloudflare Access app icons (all 7 apps) | Medium |
 
 ### Gilgamesh
 | Task | Priority |
@@ -342,6 +350,35 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 ## 📝 Session Log (Recent)
 
 ### April 19, 2026
+Date: April 19, 2026
+Phase: Phase 58 — Windrose Server Deployment
+Topics Discussed
+
+Deployed Windrose dedicated server via Docker on CT 302
+Used indifferentbroccoli/windrose-server-docker image
+Server running at /opt/windrose on gaming-wings-1
+Invite code set, server confirmed working — connected successfully
+
+Decisions Made
+
+Game servers deployed as Docker Compose on CT 302 alongside Pterodactyl
+Windrose server set to 4 max players, Medium difficulty
+
+Changes to AI-CONTEXT.md
+
+Add Windrose server to gaming section
+Note Docker deployment path /opt/windrose on CT 302
+
+Errors & Resolutions
+
+None this session
+
+Action Items
+
+Share invite code with friends
+Monitor RAM usage with Windrose running
+
+### April 18, 2026 (Part 2)
 Date: April 18, 2026
 Phase: Phase 23 — Vaultwarden + Secrets Audit & Cleanup
 Topics Discussed
@@ -364,43 +401,6 @@ Cloudflare Access app icons skipped (UI doesn't support custom icons easily)
 GitHub PAT set with fine-grained permissions (Contents read/write, homelab-infrastructure repo only)
 Google Sign-In services (Anthropic, Tailscale) stored with "Google Sign-In" as password field
 
-Changes to AI-CONTEXT.md
-
-Add CT 214 password-vaultwarden to container inventory (192.168.30.214, passwords.najhin-gaming.com)
-Update container count from 13 to 14
-Update Vault kv/ paths: add alertmanager, github, nextcloud, n8n, pihole (total 8)
-Add Vaultwarden to security architecture section
-Add Phase 23 to phase history as complete (Apr 18, 2026)
-Update Cloudflare Access to 7 apps (add Vaultwarden)
-Update SERVICE_PORTS alias: add 8080
-Move pending tasks to done: Vaultwarden setup, clear plaintext secrets, clean up Cloudflare tokens
-Update backup job: CT 214 added to small containers job
-Note: /update workflow paths fixed (removed /docs from Nextcloud fetch and GitHub push)
-Note: AI-CONTEXT.md now lives at repo root, not docs/
-
-Changes to Other Docs
-
-roadmap.md: Phase 23 moved from planned to complete (Apr 18, 2026)
-service-catalog.md: Add Vaultwarden entry
-changelog.md: Add Phase 23 entry
-troubleshoot.md: Add entries for Vault HTTPS vs HTTP error, n8n encryption key location, /update path fixes
-
-Errors & Resolutions
-
-Vault CLI HTTPS error: Set export VAULT_ADDR='http://127.0.0.1:8200' before vault commands
-n8n encryption key not in .env: Found inside Docker volume via docker exec n8n cat /home/node/.n8n/config
-/update Nextcloud 404: AI-CONTEXT.md moved from docs/ to root — updated Fetch Current File node path
-/update GitHub 404: Prepare GitHub Push node had hardcoded /docs path — removed /docs
-Push to Github SHA mismatch: URL still had /docs — updated to root path
-GitHub PAT was hardcoded in Prepare GitHub Push code node — updated to new token
-
-Action Items
-
- Install Bitwarden app on phone, set server URL to passwords.najhin-gaming.com
- Update hardcoded PAT in Prepare GitHub Push to use n8n credential instead (future improvement)
- Push updated AI-CONTEXT.md with all Phase 23 changes
-
-
 ### April 18, 2026
 - Deployed HashiCorp Vault as Phase 13 (CT 213, 192.168.30.213)
 - Vault v2.0.0 installed via HashiCorp apt repo on Debian 12
@@ -411,14 +411,6 @@ Action Items
 - Created homelab policy (kv/* + secret/*) and non-root homelab token
 - NPM reverse proxy configured for vault.najhin-gaming.com
 - Cloudflare Access email OTP protection added (6th protected app)
-- Identified /update command issue: session log accumulating duplicate entries in mixed formats — full rewrite of AI-CONTEXT.md performed
-- Discussed and planned Gilgamesh /update redesign (file attachment via Telegram)
-- Confirmed Discord/Telegram alerts come from Alertmanager CT 205, not n8n
-- Planned migration of Alertmanager alerts through n8n as central notification hub
-- Planned Gilgamesh web chat UI on homepage with shared memory
-- Researched and planned new services: Gitea, Ansible, Authentik, Coolify, Open WebUI, Headscale, Immich, Jellyfin, Portainer, k3s, Paperless-ngx, Postiz, Karakeep, Vaultwarden, SigNoz, Wazuh
-- Planned Windows 11 VM and macOS VM on Kuromoon (testing only)
-- Created new repo files: ROADMAP.md (updated), n8n-workflows.md (new)
 
 ### April 7, 2026
 - Built Gilgamesh inline keyboard menu system (Phase 7D-Menu)
@@ -435,27 +427,6 @@ Action Items
 - Implemented smart routing: Haiku 4.5 for simple queries, Sonnet 4 for complex
 - Fixed /update workflow: Cloudflare Access bypass for webhook paths, session log insert at top
 
-### April 5, 2026
-- Implemented conversation memory using n8n Data Tables (last 20 messages)
-- Added web search capability to Gilgamesh via Claude web_search tool
-- Fixed HTTP Request JSON formatting, If node routing, Send text message node
-- /update command verified working end-to-end (Nextcloud + GitHub)
-
-### April 4, 2026
-- Planned Gilgamesh upgrade (MCP evaluation, security model)
-- Decided: Keep Claude Pro + upgrade Gilgamesh with API
-- Phase 7D added to roadmap
-
-### April 2, 2026
-- Completed Phase 7C: Gilgamesh Telegram bot
-- Created workflow: Telegram → Claude → Nextcloud → GitHub
-- /update command working for context sync
-
-### March 16, 2026
-- Completed Phase 7A fully (pfSense + Pi-hole backups)
-- Enhanced Pi-hole blocklists: 81K → 489K domains
-- Purchased TP-Link EAP610 WiFi AP
-
 ---
 
-*Last updated: April 18, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: April 19, 2026 — Update this file at the end of each session before pushing to GitHub*
