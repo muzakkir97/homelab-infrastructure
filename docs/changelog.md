@@ -4,6 +4,36 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [April 20, 2026] - Foundation Planning Session
+
+#### Planning
+- **Completed foundation planning** — prioritized health, mental, work, gaming, n8n business, homelab
+- **Homepage requirements analysis** — identified 12 must-have widgets for post-foundation build
+- **n8n business strategy** — validation framework, tiered pricing ($29/$99/$199), multi-channel marketing
+- **Gaming pipeline priority** — confirmed Discord bot build BEFORE n8n scaling (Phases 60-64)
+- **Learning roadmap** — deferred Ansible/k8s until curiosity-driven (not job pressure)
+- **Backup strategy** — private repo + Backblaze B2 deployment in Week 3-4
+
+#### Technical
+- **Priority framework locked** — Health → Mental → Work → Gaming → n8n business → Homelab
+- **Foundation execution order** — Sessions 1-2: Obsidian, 3: Commands, 4: Expense, 5: Backup, 6-8: Business
+- **Cloudflare Access** — device trust, 30-day sessions for improved UX
+- **Obsidian integration** — manual upload for now, automation later
+
+#### Added (Planned)
+- Phase 7E.1: Validation Framework (4 hours)
+- Phase 7E.2: Marketing Playbook (4 hours)  
+- Phase 25.5: Minimal Off-Site Backup (3-4 hours)
+- Phase 26 expansion: Homepage Security + Personal/Business Widgets + Price/Stock Tracking + Calendar/Todos/RSS
+
+#### Business Strategy
+- Work Claude access: homelab-vault + business-vault (YES), personal-vault (NO)
+- Burnout prevention: Obsidian daily energy tracking (1-10 scale)
+- Business reframe: "Learning by building" not "must make money"
+- Gaming as self-care, not distraction
+
+---
+
 ### [April 19, 2026] - Phase 16.1, 16.2, 58: Documentation Pipeline + Windrose Server
 
 #### Added
