@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** April 19, 2026
+> **Last Updated:** April 20, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -49,6 +49,11 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 ### Naming Conventions
 - **Function-based names:** `monitoring-prometheus`, `gaming-panel`, `network-ddns`
 - **Moon theme for hardware:** Kuromoon (Proxmox), Kinmoon (NAS), Minimoon (Gaming PC)
+
+### Priority Framework
+- **Health → Mental → Work → Gaming → n8n business → Homelab**
+- Gaming pipeline is self-care, not distraction
+- n8n business priority sits below gaming (health/mental focus)
 
 ---
 
@@ -341,6 +346,14 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Vault fails to start in LXC          | Add `disable_mlock = true` to vault.hcl                        |
 | Token auth issues in shell           | Use `vault login <token>` not `export VAULT_TOKEN=`            |
 
+### Business & Learning
+
+| Issue                              | Resolution                                             |
+|------------------------------------|----------------------------------------------------|
+| MVP = Minimum Viable Product (basic version for validation) |  |
+| n8n business priority sits below gaming (health/mental focus) |  |
+| Gaming pipeline is self-care, not distraction |  |
+
 ---
 
 ## 🤖 Bots & Integrations
@@ -367,7 +380,8 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Delete old disconnected /update nodes from Telegram Agent workflow | Medium |
 | Delete Test SQLite workflow from n8n | Medium |
 | Retire Update Nextcloud File and Push to GitHub workflows (unpublish) | Medium |
-| Update Cloudflare Access app icons (all 7 apps) | Medium |
+| Create muzakkir97/homelab-private repo | Medium |
+| Set up Backblaze B2 account | Medium |
 
 ### Gilgamesh & Documentation
 | Task | Priority |
@@ -386,6 +400,7 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Remove legacy LAN 192.168.1.0/24 (after switch migration) | Medium |
 | WiFi Access Point setup (EAP610 purchased) | Medium |
 | Homepage security (Cloudflare Access) | Low |
+| Update Cloudflare Access app icons (all 7 apps) | Low |
 | Off-site backup (Backblaze B2) | Low |
 | Nextcloud 2FA (TOTP) | Low |
 
@@ -400,6 +415,56 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 20, 2026
+Date: April 20, 2026
+Phase: Foundation Planning (Discussion Phase — No Deployment)
+Topics Discussed
+
+Homepage upgrade requirements (price tracker, stock tracker, Gilgamesh button)
+Researched what other homelab dashboards have (15+ widget types identified)
+Foundation plan review (Obsidian → Commands → Expense → Business Scraper)
+n8n workflow business strategy (validation, pricing, marketing)
+Gaming pipeline scope and priority
+Work-life balance and burnout prevention
+Learning roadmap (Ansible/k8s deferral strategy)
+Backup strategy (Backblaze B2 + private repo)
+Income timeline and pivot triggers
+
+Decisions Made
+
+Priority framework: Health → Mental → Work → Gaming → n8n business → Homelab
+Homepage after foundation: Build Phases 26-26.3 AFTER first workflow sale
+Widget priority: 12 must-have widgets identified
+Work Claude access: homelab-vault + business-vault (YES), personal-vault (NO)
+Obsidian sync: Manual upload for now, automate later
+n8n validation: Check competitive landscape before building
+Pricing: Tiered ($29/$99/$199 based on complexity)
+Marketing: Multi-channel launch sequence (Reddit, LinkedIn, YouTube, free version)
+Cloudflare Access: Device trust, 30-day sessions
+Gilgamesh scope: Build what you need when you need it (no artificial cap)
+Gaming pipeline: Build Discord bot BEFORE n8n scaling, keep Phases 60-64
+Learning: Defer Ansible/k8s until curiosity-driven (not job-hunting pressure)
+Backup: Create private repo, deploy Backblaze B2 in Week 3-4
+Burnout tracking: Obsidian daily energy check (1-10 scale)
+Business reframe: "Learning by building" not "must make money"
+
+Changes to AI-CONTEXT.md
+
+Add April 20, 2026 session entry
+Foundation planning complete, execution starts next session
+
+Errors & Resolutions
+
+None this session (planning only)
+
+Action Items
+
+Start Phase 22 Session 1 (Obsidian installation) next session
+Create private repo: muzakkir97/homelab-private (during Phase 25.5)
+Sign up for Backblaze B2 account (during Phase 25.5)
+Install Obsidian on Gaming PC (Phase 22)
+Review current homelab-infrastructure repo visibility (verify if public)
 
 ### April 19, 2026
 Date: April 19, 2026
@@ -514,14 +579,6 @@ Google Sign-In services (Anthropic, Tailscale) stored with "Google Sign-In" as p
 - NPM reverse proxy configured for vault.najhin-gaming.com
 - Cloudflare Access email OTP protection added (6th protected app)
 
-### April 7, 2026
-- Built Gilgamesh inline keyboard menu system (Phase 7D-Menu)
-- Main Menu with 5 categories: Homelab, Gaming, Gilgamesh, Tools, Help
-- Homelab → Status action working (queries Proxmox API, displays all container states)
-- Proxmox API token created: root@pam!gilgamesh
-- Proxmox node name confirmed as "muzakkir" (not kuromoon)
-- Added Cloudflare Access protection to n8n (email OTP)
-
 ---
 
-*Last updated: April 19, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: April 20, 2026 — Update this file at the end of each session before pushing to GitHub*
