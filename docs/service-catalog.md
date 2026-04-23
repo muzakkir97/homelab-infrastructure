@@ -1,291 +1,258 @@
-# 📋 Service Catalog
+# 📋 Service Catalog — Complete Service Directory
 
-> **Last Updated:** December 19, 2024
-> **Total Services:** 14 containers + 8 external integrations
-> **Network:** All services on VLAN 30 (192.168.30.0/24)
+> **Last Updated:** April 24, 2026  
+> **Total Services:** 25+ active services  
+> **External Access:** 8 public endpoints  
+> **All credentials stored in Vaultwarden/Vault**
 
-## 🔗 Quick Access Links
+## 🌐 Networking Infrastructure
 
-### Public Services (External Access)
-- **Grafana:** [grafana.najhin-gaming.com](https://grafana.najhin-gaming.com) 🔒 Cloudflare Access
-- **Homepage:** [home.najhin-gaming.com](https://home.najhin-gaming.com) 🌐 Public
-- **n8n:** [n8n.najhin-gaming.com](https://n8n.najhin-gaming.com) 🔒 Cloudflare Access
-- **Vault:** [vault.najhin-gaming.com](https://vault.najhin-gaming.com) 🔒 Cloudflare Access
-- **Vaultwarden:** [passwords.najhin-gaming.com](https://passwords.najhin-gaming.com) 🔒 Cloudflare Access
-- **Nextcloud:** [cloud.najhin-gaming.com](https://cloud.najhin-gaming.com) 🚇 Cloudflare Tunnel
-- **Terraria:** terraria.najhin-gaming.com:7777 🎮 Game Server
-- **Minecraft:** mc.najhin-gaming.com:25565 🎮 Game Server
+### Core Network Services
 
----
+| Service | Container | IP | Port(s) | Subdomain | Access Method | Credentials | Backup Schedule | Dependencies |
+|---------|-----------|----|---------|-----------|--------------|---------|---------|----|
+| **pfSense Firewall** | Bare Metal | 192.168.10.1 | 443, 80 | — | Tailscale VPN only | Vaultwarden: pfSense Admin | N/A (config backup) | ISP connection |
+| **Pi-hole DNS** | Bare Metal | 192.168.30.10 | 53, 80 | — | Tailscale VPN only | Vaultwarden: Pi-hole Admin | Daily (system) | pfSense |
+| **Nginx Proxy Manager** | CT 201 | 192.168.30.201 | 80, 443, 81 | — | Internal admin only | Vaultwarden: NPM Admin | Daily 02:00 | pfSense |
+| **Network DDNS** | CT 207 | 192.168.30.207 | — | — | Automated service | Vault: kv/cloudflare | Daily 02:00 | Cloudflare API |
 
-## 🌐 Networking Services
+### VPN & Remote Access
 
-### Nginx Proxy Manager
-- **Container:** CT 201 (nginx-proxy-manager)
-- **IP Address:** 192.168.30.201
-- **Ports:** 80 (HTTP), 443 (HTTPS), 81 (Admin)
-- **Access Method:** Internal admin panel at 192.168.30.201:81
-- **Credentials:** Stored in Vaultwarden (NPM Admin)
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** None (core infrastructure)
-- **Purpose:** Reverse proxy, SSL certificate management
-
-### Dynamic DNS
-- **Container:** CT 207 (network-ddns)
-- **IP Address:** 192.168.30.207
-- **Ports:** None (service daemon)
-- **Access Method:** Cloudflare API integration
-- **Credentials:** kv/cloudflare in Vault, API token in Vaultwarden
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** Cloudflare account
-- **Purpose:** Automatic DNS record updates for najhin-gaming.com
+| Service | Container | IP | Port(s) | Subdomain | Access Method | Credentials | Backup Schedule | Dependencies |
+|---------|-----------|----|---------|-----------|--------------|---------|---------|----|
+| **Tailscale VPN** | pfSense | 192.168.10.1 | 41641/UDP | — | Tailscale client apps | Vaultwarden: Tailscale | N/A (cloud managed) | Internet |
 
 ---
 
-## 📊 Monitoring Services
+## 📊 Monitoring & Observability
 
-### Prometheus
-- **Container:** CT 202 (monitoring-prometheus)
-- **IP Address:** 192.168.30.202
-- **Ports:** 9090 (Web UI)
-- **Access Method:** Internal at http://192.168.30.202:9090
-- **Credentials:** No authentication (internal only)
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** node_exporter on all targets
-- **Purpose:** Metrics collection and time-series database
+### Metrics & Dashboards
 
-### Grafana
-- **Container:** CT 203 (monitoring-grafana)
-- **IP Address:** 192.168.30.203
-- **Ports:** 3000 (Web UI)
-- **Access Method:** External at grafana.najhin-gaming.com
-- **Credentials:** Admin account in Vaultwarden (Grafana Admin)
-- **External Auth:** Cloudflare Access (email OTP)
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** Prometheus (data source)
-- **Purpose:** Metrics visualization and dashboards
+| Service | Container | IP | Port(s) | Subdomain | Access Method | Credentials | Backup Schedule | Dependencies |
+|---------|-----------|----|---------|-----------|--------------|---------|---------|----|
+| **Prometheus** | CT 202 | 192.168.30.202 | 9090 | — | Tailscale VPN only | No auth | Daily 02:00 | All monitored targets |
+| **Grafana** | CT 203 | 192.168.30.203 | 3000 | grafana.najhin-gaming.com | Cloudflare Access (email OTP) | Vaultwarden: Grafana Admin | Daily 02:00 | Prometheus, Loki |
+| **Loki** | CT 204 | 192.168.30.204 | 3100 | — | Internal API only | No auth | Daily 02:00 | Log sources |
+| **Alertmanager** | CT 205 | 192.168.30.205 | 9093 | — | Internal API only | Vault: kv/alertmanager | Daily 02:00 | Prometheus |
+| **Uptime Kuma** | CT 206 | 192.168.30.206 | 3001 | — | Tailscale VPN only | Vaultwarden: Uptime Kuma | Daily 02:00 | Monitored endpoints |
 
-### Loki
-- **Container:** CT 204 (monitoring-loki)
-- **IP Address:** 192.168.30.204
-- **Ports:** 3100 (API)
-- **Access Method:** Internal API only
-- **Credentials:** No authentication (internal only)
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** Promtail agents (future)
-- **Purpose:** Log aggregation and storage
+### Logging & Alerting
 
-### AlertManager
-- **Container:** CT 205 (monitoring-alertmanager)
-- **IP Address:** 192.168.30.205
-- **Ports:** 9093 (Web UI)
-- **Access Method:** Internal at http://192.168.30.205:9093
-- **Credentials:** Webhook tokens in kv/alertmanager (Vault)
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** Prometheus (alert rules)
-- **Purpose:** Alert routing to Telegram and Discord
-
-### Uptime Kuma
-- **Container:** CT 206 (monitoring-uptime)
-- **IP Address:** 192.168.30.206
-- **Ports:** 3001 (Web UI)
-- **Access Method:** Internal at http://192.168.30.206:3001
-- **Credentials:** Admin account in Vaultwarden (Uptime Kuma)
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** Services being monitored
-- **Purpose:** Service availability monitoring
+| Service | Container | IP | Port(s) | Subdomain | Access Method | Credentials | Backup Schedule | Dependencies |
+|---------|-----------|----|---------|-----------|--------------|---------|---------|----|
+| **Homelab Alerts (Telegram)** | CT 205 | — | — | — | Automated notifications | Vault: kv/alertmanager | N/A (config only) | Telegram Bot API |
+| **Homelab Alerts (Discord)** | CT 205 | — | — | — | Automated notifications | Vault: kv/alertmanager | N/A (config only) | Discord Webhook |
 
 ---
 
-## 🤖 Automation Services
+## 🤖 Automation & AI
 
-### n8n Workflow Automation
-- **Container:** CT 211 (automation-n8n)
-- **IP Address:** 192.168.30.211
-- **Ports:** 5678 (Web UI)
-- **Access Method:** External at n8n.najhin-gaming.com
-- **Credentials:** Admin account in Vaultwarden (n8n Admin)
-- **External Auth:** Cloudflare Access (email OTP)
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** Telegram, Claude API, GitHub API
-- **Purpose:** Workflow automation, Gilgamesh AI agent hosting
+### Workflow Automation
 
----
+| Service | Container | IP | Port(s) | Subdomain | Access Method | Credentials | Backup Schedule | Dependencies |
+|---------|-----------|----|---------|-----------|--------------|---------|---------|----|
+| **n8n Automation** | CT 211 | 192.168.30.211 | 5678 | n8n.najhin-gaming.com | Cloudflare Access (email OTP) | Vaultwarden: n8n Admin | Daily 02:30 | Various APIs |
+| **Gilgamesh AI Agent** | CT 211 | — | — | — | Telegram (@JhinGilgamesh_bot) | Vault: kv/gilgamesh | Daily 02:30 | Claude API, n8n |
 
-## 🔒 Security Services
+### n8n Workflows (Active)
 
-### HashiCorp Vault
-- **Container:** CT 213 (vault)
-- **IP Address:** 192.168.30.213
-- **Ports:** 8200 (Web UI/API)
-- **Access Method:** External at vault.najhin-gaming.com
-- **Credentials:** Root token in Vaultwarden (Vault Root Token)
-- **External Auth:** Cloudflare Access (email OTP)
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** None (core security infrastructure)
-- **Purpose:** Secrets management for API keys and tokens
-
-### Vaultwarden
-- **Container:** CT 214 (password-vaultwarden)
-- **IP Address:** 192.168.30.214
-- **Ports:** 80 (Web UI), 3012 (WebSocket)
-- **Access Method:** External at passwords.najhin-gaming.com
-- **Credentials:** Master password (personal)
-- **External Auth:** Cloudflare Access (email OTP)
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** None
-- **Purpose:** Password manager for service credentials
+| Workflow | Purpose | Trigger | Dependencies |
+|----------|---------|---------|-------------|
+| **Telegram Agent** | Gilgamesh AI bot main handler | Telegram webhook | Claude API, Proxmox API |
+| **Documentation Pipeline - Update** | Session summary to docs | Webhook (doc-update) | Nextcloud, GitHub APIs |
+| **Documentation Pipeline - Sync Docs** | Full doc regeneration | Webhook (doc-sync) | Nextcloud, GitHub APIs |
+| **Update Nextcloud File** | Legacy (unpublished) | — | — |
+| **Push to GitHub** | Legacy (unpublished) | — | — |
 
 ---
 
-## ☁️ Cloud Storage
+## 🎮 Gaming Platform
 
-### Nextcloud Hub
-- **Container:** CT 220 (nextcloud-hub)
-- **IP Address:** 192.168.30.220
-- **Ports:** 80 (HTTP), 443 (HTTPS)
-- **Access Method:** External at cloud.najhin-gaming.com (Cloudflare Tunnel)
-- **Credentials:** Admin account in Vaultwarden (Nextcloud Admin)
-- **External Auth:** Cloudflare Tunnel (no additional auth layer)
-- **Backup Schedule:** Daily 02:30 → Local HDD (large container)
-- **Dependencies:** None
-- **Purpose:** Private cloud storage, file synchronization
+### Game Management
 
----
+| Service | Container | IP | Port(s) | Subdomain | Access Method | Credentials | Backup Schedule | Dependencies |
+|---------|-----------|----|---------|-----------|--------------|---------|---------|----|
+| **Pterodactyl Panel** | CT 300 | 192.168.30.210 | 80 | — | Tailscale VPN only | Vaultwarden: Pterodactyl Admin | Daily 02:00 | Wings node |
+| **Pterodactyl Wings** | CT 302 | 192.168.30.212 | 8080 | — | Internal API only | Vault: kv/pterodactyl | Daily 02:30 | Docker daemon |
 
-## 🎮 Gaming Services
+### Game Servers (Docker on CT 302)
 
-### Pterodactyl Panel
-- **Container:** CT 300 (gaming-panel)
-- **IP Address:** 192.168.30.210
-- **Ports:** 80 (HTTP), 443 (HTTPS)
-- **Access Method:** Internal at http://192.168.30.210
-- **Credentials:** Admin account in Vaultwarden (Pterodactyl Admin)
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** CT 302 (Wings node)
-- **Purpose:** Game server management panel
-
-### Pterodactyl Wings Node
-- **Container:** CT 302 (gaming-wings-1)
-- **IP Address:** 192.168.30.212
-- **Ports:** 8080 (Wings API), 2022 (SFTP)
-- **Game Ports:** 7777 (Terraria), 25565 (Minecraft), Internal (Windrose)
-- **Access Method:** Managed via Pterodactyl Panel
-- **Credentials:** Wings token in Vaultwarden (Wings Node Token)
-- **Backup Schedule:** Daily 02:30 → Local HDD (large container)
-- **Dependencies:** CT 300 (Panel), Docker runtime
-- **Purpose:** Game server hosting (Terraria, Minecraft, Windrose)
-
-#### Game Servers on CT 302
-| Game Server | Port | External Access | Status | Players |
-|-------------|------|-----------------|--------|---------|
-| **Terraria** | 7777 | terraria.najhin-gaming.com:7777 | ✅ Running | 0/8 |
-| **Minecraft** | 25565 | mc.najhin-gaming.com:25565 | ✅ Running | 0/20 |
-| **Windrose** | Internal | Invite code required | ✅ Running | 0/4 |
+| Service | Container | IP | Port(s) | Subdomain | Access Method | Credentials | Backup Schedule | Dependencies |
+|---------|-----------|----|---------|-----------|--------------|---------|---------|----|
+| **Terraria Server** | Docker | 192.168.30.212 | 7777 | terraria.najhin-gaming.com | Direct game client | Server password | Daily 02:30 | Wings daemon |
+| **Minecraft Server** | Docker | 192.168.30.212 | 25565 | mc.najhin-gaming.com | Direct game client | Server password | Daily 02:30 | Wings daemon |
+| **Windrose Server** | Docker | 192.168.30.212 | 27015 | — | Direct game client | Invite code: NAJHINWINDROSE | Daily 02:30 | Wings daemon |
 
 ---
 
-## 🏠 Dashboard Services
+## 💾 Storage & File Management
 
-### Homepage Dashboard
-- **Container:** CT 208 (dashboard-homepage)
-- **IP Address:** 192.168.30.208
-- **Ports:** 3000 (Web UI)
-- **Access Method:** External at home.najhin-gaming.com
-- **Credentials:** No authentication (public dashboard)
-- **External Auth:** None (pending Cloudflare Access)
-- **Backup Schedule:** Daily 02:00 → NAS
-- **Dependencies:** All services (status checking)
-- **Purpose:** Unified service dashboard and homepage
+### File Services
 
----
+| Service | Container | IP | Port(s) | Subdomain | Access Method | Credentials | Backup Schedule | Dependencies |
+|---------|-----------|----|---------|-----------|--------------|---------|---------|----|
+| **Nextcloud Hub** | CT 220 | 192.168.30.220 | 80 | cloud.najhin-gaming.com | Cloudflare Tunnel | Vaultwarden: Nextcloud Admin | Daily 02:30 | PostgreSQL, Redis |
+| **NAS Storage (Kinmoon)** | Bare Metal | 192.168.10.15 | 445, 2049 | — | SMB/NFS shares | Vaultwarden: NAS Admin | N/A (backup target) | Network connectivity |
 
-## 🔗 External Integrations
+### Backup Infrastructure
 
-### DNS Resolution (Pi-hole)
-- **Hardware:** Raspberry Pi 4
-- **IP Address:** 192.168.30.10
-- **Ports:** 53 (DNS), 80 (Admin)
-- **Access Method:** Internal at http://192.168.30.10/admin
-- **Credentials:** Admin password in kv/pihole (Vault)
-- **Dependencies:** None (critical infrastructure)
-- **Purpose:** Ad/tracker blocking (~489K domains)
+| Service | Container | IP | Port(s) | Subdomain | Access Method | Credentials | Backup Schedule | Dependencies |
+|---------|-----------|----|---------|-----------|--------------|---------|---------|----|
+| **Proxmox Backup Jobs** | Proxmox | 192.168.10.5 | — | — | Proxmox web interface | Vault: kv/proxmox | Self-managed | Storage targets |
 
-### API Integrations
-| Service | Purpose | Credential Storage | Container Using |
-|---------|---------|-------------------|-----------------|
-| **Claude API** | AI agent responses | kv/gilgamesh (Vault) | CT 211 |
-| **Telegram Bot API** | Gilgamesh bot | kv/gilgamesh (Vault) | CT 211 |
-| **GitHub API** | Documentation sync | kv/github (Vault) | CT 211 |
-| **Cloudflare API** | DNS updates | kv/cloudflare (Vault) | CT 207 |
-| **Proxmox API** | Infrastructure queries | kv/proxmox (Vault) | CT 211 |
+**Backup Job Details:**
+- **Small Containers (02:00):** CT 201,202,203,204,205,206,207,214,300 → kinmoon-nfs
+- **Large Containers (02:30):** CT 220,302 → data-storage
 
 ---
 
-## 🔄 Backup Configuration
+## 🔐 Security & Secrets
 
-### Backup Jobs
-| Job Name | Schedule | Source Containers | Target Storage | Retention |
-|----------|----------|-------------------|----------------|-----------|
-| **Small Containers** | Daily 02:00 | 201, 202, 203, 204, 205, 206, 207, 214, 300 | kinmoon-smb (NAS) | 7/4/2 |
-| **Large Containers** | Daily 02:30 | 220, 302 | data-storage (Local HDD) | 7/4/2 |
+### Identity & Access Management
 
-### Storage Targets
-- **kinmoon-smb:** UGREEN NAS, 3.6TB via SMB/CIFS
-- **data-storage:** Local HDD, 7.2TB direct attachment
+| Service | Container | IP | Port(s) | Subdomain | Access Method | Credentials | Backup Schedule | Dependencies |
+|---------|-----------|----|---------|-----------|--------------|---------|---------|----|
+| **HashiCorp Vault** | CT 213 | 192.168.30.213 | 8200 | vault.najhin-gaming.com | Cloudflare Access (email OTP) | Vault root token | Daily 02:00 | Consul (built-in) |
+| **Vaultwarden** | CT 214 | 192.168.30.214 | 80 | passwords.najhin-gaming.com | Cloudflare Access (email OTP) | Master password | Daily 02:00 | PostgreSQL |
 
----
+### Vault Secret Paths (8 total)
 
-## 🌍 External Access Summary
+| Path | Purpose | Used By |
+|------|---------|---------|
+| `kv/gilgamesh` | Telegram bot token, Claude API key | n8n Gilgamesh workflows |
+| `kv/cloudflare` | DNS API token, tunnel credentials | DDNS, Cloudflare services |
+| `kv/proxmox` | API token for infrastructure queries | Gilgamesh, monitoring |
+| `kv/alertmanager` | Telegram/Discord webhook URLs | Alert routing |
+| `kv/github` | API token for documentation pipeline | n8n doc workflows |
+| `kv/nextcloud` | App password for file operations | Documentation pipeline |
+| `kv/n8n` | Database credentials, encryption key | n8n application |
+| `kv/pihole` | Admin password, API token | DNS management |
 
-### Authentication Methods
-- 🔒 **Cloudflare Access:** Email OTP (7 services)
-- 🚇 **Cloudflare Tunnel:** Direct access (1 service)
-- 🌐 **Public:** No authentication (3 services)
-- 🏠 **Internal Only:** Local network access (4 services)
+### Access Control (Cloudflare)
 
-### SSL Certificate Management
-- **Provider:** Let's Encrypt via Nginx Proxy Manager
-- **Renewal:** Automatic via Cloudflare DNS API
-- **Wildcard:** *.najhin-gaming.com
-
-### Port Forwarding (pfSense)
-| External Port | Internal Target | Service |
-|---------------|-----------------|---------|
-| 80 | 192.168.30.201:80 | HTTP → NPM |
-| 443 | 192.168.30.201:443 | HTTPS → NPM |
-| 7777 | 192.168.30.212:7777 | Terraria |
-| 25565 | 192.168.30.212:25565 | Minecraft |
+| Application | Users | Session Duration | MFA |
+|-------------|-------|------------------|-----|
+| Grafana | Personal only | 30 days | Email OTP |
+| n8n | Personal only | 30 days | Email OTP |
+| Vault | Personal only | 30 days | Email OTP |
+| Vaultwarden | Personal only | 30 days | Email OTP |
 
 ---
 
-## 🚨 Critical Dependencies
+## 🏠 Management & Dashboards
 
-### Service Dependency Map
+### Administrative Interfaces
+
+| Service | Container | IP | Port(s) | Subdomain | Access Method | Credentials | Backup Schedule | Dependencies |
+|---------|-----------|----|---------|-----------|--------------|---------|---------|----|
+| **Homepage Dashboard** | CT 208 | 192.168.30.208 | 3000 | home.najhin-gaming.com | Public (no auth) | None | Daily 02:00 | Service APIs |
+| **Proxmox Web** | Bare Metal | 192.168.10.5 | 8006 | — | Tailscale VPN only | Vault: kv/proxmox | N/A (config backup) | Proxmox cluster |
+
+---
+
+## 📡 External Integrations
+
+### Third-Party Services
+
+| Service | Provider | Purpose | Credentials | Rate Limits |
+|---------|----------|---------|-------------|-------------|
+| **Claude API** | Anthropic | Gilgamesh AI responses | Vault: kv/gilgamesh | $10/month limit |
+| **Telegram Bot API** | Telegram | Gilgamesh chat interface | Vault: kv/gilgamesh | 30 msg/sec |
+| **Cloudflare API** | Cloudflare | DNS updates, tunnel management | Vault: kv/cloudflare | 1200 req/5min |
+| **GitHub API** | GitHub | Documentation pipeline | Vault: kv/github | 5000 req/hour |
+| **Discord Webhooks** | Discord | Alert notifications | Vault: kv/alertmanager | 30 msg/min |
+
+---
+
+## 🔧 Service Dependencies Map
+
+### Critical Path Services
 ```
-Internet Access
-├── Cloudflare (DNS/CDN)
-├── pfSense (Firewall) → All external access
-└── NPM (CT 201) → Web services
-
-Core Infrastructure
-├── Vault (CT 213) → API secrets
-├── Vaultwarden (CT 214) → Service credentials  
-└── Prometheus (CT 202) → All monitoring
-
-AI Agent (Gilgamesh)
-├── n8n (CT 211) → Workflow engine
-├── Claude API → AI responses
-├── Telegram API → Bot interface
-└── GitHub API → Documentation sync
+Internet → pfSense → Switch → Proxmox → Containers
+                 ↓
+              Pi-hole DNS ← All containers
+                 ↓
+           Service resolution
 ```
 
-### Single Points of Failure
-- **Internet:** ISP connection
-- **Power:** UPS recommended for critical services
-- **Storage:** Local storage failure affects backups
-- **pfSense:** Network isolation on failure
+### Monitoring Stack Dependencies
+```
+Prometheus ← All targets (20+)
+     ↓
+  Grafana ← Loki (logs)
+     ↓
+Alertmanager → Telegram/Discord
+```
+
+### AI Agent Dependencies
+```
+Telegram → n8n → Claude API
+              ↓
+         Proxmox API (status)
+              ↓
+       GitHub/Nextcloud (docs)
+```
 
 ---
 
-This service catalog is actively maintained and reflects the current production environment. All credentials are stored securely in either HashiCorp Vault (API keys/tokens) or Vaultwarden (service logins).
+## 🚨 Service Health Monitoring
+
+### Critical Services (Must be 99.9%+ uptime)
+- pfSense Firewall
+- Pi-hole DNS  
+- Proxmox Hypervisor
+- NPM Reverse Proxy
+- Prometheus Monitoring
+
+### Important Services (99%+ uptime target)
+- Grafana Dashboards
+- n8n Automation
+- Gilgamesh AI Agent
+- Gaming Platform
+
+### Nice-to-Have Services (95%+ uptime target)
+- Homepage Dashboard
+- Uptime Kuma
+- Documentation Pipeline
+
+---
+
+## 📞 Emergency Procedures
+
+### Service Recovery Priority
+
+1. **Network (pfSense)** — Restore internet connectivity
+2. **DNS (Pi-hole)** — Restore name resolution  
+3. **Monitoring (Prometheus)** — Restore visibility
+4. **Automation (n8n)** — Restore Gilgamesh capabilities
+5. **Gaming** — Restore community services
+
+### Backup Recovery Locations
+
+| Service Type | Primary Backup | Secondary Backup |
+|--------------|----------------|------------------|
+| Small containers | kinmoon-nfs (NAS) | Local snapshots |
+| Large containers | data-storage (Local) | Planned: Backblaze B2 |
+| Configuration | Proxmox backups | Git repositories |
+| Secrets | Vault snapshots | Encrypted exports |
+
+---
+
+## 📊 Service Utilization Stats
+
+### Daily Usage (Average)
+- **Gilgamesh Interactions:** 50+ messages/day
+- **n8n Workflow Executions:** 500+ executions/day
+- **Grafana Queries:** 500+ queries/day
+- **Gaming Server Connections:** 5-10 sessions/day
+- **Nextcloud File Operations:** 100+ operations/day
+
+### Monthly Resource Costs
+- **Claude API:** $15/month (Gilgamesh usage)
+- **Cloudflare:** $0/month (Free plan)
+- **Domain (najhin-gaming.com):** $10/year
+- **Electricity:** ~$25/month (estimated)
+
+---
+
+*This service catalog is maintained through the Gilgamesh documentation pipeline and updated with each deployment session.*
