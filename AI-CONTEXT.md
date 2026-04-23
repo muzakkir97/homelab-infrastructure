@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** April 23, 2026
+> **Last Updated:** April 24, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Phase 16.1, 16.2, and 58 complete (Documentation Pipeline + Windrose Server). Game server deployed on CT 302 via Docker. 14 LXC containers running.
+**Current Status:** Phase 16.1, 16.2, 58, 7D-Menu, and 14 complete (Documentation Pipeline + Windrose Server + Gilgamesh Menu System). Game server deployed on CT 302 via Docker. 14 LXC containers running.
 
 ---
 
@@ -64,7 +64,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 | Proxmox Server   | Kuromoon | Ryzen 5 5600X, 32GB RAM, RX 6700 XT 12GB  | 192.168.10.5   | Hypervisor                           |
 | pfSense Firewall | —        | AC8F Mini PC, Intel N100                  | 192.168.10.1   | Router, Firewall                     |
 | Managed Switch   | —        | TP-Link TL-SG108E                         | 192.168.1.20   | Layer 2, VLANs                       |
-| NAS              | Kinmoon  | UGREEN DXP2800, 3.6TB WD Purple           | 192.168.10.15  | Backups (SMB target: kinmoon-smb)    |
+| NAS              | Kinmoon  | UGREEN DXP2800, 3.6TB WD Purple           | 192.168.10.15  | Backups (SMB target: kinmoon-nfs)    |
 | DNS Server       | —        | Raspberry Pi 4                            | 192.168.30.10  | Pi-hole (~489K domains blocked)      |
 | Gaming PC        | Minimoon | Ryzen 7 7800X3D, RX 9070 XT 16GB          | 192.168.20.101 | **Gaming only — never homelab**      |
 | WiFi AP          | —        | TP-Link EAP610                            | TBD            | Purchased, pending setup             |
@@ -248,7 +248,7 @@ Implementation: Phases 59-64 (Gaming Platform Pipeline)
 
 ---
 
-## 🤖 Gilgamesh AI Agent (Phase 7C/7D)
+## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu)
 
 ### Architecture
 ```
@@ -265,7 +265,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 - **Smart routing:** Simple inputs → Haiku 4.5, complex queries → Sonnet 4
 - **Web search:** Real-time information via Claude's web_search tool
 - **Cost tracking:** Token usage logged to gilgamesh_costs table
-- **Inline keyboard menu:** Main menu with Homelab, Gaming, Gilgamesh, Tools, Help categories
+- **Inline keyboard menu:** Full menu system with all submenus working
 - **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
 - **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
 
@@ -297,17 +297,23 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 |------------------|--------------|
 | Main Menu        | ✅ Working   |
 | Homelab → Status | ✅ Working   |
-| Homelab → Metrics| 📋 Pending   |
-| Homelab → Temps  | 📋 Pending   |
-| Homelab → Storage| 📋 Pending   |
-| Gaming submenu   | 📋 Pending   |
-| Gilgamesh submenu| 📋 Pending   |
-| Tools submenu    | 📋 Pending   |
-| Help             | 📋 Pending   |
+| Homelab → Metrics| ✅ Working   |
+| Homelab → Temps  | ✅ Working   |
+| Homelab → Storage| ✅ Working   |
+| Gaming submenu   | ✅ Working   |
+| Gilgamesh submenu| ✅ Working   |
+| Tools submenu    | ✅ Working   |
+| Help             | ✅ Working   |
+
+### SSH & API Access
+- **SSH to Kuromoon:** CT 211 → 192.168.10.5:22 (pfSense rule added)
+- **SSH to CT 302:** Password auth enabled (PermitRootLogin yes)
+- **Proxmox API:** root@pam!gilgamesh token
+- **Storage IDs:** kinmoon-nfs (not kinmoon-smb in Proxmox)
 
 ### Known Constraints
 - Telegram messages must be **plain text only** — code blocks, backticks, and complex formatting break JSON parsing in the Claude API request body
-- /update appends to Session Log only — no section-aware merging yet (handled by new pipeline workflows)
+- Progress bars use ASCII (= and -) — Unicode block chars don't render on Telegram mobile
 
 ---
 
@@ -410,9 +416,10 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | 7C      | Gilgamesh Telegram Bot + GitHub Integration               | ✅ Complete    | Apr 2, 2026      |
 | 7D      | Gilgamesh Enhancements (Memory, Routing, Web Search)      | ✅ Complete    | Apr 6, 2026      |
 | 7D-Sec  | Cloudflare Access for n8n                                 | ✅ Complete    | Apr 7, 2026      |
-| 7D-Menu | Gilgamesh Inline Keyboard Menu                            | 🔄 In Progress | —                |
+| 7D-Menu | Gilgamesh Inline Keyboard Menu                            | ✅ Complete    | Apr 24, 2026     |
 | 9       | NAS Deployment (Kinmoon)                                  | ✅ Complete    | Mar 3, 2026      |
 | 13      | HashiCorp Vault — Secrets Manager                         | ✅ Complete    | Apr 18, 2026     |
+| 14      | Secrets Management & Integration                          | ✅ Complete    | Apr 24, 2026     |
 | 16.1    | Documentation Pipeline - Update Workflow                  | ✅ Complete    | Apr 19, 2026     |
 | 16.2    | Documentation Pipeline - Sync Docs Workflow               | ✅ Complete    | Apr 19, 2026     |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                     | ✅ Complete    | Apr 18, 2026     |
@@ -497,6 +504,8 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Set $10 API limit in Anthropic Console (temporary) | High |
 | Begin Phase 38 planning after Phase 14 complete | High |
 | Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn) | High |
+| Store Proxmox root password in Vaultwarden | High |
+| Store CT 302 root password in Vaultwarden | High |
 | Delete old disconnected /update nodes from Telegram Agent workflow | Medium |
 | Delete Test SQLite workflow from n8n | Medium |
 | Retire Update Nextcloud File and Push to GitHub workflows (unpublish) | Medium |
@@ -508,11 +517,11 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 |------|----------|
 | Build Phase 16.3 — Monthly Infrastructure Audit cron workflow | High |
 | Build Mash Discord bot (Phases 59-64) | High |
-| Complete menu submenus (Metrics, Temps, Storage, Gaming, Gilgamesh, Tools, Help) | Medium |
 | /update redesign — file attachment via Telegram, push to GitHub + Nextcloud | Medium |
 | Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram) | Medium |
 | Integrate Vault secrets into n8n Gilgamesh workflow | Medium |
 | Document all future agent additions in Fate Agent section | Medium |
+| Begin Phase 15 (additional slash commands) or Phase 22 (Obsidian) next session | Medium |
 
 ### Infrastructure
 | Task | Priority |
@@ -536,6 +545,61 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 24, 2026
+Date: April 24, 2026
+Phase: 7D-Menu + Phase 14 — Gilgamesh Inline Keyboard Menu (COMPLETE)
+
+Topics Discussed
+
+Built all remaining Gilgamesh menu actions
+Homelab → Metrics (Proxmox API)
+Homelab → Temps (SSH to Kuromoon, lm-sensors)
+Homelab → Storage (Proxmox API)
+Gaming servers status (SSH to CT 302, docker ps)
+Gilgamesh info panel (static)
+Tools quick links (static)
+Help command reference (static)
+
+Decisions Made
+
+SSH key auth set up from CT 211 to Kuromoon (port 22 pfSense rule added)
+SSH password auth set up from n8n to CT 302 (PermitRootLogin yes)
+Proxmox root password set for SSH access from n8n
+Progress bars use = and - ASCII characters (Unicode block chars don't render on Telegram mobile)
+Gaming submenu shows direct status (no submenu layer)
+kinmoon storage ID is kinmoon-nfs not kinmoon-smb
+SSH credentials: "SSH Password account" (Kuromoon), "SSH CT302 Wings" (CT 302)
+
+Changes to AI-CONTEXT.md
+
+Mark Phase 7D-Menu as ✅ Complete (April 24, 2026)
+Mark Phase 14 as ✅ Complete (April 24, 2026)
+Update Inline Keyboard Menu Status table — all items ✅ Working
+Add SSH credentials to n8n credential list
+Add pfSense rule: TCP 22 from 192.168.30.211 to 192.168.10.5 (n8n SSH to Kuromoon)
+Add PermitRootLogin yes on CT 302
+
+Changes to Other Docs
+
+roadmap.md: Move 7D-Menu and Phase 14 to Completed
+changelog.md: Add Phase 14 completion entry
+
+Errors & Resolutions
+
+Format Metrics callback_query undefined: Pull inputData from $('Callback Router').first().json instead of $json
+Send Metrics invalid JSON: Use "Using Fields Below" body mode instead of raw JSON
+SSH hanging from CT 211 to Kuromoon: pfSense blocking port 22 VLAN30→VLAN10, added firewall rule
+SSH password auth failing on CT 302: PermitRootLogin prohibit-password — changed to PermitRootLogin yes
+Get Game Servers invalid syntax: {{.Names}} parsed as n8n expression — switch Command field to Fixed mode
+kinmoon-smb showing N/A: Storage ID is kinmoon-nfs in Proxmox
+
+Action Items
+
+Push updated docs to GitHub via /sync-docs
+Store Proxmox root password in Vaultwarden
+Store CT 302 root password in Vaultwarden
+Begin Phase 15 (additional slash commands) or Phase 22 (Obsidian) next session
 
 ### April 23, 2026
 Date: April 23, 2026
@@ -711,4 +775,4 @@ None - pipeline test successful
 
 ---
 
-*Last updated: April 23, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: April 24, 2026 — Update this file at the end of each session before pushing to GitHub*
