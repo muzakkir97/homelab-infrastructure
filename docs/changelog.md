@@ -4,6 +4,30 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [April 23, 2026] - Gilgamesh Evolution Roadmap Planning
+
+#### Planning
+- **PRIMARY GOAL:** Replace claude.ai with Gilgamesh by August 2026 (16-week roadmap)
+- **Cost target:** Reduce from $30-40/month to $5-10/month using local LLM + hybrid routing
+- **Phase 38 promoted:** Ollama + ROCm moved to Near Term #2 (CRITICAL — stop API bleeding)
+- **Phase 41 promoted:** Hybrid Routing moved to Near Term #6
+
+#### Added
+- **Six new Gilgamesh phases:** 7E Extended Memory, 7F File Generation, 7G Vision API, 7H Document Upload, 7I Quality Assurance, 7J Migration
+- **4-phase evolution plan:** Foundation (Ollama + Obsidian) → Intelligence (Memory + Routing) → Capabilities (Artifacts + Vision) → Refinement (QA + Migration)
+- **Success criteria:** 20+ message conversations, RAG recall, Vision API, artifacts generation, under $10/month cost
+
+#### Documentation
+- **Fate agent ecosystem recovered:** Active agents (Gilgamesh, Da Vinci, EMIYA) and planned agents (MERLIN #1 priority, Mash gaming bot, Guardian security)
+- **Roadmap restructured:** Complete rewrite with new priority order and cost projections
+- **Agent separation:** Gaming agents (Mash Discord) separate from admin agents (Gilgamesh Telegram)
+
+#### Business
+- **Backup plan:** Keep Claude Pro if quality insufficient, still save $10-15/month with hybrid approach
+- **API limit:** Temporary $10 limit set to control costs during development
+
+---
+
 ### [April 23, 2026] - Documentation Update: Fate Agent Roster Recovery
 
 #### Added
