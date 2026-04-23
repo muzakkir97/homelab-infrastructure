@@ -4,6 +4,24 @@
 
 ---
 
+## 2026-04-23 — Claude Conversation Search Missing Specific Character Names
+
+**Symptoms:** When searching for "Fate themed agent" or "agent ecosystem" in conversation history, Claude initially returned no results despite detailed discussion of Fate/Grand Order servant-themed agents on April 21-22, 2026.
+
+**Root Cause:** Generic search terms failed to match specific character names and servant references in conversation. The discussion included specific servants like "Merlin," "Mash Kyrielight," "Da Vinci," and "EMIYA" but searching for broad themes missed these specific mentions.
+
+**Resolution:** Used specific character/servant names when searching past conversations:
+- "Merlin Chaldea" instead of "reminder agent"
+- "Mash Kyrielight" instead of "gaming bot"
+- "Fate Grand Order" instead of "themed agents"
+- Specific servant class names (Caster, Shielder, Archer)
+
+**Verification:** Re-searched with specific names and successfully located the complete agent ecosystem discussion from April 21-22.
+
+**Lesson:** When searching conversation history for specific themed content, use proper nouns and specific terminology rather than generic descriptions. Character names, brand names, and technical terms are more searchable than broad concepts.
+
+---
+
 ## 2026-04-19 — Documentation Pipeline Template Literal Syntax Error
 
 **Symptoms:** n8n Documentation Pipeline - Sync Docs workflow failing with JavaScript syntax error when processing AI-CONTEXT.md content containing backticks.
