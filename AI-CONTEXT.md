@@ -71,7 +71,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 
 ### GPU Notes (Kuromoon)
 - RX 6700 XT in IOMMU Group 18, audio in Group 19
-- Earmarked for Ollama/ROCm AI inference (Phase 11)
+- Earmarked for Ollama/ROCm AI inference (Phase 38 — promoted to Near Term #2)
 - Idle baseline: CPU 48.5°C, GPU edge 46°C, GPU 5W with zero-RPM fan
 
 ---
@@ -309,6 +309,44 @@ Implementation: Phases 59-64 (Gaming Platform Pipeline)
 
 ---
 
+## 🔮 Gilgamesh Evolution Roadmap
+
+### PRIMARY GOAL: Replace claude.ai with Gilgamesh by August 2026 (16 weeks)
+
+**Current Cost:** $30-40/month Claude Pro + API usage
+**Target Cost:** $5-10/month (local LLM + occasional API)
+
+### 4-Phase Plan
+
+#### Phase 1: Foundation (Weeks 1-4)
+- **Phase 38** — Ollama + ROCm on Kuromoon RX 6700 XT (CRITICAL — stop API bleeding)
+- **Phase 22** — Obsidian Knowledge Base (vault sync with Gilgamesh)
+
+#### Phase 2: Intelligence (Weeks 5-8)
+- **Phase 7E** — Extended Memory (20+ message conversations via RAG)
+- **Phase 41** — Hybrid Routing (local/API based on complexity)
+
+#### Phase 3: Capabilities (Weeks 9-12)
+- **Phase 7F** — File Generation (code, configs, docs)
+- **Phase 7G** — Vision API (image analysis)
+- **Phase 7H** — Document Upload (PDF/text processing)
+
+#### Phase 4: Refinement (Weeks 13-16)
+- **Phase 7I** — Quality Assurance (compare outputs with Claude Pro)
+- **Phase 7J** — Migration (full switch to Gilgamesh)
+
+### Success Criteria
+- 20+ message conversation retention
+- Knowledge base recall from Obsidian
+- Vision capabilities for screenshots/diagrams
+- Artifact generation (code, configs)
+- Monthly cost under $10
+
+### Backup Plan
+Keep Claude Pro if quality insufficient, still save $10-15/month with hybrid approach
+
+---
+
 ## 💾 Backup Strategy (Phase 7A)
 
 ### Backup Jobs
@@ -370,8 +408,8 @@ Implementation: Phases 59-64 (Gaming Platform Pipeline)
 | 16.1    | Documentation Pipeline - Update Workflow                  | ✅ Complete    | Apr 19, 2026     |
 | 16.2    | Documentation Pipeline - Sync Docs Workflow               | ✅ Complete    | Apr 19, 2026     |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                     | ✅ Complete    | Apr 18, 2026     |
+| 38      | Ollama + ROCm on Kuromoon RX 6700 XT                      | 📋 Near Term #2 | —               |
 | 58      | Windrose Server Deployment                                | ✅ Complete    | Apr 19, 2026     |
-| 11      | Ollama + ROCm on Kuromoon RX 6700 XT                      | 📋 Planned     | —                |
 
 ---
 
@@ -448,6 +486,8 @@ Implementation: Phases 59-64 (Gaming Platform Pipeline)
 | Monitor RAM usage with Windrose running on CT 302 | High |
 | Set up Bitwarden app on phone with passwords.najhin-gaming.com server | High |
 | Store new Nextcloud app password (n8n-doc-pipeline) in Vaultwarden | High |
+| Set $10 API limit in Anthropic Console (temporary) | High |
+| Begin Phase 38 planning after Phase 14 complete | High |
 | Delete old disconnected /update nodes from Telegram Agent workflow | Medium |
 | Delete Test SQLite workflow from n8n | Medium |
 | Retire Update Nextcloud File and Push to GitHub workflows (unpublish) | Medium |
@@ -480,7 +520,6 @@ Implementation: Phases 59-64 (Gaming Platform Pipeline)
 ### Deferred
 | Task | Priority |
 |------|----------|
-| Phase 11: Ollama + ROCm local LLM inference (RX 6700 XT) | Deferred |
 | Fedora dual-boot on Minimoon (kernel 6.12+ for RDNA 4) | Deferred |
 | Old P400S build repurpose (Z270E + i7-7700K) | Deferred |
 | Claude Project auto-sync — revisit if Anthropic releases Project Files API | Deferred |
@@ -491,37 +530,40 @@ Implementation: Phases 59-64 (Gaming Platform Pipeline)
 
 ### April 23, 2026
 Date: April 23, 2026
-Phase: Documentation Update — Fate Agent Roster Recovery
+Phase: Gilgamesh Evolution Roadmap Planning
+
 Topics Discussed
 
-Verified all AI agents discussed across project history
-Recovered Fate Grand Order themed agent ecosystem from April 21-22, 2026 conversation
-Identified gap where Fate agent roster was in conversation history but not in AI-CONTEXT.md
-Updated Claude memory with Fate agent details
+Fate Grand Order AI agent ecosystem recovered (Gilgamesh, Da Vinci, EMIYA active; MERLIN, Mash, Guardian, Nexus, Scribe, Midas, Oracle planned)
+Claude API cost limit hit, paid extra to continue
+Long-term goal: Replace claude.ai with Gilgamesh by August 2026
+16-week roadmap created: Foundation → Intelligence → Capabilities → Refinement
+Target cost reduction: $30-40/month → $5-10/month
 
 Decisions Made
 
-Document Fate agent ecosystem in AI-CONTEXT.md to prevent loss
-Keep gaming agents (Mash) separate from Gilgamesh (Telegram admin)
-MERLIN remains #1 priority for reminder/scheduler functionality
+PRIMARY GOAL: Full Gilgamesh replacement of Claude Web in 16 weeks
+Phase 38 (Ollama + ROCm) promoted to Near Term #2 (CRITICAL - stop API bleeding)
+Phase 41 (Hybrid Routing) promoted to Near Term #6
+Six new phases added: 7E Extended Memory, 7F File Generation, 7G Vision API, 7H Document Upload, 7I Quality Assurance, 7J Migration
+Backup plan: Keep Claude Pro if quality insufficient, still save $10-15/month
+Gaming agents (Mash) separate from Gilgamesh (Telegram)
 
 Changes to AI-CONTEXT.md
 
-Added new section "Fate Grand Order Agent Ecosystem" after "Bots & Integrations"
-Added active agents: Gilgamesh (Telegram), Da Vinci (n8n/Nextcloud), EMIYA (n8n)
-Added planned agents with priority order: MERLIN #1, Mash (gaming), Guardian (security)
-Added detailed Merlin specs (reminder agent) and Mash specs (Discord gaming bot)
-Added design principles for agent separation
+Add "Gilgamesh Evolution Roadmap" section with 4-phase plan (Foundation: Ollama + Obsidian; Intelligence: Extended Memory + Hybrid Routing; Capabilities: Artifacts + Vision + Upload; Refinement: QA + Migration). Target $5-10/month vs current $30-40/month. Success criteria: 20+ msg conversations, RAG recall, Vision, artifacts, under $10/month cost.
+Add "Fate Grand Order Agent Ecosystem" section: Active (Gilgamesh Telegram, Da Vinci knowledge, EMIYA infrastructure). Planned (MERLIN #1 priority reminders, Mash Discord gaming, Guardian security, Nexus automation, Scribe docs, Midas cost, Oracle predictions). Gaming agents separate from admin.
+Update recent_updates: Fate agents discussed Apr 21-22. Gilgamesh Evolution goal Apr 23. Phase 38 promoted critical. Six new phases added.
 
 Errors & Resolutions
 
-Claude initially missed Fate agent roster in conversation search due to generic search terms ("Fate themed agent" vs specific servant names like "Merlin Chaldea"). Resolution: Use specific character/servant names when searching past conversations.
+Claude search missed Fate roster due to generic terms. Use specific names (Merlin, Mash, Chaldea) for conversation_search.
 
 Action Items
 
-Build MERLIN reminder agent (highest priority due to memory issues)
-Build Mash Discord bot (Phases 59-64)
-Document all future agent additions in Fate Agent section
+Push updated roadmap.md to GitHub
+Set $10 API limit in Anthropic Console (temporary)
+Begin Phase 38 planning after Phase 14 complete
 
 ### April 20, 2026
 Date: April 20, 2026
