@@ -4,6 +4,33 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [April 23, 2026] - Gilgamesh Evolution + Claude Design Discovery
+
+#### Planning
+- **PRIMARY GOAL:** Replace claude.ai with Gilgamesh by August 2026 (16-week roadmap)
+- **Cost target:** Reduce from $30-40/month to $5-10/month using local LLM + hybrid routing
+- **Phase 38 promoted:** Ollama + ROCm moved to Near Term #2 (CRITICAL — stop API bleeding)
+- **Phase 41 promoted:** Hybrid Routing moved to Near Term #6
+
+#### Added
+- **Gilgamesh Evolution Roadmap:** 4-phase plan over 16 weeks (Foundation → Intelligence → Capabilities → Refinement)
+- **Seven new Gilgamesh phases:** 7E Extended Memory, 7F File Generation, 7G Vision API, 7H Document Upload, 7I Quality Assurance, 7J Migration, 7K AI News Scraper
+- **Fate agent ecosystem:** Recovered from April 21-22 discussions, active agents (Gilgamesh, Da Vinci, EMIYA) and planned (MERLIN #1 priority, Mash gaming bot)
+- **Cost projection:** Target savings of $300-360/year with local LLM infrastructure
+- **Claude Design integration:** Homelab infrastructure diagram created, strategy for high-value visual content only
+
+#### Documentation
+- **Agent separation strategy:** Gaming agents (Mash Discord) separate from admin agents (Gilgamesh Telegram)
+- **Success criteria:** 20+ message conversations, RAG recall, Vision API, artifacts generation, under $10/month cost
+- **Phase 7F scope defined:** Automate text/code/Mermaid diagrams, keep marketing graphics manual via Claude Design
+- **AI News Scraper concept:** RSS/Reddit scraping, Ollama evaluation, Telegram alerts, Obsidian storage
+
+#### Business
+- **Backup plan:** Keep Claude Pro if quality insufficient, still save $10-15/month with hybrid approach
+- **Claude Design strategy:** Use sparingly (1-2 projects/week), high-value only, do NOT automate
+
+---
+
 ### [April 23, 2026] - Gilgamesh Evolution Roadmap Planning
 
 #### Planning
