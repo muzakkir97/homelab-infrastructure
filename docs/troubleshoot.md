@@ -4,6 +4,95 @@
 
 ---
 
+## 2026-04-24 — n8n Node Configuration Always Output Data
+
+**Symptoms:** Get Alerts and Clear Memory DB nodes not proceeding to next nodes when empty results returned, causing workflow to terminate early.
+
+**Root Cause:** n8n nodes with database queries or filters that return empty arrays/objects do not output data by default, preventing subsequent nodes from executing even when the empty result is a valid state.
+
+**Resolution:** Enabled "Always Output Data" setting in both nodes:
+- Get Alerts node: Always outputs array even when no alerts present
+- Clear Memory DB node: Always outputs result even when no records found
+
+**Verification:** Tested /alerts command with no active alerts - now returns "No active alerts" instead of no response. Tested /clear with empty memory - now returns confirmation message.
+
+**Lesson:** For workflow reliability, enable "Always Output Data" on database/filter nodes where empty results are valid states that should proceed to subsequent steps.
+
+---
+
+## 2026-04-24 — n8n Format Alerts Array Handling Error
+
+**Symptoms:** Format Alerts node showing "Active Alerts: undefined" when processing alert data from Alertmanager.
+
+**Root Cause:** Code assumed alerts data would always be an array, but empty responses from Alertmanager can be undefined or null, causing array methods to fail.
+
+**Resolution:** Added array validation in Code node:
+```javascript
+const alerts = inputData.alerts;
+if (!Array.isArray(alerts) || alerts.length === 0) {
+  return { alertText: "No active alerts" };
+}
+// Process alerts array...
+```
+
+**Lesson:** Always validate data types before using array/object methods in n8n Code nodes. External APIs can return varying data structures based on state.
+
+---
+
+## 2026-04-24 — n8n Format Cost Node JavaScript Syntax Error
+
+**Symptoms:** Format Cost Code node failing with SyntaxError when processing token usage data for cost calculation display.
+
+**Root Cause:** Code node contained JavaScript syntax that n8n couldn't parse - specifically using toLocaleString() method and emoji characters in template literals were causing parsing issues.
+
+**Resolution:** Simplified JavaScript code in Format Cost node:
+- Removed toLocaleString() formatting method
+- Removed emoji characters from string templates  
+- Used basic string concatenation instead of complex formatting
+
+**Verification:** /cost command now displays token counts and estimated costs without syntax errors.
+
+**Lesson:** Keep n8n Code node JavaScript simple - avoid advanced formatting methods and special characters that may not be supported in the execution environment.
+
+---
+
+## 2026-04-24 — n8n Send Clear Confirmation Wrong Chat ID Reference
+
+**Symptoms:** Send Clear Confirmation node failing with "chat not found" error when trying to send message after memory clear operation.
+
+**Root Cause:** Node was using `$json.message.chat.id` to get chat ID, but after the Clear Memory DB operation, the data structure changed and this path no longer existed.
+
+**Resolution:** Changed chat ID reference to use data from specific earlier node:
+```javascript
+// Before (failing):
+chat_id: $json.message.chat.id
+
+// After (working):  
+chat_id: $('Get Chat ID').first().json.chat_id
+```
+
+**Verification:** /clear command now successfully sends confirmation message after clearing memory.
+
+**Lesson:** In n8n workflows with multiple data transformations, reference data from specific nodes using `$('NodeName').first().json` rather than assuming `$json` contains expected structure.
+
+---
+
+## 2026-04-24 — n8n Clear Memory DB No Condition Error
+
+**Symptoms:** Clear Memory DB node failing with error "At least one condition is required" when trying to delete all records from gilgamesh_memory table.
+
+**Root Cause:** n8n Data Tables Delete operation requires at least one WHERE condition. Cannot perform unconditional DELETE to clear entire table.
+
+**Resolution:** Added condition `role IS NOT EMPTY` which matches all records (since role field is never empty):
+- Operation: Delete
+- Conditions: role IS NOT EMPTY
+
+**Verification:** /clear command now successfully deletes all conversation memory records.
+
+**Lesson:** n8n Data Tables delete operations require explicit conditions for safety. Use "IS NOT EMPTY" on required fields to match all records when clearing entire table.
+
+---
+
 ## 2026-04-24 — kinmoon Storage ID Incorrect in Proxmox
 
 **Symptoms:** Gilgamesh Storage menu showing "kinmoon-smb: N/A" instead of actual storage usage statistics.
