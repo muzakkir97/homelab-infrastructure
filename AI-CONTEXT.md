@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** April 20, 2026
+> **Last Updated:** April 23, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -227,6 +227,88 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 
 ---
 
+## 🤖 Bots & Integrations
+
+| Bot | Platform | Source | Status | Purpose |
+|-----|----------|--------|--------|---------|
+| @JhinGilgamesh_bot | Telegram | n8n CT 211 | ✅ Active | Personal AI agent — chat, homelab control, /update, /sync-docs |
+| Homelab Alerts | Telegram | Alertmanager CT 205 | ✅ Active | Critical alerts (host down, high CPU/memory/disk) |
+| Homelab Alerts | Discord webhook | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel |
+
+**Planned:** Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n.
+
+---
+
+## 🎴 Fate Grand Order Agent Ecosystem
+
+Theme: Homelab agents named after Fate/Grand Order servants, discussed April 21-22, 2026
+
+### Active Agents
+
+| Servant | Class | Role | Platform | Status |
+|---------|-------|------|----------|--------|
+| Gilgamesh 👑 | Archer | Personal AI Assistant | Telegram (@JhinGilgamesh_bot) | ✅ Active |
+| Caster (Da Vinci) 🎨 | Caster | Knowledge Curator | n8n/Nextcloud | ✅ Active |
+| Archer (EMIYA) 🏹 | Archer | Infrastructure Translator | n8n | ✅ Active |
+
+### Planned Agents (Priority Order)
+
+Phase 2: Safety Net (High Priority)
+
+| Servant | Class | Role | Noble Phantasm | Priority |
+|---------|-------|------|----------------|----------|
+| MERLIN 🔮 | Caster | Reminders & Scheduler | *Garden of Avalon* | #1 (user keeps forgetting everything) |
+| Mash Kyrielight 🛡️ | Shielder | Gaming Server Manager + Wellbeing | *Lord Camelot* | High (Phases 59-64) |
+| Guardian | — | Security Monitoring | — | Medium |
+
+Phase 3: Efficiency
+- Nexus — Cross-platform Automation
+- Scribe — Auto-documentation
+- Midas — Cost Tracking & Optimization
+
+Phase 4: Intelligence
+- Oracle — Predictive Intelligence
+
+### Merlin Details (Reminder Agent — #1 Priority)
+
+Why Merlin:
+- Clairvoyance (sees the future → knows what you'll forget)
+- Garden of Avalon (creates safe space → maintenance windows)
+- Illusion magic (reminds you gently, not annoyingly)
+
+What Merlin Does:
+- SSL certificate renewal reminders (expires in X days)
+- Backup restore test reminders (overdue by X days)
+- Loki/Prometheus memory limit warnings (OOM in X days)
+- Scheduled maintenance windows
+- Proactive infrastructure health checks
+
+### Mash Details (Gaming Discord Bot)
+
+Why Mash:
+- Protects the team (gaming friends)
+- Keeps everyone safe and organized
+- Announces player activity
+
+What Mash Does:
+- Discord bot commands: !start, !stop, !status
+- Announces player joins/leaves
+- Scheduled game night reminders
+- Auto-shutdown idle servers
+- Game update notifications
+- Personality: "Senpai, PlayerX just joined Windrose!"
+
+Implementation: Phases 59-64 (Gaming Platform Pipeline)
+
+### Design Principles
+
+- Gilgamesh = Telegram-only (homelab admin)
+- Mash = Discord-only (gaming with friends)
+- Keep gaming separate from homelab admin
+- All agents use Fate/GO servant theming for consistency
+
+---
+
 ## 💾 Backup Strategy (Phase 7A)
 
 ### Backup Jobs
@@ -356,23 +438,12 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 
 ---
 
-## 🤖 Bots & Integrations
-
-| Bot | Platform | Source | Status | Purpose |
-|-----|----------|--------|--------|---------|
-| @JhinGilgamesh_bot | Telegram | n8n CT 211 | ✅ Active | Personal AI agent — chat, homelab control, /update, /sync-docs |
-| Homelab Alerts | Telegram | Alertmanager CT 205 | ✅ Active | Critical alerts (host down, high CPU/memory/disk) |
-| Homelab Alerts | Discord webhook | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel |
-
-**Planned:** Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n.
-
----
-
 ## ❓ Pending Tasks
 
 ### Immediate
 | Task | Priority |
 |------|----------|
+| Build MERLIN reminder agent (highest priority due to memory issues) | High |
 | Share Windrose invite code NAJHINWINDROSE with friends | High |
 | Monitor RAM usage with Windrose running on CT 302 | High |
 | Set up Bitwarden app on phone with passwords.najhin-gaming.com server | High |
@@ -387,10 +458,12 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Task | Priority |
 |------|----------|
 | Build Phase 16.3 — Monthly Infrastructure Audit cron workflow | High |
+| Build Mash Discord bot (Phases 59-64) | High |
 | Complete menu submenus (Metrics, Temps, Storage, Gaming, Gilgamesh, Tools, Help) | Medium |
 | /update redesign — file attachment via Telegram, push to GitHub + Nextcloud | Medium |
 | Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram) | Medium |
 | Integrate Vault secrets into n8n Gilgamesh workflow | Medium |
+| Document all future agent additions in Fate Agent section | Medium |
 
 ### Infrastructure
 | Task | Priority |
@@ -415,6 +488,40 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 23, 2026
+Date: April 23, 2026
+Phase: Documentation Update — Fate Agent Roster Recovery
+Topics Discussed
+
+Verified all AI agents discussed across project history
+Recovered Fate Grand Order themed agent ecosystem from April 21-22, 2026 conversation
+Identified gap where Fate agent roster was in conversation history but not in AI-CONTEXT.md
+Updated Claude memory with Fate agent details
+
+Decisions Made
+
+Document Fate agent ecosystem in AI-CONTEXT.md to prevent loss
+Keep gaming agents (Mash) separate from Gilgamesh (Telegram admin)
+MERLIN remains #1 priority for reminder/scheduler functionality
+
+Changes to AI-CONTEXT.md
+
+Added new section "Fate Grand Order Agent Ecosystem" after "Bots & Integrations"
+Added active agents: Gilgamesh (Telegram), Da Vinci (n8n/Nextcloud), EMIYA (n8n)
+Added planned agents with priority order: MERLIN #1, Mash (gaming), Guardian (security)
+Added detailed Merlin specs (reminder agent) and Mash specs (Discord gaming bot)
+Added design principles for agent separation
+
+Errors & Resolutions
+
+Claude initially missed Fate agent roster in conversation search due to generic search terms ("Fate themed agent" vs specific servant names like "Merlin Chaldea"). Resolution: Use specific character/servant names when searching past conversations.
+
+Action Items
+
+Build MERLIN reminder agent (highest priority due to memory issues)
+Build Mash Discord bot (Phases 59-64)
+Document all future agent additions in Fate Agent section
 
 ### April 20, 2026
 Date: April 20, 2026
@@ -568,17 +675,6 @@ Cloudflare Access app icons skipped (UI doesn't support custom icons easily)
 GitHub PAT set with fine-grained permissions (Contents read/write, homelab-infrastructure repo only)
 Google Sign-In services (Anthropic, Tailscale) stored with "Google Sign-In" as password field
 
-### April 18, 2026
-- Deployed HashiCorp Vault as Phase 13 (CT 213, 192.168.30.213)
-- Vault v2.0.0 installed via HashiCorp apt repo on Debian 12
-- Configured file storage backend, `disable_mlock = true` (required for LXC)
-- Initialized with 5 unseal keys, threshold 3
-- KV secrets engine enabled at path `kv/`
-- Secrets migrated from plaintext Notepad: kv/gilgamesh, kv/cloudflare, kv/proxmox
-- Created homelab policy (kv/* + secret/*) and non-root homelab token
-- NPM reverse proxy configured for vault.najhin-gaming.com
-- Cloudflare Access email OTP protection added (6th protected app)
-
 ---
 
-*Last updated: April 20, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: April 23, 2026 — Update this file at the end of each session before pushing to GitHub*
