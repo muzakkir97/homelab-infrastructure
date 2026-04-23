@@ -4,6 +4,43 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [April 24, 2026] - Phase 7D-Menu + Phase 14: Complete Gilgamesh Menu System
+
+#### Completed
+- **Phase 7D-Menu:** Complete inline keyboard menu system for Gilgamesh bot
+- **Phase 14:** Secrets Management & Integration phase finalized
+
+#### Added
+- **Homelab → Metrics:** Real-time Proxmox system metrics (CPU, RAM, storage usage)
+- **Homelab → Temps:** Live temperature monitoring via SSH to Kuromoon (lm-sensors)
+- **Homelab → Storage:** Complete storage overview with usage percentages
+- **Gaming submenu:** Direct Docker container status from CT 302
+- **Gilgamesh info:** Bot capabilities and feature overview
+- **Tools submenu:** Quick access links to all services
+- **Help menu:** Complete command reference and usage guide
+
+#### Technical
+- **SSH access configured:** CT 211 → Kuromoon (pfSense rule TCP 22 added)
+- **Container SSH enabled:** CT 302 root access with PermitRootLogin yes
+- **Progress bars:** ASCII characters (= and -) for mobile compatibility
+- **Storage fix:** kinmoon-nfs identified as correct Proxmox storage ID
+- **Credentials added:** SSH Password account (Kuromoon), SSH CT302 Wings
+
+#### Fixed
+- Format Metrics callback_query undefined: Use inputData from Callback Router node
+- Send Metrics invalid JSON: Switch to "Using Fields Below" body mode
+- SSH hanging to Kuromoon: Added pfSense firewall rule VLAN30→VLAN10 port 22
+- SSH auth failing CT 302: Changed PermitRootLogin from prohibit-password to yes
+- Game server template parsing: Switch Command field to Fixed mode
+- Storage display N/A: Correct storage ID is kinmamoon-nfs not kinmoon-smb
+
+#### Security
+- SSH key authentication between CT 211 and Kuromoon
+- Password authentication enabled for CT 302 container management
+- pfSense firewall rule for specific n8n SSH access
+
+---
+
 ### [April 23, 2026] - Gilgamesh Evolution + Claude Design Discovery
 
 #### Planning
