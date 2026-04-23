@@ -1,279 +1,216 @@
-# 🗺️ Homelab Infrastructure Roadmap
+# 🗺️ Project Roadmap
 
-> **Last Updated:** April 23, 2026
-> **Owner:** Muzakkir Kholil
-> **GitHub:** github.com/muzakkir97/homelab-infrastructure
+> **Last Updated:** April 24, 2026  
+> **Total Phases:** 64+ planned  
+> **Completed:** 17 phases  
+> **In Progress:** 2 phases  
+
+## 📊 Summary Overview
+
+| Status | Count | Percentage |
+|--------|-------|------------|
+| **✅ Completed** | 17 | 27% |
+| **📋 In Progress** | 2 | 3% |
+| **🔄 Planned** | 45+ | 70% |
+| **🎯 Near Term** | 6 | Priority |
 
 ---
 
 ## ✅ Completed Phases
 
-| Phase    | Title                                                      | Completed        |
-|----------|------------------------------------------------------------|------------------|
-| 1        | Proxmox VE Installation                                    | Jan 2026         |
-| 2        | pfSense Firewall & VLAN Setup                              | Jan 2026         |
-| 3        | Core Services (Pi-hole, NPM, Tailscale, DDNS)              | Jan 2026         |
-| 4        | External Access & SSL                                      | Feb 2026         |
-| 5        | Monitoring Stack (Prometheus, Grafana, Loki, Alertmanager) | Feb 2026         |
-| 6A–6D    | Gaming Platform (Pterodactyl, Terraria, Minecraft)         | Feb 2026         |
-| 6E       | Homepage Dashboard (gethomepage.dev)                       | Mar 2026         |
-| 6F       | Infrastructure Audit, VLAN Migration & Firewall Hardening  | Mar 9, 2026      |
-| 7        | Nextcloud Deployment                                       | Mar 8, 2026      |
-| 7A       | Backup Strategy (Proxmox vzdump, NAS + local)              | Mar 13, 2026     |
-| 7B       | n8n Automation Hub                                         | Apr 2, 2026      |
-| 7C       | Gilgamesh Telegram Bot + GitHub Integration                | Apr 2, 2026      |
-| 7D       | Gilgamesh Enhancements (Memory, Routing, Web Search)       | Apr 6, 2026      |
-| 7D-Sec   | Cloudflare Access for n8n                                  | Apr 7, 2026      |
-| 9        | NAS Deployment (Kinmoon — UGREEN DXP2800)                  | Mar 3, 2026      |
-| 13       | HashiCorp Vault — Secrets Manager                          | Apr 18, 2026     |
-| 16.1     | Documentation Pipeline - Update Workflow                   | Apr 19, 2026     |
-| 16.2     | Documentation Pipeline - Sync Docs Workflow                | Apr 19, 2026     |
-| 23       | Vaultwarden + Secrets Audit & Cleanup                      | Apr 18, 2026     |
-| 58       | Windrose Server Deployment                                 | Apr 19, 2026     |
+| Phase | Title | Completed | Dependencies |
+|-------|-------|-----------|--------------|
+| 1 | Proxmox VE Installation | Jan 2026 | Hardware setup |
+| 2 | pfSense Firewall & VLAN Setup | Jan 2026 | Phase 1 |
+| 3 | Core Services (Pi-hole, NPM, Tailscale, DDNS) | Jan 2026 | Phase 2 |
+| 4 | External Access & SSL | Feb 2026 | Phase 3 |
+| 5 | Monitoring Stack | Feb 2026 | Phase 4 |
+| 6A-6D | Gaming Platform (Pterodactyl, Terraria, Minecraft) | Feb 2026 | Phase 5 |
+| 6E | Homepage Dashboard | Mar 2026 | Phase 6D |
+| 6F | Infrastructure Audit, VLAN Migration & Firewall Hardening | Mar 9, 2026 | Phase 6E |
+| 7 | Nextcloud Deployment | Mar 8, 2026 | Phase 6F |
+| 7A | Backup Strategy | Mar 13, 2026 | Phase 7 |
+| 7B | n8n Workflow Automation | Apr 2, 2026 | Phase 7A |
+| 7C | Gilgamesh Telegram Bot + GitHub Integration | Apr 2, 2026 | Phase 7B |
+| 7D | Gilgamesh Enhancements (Memory, Routing, Web Search) | Apr 6, 2026 | Phase 7C |
+| 7D-Sec | Cloudflare Access for n8n | Apr 7, 2026 | Phase 7D |
+| 7D-Menu | Gilgamesh Inline Keyboard Menu | Apr 24, 2026 | Phase 7D |
+| 9 | NAS Deployment (Kinmoon) | Mar 3, 2026 | Phase 7A |
+| 13 | HashiCorp Vault — Secrets Manager | Apr 18, 2026 | Phase 9 |
+| 14 | Secrets Management & Integration | Apr 24, 2026 | Phase 13 |
+| 15 | Gilgamesh Additional Slash Commands | Apr 24, 2026 | Phase 14 |
+| 16.1 | Documentation Pipeline - Update Workflow | Apr 19, 2026 | Phase 7C |
+| 16.2 | Documentation Pipeline - Sync Docs Workflow | Apr 19, 2026 | Phase 16.1 |
+| 23 | Vaultwarden + Secrets Audit & Cleanup | Apr 18, 2026 | Phase 13 |
+| 58 | Windrose Server Deployment | Apr 19, 2026 | Phase 6D |
 
 ---
 
-## 🔄 In Progress
+## 📋 In Progress
 
-| Phase    | Title                          | Notes                                                           |
-|----------|--------------------------------|-----------------------------------------------------------------|
-| 7D-Menu  | Gilgamesh Inline Keyboard Menu | Status working. Metrics, Temps, Storage, Gaming, Tools pending. |
-
----
-
-## 📋 Planned Phases
-
-> Phases continue sequentially, with Gilgamesh Evolution integrated as primary near-term focus.
-> Sub-phases use dot notation: e.g. 22.1, 22.2
-> Completed phases retain original numbering for historical continuity.
+| Phase | Title | Started | Target | Dependencies |
+|-------|-------|---------|--------|--------------|
+| 22 | Obsidian Knowledge Base | Planning | Q2 2026 | Phase 15 |
+| 38 | Ollama + ROCm on Kuromoon RX 6700 XT | Planning | Q2 2026 | Phase 22 |
 
 ---
 
-## 🎯 **PRIMARY GOAL: Gilgamesh Evolution**
+## 🎯 Near Term Priority Queue
 
-**Mission:** Replace claude.ai entirely with Gilgamesh as primary AI interface via Telegram
-
-**Timeline:** 16 weeks (~August 2026)  
-**Target Cost:** $5-10/month (down from $20+ Claude Pro subscription)
-
-**Success Criteria:**
-- 20+ message conversations without context loss
-- RAG recalls decisions from weeks-old sessions
-- Vision API handles screenshot analysis
-- Artifact generation (code/docs downloadable)
-- 90% response quality match with Claude Web
-- API cost consistently <$10/month
+| Priority | Phase | Title | Rationale |
+|----------|-------|-------|-----------|
+| #1 | MERLIN Agent | Reminder & Scheduler Agent | User memory issues |
+| #2 | 38 | Ollama + ROCm on Kuromoon RX 6700 XT | Stop API bleeding, local LLM |
+| #3 | 22 | Obsidian Knowledge Base | Foundation for AI memory |
+| #4 | 7E | Gilgamesh Extended Memory (20+ messages) | Core AI enhancement |
+| #5 | 41 | Gilgamesh Hybrid Routing | Cost optimization |
+| #6 | 16.3 | Monthly Infrastructure Audit (Cron) | Automated health checks |
 
 ---
 
-### **Phase 1: Foundation (Weeks 1-4)**
+## 🔮 Planned Phases by Category
 
-| Phase | Title                          | Description                                                                       | Depends On | Evolution Stage |
-|-------|--------------------------------|-----------------------------------------------------------------------------------|------------|-----------------|
-| 14    | Gilgamesh Menu — Remaining     | Complete Metrics, Temps, Storage, Gaming, Gilgamesh, Tools, Help submenus         | 7D-Menu    | Prerequisites   |
-| 15    | Gilgamesh Additional Commands  | /temps, /storage, /alerts, /logs, /backup, /cost, /memory, /clear, /help          | 14         | Prerequisites   |
-| **38** | **Ollama + ROCm Local LLM** | **RX 6700 XT on Kuromoon, 7B-32B models, FREE inference for 80% of queries** | — | **🔥 CRITICAL** |
-| **22** | **Obsidian Knowledge Base** | **Obsidian + Nextcloud WebDAV + claude-obsidian plugin + RAG + Dataview subscription tracker** | — | **🔥 CRITICAL** |
+### Gilgamesh & AI Automation
+| Phase | Title | Dependencies |
+|-------|-------|--------------|
+| 7E | Extended Memory (20+ message conversations via RAG) | Phase 22 |
+| 7F | File Generation (code, configs, docs) | Phase 7E |
+| 7G | Vision API (image analysis) | Phase 7F |
+| 7H | Document Upload (PDF/text processing) | Phase 7G |
+| 7I | Quality Assurance (compare outputs with Claude Pro) | Phase 7H |
+| 7J | Migration (full switch to Gilgamesh) | Phase 7I |
+| 7K | AI News Scraper (RSS/Reddit → Ollama evaluation) | Phase 38 |
+| 41 | Hybrid Routing (local/API based on complexity) | Phase 38 |
 
-**Deliverable:** Gilgamesh handles documentation FREE, Obsidian becomes knowledge layer with RAG
+### Gaming Platform Pipeline
+| Phase | Title | Dependencies |
+|-------|-------|--------------|
+| 59 | Gaming Platform Standardization & Documentation | Phase 58 |
+| 60 | Mash Discord Bot (Gaming Server Management) | Phase 59 |
+| 61 | Auto-scaling & Resource Management | Phase 60 |
+| 62 | Game Server Status Dashboard (Grafana) | Phase 61 |
+| 63 | Scheduled Game Nights & Notifications | Phase 62 |
+| 64 | Game Update Automation | Phase 63 |
 
----
+### Personal & Knowledge Management
+| Phase | Title | Dependencies |
+|-------|-------|--------------|
+| 24 | Expense Tracking System | Phase 22 |
+| 25 | Time Tracking Integration | Phase 24 |
+| 25.5 | Private Repository + Backblaze B2 Backup | Phase 25 |
+| 26 | Homepage Upgrade (Stock/Price Trackers) | Phase 25.5 |
+| 26.1 | Homepage Weather Widget | Phase 26 |
+| 26.2 | Homepage Calendar Integration | Phase 26.1 |
+| 26.3 | Homepage Embedded Gilgamesh Chat | Phase 26.2 |
 
-### **Phase 2: Intelligence (Weeks 5-7)**
+### Infrastructure Cleanup & Optimization
+| Phase | Title | Dependencies |
+|-------|-------|--------------|
+| 8 | Infrastructure Cleanup & Optimization | Phase 7A |
+| 10 | WiFi Access Point Setup | Phase 9 |
+| 11 | Network Optimization | Phase 10 |
+| 12 | Advanced Firewall Rules | Phase 11 |
+| 16.3 | Monthly Infrastructure Audit (Cron Workflow) | Phase 16.2 |
+| 17 | SSL Certificate Automation | Phase 12 |
+| 18 | Advanced Monitoring | Phase 17 |
+| 19 | Performance Tuning | Phase 18 |
 
-| Phase | Title                          | Description                                                                       | Depends On | Evolution Stage |
-|-------|--------------------------------|-----------------------------------------------------------------------------------|------------|-----------------|
-| **7E** | **Extended Memory (50-100 msgs)** | **Long planning sessions, conversation context expansion** | 22, 38 | **Intelligence** |
-| **41** | **Gilgamesh Hybrid Routing** | **Smart routing: Ollama (free) → Claude API (paid) only when needed, cost optimization** | 38 | **Intelligence** |
-| 16    | Gilgamesh /update Redesign     | Accept .md file attachment via Telegram, replace GitHub + Nextcloud workflow      | 38, 41     | Workflow        |
+### Core Services & Storage
+| Phase | Title | Dependencies |
+|-------|-------|--------------|
+| 20 | Service Discovery | Phase 19 |
+| 21 | Load Balancing | Phase 20 |
+| 65 | Database Cluster (PostgreSQL HA) | Phase 21 |
+| 66 | Redis Cluster | Phase 65 |
+| 67 | Object Storage (MinIO) | Phase 66 |
+| 68 | Backup Automation Enhancement | Phase 67 |
 
-**Deliverable:** Gilgamesh can handle complex multi-turn conversations with full context, cost <$5/month
+### AI & Local LLM Infrastructure
+| Phase | Title | Dependencies |
+|-------|-------|--------------|
+| 39 | Local LLM Model Management | Phase 38 |
+| 40 | AI Model Performance Monitoring | Phase 39 |
+| 42 | Multi-Model Support | Phase 41 |
+| 43 | AI Agent Framework | Phase 42 |
+| 44 | Voice Interface (Whisper) | Phase 43 |
 
----
+### n8n Business Automation
+| Phase | Title | Dependencies |
+|-------|-------|--------------|
+| 27 | Advanced n8n Workflows | Phase 14 |
+| 28 | Workflow Marketplace Preparation | Phase 27 |
+| 29 | Business Process Automation | Phase 28 |
+| 30 | Revenue Tracking System | Phase 29 |
 
-### **Phase 3: Capabilities (Weeks 8-12)**
+### Career Development & Skills
+| Phase | Title | Dependencies |
+|-------|-------|--------------|
+| 31 | Kubernetes Learning Lab | Phase 30 |
+| 32 | Ansible Automation | Phase 31 |
+| 33 | Terraform Infrastructure | Phase 32 |
+| 34 | CI/CD Pipeline Enhancement | Phase 33 |
+| 35 | Security Hardening | Phase 34 |
+| 36 | Compliance & Auditing | Phase 35 |
+| 37 | Documentation Website | Phase 36 |
 
-| Phase | Title                          | Description                                                                       | Depends On | Evolution Stage |
-|-------|--------------------------------|-----------------------------------------------------------------------------------|------------|-----------------|
-| 17    | Gilgamesh Web Chat             | Embedded chat UI on homepage, shared memory with Telegram                         | 16         | Enhancement     |
-| 18    | Gilgamesh Proactive Alerts     | Alertmanager → n8n → Telegram for critical infrastructure events                  | —          | Enhancement     |
-| 19    | Gilgamesh Daily Summary        | Scheduled morning summary — containers, metrics, alerts, backup status            | 18         | Enhancement     |
-| **7F** | **File Generation (Artifacts)** | **Generate code, docs, diagrams via n8n, downloadable from Telegram** | 41 | **Capabilities** |
-| **7G** | **Vision API Integration** | **Image analysis via Telegram upload, screenshot troubleshooting** | 41 | **Capabilities** |
-| **7H** | **Document Upload Handling** | **PDF/doc context via Telegram attachment, full document analysis** | 41 | **Capabilities** |
+### Long Term Expansion
+| Phase | Title | Dependencies |
+|-------|-------|--------------|
+| 45 | Multi-node Cluster | Phase 44 |
+| 46 | Disaster Recovery Site | Phase 45 |
+| 47 | High Availability Setup | Phase 46 |
+| 48 | Performance Optimization | Phase 47 |
+| 49 | Advanced Security | Phase 48 |
+| 50 | Compliance Framework | Phase 49 |
 
-**Deliverable:** Feature parity with Claude Web (artifacts, vision, file uploads)
-
----
-
-### **Phase 4: Refinement (Weeks 13-16)**
-
-| Phase | Title                          | Description                                                                       | Depends On | Evolution Stage |
-|-------|--------------------------------|-----------------------------------------------------------------------------------|------------|-----------------|
-| 20    | n8n Notification Hub           | Migrate Alertmanager alerts through n8n, route by severity to Telegram + Discord  | 18         | Enhancement     |
-| 21    | n8n Workflow Suite             | Game server notifications, backup notifications, weekly report                    | 20         | Enhancement     |
-| **7I** | **Quality Assurance & Testing** | **Side-by-side comparison with Claude Web, response quality validation** | 7F, 7G, 7H | **Refinement** |
-| **7J** | **Claude Web Migration** | **Full switchover to Gilgamesh, cancel Claude Pro subscription** | 7I | **🎯 COMPLETION** |
-
-**Deliverable:** Confidently cancel Claude Pro, save $20/month, Gilgamesh as sole AI interface
-
----
-
-### Near Term — Personal & Knowledge *(Post-Evolution)*
-
-| Phase | Title                          | Description                                                                       | Depends On |
-|-------|--------------------------------|-----------------------------------------------------------------------------------|------------|
-| 24    | Network Cleanup                | Switch IP migration (192.168.1.20 → 192.168.10.20), remove legacy LAN 192.168.1.0/24 | 7J      |
-| 25    | WiFi Access Point              | TP-Link EAP610 deployment, hardware already on hand                               | 24         |
-| 26    | Homepage Security              | Cloudflare Access protection for home.najhin-gaming.com                           | —          |
-| 27    | Vault Integration with n8n     | Gilgamesh and n8n workflows fetch API secrets from Vault dynamically              | 13         |
-
----
-
-### Medium Term — Core Services Expansion
-
-| Phase | Title                          | Description                                                                       | Depends On |
-|-------|--------------------------------|-----------------------------------------------------------------------------------|------------|
-| 28    | Authentik SSO                  | Single sign-on for all services, replaces per-service logins, MFA support         | —          |
-| 29    | Gitea + Woodpecker CI          | Self-hosted Git server + CI/CD pipeline, career portfolio piece                   | —          |
-| 30    | Ansible + Semaphore UI         | Infrastructure automation for all containers, career portfolio piece              | —          |
-| 31    | Paperless-ngx                  | Document management with OCR, personal documents and receipts                     | —          |
-| 32    | Immich                         | Self-hosted Google Photos alternative, ~1.5GB RAM                                 | —          |
-| 33    | Jellyfin                       | Self-hosted media server (deploy if media collection warrants it)                 | —          |
-| 34    | FreshRSS                       | Self-hosted RSS reader, follow blogs/news without algorithm                       | —          |
-| 35    | Memos                          | Lightweight quick-capture notes, pairs with Obsidian                              | 22         |
-| 36    | Off-site Backup                | Backblaze B2 for critical container backups                                       | —          |
-| 37    | Nextcloud 2FA                  | TOTP two-factor authentication on Nextcloud                                       | —          |
-| 39    | Open WebUI                     | Web frontend for Ollama (optional — may be redundant with Gilgamesh)              | 38         |
-| 40    | Karakeep                       | AI-powered bookmarking with local Ollama integration                              | 38         |
-
----
-
-### Medium Term — Career Development
-
-| Phase | Title                          | Description                                                                       | Depends On |
-|-------|--------------------------------|-----------------------------------------------------------------------------------|------------|
-| 42    | k3s Kubernetes Cluster         | 2 LXCs on Kuromoon (1 master + 1 worker), industry-standard Kubernetes learning   | —          |
-| 43    | Coolify                        | Self-hosted PaaS (Heroku/Vercel alternative), one-click app deployment            | —          |
-| 44    | Traefik                        | Code-driven reverse proxy, migrate from NPM when running k3s workloads            | 42         |
-| 45    | Headscale                      | Self-hosted Tailscale control server, removes last cloud VPN dependency           | —          |
-| 46    | Netbox                         | Network documentation and IP address management (IPAM)                            | —          |
-| 47    | SigNoz                         | Advanced observability — logs + traces + metrics, Datadog alternative             | 42         |
-| 48    | Postiz                         | Self-hosted social media scheduler, automate LinkedIn phase announcements          | —          |
-
----
-
-### Long Term — Testing & Advanced
-
-| Phase | Title                          | Description                                                                       | Depends On |
-|-------|--------------------------------|-----------------------------------------------------------------------------------|------------|
-| 49    | Windows 11 VM                  | Proxmox VM, 4 cores / 8GB RAM / 64GB disk, testing only                           | —          |
-| 50    | macOS VM                       | OpenCore on Proxmox, legally grey, testing only — expect complexity               | —          |
-| 51    | Portainer                      | Docker management GUI, useful if Docker workloads grow significantly              | —          |
-| 52    | Wazuh SIEM                     | Security monitoring across all containers, ~4GB RAM minimum                       | —          |
-| 53    | Docmost                        | Team-facing wiki / Notion alternative for shared documentation                    | —          |
-| 54    | BookLore                       | Personal ebook library with OPDS e-reader support                                 | —          |
+### Hardware & Infrastructure
+| Phase | Title | Dependencies |
+|-------|-------|--------------|
+| 51 | Second Proxmox Node | Phase 50 |
+| 52 | Shared Storage Cluster | Phase 51 |
+| 53 | Network Upgrade (10Gbps) | Phase 52 |
+| 54 | UPS & Power Management | Phase 53 |
+| 55 | Environmental Monitoring | Phase 54 |
+| 56 | Hardware Refresh Planning | Phase 55 |
 
 ---
 
-### Gaming Platform Pipeline *(Parallel Track)*
+## 🎴 Fate Grand Order Agent Ecosystem Roadmap
 
-| Phase | Title                          | Description                                                                       | Depends On |
-|-------|--------------------------------|-----------------------------------------------------------------------------------|------------|
-| 57    | Gaming Platform Deployment Guide | Standardized deployment docs for all game servers                              | —          |
-| 58    | Windrose Server                | ✅ Complete — Docker deployment on CT 302                                         | —          |
-| 59    | Discord Gaming Bot (Mash)      | !start/!stop/!status commands for friends                                         | —          |
-| 60    | Auto-shutdown Idle Servers     | Detect idle state, graceful shutdown                                              | 59         |
-| 60.1  | Backup Before Shutdown         | Automated backup trigger before server stops                                      | 60         |
-| 61    | Discord Status Embed           | Rich embed with player counts, uptime, server health                              | 59         |
-| 62    | Scheduled Game Nights          | Calendar integration, auto-start servers, reminders                               | 59         |
-| 63    | Game Update Notifications      | Detect patch releases, notify Discord                                             | 59         |
-| 64    | Gaming Grafana Dashboard       | Metrics visualization for all game servers                                        | —          |
+### Phase Allocation for Servants
 
----
-
-### Hardware
-
-| Phase | Title                          | Description                                                                       | Depends On |
-|-------|--------------------------------|-----------------------------------------------------------------------------------|------------|
-| 55    | P400S Repurpose                | Z270E + i7-7700K build, potential SAS NAS or secondary hypervisor                 | —          |
-| 56    | Fedora Dual-boot on Minimoon   | Requires kernel 6.12+ for RDNA 4 (RX 9070 XT)                                    | —          |
+| Servant | Phase | Status | Purpose |
+|---------|-------|--------|---------|
+| **Gilgamesh** | 7C-7J | ✅ Active | Personal AI Assistant (Telegram) |
+| **Da Vinci** | 27-29 | 📋 Planned | Knowledge Curator (n8n/Nextcloud) |
+| **EMIYA** | 27-29 | ✅ Active | Infrastructure Translator (n8n) |
+| **MERLIN** | Special | 🎯 Priority #1 | Reminders & Scheduler |
+| **Mash** | 60 | 📋 Planned | Gaming Server Manager (Discord) |
+| **Guardian** | 35-36 | 📋 Planned | Security Monitoring |
+| **Nexus** | 43 | 📋 Planned | Cross-platform Automation |
+| **Scribe** | 37 | 📋 Planned | Auto-documentation |
+| **Midas** | 30 | 📋 Planned | Cost Tracking & Optimization |
+| **Oracle** | 40 | 📋 Planned | Predictive Intelligence |
 
 ---
 
-## 📊 Summary
+## 📋 Recommended Next Session Order
 
-| Status | Count |
-|--------|-------|
-| ✅ Complete | 20 |
-| 🔄 In Progress | 1 |
-| 📋 Planned | 53 |
-| **Total LXC Containers** | **14** |
+Based on current priorities and dependencies:
 
----
+1. **Complete MERLIN Agent** — Address critical memory/reminder issues
+2. **Phase 22 Session 1** — Install Obsidian on Gaming PC
+3. **Phase 38 Planning** — Ollama + ROCm requirements analysis
+4. **Phase 16.3** — Monthly Infrastructure Audit cron workflow
+5. **Phase 7E** — Extended Memory for Gilgamesh (post-Obsidian)
+6. **Phase 25.5** — Private repo + Backblaze B2 setup
 
-## 🎯 Recommended Execution Order
-
-| Priority | Phase | Title | Why | Weeks |
-|----------|-------|-------|-----|-------|
-| 1 | 7D-Menu → 14 | Complete Gilgamesh Menu | Already in progress | 1-2 |
-| 2 | **38** | **Ollama + ROCm** | **🔥 CRITICAL: Stop API cost bleeding** | 2-3 |
-| 3 | **22** | **Obsidian + RAG** | **🔥 Foundation for intelligence** | 3-4 |
-| 4 | 15 | Additional Commands | Quality of life improvements | 4-5 |
-| 5 | **7E** | **Extended Memory** | **Enable long conversations** | 5-6 |
-| 6 | **41** | **Hybrid Routing** | **Cost optimization, <$5/month** | 6-7 |
-| 7 | 16 | /update Redesign | Better workflow | 7-8 |
-| 8 | 18-19 | Proactive Alerts + Daily Summary | Homelab intelligence | 8-10 |
-| 9 | **7F** | **File Generation** | **Artifacts capability** | 10-12 |
-| 10 | **7G** | **Vision API** | **Image analysis** | 12-13 |
-| 11 | **7H** | **Document Upload** | **Full context** | 13-14 |
-| 12 | **7I** | **Quality Assurance** | **Testing vs Claude Web** | 14-15 |
-| 13 | **7J** | **Migration** | **🎯 Cancel Claude Pro** | 15-16 |
+### Weekly Rhythm Suggestion
+- **Monday:** Infrastructure/DevOps phases (Core services, monitoring)
+- **Wednesday:** Gilgamesh/AI development (7E-7J series)
+- **Friday:** Gaming platform or business automation
+- **Weekend:** Documentation, planning, and knowledge base updates
 
 ---
 
-## 💰 Cost Projection
-
-| Timeline | Claude Pro | Claude API | Ollama | Total |
-|----------|-----------|------------|--------|-------|
-| **Today** | $20 | $10-20 | $0 | **$30-40/month** |
-| **After Phase 38** (Week 3) | $20 | $2-5 | $0 | **$22-25/month** |
-| **After Phase 41** (Week 7) | $20 | $1-3 | $0 | **$21-23/month** |
-| **After Phase 7J** (Week 16) | $0 | $5-10 | $0 | **$5-10/month** |
-
-**Annual Savings:** $240-360/year
-
----
-
-## 🎴 Fate Grand Order Agent Ecosystem
-
-**Servant naming theme for all AI agents (April 21-22, 2026)**
-
-### Active Servants
-
-| Servant | Class | Role | Platform | Status |
-|---------|-------|------|----------|--------|
-| **Gilgamesh** 👑 | Archer | Personal AI Assistant | Telegram | ✅ Active |
-| **Da Vinci** 🎨 | Caster | Knowledge Curator | n8n/Nextcloud | ✅ Active |
-| **EMIYA** 🏹 | Archer | Infrastructure Translator | n8n | ✅ Active |
-
-### Planned Servants (Priority Order)
-
-**Phase 2: Safety Net**
-- **MERLIN** 🔮 (Caster) — #1 Priority: Reminders & Scheduler (SSL certs, backups, maintenance windows)
-- **Mash Kyrielight** 🛡️ (Shielder) — Discord Gaming Bot (Phases 59-64)
-- **Guardian** — Security Monitoring
-
-**Phase 3: Efficiency**
-- **Nexus** — Cross-platform Automation
-- **Scribe** — Auto-documentation
-- **Midas** — Cost Tracking & Optimization
-
-**Phase 4: Intelligence**
-- **Oracle** — Predictive Intelligence
-
-**Design Principle:** Gaming agents (Mash) stay on Discord, homelab admin (Gilgamesh) stays on Telegram — keep them separate.
-
----
-
-*Last updated: April 23, 2026*
+*This roadmap is living documentation, updated after each completed phase via the Gilgamesh /sync-docs pipeline.*
