@@ -132,6 +132,122 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 ---
 
+## 🔮 Gilgamesh Evolution Roadmap
+
+### PRIMARY GOAL: Replace claude.ai with Gilgamesh by August 2026 (16 weeks)
+
+**Current Cost:** $30-40/month Claude Pro + API usage
+**Target Cost:** $5-10/month (local LLM + occasional API)
+
+### 4-Phase Plan
+
+#### Phase 1: Foundation (Weeks 1-4)
+- **Phase 38** — Ollama + ROCm on Kuromoon RX 6700 XT (CRITICAL — stop API bleeding)
+- **Phase 22** — Obsidian Knowledge Base (vault sync with Gilgamesh)
+
+#### Phase 2: Intelligence (Weeks 5-8)
+- **Phase 7E** — Extended Memory (20+ message conversations via RAG)
+- **Phase 41** — Hybrid Routing (local/API based on complexity)
+
+#### Phase 3: Capabilities (Weeks 9-12)
+- **Phase 7F** — File Generation (code, configs, docs)
+- **Phase 7G** — Vision API (image analysis)
+- **Phase 7H** — Document Upload (PDF/text processing)
+
+#### Phase 4: Refinement (Weeks 13-16)
+- **Phase 7I** — Quality Assurance (compare outputs with Claude Pro)
+- **Phase 7J** — Migration (full switch to Gilgamesh)
+
+### Success Criteria
+- 20+ message conversation retention
+- Knowledge base recall from Obsidian
+- Vision capabilities for screenshots/diagrams
+- Artifact generation (code, configs)
+- Monthly cost under $10
+
+### Cost Projection Table
+
+| Component | Current | Target | Savings |
+|-----------|---------|--------|---------|
+| Claude Pro | $20/month | $0/month | $240/year |
+| API Usage | $10-20/month | $5-10/month | $60-120/year |
+| **Total** | **$30-40/month** | **$5-10/month** | **$300-360/year** |
+
+### Backup Plan
+Keep Claude Pro if quality insufficient, still save $10-15/month with hybrid approach
+
+---
+
+## 🎴 Fate Grand Order Agent Ecosystem
+
+Theme: Homelab agents named after Fate/Grand Order servants, discussed April 21-22, 2026
+
+### Active Agents
+
+| Servant | Class | Role | Platform | Status |
+|---------|-------|------|----------|--------|
+| Gilgamesh 👑 | Archer | Personal AI Assistant | Telegram (@JhinGilgamesh_bot) | ✅ Active |
+| Caster (Da Vinci) 🎨 | Caster | Knowledge Curator | n8n/Nextcloud | ✅ Active |
+| Archer (EMIYA) 🏹 | Archer | Infrastructure Translator | n8n | ✅ Active |
+
+### Planned Agents (Priority Order)
+
+Phase 2: Safety Net (High Priority)
+
+| Servant | Class | Role | Noble Phantasm | Priority |
+|---------|-------|------|----------------|----------|
+| MERLIN 🔮 | Caster | Reminders & Scheduler | *Garden of Avalon* | #1 (user keeps forgetting everything) |
+| Mash Kyrielight 🛡️ | Shielder | Gaming Server Manager + Wellbeing | *Lord Camelot* | High (Phases 59-64) |
+| Guardian | — | Security Monitoring | — | Medium |
+
+Phase 3: Efficiency
+- Nexus — Cross-platform Automation
+- Scribe — Auto-documentation
+- Midas — Cost Tracking & Optimization
+
+Phase 4: Intelligence
+- Oracle — Predictive Intelligence
+
+### Merlin Details (Reminder Agent — #1 Priority)
+
+Why Merlin:
+- Clairvoyance (sees the future → knows what you'll forget)
+- Garden of Avalon (creates safe space → maintenance windows)
+- Illusion magic (reminds you gently, not annoyingly)
+
+What Merlin Does:
+- SSL certificate renewal reminders (expires in X days)
+- Backup restore test reminders (overdue by X days)
+- Loki/Prometheus memory limit warnings (OOM in X days)
+- Scheduled maintenance windows
+- Proactive infrastructure health checks
+
+### Mash Details (Gaming Discord Bot)
+
+Why Mash:
+- Protects the team (gaming friends)
+- Keeps everyone safe and organized
+- Announces player activity
+
+What Mash Does:
+- Discord bot commands: !start, !stop, !status
+- Announces player joins/leaves
+- Scheduled game night reminders
+- Auto-shutdown idle servers
+- Game update notifications
+- Personality: "Senpai, PlayerX just joined Windrose!"
+
+Implementation: Phases 59-64 (Gaming Platform Pipeline)
+
+### Design Principles
+
+- Gilgamesh = Telegram-only (homelab admin)
+- Mash = Discord-only (gaming with friends)
+- Keep gaming separate from homelab admin
+- All agents use Fate/GO servant theming for consistency
+
+---
+
 ## 🤖 Gilgamesh AI Agent (Phase 7C/7D)
 
 ### Architecture
@@ -236,114 +352,6 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Homelab Alerts | Discord webhook | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel |
 
 **Planned:** Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n.
-
----
-
-## 🎴 Fate Grand Order Agent Ecosystem
-
-Theme: Homelab agents named after Fate/Grand Order servants, discussed April 21-22, 2026
-
-### Active Agents
-
-| Servant | Class | Role | Platform | Status |
-|---------|-------|------|----------|--------|
-| Gilgamesh 👑 | Archer | Personal AI Assistant | Telegram (@JhinGilgamesh_bot) | ✅ Active |
-| Caster (Da Vinci) 🎨 | Caster | Knowledge Curator | n8n/Nextcloud | ✅ Active |
-| Archer (EMIYA) 🏹 | Archer | Infrastructure Translator | n8n | ✅ Active |
-
-### Planned Agents (Priority Order)
-
-Phase 2: Safety Net (High Priority)
-
-| Servant | Class | Role | Noble Phantasm | Priority |
-|---------|-------|------|----------------|----------|
-| MERLIN 🔮 | Caster | Reminders & Scheduler | *Garden of Avalon* | #1 (user keeps forgetting everything) |
-| Mash Kyrielight 🛡️ | Shielder | Gaming Server Manager + Wellbeing | *Lord Camelot* | High (Phases 59-64) |
-| Guardian | — | Security Monitoring | — | Medium |
-
-Phase 3: Efficiency
-- Nexus — Cross-platform Automation
-- Scribe — Auto-documentation
-- Midas — Cost Tracking & Optimization
-
-Phase 4: Intelligence
-- Oracle — Predictive Intelligence
-
-### Merlin Details (Reminder Agent — #1 Priority)
-
-Why Merlin:
-- Clairvoyance (sees the future → knows what you'll forget)
-- Garden of Avalon (creates safe space → maintenance windows)
-- Illusion magic (reminds you gently, not annoyingly)
-
-What Merlin Does:
-- SSL certificate renewal reminders (expires in X days)
-- Backup restore test reminders (overdue by X days)
-- Loki/Prometheus memory limit warnings (OOM in X days)
-- Scheduled maintenance windows
-- Proactive infrastructure health checks
-
-### Mash Details (Gaming Discord Bot)
-
-Why Mash:
-- Protects the team (gaming friends)
-- Keeps everyone safe and organized
-- Announces player activity
-
-What Mash Does:
-- Discord bot commands: !start, !stop, !status
-- Announces player joins/leaves
-- Scheduled game night reminders
-- Auto-shutdown idle servers
-- Game update notifications
-- Personality: "Senpai, PlayerX just joined Windrose!"
-
-Implementation: Phases 59-64 (Gaming Platform Pipeline)
-
-### Design Principles
-
-- Gilgamesh = Telegram-only (homelab admin)
-- Mash = Discord-only (gaming with friends)
-- Keep gaming separate from homelab admin
-- All agents use Fate/GO servant theming for consistency
-
----
-
-## 🔮 Gilgamesh Evolution Roadmap
-
-### PRIMARY GOAL: Replace claude.ai with Gilgamesh by August 2026 (16 weeks)
-
-**Current Cost:** $30-40/month Claude Pro + API usage
-**Target Cost:** $5-10/month (local LLM + occasional API)
-
-### 4-Phase Plan
-
-#### Phase 1: Foundation (Weeks 1-4)
-- **Phase 38** — Ollama + ROCm on Kuromoon RX 6700 XT (CRITICAL — stop API bleeding)
-- **Phase 22** — Obsidian Knowledge Base (vault sync with Gilgamesh)
-
-#### Phase 2: Intelligence (Weeks 5-8)
-- **Phase 7E** — Extended Memory (20+ message conversations via RAG)
-- **Phase 41** — Hybrid Routing (local/API based on complexity)
-
-#### Phase 3: Capabilities (Weeks 9-12)
-- **Phase 7F** — File Generation (code, configs, docs)
-- **Phase 7G** — Vision API (image analysis)
-- **Phase 7H** — Document Upload (PDF/text processing)
-
-#### Phase 4: Refinement (Weeks 13-16)
-- **Phase 7I** — Quality Assurance (compare outputs with Claude Pro)
-- **Phase 7J** — Migration (full switch to Gilgamesh)
-
-### Success Criteria
-- 20+ message conversation retention
-- Knowledge base recall from Obsidian
-- Vision capabilities for screenshots/diagrams
-- Artifact generation (code, configs)
-- Monthly cost under $10
-
-### Backup Plan
-Keep Claude Pro if quality insufficient, still save $10-15/month with hybrid approach
 
 ---
 
@@ -484,10 +492,11 @@ Keep Claude Pro if quality insufficient, still save $10-15/month with hybrid app
 | Build MERLIN reminder agent (highest priority due to memory issues) | High |
 | Share Windrose invite code NAJHINWINDROSE with friends | High |
 | Monitor RAM usage with Windrose running on CT 302 | High |
-| Set up Bitwarden app on phone with passwords.najhin-gaming.com server | High |
+| Set Bitwarden app on phone with passwords.najhin-gaming.com server | High |
 | Store new Nextcloud app password (n8n-doc-pipeline) in Vaultwarden | High |
 | Set $10 API limit in Anthropic Console (temporary) | High |
 | Begin Phase 38 planning after Phase 14 complete | High |
+| Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn) | High |
 | Delete old disconnected /update nodes from Telegram Agent workflow | Medium |
 | Delete Test SQLite workflow from n8n | Medium |
 | Retire Update Nextcloud File and Push to GitHub workflows (unpublish) | Medium |
@@ -530,39 +539,45 @@ Keep Claude Pro if quality insufficient, still save $10-15/month with hybrid app
 
 ### April 23, 2026
 Date: April 23, 2026
-Phase: Gilgamesh Evolution Roadmap Planning
+Phase: Gilgamesh Evolution + Claude Design Discovery
 
 Topics Discussed
 
-Fate Grand Order AI agent ecosystem recovered (Gilgamesh, Da Vinci, EMIYA active; MERLIN, Mash, Guardian, Nexus, Scribe, Midas, Oracle planned)
-Claude API cost limit hit, paid extra to continue
-Long-term goal: Replace claude.ai with Gilgamesh by August 2026
-16-week roadmap created: Foundation → Intelligence → Capabilities → Refinement
-Target cost reduction: $30-40/month → $5-10/month
+Fate Grand Order AI agent ecosystem (Gilgamesh, Da Vinci, EMIYA active; MERLIN, Mash, Guardian, Nexus, Scribe, Midas, Oracle planned)
+Claude API cost limit hit, need to control spending
+Long-term goal: Replace claude.ai with Gilgamesh by August 2026 (16-week roadmap)
+Target cost: $30-40/month → $5-10/month
+Claude Design discovered (launched April 17, 2026) - new visual design tool
+Created homelab infrastructure diagram using Claude Design
+AI News Scraper idea for tracking new homelab-ready tools
 
 Decisions Made
 
-PRIMARY GOAL: Full Gilgamesh replacement of Claude Web in 16 weeks
-Phase 38 (Ollama + ROCm) promoted to Near Term #2 (CRITICAL - stop API bleeding)
+PRIMARY GOAL: Gilgamesh replaces Claude Web in 16 weeks, save $240-360/year
+Phase 38 (Ollama + ROCm) promoted to Near Term #2 (CRITICAL)
 Phase 41 (Hybrid Routing) promoted to Near Term #6
-Six new phases added: 7E Extended Memory, 7F File Generation, 7G Vision API, 7H Document Upload, 7I Quality Assurance, 7J Migration
-Backup plan: Keep Claude Pro if quality insufficient, still save $10-15/month
-Gaming agents (Mash) separate from Gilgamesh (Telegram)
+Six new Gilgamesh phases: 7E Extended Memory, 7F File Generation, 7G Vision API, 7H Document Upload, 7I Quality Assurance, 7J Migration
+Phase 7K added: AI News Scraper (RSS/Reddit scraping, Ollama evaluation, Telegram alerts, Obsidian storage)
+Claude Design strategy: Use sparingly (1-2 projects/week), high-value only (LinkedIn, GitHub, milestones), do NOT automate
+Phase 7F scope: Automate text/code/Mermaid diagrams, keep marketing graphics manual via Claude Design
 
 Changes to AI-CONTEXT.md
 
-Add "Gilgamesh Evolution Roadmap" section with 4-phase plan (Foundation: Ollama + Obsidian; Intelligence: Extended Memory + Hybrid Routing; Capabilities: Artifacts + Vision + Upload; Refinement: QA + Migration). Target $5-10/month vs current $30-40/month. Success criteria: 20+ msg conversations, RAG recall, Vision, artifacts, under $10/month cost.
-Add "Fate Grand Order Agent Ecosystem" section: Active (Gilgamesh Telegram, Da Vinci knowledge, EMIYA infrastructure). Planned (MERLIN #1 priority reminders, Mash Discord gaming, Guardian security, Nexus automation, Scribe docs, Midas cost, Oracle predictions). Gaming agents separate from admin.
-Update recent_updates: Fate agents discussed Apr 21-22. Gilgamesh Evolution goal Apr 23. Phase 38 promoted critical. Six new phases added.
+Add Gilgamesh Evolution Roadmap section (4 phases over 16 weeks, cost projection table, success criteria)
+Add Fate Grand Order Agent Ecosystem section (active + planned servants with roles)
+Phase 38 promoted to Near Term #2, Phase 41 to Near Term #6
+Updated recent_updates with Fate agents, Gilgamesh Evolution goal, Phase 38 promotion, Claude Design discovery
 
 Errors & Resolutions
 
-Claude search missed Fate roster due to generic terms. Use specific names (Merlin, Mash, Chaldea) for conversation_search.
+Claude search missed Fate roster initially, used conversation_search with specific names (Merlin, Mash) to find it
 
 Action Items
 
-Push updated roadmap.md to GitHub
-Set $10 API limit in Anthropic Console (temporary)
+Download updated roadmap.md and push to GitHub
+Send condensed summary via /update to Gilgamesh
+Set $10 API spend limit in Anthropic Console (temporary safety)
+Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)
 Begin Phase 38 planning after Phase 14 complete
 
 ### April 20, 2026
@@ -693,29 +708,6 @@ None this session
 Action Items
 
 None - pipeline test successful
-
-### April 18, 2026 (Part 2)
-Date: April 18, 2026
-Phase: Phase 23 — Vaultwarden + Secrets Audit & Cleanup
-Topics Discussed
-
-Deployed Vaultwarden (CT 214, 192.168.30.214, passwords.najhin-gaming.com)
-Full secrets audit across all 14 containers
-Migrated all API keys to HashiCorp Vault kv/ (8 paths total)
-Stored all service logins and API keys in Vaultwarden (~23 entries)
-Cleaned up duplicate Cloudflare API tokens (9 to 3)
-Cleaned up duplicate n8n GitHub credentials (3 to 1)
-Generated new GitHub PAT (fine-grained, n8n-gilgamesh, Contents read/write)
-Fixed /update workflow — Nextcloud 404 and GitHub 404 (removed /docs from paths)
-Deleted old docs/AI-CONTEXT.md from GitHub
-Deleted plaintext notepad secrets file
-
-Decisions Made
-
-Vaultwarden for personal password reference, Vault for machine secrets — API keys stored in both
-Cloudflare Access app icons skipped (UI doesn't support custom icons easily)
-GitHub PAT set with fine-grained permissions (Contents read/write, homelab-infrastructure repo only)
-Google Sign-In services (Anthropic, Tailscale) stored with "Google Sign-In" as password field
 
 ---
 
