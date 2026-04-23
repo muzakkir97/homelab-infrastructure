@@ -4,6 +4,41 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [April 24, 2026] - Phase 15: Gilgamesh Additional Slash Commands (COMPLETE)
+
+#### Completed
+- **Phase 15:** Gilgamesh Additional Slash Commands deployed and tested
+
+#### Added
+- **6 new slash commands:** /help, /clear, /memory, /cost, /alerts, /backup
+- **Command documentation:** Complete reference guide for all Gilgamesh commands
+- **Memory management:** /clear command to reset conversation history
+- **Cost tracking display:** /cost command shows token usage and estimated costs
+- **Alert monitoring:** /alerts command displays active Alertmanager alerts
+- **Backup status:** /backup command shows last backup times for all containers
+
+#### Technical
+- **Always Output Data enabled:** Get Alerts and Clear Memory DB nodes handle empty responses
+- **Cost calculation:** Uses estimated token rates (Sonnet $3/$15 per 1M) due to cost_usd bug
+- **Error handling:** Added proper array checks and chat ID references
+- **Workflow optimization:** Removed redundant /temps and /storage commands (available in menu)
+
+#### Fixed
+- Clear Memory DB "at least one condition required": Added role not empty condition
+- Send Clear Confirmation wrong chat_id: Use $('Get Chat ID').first().json.chat_id pattern
+- Format Cost SyntaxError: Removed toLocaleString() and emojis from Code node
+- Get Alerts/Format Alerts undefined handling: Added Array.isArray() checks
+
+#### Known Issues
+- **cost_usd column bug:** gilgamesh_costs.cost_usd always returns 0 (pre-existing from earlier phases)
+- **Cost estimation:** Using token count approximation until Save Cost node investigation
+
+#### Scope Changes
+- **/logs command deferred:** Not practical without proper filtering, saved for future menu action
+- **Command consolidation:** /temps and /storage removed (redundant with existing menu system)
+
+---
+
 ### [April 24, 2026] - Phase 7D-Menu + Phase 14: Complete Gilgamesh Menu System
 
 #### Completed
