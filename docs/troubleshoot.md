@@ -4,6 +4,104 @@
 
 ---
 
+## 2026-04-24 — kinmoon Storage ID Incorrect in Proxmox
+
+**Symptoms:** Gilgamesh Storage menu showing "kinmoon-smb: N/A" instead of actual storage usage statistics.
+
+**Root Cause:** AI-CONTEXT.md documented the NAS storage as "kinmoon-smb" but the actual Proxmox storage ID is "kinmoon-nfs". The Proxmox API call was requesting the wrong storage identifier.
+
+**Resolution:** Updated n8n workflow to use correct storage ID "kinmoon-nfs" in the Proxmox API request for storage information.
+
+**Verification:** Tested Gilgamesh Storage menu - now correctly displays kinmoon-nfs usage statistics.
+
+**Lesson:** Always verify actual storage IDs in Proxmox web interface before hardcoding them in API calls. Storage names in documentation may not match actual Proxmox configuration.
+
+---
+
+## 2026-04-24 — n8n Command Field Parsing Expressions Incorrectly
+
+**Symptoms:** SSH command `docker ps --format "table {{.Names}}\t{{.Status}}"` failing with n8n syntax error, interpreting `{{.Names}}` as n8n expression instead of Docker Go template.
+
+**Root Cause:** n8n Expression mode interprets any `{{}}` syntax as n8n expressions. Docker's Go template format conflicts with n8n's expression syntax.
+
+**Resolution:** Changed Command field from "Expression" mode to "Fixed" mode in the SSH node configuration.
+
+**Lesson:** When using external command templates (Docker, Kubernetes, etc.) that use `{{}}` syntax, always use "Fixed" mode in n8n to prevent expression parsing conflicts.
+
+---
+
+## 2026-04-24 — SSH Password Authentication Failing to CT 302
+
+**Symptoms:** n8n SSH connection to CT 302 (gaming-wings-1) failing with "Permission denied (publickey)" error despite providing password.
+
+**Root Cause:** Container SSH configuration had `PermitRootLogin prohibit-password` which only allows key-based authentication, not password authentication.
+
+**Resolution:** Modified `/etc/ssh/sshd_config` on CT 302:
+```bash
+PermitRootLogin yes
+systemctl restart sshd
+```
+
+**Verification:** SSH connection from n8n to CT 302 now works with password authentication.
+
+**Lesson:** `PermitRootLogin prohibit-password` blocks password auth even when other password auth is enabled. Use `PermitRootLogin yes` for password-based root access.
+
+---
+
+## 2026-04-24 — pfSense Blocking SSH Between VLANs
+
+**Symptoms:** SSH connection hanging when trying to connect from CT 211 (VLAN 30) to Kuromoon (VLAN 10) on port 22.
+
+**Root Cause:** pfSense firewall rules were blocking inter-VLAN communication on port 22. No explicit rule allowed SSH traffic from VLAN 30 to VLAN 10.
+
+**Resolution:** Added pfSense firewall rule:
+- Interface: VLAN30_SERVICES  
+- Action: Pass
+- Protocol: TCP
+- Source: Single host 192.168.30.211 (n8n container)
+- Destination: Single host 192.168.10.5 (Kuromoon)
+- Port: 22
+
+**Verification:** SSH connection from CT 211 to Kuromoon now works successfully.
+
+**Lesson:** Inter-VLAN communication requires explicit firewall rules. Default inter-VLAN rules may not cover specific service ports like SSH.
+
+---
+
+## 2026-04-24 — n8n Send Telegram Message Invalid JSON Body
+
+**Symptoms:** n8n HTTP Request node for sending Telegram messages failing with "Invalid JSON" error when using Raw/JSON body mode.
+
+**Root Cause:** Complex message formatting with dynamic content was causing JSON parsing issues in the HTTP Request node's JSON body field.
+
+**Resolution:** Changed HTTP Request body mode from "Raw/JSON" to "Using Fields Below" and configured individual fields:
+- chat_id: 518832696
+- text: Dynamic content via expression
+- parse_mode: HTML (if needed)
+
+**Lesson:** For HTTP APIs with dynamic content, "Using Fields Below" mode is more reliable than raw JSON when dealing with complex message formatting and special characters.
+
+---
+
+## 2026-04-24 — n8n Callback Query Data Undefined
+
+**Symptoms:** Telegram callback query processing showing `inputData.callback_query` as undefined when trying to access button press data.
+
+**Root Cause:** Callback query data was not being properly extracted from the Telegram webhook payload in subsequent nodes after the Callback Router.
+
+**Resolution:** Modified data access pattern to use:
+```javascript
+$('Callback Router').first().json.callback_query.data
+```
+Instead of:
+```javascript
+$json.callback_query.data
+```
+
+**Lesson:** In n8n workflows with multiple trigger types and routing nodes, always reference data from specific nodes using `$('NodeName').first().json` rather than assuming `$json` contains the expected data structure.
+
+---
+
 ## 2026-04-23 — Claude Design Visual Content Strategy Learning
 
 **Symptoms:** Need to understand how to effectively use Claude Design for homelab project without overwhelming the workflow or increasing costs significantly.
