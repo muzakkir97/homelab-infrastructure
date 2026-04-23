@@ -4,6 +4,25 @@
 
 ---
 
+## 2026-04-23 — Claude Design Visual Content Strategy Learning
+
+**Symptoms:** Need to understand how to effectively use Claude Design for homelab project without overwhelming the workflow or increasing costs significantly.
+
+**Root Cause:** Claude Design is a new visual design tool (launched April 17, 2026) that requires strategic usage to be cost-effective. Unlimited automation would be expensive and unnecessary for most homelab documentation needs.
+
+**Resolution:** Established clear usage strategy for Claude Design:
+- **Limit to 1-2 projects per week maximum**
+- **High-value content only:** LinkedIn posts, GitHub README visuals, milestone presentations
+- **Do NOT automate:** Keep manual to control costs and ensure quality
+- **Export artifacts:** Save PNG/SVG files for reuse across platforms
+- **Phase 7F scope adjusted:** Automate text/code/Mermaid diagrams only, keep marketing graphics manual
+
+**Verification:** Created homelab infrastructure diagram as test case - successful visual representation of network topology and container architecture.
+
+**Lesson:** New AI tools like Claude Design require strategic integration rather than immediate automation. High-value, manual usage is more cost-effective than automated integration for visual content creation.
+
+---
+
 ## 2026-04-23 — Claude Conversation Search Missing Specific Character Names
 
 **Symptoms:** When searching for "Fate themed agent" or "agent ecosystem" in conversation history, Claude initially returned no results despite detailed discussion of Fate/Grand Order servant-themed agents on April 21-22, 2026.
