@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Phase 16.1, 16.2, 58, 7D-Menu, and 14 complete (Documentation Pipeline + Windrose Server + Gilgamesh Menu System). Game server deployed on CT 302 via Docker. 14 LXC containers running.
+**Current Status:** Phase 15 complete (Gilgamesh Additional Slash Commands). 14 LXC containers running.
 
 ---
 
@@ -248,7 +248,7 @@ Implementation: Phases 59-64 (Gaming Platform Pipeline)
 
 ---
 
-## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu)
+## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15)
 
 ### Architecture
 ```
@@ -268,6 +268,20 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 - **Inline keyboard menu:** Full menu system with all submenus working
 - **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
 - **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
+- **Slash commands:** 6 additional commands for direct actions
+
+### Slash Commands
+
+| Command | Purpose | Description |
+|---------|---------|-------------|
+| /help | Quick reference | Shows all available commands and menu options |
+| /clear | Memory reset | Clears conversation memory (last 20 messages) |
+| /memory | View history | Shows recent conversation messages |
+| /cost | Usage tracking | Displays token usage and estimated costs |
+| /alerts | System status | Shows active Alertmanager alerts |
+| /backup | Backup status | Last backup times for all containers |
+| /update | Session summary | Merges session into docs (3 files) |
+| /sync-docs | Full regeneration | Regenerates all documentation (7 files) |
 
 ### Technical Details
 
@@ -280,6 +294,10 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 | n8n Container  | CT 211, 192.168.30.211      |
 | Proxmox API    | root@pam!gilgamesh token    |
 | Proxmox node   | muzakkir (not kuromoon)     |
+
+### Cost Tracking Note
+- gilgamesh_costs.cost_usd column always returns 0 (pre-existing bug from earlier phases)
+- Cost calculation uses estimated token rates (Sonnet $3/$15 per 1M input/output tokens)
 
 ### n8n Workflows (Count: 7)
 
@@ -420,6 +438,7 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | 9       | NAS Deployment (Kinmoon)                                  | ✅ Complete    | Mar 3, 2026      |
 | 13      | HashiCorp Vault — Secrets Manager                         | ✅ Complete    | Apr 18, 2026     |
 | 14      | Secrets Management & Integration                          | ✅ Complete    | Apr 24, 2026     |
+| 15      | Gilgamesh Additional Slash Commands                       | ✅ Complete    | Apr 24, 2026     |
 | 16.1    | Documentation Pipeline - Update Workflow                  | ✅ Complete    | Apr 19, 2026     |
 | 16.2    | Documentation Pipeline - Sync Docs Workflow               | ✅ Complete    | Apr 19, 2026     |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                     | ✅ Complete    | Apr 18, 2026     |
@@ -497,12 +516,13 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Task | Priority |
 |------|----------|
 | Build MERLIN reminder agent (highest priority due to memory issues) | High |
+| Fix cost_usd column not being saved (investigate Save Cost node in main workflow) | High |
 | Share Windrose invite code NAJHINWINDROSE with friends | High |
 | Monitor RAM usage with Windrose running on CT 302 | High |
 | Set Bitwarden app on phone with passwords.najhin-gaming.com server | High |
 | Store new Nextcloud app password (n8n-doc-pipeline) in Vaultwarden | High |
 | Set $10 API limit in Anthropic Console (temporary) | High |
-| Begin Phase 38 planning after Phase 14 complete | High |
+| Begin Phase 22 (Obsidian) next session | High |
 | Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn) | High |
 | Store Proxmox root password in Vaultwarden | High |
 | Store CT 302 root password in Vaultwarden | High |
@@ -521,7 +541,6 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram) | Medium |
 | Integrate Vault secrets into n8n Gilgamesh workflow | Medium |
 | Document all future agent additions in Fate Agent section | Medium |
-| Begin Phase 15 (additional slash commands) or Phase 22 (Obsidian) next session | Medium |
 
 ### Infrastructure
 | Task | Priority |
@@ -545,6 +564,50 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 24, 2026
+Date: April 24, 2026
+Phase: 15 — Gilgamesh Additional Slash Commands (COMPLETE)
+
+Topics Discussed
+
+Built 6 new slash commands for Gilgamesh Telegram bot
+Removed /temps and /storage from scope (redundant with menu)
+Removed /logs from scope (not practical without proper filtering)
+
+Decisions Made
+
+/temps and /storage dropped — already in menu system
+/logs dropped — defer to future dedicated menu action
+Cost calculation uses estimated token rates (Sonnet $3/$15 per 1M) because cost_usd column in gilgamesh_costs table has always been 0 (pre-existing bug from earlier phases)
+Always Output Data enabled on Get Alerts and Clear Memory DB nodes to handle empty responses
+
+Changes to AI-CONTEXT.md
+
+Mark Phase 15 as Complete (April 24, 2026)
+Add 6 new commands to Gilgamesh features section: /help, /clear, /memory, /cost, /alerts, /backup
+Note: gilgamesh_costs.cost_usd column always 0 — cost estimated from token counts
+
+Changes to Other Docs
+
+roadmap.md: Move Phase 15 to Completed
+changelog.md: Add Phase 15 completion entry
+
+Errors & Resolutions
+
+Clear Memory DB "at least one condition required": Added role is not empty condition
+Send Clear Confirmation wrong chat_id: Used $('Get Chat ID').first().json.chat_id instead of $json.message.chat.id
+Clear Memory DB no output when table empty: Enabled Always Output Data
+Format Cost SyntaxError: Removed toLocaleString() and emojis from Code node
+Get Alerts no output on empty array: Enabled Always Output Data
+Format Alerts "Active Alerts: undefined": Added Array.isArray() check before using alerts
+
+Action Items
+
+Save and Publish Telegram Agent workflow
+Run /sync-docs to push updated docs to GitHub
+Fix cost_usd column not being saved (investigate Save Cost node in main workflow)
+Begin Phase 22 (Obsidian) next session
 
 ### April 24, 2026
 Date: April 24, 2026
@@ -747,31 +810,6 @@ Retire Update Nextcloud File and Push to GitHub workflows (unpublish)
 Store new Nextcloud app password in Vaultwarden
 Share Windrose invite code with friends
 Monitor Windrose RAM usage on CT 302
-
-### December 19, 2024
-Date: December 19, 2024
-Phase: Documentation Pipeline Test
-Topics Discussed
-
-Tested documentation pipeline integration via Telegram /update command
-Verified end-to-end workflow from Telegram → n8n → Claude → GitHub
-No actual infrastructure changes made - verification session only
-
-Decisions Made
-
-Pipeline working correctly - documentation merging process confirmed operational
-
-Changes to AI-CONTEXT.md
-
-None - test session only
-
-Errors & Resolutions
-
-None this session
-
-Action Items
-
-None - pipeline test successful
 
 ---
 
