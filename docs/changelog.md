@@ -4,6 +4,31 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [April 23, 2026] - Documentation Update: Fate Agent Roster Recovery
+
+#### Added
+- **Fate Grand Order Agent Ecosystem** section in AI-CONTEXT.md
+- Active agents documented: Gilgamesh (Telegram), Da Vinci (n8n/Nextcloud), EMIYA (n8n)
+- Planned agent priority order: MERLIN #1 (reminders), Mash (gaming Discord bot), Guardian (security)
+- Detailed specifications for MERLIN reminder agent and Mash Discord bot
+- Agent design principles: Gilgamesh=Telegram admin, Mash=Discord gaming, separate domains
+
+#### Planning
+- MERLIN identified as highest priority agent due to user memory issues
+- Mash Discord bot planned for Phases 59-64 (Gaming Platform Pipeline)
+- Agent ecosystem theme: Fate/Grand Order servants for consistency
+
+#### Documentation
+- Recovered agent roster from April 21-22 conversation history
+- Established pattern for documenting future agent additions
+- Added specific character names for better conversation searchability
+
+#### Lessons Learned
+- Use specific character/servant names when searching past conversations ("Merlin Chaldea" vs "Fate themed agent")
+- Important planning discussions can get lost without proper documentation structure
+
+---
+
 ### [April 20, 2026] - Foundation Planning Session
 
 #### Planning
