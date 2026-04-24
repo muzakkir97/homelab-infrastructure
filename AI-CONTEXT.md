@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Phase 39 complete (Open WebUI). 14 LXC containers + 1 VM running.
+**Current Status:** Phase 41 complete (Hybrid Routing). 14 LXC containers + 1 VM running.
 
 ---
 
@@ -138,8 +138,9 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Hardware:** 6 CPU cores, 8GB RAM, 100GB disk
 - **GPU:** RX 6700 XT passthrough (IOMMU Group 18)
 - **ROCm:** Version 6.1.3 installed and configured
-- **Models:** qwen2.5:14b (8.7GB), llama3.2 (2.0GB)
+- **Models:** qwen3:14b (9.3GB), llama3.2 (2.0GB)
 - **Environment:** HSA_OVERRIDE_GFX_VERSION=10.3.0, OLLAMA_HOST=0.0.0.0
+- **SSH Access:** muzakkir user with sudo access (not root)
 
 ### Nextcloud Hub (CT 220)
 - **Root disk:** 100GB (resized from 20GB to resolve quota issues)
@@ -158,7 +159,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 ### Infrastructure
 - **VM 400:** ollama-gpu with RX 6700 XT passthrough
 - **Open WebUI:** Docker container on port 3000
-- **Models running:** qwen2.5:14b (primary), llama3.2 (backup)
+- **Models running:** qwen3:14b (primary), llama3.2 (backup)
 - **GPU utilization:** 100% GPU inference confirmed
 - **Access:** ollama.najhin-gaming.com via NPM SSL + Cloudflare Access
 
@@ -172,6 +173,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - Cloudflare Access protection (email OTP)
 - NPM SSL termination
 - Internal Docker network isolation
+- NPM Configuration: proxy_buffering off for streaming JSON responses
 
 ---
 
@@ -218,14 +220,14 @@ second-brain/
 
 ### 4-Phase Plan
 
-#### Phase 1: Foundation (Weeks 1-4) — ✅ IN PROGRESS
+#### Phase 1: Foundation (Weeks 1-4) — ✅ COMPLETE
 - **Phase 38** — Ollama + ROCm on Kuromoon RX 6700 XT ✅ COMPLETE
 - **Phase 39** — Open WebUI frontend ✅ COMPLETE
 - **Phase 22** — Obsidian Knowledge Base ✅ COMPLETE
+- **Phase 41** — Hybrid Routing (local/API based on complexity) ✅ COMPLETE
 
 #### Phase 2: Intelligence (Weeks 5-8)
 - **Phase 7E** — Extended Memory (20+ message conversations via RAG)
-- **Phase 41** — Hybrid Routing (local/API based on complexity)
 
 #### Phase 3: Capabilities (Weeks 9-12)
 - **Phase 7F** — File Generation (code, configs, docs)
@@ -326,11 +328,11 @@ Implementation: Phases 59-64 (Gaming Platform Pipeline)
 
 ---
 
-## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15)
+## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15/41)
 
 ### Architecture
 ```
-Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
+Telegram (@JhinGilgamesh_bot) → n8n Workflow → Routing Logic → Ollama/Claude API → Response
                                      ↓
                               Memory (n8n Data Tables)
                                      ↓
@@ -340,13 +342,19 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 
 ### Features
 - **Conversation memory:** Last 20 messages stored in n8n Data Tables
-- **Smart routing:** Simple inputs → Haiku 4.5, complex queries → Sonnet 4
+- **Hybrid routing:** Ollama qwen3:14b (simple queries) → Haiku 4.5 (fallback) → Sonnet 4 (complex queries)
 - **Web search:** Real-time information via Claude's web_search tool
 - **Cost tracking:** Token usage logged to gilgamesh_costs table
 - **Inline keyboard menu:** Full menu system with all submenus working
 - **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
 - **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
 - **Slash commands:** 6 additional commands for direct actions
+
+### Routing Logic
+- **Complex keywords:** API, authentication, security, deployment, configuration, troubleshooting → Claude Sonnet
+- **Word count:** >50 words → Claude Sonnet
+- **Simple queries:** Default → Ollama qwen3:14b
+- **Fallback:** If Ollama down → Claude Haiku
 
 ### Slash Commands
 
@@ -369,6 +377,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 | Chat ID        | 518832696                   |
 | Haiku Model    | claude-haiku-4-5-20251001   |
 | Sonnet Model   | claude-sonnet-4-20250514    |
+| Ollama Model   | qwen3:14b (9.3GB)          |
 | n8n Container  | CT 211, 192.168.30.211      |
 | Proxmox API    | root@pam!gilgamesh token    |
 | Proxmox node   | muzakkir (not kuromoon)     |
@@ -381,7 +390,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 
 | Workflow                    | Purpose                             | Nodes | Trigger         |
 |-----------------------------|-------------------------------------|-------|-----------------|
-| Telegram Agent              | Main bot, menu, commands            | 15    | Telegram        |
+| Telegram Agent              | Main bot, menu, commands, routing   | 15+   | Telegram        |
 | Documentation Pipeline - Update | Session summary → 3 files     | 7     | Webhook         |
 | Documentation Pipeline - Sync Docs | Full doc regeneration → 7 files | 7  | Webhook         |
 | Update Nextcloud File       | Legacy (unpublished)                | 5     | Webhook         |
@@ -404,6 +413,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 ### SSH & API Access
 - **SSH to Kuromoon:** CT 211 → 192.168.10.5:22 (pfSense rule added)
 - **SSH to CT 302:** Password auth enabled (PermitRootLogin yes)
+- **SSH to VM 400:** muzakkir user with sudo access
 - **Proxmox API:** root@pam!gilgamesh token
 - **Storage IDs:** kinmoon-nfs (not kinmoon-smb in Proxmox)
 
@@ -413,7 +423,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 
 ---
 
-## 🔧 Documentation Pipeline (Phase 16.1/16.2)
+## 🔧 Documentation Pipeline (Phase 16.1/16.2/16.3)
 
 ### Architecture
 ```
@@ -442,6 +452,11 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ### File Coverage (sync-docs)
 - AI-CONTEXT.md, changelog.md, troubleshoot.md (from /update)
 - README.md, roadmap.md, current-state.md, service-catalog.md
+
+### Phase 16.3 - Da Vinci Documentation Pipeline (Planned)
+- **Purpose:** Redesign /update workflow with append-only session summaries
+- **Features:** File attachment via Telegram, background Claude format processing, Nextcloud download links
+- **Agent:** Da Vinci (Caster) handles knowledge curation and documentation formatting
 
 ---
 
@@ -524,6 +539,7 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | 24.1    | Service Update Manager (Docker + apt + Proxmox, approval-gated) | 📋 Planned | —               |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT                      | ✅ Complete    | Apr 24, 2026     |
 | 39      | Open WebUI Frontend                                       | ✅ Complete    | Apr 24, 2026     |
+| 41      | Hybrid Routing (Ollama/Claude API)                        | ✅ Complete    | Apr 24, 2026     |
 | 58      | Windrose Server Deployment                                | ✅ Complete    | Apr 19, 2026     |
 
 ---
@@ -588,7 +604,7 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Nextcloud quota exceeded             | Resize CT 220 from 20GB to 100GB with `pct resize 220 rootfs +80G` |
 | Dataview queries no results         | Queries must target folder with individual notes, not same file |
 
-### Ollama & ROCm (Phases 38/39)
+### Ollama & ROCm (Phases 38/39/41)
 
 | Issue                                | Resolution                                                      |
 |--------------------------------------|-----------------------------------------------------------------|
@@ -596,6 +612,9 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | vfio modules not loading             | Add softdep lines to `/etc/modprobe.d/vfio.conf` and update-initramfs |
 | ROCm not detecting RX 6700 XT       | Set `HSA_OVERRIDE_GFX_VERSION=10.3.0` environment variable      |
 | Open WebUI not accessible externally | Set `OLLAMA_HOST=0.0.0.0` in environment, restart ollama service |
+| Open WebUI JSON parse error         | Add `proxy_buffering off` in NPM advanced config for streaming  |
+| SSH to VM 400 wrong password        | VM uses muzakkir user not root (different passwords)           |
+| httpRequestWithAuthentication not supported | Use separate HTTP Request node with credential instead |
 
 ### Business & Learning
 
@@ -620,7 +639,8 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Store new Nextcloud app password (n8n-doc-pipeline) in Vaultwarden | High |
 | Set $10 API limit in Anthropic Console (temporary) | High |
 | Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn) | High |
-| Store ollama-gpu root password in Vaultwarden | High |
+| Store VM 400 muzakkir password in Vaultwarden | High |
+| Store VM 400 root password in Vaultwarden | High |
 | Add Cloudflare Access icon for ollama.najhin-gaming.com | High |
 | Store Proxmox root password in Vaultwarden | High |
 | Store CT 302 root password in Vaultwarden | High |
@@ -643,9 +663,9 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ### Gilgamesh & Documentation
 | Task | Priority |
 |------|----------|
-| Build Phase 16.3 — Monthly Infrastructure Audit cron workflow | High |
+| Build Phase 16.3 — Da Vinci Documentation Pipeline (append-only /update) | High |
 | Build Mash Discord bot (Phases 59-64) | High |
-| /update redesign — file attachment via Telegram, push to GitHub + Nextcloud | Medium |
+| Build Phase 7E — Extended Memory (20+ message conversations via RAG) | High |
 | Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram) | Medium |
 | Integrate Vault secrets into n8n Gilgamesh workflow | Medium |
 | Document all future agent additions in Fate Agent section | Medium |
@@ -672,6 +692,58 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 24, 2026
+Date: April 24, 2026
+Phase: 38/39 Model Upgrade + Phase 41 Hybrid Routing (COMPLETE)
+
+Topics Discussed
+
+Upgraded Ollama model from qwen2.5:14b to qwen3:14b (9.3GB, fits in 12GB VRAM)
+Fixed SSH access to VM 400 - uses muzakkir user with sudo, not root
+Fixed Open WebUI JSON parse error by adding proxy_buffering off in NPM advanced config
+Updated Open WebUI to latest version
+Built Phase 41 hybrid routing in Gilgamesh Telegram Agent with complex keyword detection
+Complex routing: API/auth/security/deployment keywords OR >50 words → Sonnet
+Simple routing: Default → Ollama qwen3:14b, fallback to Haiku if Ollama down
+Discussed Phase 16.3 Da Vinci Documentation Pipeline for append-only /update redesign
+
+Decisions Made
+
+qwen3:14b is the primary local model for Gilgamesh hybrid routing
+SSH to VM 400 uses muzakkir user with sudo access, not direct root
+Routing logic: complex keywords or word count >50 = Sonnet, otherwise Ollama
+Phase 16.3 scope: Da Vinci handles /update redesign with file attachments and background formatting
+Route Check If node with Call Ollama Code branch and Call Claude HTTP Request branch
+
+Changes to AI-CONTEXT.md
+
+Mark Phase 41 as ✅ Complete (April 24, 2026)
+Update Gilgamesh routing: Ollama qwen3:14b → Haiku fallback → Sonnet complex
+Update VM 400 notes: SSH as muzakkir user with sudo, not root
+Add proxy_buffering off to NPM lesson learned
+Add Phase 16.3 to planned phases: Da Vinci Documentation Pipeline
+Update model from qwen2.5:14b to qwen3:14b (9.3GB)
+
+Changes to Other Docs
+
+roadmap.md: Move Phase 41 to Completed (April 24, 2026)
+changelog.md: Add Phase 41 completion entry
+
+Errors & Resolutions
+
+SSH to VM 400 wrong password: VM uses muzakkir user not root, different passwords
+Open WebUI JSON parse error: proxy_buffering off needed in NPM for streaming responses
+httpRequestWithAuthentication not supported in Code nodes: use separate HTTP Request node
+Extract Response reading wrong node: reference $('Merge').first().json explicitly
+
+Action Items
+
+Store VM 400 muzakkir password in Vaultwarden
+Store VM 400 root password in Vaultwarden
+Plan Phase 16.3 (Da Vinci Documentation Pipeline) next session
+Run /sync-docs to push updated docs to GitHub
+Begin Phase 7E (Extended Memory) planning
 
 ### April 24, 2026
 Date: April 24, 2026
@@ -885,49 +957,6 @@ Push updated docs to GitHub via /sync-docs
 Store Proxmox root password in Vaultwarden
 Store CT 302 root password in Vaultwarden
 Begin Phase 15 (additional slash commands) or Phase 22 (Obsidian) next session
-
-### April 23, 2026
-Date: April 23, 2026
-Phase: Gilgamesh Evolution + Claude Design Discovery
-
-Topics Discussed
-
-Fate Grand Order AI agent ecosystem (Gilgamesh, Da Vinci, EMIYA active; MERLIN, Mash, Guardian, Nexus, Scribe, Midas, Oracle planned)
-Claude API cost limit hit, need to control spending
-Long-term goal: Replace claude.ai with Gilgamesh by August 2026 (16-week roadmap)
-Target cost: $30-40/month → $5-10/month
-Claude Design discovered (launched April 17, 2026) - new visual design tool
-Created homelab infrastructure diagram using Claude Design
-AI News Scraper idea for tracking new homelab-ready tools
-
-Decisions Made
-
-PRIMARY GOAL: Gilgamesh replaces Claude Web in 16 weeks, save $240-360/year
-Phase 38 (Ollama + ROCm) promoted to Near Term #2 (CRITICAL)
-Phase 41 (Hybrid Routing) promoted to Near Term #6
-Six new Gilgamesh phases: 7E Extended Memory, 7F File Generation, 7G Vision API, 7H Document Upload, 7I Quality Assurance, 7J Migration
-Phase 7K added: AI News Scraper (RSS/Reddit scraping, Ollama evaluation, Telegram alerts, Obsidian storage)
-Claude Design strategy: Use sparingly (1-2 projects/week), high-value only (LinkedIn, GitHub, milestones), do NOT automate
-Phase 7F scope: Automate text/code/Mermaid diagrams, keep marketing graphics manual via Claude Design
-
-Changes to AI-CONTEXT.md
-
-Add Gilgamesh Evolution Roadmap section (4 phases over 16 weeks, cost projection table, success criteria)
-Add Fate Grand Order Agent Ecosystem section (active + planned servants with roles)
-Phase 38 promoted to Near Term #2, Phase 41 to Near Term #6
-Updated recent_updates with Fate agents, Gilgamesh Evolution goal, Phase 38 promotion, Claude Design discovery
-
-Errors & Resolutions
-
-Claude search missed Fate roster initially, used conversation_search with specific names (Merlin, Mash) to find it
-
-Action Items
-
-Download updated roadmap.md and push to GitHub
-Send condensed summary via /update to Gilgamesh
-Set $10 API spend limit in Anthropic Console (temporary safety)
-Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)
-Begin Phase 38 planning after Phase 14 complete
 
 ---
 
