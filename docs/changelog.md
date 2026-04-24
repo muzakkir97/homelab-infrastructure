@@ -4,6 +4,41 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [April 24, 2026] - Phase 38 + 39: Ollama ROCm + Open WebUI (COMPLETE)
+
+#### Added
+- **VM 400 ollama-gpu** with Ubuntu 22.04, 6 CPU cores, 8GB RAM, 100GB disk on VLAN 30 (192.168.30.221)
+- **RX 6700 XT PCIe passthrough** successful GPU acceleration for AI inference workloads
+- **ROCm 6.1.3 runtime** installed and configured for AMD GPU compute support
+- **Ollama service** running with 100% GPU utilization confirmed
+- **AI models deployed:** qwen2.5:14b (8.7GB primary), llama3.2 (2.0GB backup)
+- **Open WebUI** Docker container on port 3000 for web-based model interaction
+- **Subdomain access:** ollama.najhin-gaming.com via NPM SSL termination
+- **Cloudflare Access protection** (email OTP) for external security
+
+#### Technical
+- **GPU passthrough:** IOMMU Group 18 configured in Proxmox VM settings
+- **ROCm compatibility:** HSA_OVERRIDE_GFX_VERSION=10.3.0 for RX 6700 XT support
+- **External access:** OLLAMA_HOST=0.0.0.0 environment variable for network binding
+- **vfio configuration:** Softdep modules loaded for GPU isolation
+
+#### Fixed
+- **VM disk space:** Resized root filesystem from 20GB to 100GB using lvextend + resize2fs
+- **vfio module loading:** Added softdep configuration to /etc/modprobe.d/vfio.conf with initramfs update
+- **ROCm GPU detection:** Environment override for RX 6700 XT compatibility (10.3.0 GFX version)
+- **Open WebUI accessibility:** Network binding configuration for external container access
+
+#### Milestone
+- **Gilgamesh Evolution Phase 1 Foundation:** Ollama + Open WebUI infrastructure complete
+- **Local AI infrastructure:** Ready for extended memory and hybrid routing development
+- **Cost reduction path:** Foundation for reducing $30-40/month Claude dependency
+
+#### Planned Next
+- Phase 7E: Extended Memory (20+ message conversations via RAG)
+- MERLIN reminder agent (highest priority for memory management)
+
+---
+
 ### [April 24, 2026] - Phase 22: Obsidian Knowledge Base (COMPLETE)
 
 #### Added
