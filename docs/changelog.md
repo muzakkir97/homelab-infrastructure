@@ -4,6 +4,40 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [April 24, 2026] - Phase 22: Obsidian Knowledge Base (COMPLETE)
+
+#### Added
+- **Obsidian installation** on Minimoon (Gaming PC) with vault at C:\Users\muzak\Nextcloud\Obsidian\second-brain
+- **6 essential plugins:** Dataview, Tasks, Templater, Calendar, Excalidraw, Kanban
+- **Structured folder system:** 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 05-templates, 06-archive
+- **Subscription tracker dashboard:** Individual notes per subscription using Dataview queries
+- **Session summary template:** Standardized template for homelab session documentation
+
+#### Technical
+- **Auto-sync via Nextcloud:** Local vault syncs automatically to CT 220 cloud storage
+- **Dashboard queries:** Dataview showing subscription costs and category totals
+- **Template system:** 05-templates/session-summary.md for consistent documentation
+
+#### Fixed
+- **Nextcloud quota exceeded:** CT 220 root disk resized from 20GB to 100GB (99% full → 20% usage)
+- **Dataview query errors:** Individual subscription notes required in separate folder structure
+
+#### Infrastructure
+- **CT 220 storage expansion:** Root disk 20GB → 100GB via `pct resize 220 rootfs +80G`
+- **Thin pool overprovisioning:** Warning identified on local-lvm storage (deferred to infrastructure cleanup)
+
+#### Planned
+- **Phase 24.1:** Service Update Manager (Docker + apt + Proxmox updates with Telegram approval)
+- **Data migration:** Move Nextcloud data directory to /mnt/data-storage (7.3TB HDD) in future phase
+
+#### Action Items
+- Add remaining subscriptions to Obsidian vault
+- Fix Total by Category query (backtick parsing issue)
+- Update Nextcloud to version 33.0.2
+- Begin Phase 38 (Ollama + ROCm) next session
+
+---
+
 ### [April 24, 2026] - Phase 15: Gilgamesh Additional Slash Commands (COMPLETE)
 
 #### Completed
