@@ -4,6 +4,85 @@
 
 ---
 
+## 2026-04-24 — Open WebUI Not Accessible Externally
+
+**Symptoms:** Open WebUI container running on VM 400 port 3000, but not accessible from external browsers via ollama.najhin-gaming.com. NPM proxy returning connection refused errors.
+
+**Root Cause:** Ollama service was bound to localhost (127.0.0.1) only, preventing external container access. Default Ollama configuration doesn't allow network connections from other interfaces.
+
+**Resolution:** Set environment variable `OLLAMA_HOST=0.0.0.0` to bind Ollama to all network interfaces:
+```bash
+echo "OLLAMA_HOST=0.0.0.0" >> ~/.bashrc
+source ~/.bashrc
+sudo systemctl restart ollama
+```
+
+**Verification:** Open WebUI now accessible via ollama.najhin-gaming.com. Docker container can successfully connect to Ollama API on all network interfaces.
+
+**Lesson:** Ollama defaults to localhost-only access for security. Must explicitly bind to 0.0.0.0 for Docker container or external proxy access.
+
+---
+
+## 2026-04-24 — ROCm Not Detecting RX 6700 XT GPU
+
+**Symptoms:** ROCm 6.1.3 installed but `rocminfo` showing "No ROCm device found" despite RX 6700 XT being passed through to VM successfully. GPU visible in `lspci` but not available for compute.
+
+**Root Cause:** RX 6700 XT uses gfx10.3.0 architecture but ROCm was looking for explicitly supported GPU IDs. Navi 22 (RX 6700 XT) requires architecture override to be recognized by ROCm runtime.
+
+**Resolution:** Set HSA environment variable to override GPU architecture detection:
+```bash
+echo "export HSA_OVERRIDE_GFX_VERSION=10.3.0" >> ~/.bashrc
+source ~/.bashrc
+```
+
+**Verification:** `rocminfo` now shows RX 6700 XT as available compute device. Ollama successfully utilizing 100% GPU for model inference.
+
+**Lesson:** Newer AMD GPUs may require architecture override (HSA_OVERRIDE_GFX_VERSION) for ROCm compatibility. Check AMD ROCm documentation for specific GPU architecture values.
+
+---
+
+## 2026-04-24 — vfio Kernel Modules Not Loading for GPU Passthrough
+
+**Symptoms:** VM 400 failing to start with GPU passthrough enabled. Error: "vfio-pci device not found" despite RX 6700 XT being in correct IOMMU group and added to VM configuration.
+
+**Root Cause:** vfio-pci module was not loading early enough in boot process. Default module loading order didn't ensure vfio modules were available before GPU initialization.
+
+**Resolution:** Added softdep configuration to ensure proper module loading:
+```bash
+echo "softdep radeon pre: vfio-pci" >> /etc/modprobe.d/vfio.conf
+echo "softdep amdgpu pre: vfio-pci" >> /etc/modprobe.d/vfio.conf
+update-initramfs -u -k all
+reboot
+```
+
+**Verification:** VM 400 starts successfully with RX 6700 XT passthrough. GPU visible in VM as primary graphics device.
+
+**Lesson:** GPU passthrough requires vfio modules to load before native GPU drivers. Use softdep to control module loading order and update initramfs after changes.
+
+---
+
+## 2026-04-24 — VM Disk Space Insufficient for ROCm Installation
+
+**Symptoms:** VM 400 running out of disk space during ROCm 6.1.3 installation. Error: "No space left on device" with df showing 100% usage on root filesystem.
+
+**Root Cause:** Initial VM disk allocation of 20GB was insufficient for Ubuntu 22.04 + ROCm runtime + AI models. ROCm installation requires ~5GB, plus AI models (qwen2.5:14b = 8.7GB).
+
+**Resolution:** Extended VM root disk from 20GB to 100GB:
+```bash
+# On Proxmox host
+qm resize 400 scsi0 +80G
+
+# Inside VM
+sudo lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+```
+
+**Verification:** VM now has 100GB root disk with ~80GB free space, sufficient for ROCm + multiple AI models.
+
+**Lesson:** AI/ML VMs require significant disk space for runtime environments and model storage. Plan 50GB+ for ROCm/CUDA + models.
+
+---
+
 ## 2026-04-24 — Obsidian Dataview Query No Results
 
 **Symptoms:** Dataview queries in Obsidian dashboard returning no results despite subscription notes existing in the vault.
