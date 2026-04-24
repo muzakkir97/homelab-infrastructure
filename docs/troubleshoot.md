@@ -4,6 +4,44 @@
 
 ---
 
+## 2026-04-24 — Obsidian Dataview Query No Results
+
+**Symptoms:** Dataview queries in Obsidian dashboard returning no results despite subscription notes existing in the vault.
+
+**Root Cause:** Dashboard queries were targeting the same file containing the query instead of the folder containing individual subscription notes. Dataview requires separate note files for proper data querying.
+
+**Resolution:** Created individual subscription note files in `04-personal/subscriptions/` folder:
+- Each subscription as separate `.md` file (e.g., `claude-pro.md`, `netflix.md`)
+- Dashboard queries target `"04-personal/subscriptions"` folder
+- Each subscription note contains YAML frontmatter with cost, category, renewal date
+
+**Verification:** Dashboard now displays subscription data with `TABLE cost, category, renewal FROM "04-personal/subscriptions"`
+
+**Lesson:** Dataview plugin requires individual notes for database-style queries. Cannot query YAML frontmatter within the same file containing the query.
+
+---
+
+## 2026-04-24 — Nextcloud Sync Errors Due to Quota Exceeded
+
+**Symptoms:** Obsidian vault sync failing with "quota exceeded" errors. Nextcloud showing sync errors and files not uploading to CT 220.
+
+**Root Cause:** CT 220 root disk was 99% full (19.8GB used of 20GB). The original 20GB allocation was insufficient for Nextcloud data growth, user files, and system overhead.
+
+**Resolution:** Resized CT 220 root disk from 20GB to 100GB:
+```bash
+pct resize 220 rootfs +80G
+pct reboot 220
+```
+
+**Verification:** 
+- Disk usage dropped from 99% to ~20%
+- Nextcloud sync resumed successfully
+- Obsidian vault files syncing normally
+
+**Lesson:** Monitor container disk usage regularly. 20GB is insufficient for Nextcloud with active file syncing. Plan for growth when allocating container storage.
+
+---
+
 ## 2026-04-24 — n8n Node Configuration Always Output Data
 
 **Symptoms:** Get Alerts and Clear Memory DB nodes not proceeding to next nodes when empty results returned, causing workflow to terminate early.
