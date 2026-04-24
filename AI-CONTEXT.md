@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Phase 15 complete (Gilgamesh Additional Slash Commands). 14 LXC containers running.
+**Current Status:** Phase 22 complete (Obsidian Knowledge Base). 14 LXC containers running.
 
 ---
 
@@ -125,10 +125,49 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 **Total: 14 LXC containers, all on VLAN 30, all autostart enabled**
 
+### Nextcloud Hub (CT 220)
+- **Root disk:** 100GB (resized from 20GB to resolve quota issues)
+- **Data location:** Currently on /var/lib/nextcloud (root disk)
+- **Planned migration:** Move data directory to /mnt/data-storage (7.3TB HDD) during future phase
+
 ### Gaming Servers (Docker on CT 302)
 - **Terraria** — terraria.najhin-gaming.com
 - **Minecraft** — mc.najhin-gaming.com  
 - **Windrose** — Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE
+
+---
+
+## 📚 Obsidian Knowledge Base (Phase 22)
+
+### Vault Configuration
+- **Path:** C:\Users\muzak\Nextcloud\Obsidian\second-brain (auto-syncs to CT 220)
+- **Platform:** Obsidian on Minimoon (Gaming PC)
+- **Sync:** Via Nextcloud - changes sync automatically between local vault and cloud
+
+### Plugins Installed
+1. **Dataview** — Database queries and dashboards
+2. **Tasks** — Task management and tracking  
+3. **Templater** — Note templates and automation
+4. **Calendar** — Calendar view integration
+5. **Excalidraw** — Diagrams and sketches
+6. **Kanban** — Kanban boards for project management
+
+### Folder Structure
+```
+second-brain/
+├── 00-inbox/          # Quick capture, unsorted notes
+├── 01-homelab/        # Infrastructure documentation
+├── 02-career/         # Career transition materials
+├── 03-knowledge/      # Learning notes, references
+├── 04-personal/       # Personal management (subscriptions, finance)
+├── 05-templates/      # Note templates
+└── 06-archive/        # Completed or outdated notes
+```
+
+### Key Features
+- **Subscription tracker:** Individual notes per subscription in 04-personal/subscriptions/
+- **Dashboard:** Dataview queries showing subscription costs and totals at 04-personal/dashboard
+- **Session summaries:** Template at 05-templates/session-summary.md for homelab documentation
 
 ---
 
@@ -143,7 +182,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 #### Phase 1: Foundation (Weeks 1-4)
 - **Phase 38** — Ollama + ROCm on Kuromoon RX 6700 XT (CRITICAL — stop API bleeding)
-- **Phase 22** — Obsidian Knowledge Base (vault sync with Gilgamesh)
+- **Phase 22** — Obsidian Knowledge Base ✅ COMPLETE
 
 #### Phase 2: Intelligence (Weeks 5-8)
 - **Phase 7E** — Extended Memory (20+ message conversations via RAG)
@@ -441,8 +480,10 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | 15      | Gilgamesh Additional Slash Commands                       | ✅ Complete    | Apr 24, 2026     |
 | 16.1    | Documentation Pipeline - Update Workflow                  | ✅ Complete    | Apr 19, 2026     |
 | 16.2    | Documentation Pipeline - Sync Docs Workflow               | ✅ Complete    | Apr 19, 2026     |
+| 22      | Obsidian Knowledge Base                                   | ✅ Complete    | Apr 24, 2026     |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                     | ✅ Complete    | Apr 18, 2026     |
-| 38      | Ollama + ROCm on Kuromoon RX 6700 XT                      | 📋 Near Term #2 | —               |
+| 24.1    | Service Update Manager (Docker + apt + Proxmox, approval-gated) | 📋 Planned | —               |
+| 38      | Ollama + ROCm on Kuromoon RX 6700 XT                      | 📋 Near Term #1 | —               |
 | 58      | Windrose Server Deployment                                | ✅ Complete    | Apr 19, 2026     |
 
 ---
@@ -500,6 +541,13 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Vault fails to start in LXC          | Add `disable_mlock = true` to vault.hcl                        |
 | Token auth issues in shell           | Use `vault login <token>` not `export VAULT_TOKEN=`            |
 
+### Obsidian & Knowledge Management
+
+| Issue                                | Resolution                                                      |
+|--------------------------------------|-----------------------------------------------------------------|
+| Nextcloud quota exceeded             | Resize CT 220 from 20GB to 100GB with `pct resize 220 rootfs +80G` |
+| Dataview queries no results         | Queries must target folder with individual notes, not same file |
+
 ### Business & Learning
 
 | Issue                              | Resolution                                             |
@@ -515,6 +563,7 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ### Immediate
 | Task | Priority |
 |------|----------|
+| Begin Phase 38 (Ollama + ROCm) in next session | High |
 | Build MERLIN reminder agent (highest priority due to memory issues) | High |
 | Fix cost_usd column not being saved (investigate Save Cost node in main workflow) | High |
 | Share Windrose invite code NAJHINWINDROSE with friends | High |
@@ -522,10 +571,19 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Set Bitwarden app on phone with passwords.najhin-gaming.com server | High |
 | Store new Nextcloud app password (n8n-doc-pipeline) in Vaultwarden | High |
 | Set $10 API limit in Anthropic Console (temporary) | High |
-| Begin Phase 22 (Obsidian) next session | High |
 | Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn) | High |
 | Store Proxmox root password in Vaultwarden | High |
 | Store CT 302 root password in Vaultwarden | High |
+| Add remaining subscriptions to Obsidian vault | High |
+| Fix Total by Category query in Obsidian dashboard (backtick issue) | High |
+
+### Infrastructure
+| Task | Priority |
+|------|----------|
+| Update Nextcloud to 33.0.2 | High |
+| Move Nextcloud data directory to /mnt/data-storage (long term) | Medium |
+| Address local-lvm thin pool overprovisioning (during infrastructure cleanup) | Medium |
+| Plan Phase 24.1 (Service Update Manager) in dedicated session | Medium |
 | Delete old disconnected /update nodes from Telegram Agent workflow | Medium |
 | Delete Test SQLite workflow from n8n | Medium |
 | Retire Update Nextcloud File and Push to GitHub workflows (unpublish) | Medium |
@@ -564,6 +622,65 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 24, 2026
+Date: April 24, 2026
+Phase: 22 — Obsidian Knowledge Base (COMPLETE)
+
+Topics Discussed
+
+Installed Obsidian on Minimoon, vault at Nextcloud/Obsidian/second-brain
+Installed and enabled 6 plugins: Dataview, Tasks, Templater, Calendar, Excalidraw, Kanban
+Created folder structure: 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 05-templates, 06-archive
+Created session summary template in 05-templates
+Built subscription tracker dashboard using Dataview (separate notes per subscription)
+Fixed Nextcloud quota issue — root disk was 99% full (20GB), resized to 100GB
+Discovered thin pool overprovisioning warning on local-lvm
+Discussed long term fix: move Nextcloud data directory to /mnt/data-storage (7.3TB HDD)
+Windrose ground loot discussion — no config option exists in Early Access to remove existing world loot; fresh world reset is the only clean option
+Planned Phase 24.1 — Service Update Manager (Docker + apt + Proxmox, approval-gated via Gilgamesh)
+
+Decisions Made
+
+Vault location: C:\Users\muzak\Nextcloud\Obsidian\second-brain (auto-syncs to CT 220)
+Subscription entries as individual notes inside 04-personal/subscriptions/
+Dashboard note at 04-personal/dashboard
+Nextcloud data dir migration deferred — handle per phase order
+Phase 24.1 scope: all updates (Docker, apt, Proxmox) with Telegram approval gate
+Phase 38 (Ollama + ROCm) to be done in next chat session
+
+Changes to AI-CONTEXT.md
+
+Mark Phase 22 as Complete (April 24, 2026)
+Add Obsidian vault details: path C:\Users\muzak\Nextcloud\Obsidian\second-brain
+Add 6 plugins list under Obsidian section
+Add folder structure to Obsidian section
+Add Phase 24.1 to planned phases: Service Update Manager (Docker + apt + Proxmox, approval-gated)
+Add pending task: Move Nextcloud data directory to /mnt/data-storage (long term)
+Add pending task: Nextcloud 33.0.2 update available
+Add pending task: local-lvm thin pool overprovisioning — address during infrastructure cleanup
+Update CT 220 disk size from 20GB to 100GB
+
+Changes to Other Docs
+
+roadmap.md: Move Phase 22 to Completed (April 24, 2026)
+roadmap.md: Add Phase 24.1 — Service Update Manager to planned phases
+changelog.md: Add Phase 22 completion entry
+
+Errors & Resolutions
+
+Nextcloud sync errors (quota exceeded): CT 220 root disk was 99% full — resized from 20GB to 100GB with pct resize 220 rootfs +80G
+Dataview no results: queries must point to folder containing individual subscription notes, not the same file
+
+Action Items
+
+Add remaining subscriptions to 04-personal/subscriptions/
+Fix Total by Category query (backtick issue in dashboard)
+Update Nextcloud to 33.0.2
+Move Nextcloud data dir to /mnt/data-storage (deferred, per phase)
+Address local-lvm thin pool overprovisioning (deferred, infrastructure cleanup)
+Begin Phase 38 (Ollama + ROCm) in next session
+Plan Phase 24.1 (Service Update Manager) in dedicated session
 
 ### April 24, 2026
 Date: April 24, 2026
@@ -706,110 +823,6 @@ Send condensed summary via /update to Gilgamesh
 Set $10 API spend limit in Anthropic Console (temporary safety)
 Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)
 Begin Phase 38 planning after Phase 14 complete
-
-### April 20, 2026
-Date: April 20, 2026
-Phase: Foundation Planning (Discussion Phase — No Deployment)
-Topics Discussed
-
-Homepage upgrade requirements (price tracker, stock tracker, Gilgamesh button)
-Researched what other homelab dashboards have (15+ widget types identified)
-Foundation plan review (Obsidian → Commands → Expense → Business Scraper)
-n8n workflow business strategy (validation, pricing, marketing)
-Gaming pipeline scope and priority
-Work-life balance and burnout prevention
-Learning roadmap (Ansible/k8s deferral strategy)
-Backup strategy (Backblaze B2 + private repo)
-Income timeline and pivot triggers
-
-Decisions Made
-
-Priority framework: Health → Mental → Work → Gaming → n8n business → Homelab
-Homepage after foundation: Build Phases 26-26.3 AFTER first workflow sale
-Widget priority: 12 must-have widgets identified
-Work Claude access: homelab-vault + business-vault (YES), personal-vault (NO)
-Obsidian sync: Manual upload for now, automate later
-n8n validation: Check competitive landscape before building
-Pricing: Tiered ($29/$99/$199 based on complexity)
-Marketing: Multi-channel launch sequence (Reddit, LinkedIn, YouTube, free version)
-Cloudflare Access: Device trust, 30-day sessions
-Gilgamesh scope: Build what you need when you need it (no artificial cap)
-Gaming pipeline: Build Discord bot BEFORE n8n scaling, keep Phases 60-64
-Learning: Defer Ansible/k8s until curiosity-driven (not job-hunting pressure)
-Backup: Create private repo, deploy Backblaze B2 in Week 3-4
-Burnout tracking: Obsidian daily energy check (1-10 scale)
-Business reframe: "Learning by building" not "must make money"
-
-Changes to AI-CONTEXT.md
-
-Add April 20, 2026 session entry
-Foundation planning complete, execution starts next session
-
-Errors & Resolutions
-
-None this session (planning only)
-
-Action Items
-
-Start Phase 22 Session 1 (Obsidian installation) next session
-Create private repo: muzakkir97/homelab-private (during Phase 25.5)
-Sign up for Backblaze B2 account (during Phase 25.5)
-Install Obsidian on Gaming PC (Phase 22)
-Review current homelab-infrastructure repo visibility (verify if public)
-
-### April 19, 2026
-Date: April 19, 2026
-Phase: Phase 16.1, 16.2, 58 — Documentation Pipeline + Windrose Server
-Topics Discussed
-
-Designed documentation automation pipeline — single session summary input generates 10 docs across GitHub and Nextcloud
-Discussed separating /update (every session, 3 files) from /sync-docs (deployment sessions, 7 files)
-Planned monthly infrastructure audit as separate cron workflow (Phase 16.3)
-Planned gaming platform pipeline (Phases 57-64) — standardized deployment guide, Discord bot, auto-shutdown, status embed, scheduled game nights, update notifications, Grafana dashboard
-Deployed Windrose dedicated server via Docker on CT 302 using indifferentbroccoli/windrose-server-docker image at /opt/windrose
-Built and tested Documentation Pipeline - Update workflow (Phase 16.1) — 7 nodes, webhook triggered
-Built and tested Documentation Pipeline - Sync Docs workflow (Phase 16.2) — 7 nodes, webhook triggered
-Wired both pipelines into Telegram Agent via Switch node routes
-Deleted session-summary.md from GitHub (legacy file)
-Updated roadmap.md with new gaming pipeline phases 57-64 and restructured Phase 16 into sub-phases
-
-Decisions Made
-
-/update for every session (merge 3 files), /sync-docs for deployment sessions only (regenerate 7 files)
-Hardcoded secrets acceptable until Phase 27 (Vault integration)
-Windrose server set to 4 max players, Medium difficulty, invite code NAJHINWINDROSE
-Discord bot for game server management (not Telegram — keeps gaming separate from homelab admin)
-Session-summary.md deleted as legacy file, no longer needed
-Monthly audit report added to pipeline as Phase 16.3
-
-Changes to AI-CONTEXT.md
-
-Add Phase 16.1 and 16.2 as complete (Apr 19, 2026)
-Add Phase 58 as complete (Apr 19, 2026)
-Add Documentation Pipeline - Update workflow to n8n workflows section (7 nodes, webhook doc-update)
-Add Documentation Pipeline - Sync Docs workflow to n8n workflows section (7 nodes, webhook doc-sync)
-Add /sync-docs route to Telegram Agent Switch node
-Add Windrose server to gaming section (Docker on CT 302, /opt/windrose, invite code NAJHINWINDROSE)
-Update Telegram Chat ID from 510832696 to 518832696 (was incorrect)
-Add new Nextcloud app password entry: n8n-doc-pipeline
-Update n8n workflow count from 5 to 7
-
-Errors & Resolutions
-
-Nextcloud Push 401: Password from Vaultwarden was wrong — created new app password n8n-doc-pipeline
-Telegram Send Confirmation chat not found: Chat ID was 510832696 (typo), correct ID is 518832696
-Telegram node bad request: Switched from n8n Telegram node to direct HTTP API call for reliability
-Template literal syntax error in sync-docs: AI-CONTEXT.md contains backticks which break JS template literals — replaced with string concatenation
-Switch node routing miss for /sync-docs: Expression format needed optional chaining to match other rules
-
-Action Items
-
-Delete old disconnected /update nodes from Telegram Agent (after confirming pipeline is stable)
-Delete Test SQLite workflow from n8n
-Retire Update Nextcloud File and Push to GitHub workflows (unpublish)
-Store new Nextcloud app password in Vaultwarden
-Share Windrose invite code with friends
-Monitor Windrose RAM usage on CT 302
 
 ---
 
