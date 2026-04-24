@@ -4,6 +4,45 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [April 24, 2026] - Phase 38/39 Model Upgrade + Phase 41: Hybrid Routing (COMPLETE)
+
+#### Added
+- **Phase 41 Hybrid Routing** in Gilgamesh Telegram Agent with intelligent query classification
+- **Ollama model upgrade** from qwen2.5:14b to qwen3:14b (9.3GB, optimized for 12GB VRAM)
+- **Complex keyword detection** for routing: API, authentication, security, deployment, configuration, troubleshooting → Claude Sonnet
+- **Word count routing** - queries >50 words automatically routed to Claude Sonnet for better handling
+- **Fallback system** - Ollama primary → Haiku fallback if Ollama down → Sonnet for complex queries
+- **Open WebUI updates** to latest version with improved JSON streaming support
+
+#### Technical
+- **Route Check If node** with Call Ollama (Code) and Call Claude (HTTP Request) branches
+- **Merge node** combining responses from both routing paths before Extract Response
+- **SSH access fix** - VM 400 uses muzakkir user with sudo access, not direct root login
+- **NPM configuration** - proxy_buffering off in advanced config for streaming JSON responses
+
+#### Fixed
+- **SSH authentication to VM 400** - corrected user credentials (muzakkir vs root)
+- **Open WebUI JSON parse error** - NPM proxy_buffering setting for streaming responses
+- **httpRequestWithAuthentication limitation** - replaced with separate HTTP Request node with credentials
+- **Extract Response node reference** - explicitly reference $('Merge').first().json for proper data flow
+
+#### Architecture
+- **Primary routing:** Simple queries → Ollama qwen3:14b (local, fast, cost-effective)
+- **Complex routing:** Complex keywords OR >50 words → Claude Sonnet (cloud, advanced reasoning)
+- **Fallback routing:** Ollama unavailable → Claude Haiku (cloud, basic queries)
+
+#### Gilgamesh Evolution
+- **Phase 1 Foundation** now complete with local LLM + hybrid routing
+- **Cost optimization** achieved - most queries now processed locally on Ollama
+- **Quality assurance** maintained - complex queries still use Claude's advanced capabilities
+
+#### Planned Next
+- **Phase 7E:** Extended Memory (20+ message conversations via RAG integration)
+- **Phase 16.3:** Da Vinci Documentation Pipeline (append-only /update redesign)
+- **MERLIN reminder agent** (highest priority for memory management)
+
+---
+
 ### [April 24, 2026] - Phase 38 + 39: Ollama ROCm + Open WebUI (COMPLETE)
 
 #### Added
