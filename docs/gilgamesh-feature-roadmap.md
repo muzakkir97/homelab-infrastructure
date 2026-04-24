@@ -1,245 +1,346 @@
-# Gilgamesh AI Agent — Feature Roadmap
+# Gilgamesh AI Agent - Feature Roadmap
 
 ## Overview
 
-Gilgamesh is a Telegram-based AI agent built on n8n workflows with Claude API integration. The primary goal is to **replace claude.ai subscription by August 2026**, reducing costs from $30-40/month to $5-10/month while maintaining equivalent capabilities.
+Gilgamesh is a Telegram-based AI assistant for homelab infrastructure management, built on n8n workflows with Claude API integration. The primary goal is to **replace Claude Web interface by August 2026**, reducing monthly AI costs from $30-40 to $5-10.
 
 ## Current Architecture
 
 ```
 Telegram Bot (@JhinGilgamesh_bot)
-    ↓
-n8n Workflow (CT 211: automation-n8n)
-    ↓
-Claude API (Haiku 4.5 / Sonnet 4)
-    ↓
-Response + Memory Storage (n8n Data Tables)
-    ↓
-Documentation Pipeline (GitHub + Nextcloud)
+            ↓
+    n8n Workflow Engine (CT 211)
+            ↓
+    ┌─────────────┬─────────────┐
+Smart Routing    Memory System   Cost Tracking
+(Haiku/Sonnet)   (Data Tables)   (Token Usage)
+            ↓
+        Claude API
+            ↓
+    Documentation Pipeline
+    (GitHub + Nextcloud)
 ```
 
-### Technical Specifications
+## Current Features (✅ WORKING)
 
-| Component         | Value                       |
-|-------------------|-----------------------------|
-| Telegram Bot      | @JhinGilgamesh_bot          |
-| Primary Chat ID   | 518832696                   |
-| Haiku Model       | claude-haiku-4-5-20251001   |
-| Sonnet Model      | claude-sonnet-4-20250514    |
-| n8n Container     | CT 211 (192.168.30.211)    |
-| Proxmox Node      | muzakkir (not kuromoon)     |
-| API Token         | root@pam!gilgamesh          |
+### Core Chat Capabilities
+- **Smart Model Routing:** Simple queries → Haiku 4.5, complex → Sonnet 4
+- **Conversation Memory:** Last 20 messages stored in n8n Data Tables
+- **Web Search:** Real-time information via Claude's web_search tool
+- **Cost Tracking:** Token usage logged (estimated costs due to API bug)
 
-## Current Features (Status: Working ✅)
+### Telegram Interface
+- **Bot Handle:** @JhinGilgamesh_bot
+- **Chat ID:** 518832696
+- **Message Format:** Plain text only (JSON parsing constraints)
+- **Response Limit:** Telegram 4096 character maximum
 
-### 1. Conversation Memory System
-- **Implementation**: n8n Data Tables (gilgamesh_memory)
-- **Retention**: Last 20 messages per conversation
-- **Storage**: Message content, timestamp, role (user/assistant)
-- **Commands**: `/memory` (view history), `/clear` (reset memory)
+### Slash Commands (8 Total)
+| Command | Purpose | Status |
+|---------|---------|--------|
+| /help | Show all commands and menu options | ✅ Working |
+| /clear | Clear conversation memory | ✅ Working |
+| /memory | View recent conversation history | ✅ Working |
+| /cost | Display token usage and estimated costs | ✅ Working |
+| /alerts | Show active Alertmanager notifications | ✅ Working |
+| /backup | Last backup times for all containers | ✅ Working |
+| /update | Push session summary to docs (3 files) | ✅ Working |
+| /sync-docs | Full documentation regeneration (7 files) | ✅ Working |
 
-### 2. Smart Message Routing
-- **Simple Queries** → Claude Haiku 4.5 (faster, cheaper)
-- **Complex Queries** → Claude Sonnet 4 (better reasoning)
-- **Routing Logic**: Message length, keywords, context complexity
+### Inline Keyboard Menu System
 
-### 3. Real-time Web Search
-- **Tool**: Claude's native web_search capability
-- **Trigger**: Current events, recent information needs
-- **Integration**: Seamless within conversation flow
+#### Main Menu
+- 🏠 Homelab
+- 🎮 Gaming
+- 🤖 Gilgamesh
+- 🔧 Tools
+- ❓ Help
 
-### 4. Cost Tracking
-- **Logging**: Token usage per request stored in gilgamesh_costs table
-- **Display**: `/cost` command shows usage statistics
-- **Known Issue**: cost_usd column returns 0 (pre-existing bug)
-- **Workaround**: Estimated costs from token counts (Sonnet $3/$15 per 1M tokens)
+#### Homelab Submenu (All ✅ Working)
+- **Status:** Container states via Proxmox API
+- **Metrics:** CPU/RAM/Disk usage with progress bars
+- **Temps:** Hardware temperatures via SSH + lm-sensors
+- **Storage:** ZFS/LVM pool utilization
 
-### 5. Inline Keyboard Menu System
+#### Gaming Submenu (✅ Working)
+- **Server Status:** Docker container states on CT 302
+- **Direct Display:** No nested submenus
 
-#### Main Menu Options
-- **🏠 Homelab** → Status, Metrics, Temps, Storage submenus
-- **🎮 Gaming** → Server status (Terraria, Minecraft, Windrose)
-- **🤖 Gilgamesh** → Agent information and statistics
-- **🛠️ Tools** → Quick access links to services
-- **❓ Help** → Command reference and documentation
+#### Gilgamesh Submenu (✅ Working)
+- **Info Panel:** Bot statistics and capabilities
+- **Static Information:** Version, features, model routing
 
-#### Homelab Submenu (All Working ✅)
-- **Status**: Container status via Proxmox API
-- **Metrics**: CPU, memory, uptime statistics
-- **Temps**: Hardware temperatures via SSH to Kuromoon
-- **Storage**: Disk usage across all storage pools
-
-#### Gaming Submenu (Working ✅)
-- **Server Status**: Docker container status on CT 302
-- **Direct Display**: No additional submenus (streamlined)
-
-#### Technical Implementation
-- **SSH Access**: n8n → Kuromoon (port 22), n8n → CT 302 (password auth)
-- **API Integration**: Proxmox API for container and storage metrics
-- **Progress Bars**: ASCII characters (= and -) for Telegram mobile compatibility
-
-### 6. Slash Commands (6 Commands Active)
-
-| Command   | Purpose                  | Description                           |
-|-----------|--------------------------|---------------------------------------|
-| `/help`   | Quick reference          | Shows all commands and menu options   |
-| `/clear`  | Memory reset             | Clears last 20 messages              |
-| `/memory` | View conversation history| Shows recent message log              |
-| `/cost`   | Usage tracking           | Token usage and estimated costs       |
-| `/alerts` | System monitoring        | Active Alertmanager alerts            |
-| `/backup` | Backup verification      | Last backup times for all containers  |
-
-### 7. Documentation Pipeline (Working ✅)
-
-#### Session Summary Workflow (`/update`)
-- **Trigger**: After each session
-- **Files Updated**: 3 (AI-CONTEXT.md, changelog.md, troubleshoot.md)
-- **Process**: Claude merges session summary into existing documentation
-
-#### Full Regeneration Workflow (`/sync-docs`)
-- **Trigger**: After deployment sessions
-- **Files Updated**: 7 (full documentation suite)
-- **Process**: Complete regeneration from AI-CONTEXT.md master file
-
-#### Pipeline Architecture
-```
-Telegram Command (/update or /sync-docs)
-    ↓
-n8n Webhook (doc-update or doc-sync)
-    ↓
-Claude API (intelligent document merging)
-    ↓
-Nextcloud (file storage via app password)
-    ↓
-GitHub API (version control push)
-```
-
-## Planned Features (4-Phase Roadmap)
-
-### PRIMARY GOAL: Replace claude.ai by August 2026 (16 weeks)
-**Cost Reduction**: $30-40/month → $5-10/month ($300-360/year savings)
-
-### Phase 1: Foundation (Weeks 1-4)
-- **Phase 38** — Ollama + ROCm on Kuromoon RX 6700 XT (CRITICAL)
-- **Phase 22** — Obsidian Knowledge Base integration
-
-### Phase 2: Intelligence (Weeks 5-8)
-- **Phase 7E** — Extended Memory (20+ message conversations via RAG)
-- **Phase 41** — Hybrid Routing (local/API based on complexity)
-
-### Phase 3: Capabilities (Weeks 9-12)
-- **Phase 7F** — File Generation (code, configs, documentation)
-- **Phase 7G** — Vision API (image analysis, screenshots)
-- **Phase 7H** — Document Upload (PDF/text processing)
-
-### Phase 4: Refinement (Weeks 13-16)
-- **Phase 7I** — Quality Assurance (compare outputs with Claude Pro)
-- **Phase 7J** — Migration (complete switch to Gilgamesh)
-
-### Future Enhancements (Post-Migration)
-- **Phase 7K** — AI News Scraper (RSS/Reddit → Ollama → Telegram alerts)
-- **Web Chat UI** — Homepage embedded interface (shared memory)
-- **Proactive Alerts** — System health monitoring with AI analysis
-- **Daily Summary** — Automated infrastructure status reports
-
-## Cost Projection
-
-| Component           | Current      | Target       | Annual Savings |
-|---------------------|--------------|--------------|----------------|
-| Claude Pro          | $20/month    | $0/month     | $240           |
-| API Usage           | $10-20/month | $5-10/month  | $60-120        |
-| **Total Monthly**   | **$30-40**   | **$5-10**    | **—**          |
-| **Annual Savings**  | **—**        | **—**        | **$300-360**  |
-
-## Integration Points
-
-### Active Integrations
-- **Proxmox API**: Container status, metrics, storage information
-- **Telegram Bot API**: Message handling, inline keyboards, webhooks
-- **Claude API**: Haiku 4.5 and Sonnet 4 routing
-- **GitHub API**: Documentation pipeline pushes
-- **Nextcloud API**: File storage for documentation
-- **SSH Access**: Hardware monitoring (Kuromoon, CT 302)
-
-### Planned Integrations
-- **Ollama API**: Local LLM inference (Phase 38)
-- **Obsidian Vault**: Knowledge base synchronization (Phase 22)
-- **Alertmanager API**: Proactive system monitoring
-- **HashiCorp Vault**: Secrets management integration
-- **Discord API**: Gaming server notifications (separate bot: Mash)
-
-## Memory System Architecture
-
-### Current Implementation
-- **Storage**: n8n Data Tables (gilgamesh_memory)
-- **Capacity**: Last 20 messages
-- **Structure**: message_id, chat_id, role, content, timestamp
-- **Limitation**: Conversation-bound, no long-term knowledge retention
-
-### Planned Enhancement (Phase 7E)
-- **RAG System**: Vector embeddings for semantic search
-- **Knowledge Base**: Obsidian vault integration
-- **Context Expansion**: 20+ message conversations with relevant retrieval
-- **Persistent Learning**: Cross-conversation knowledge retention
+#### Tools Submenu (✅ Working)
+- **Quick Links:** External service URLs
+- **Static Reference:** No dynamic functionality
 
 ## Smart Routing Logic
 
-### Current Routing (Working)
+### Model Selection Criteria
 ```python
-def route_message(content, context):
-    if len(content) < 100:
-        return "haiku"  # Fast, simple queries
-    elif contains_complex_keywords(content):
-        return "sonnet"  # Reasoning, analysis
-    elif has_conversation_context(context):
-        return "sonnet"  # Contextual understanding
-    else:
-        return "haiku"   # Default to cheaper model
+# Simplified logic (actual implementation in n8n)
+if message_length < 100 and no_technical_keywords:
+    model = "claude-haiku-4-5-20251001"
+    cost_per_token = lower
+else:
+    model = "claude-sonnet-4-20250514"
+    cost_per_token = higher
 ```
 
-### Planned Hybrid Routing (Phase 41)
-```python
-def hybrid_route(content, context, local_capability):
-    complexity_score = analyze_complexity(content)
-    
-    if complexity_score < 3:
-        return "ollama_local"      # Simple tasks
-    elif complexity_score < 7:
-        return "claude_haiku"      # Medium complexity
-    else:
-        return "claude_sonnet"     # High complexity
+### Technical Implementation
+- **Haiku Use Cases:** Simple questions, status checks, casual chat
+- **Sonnet Use Cases:** Complex analysis, troubleshooting, documentation
+- **Override:** Manual model selection not implemented
+
+## Memory System (Data Tables)
+
+### Schema
+```sql
+Table: gilgamesh_memory
+- id (auto-increment)
+- chat_id (518832696)
+- role (user/assistant)
+- content (message text)
+- timestamp (datetime)
+- tokens_used (integer)
 ```
 
-## Known Issues & Constraints
+### Limitations
+- **Capacity:** 20 messages maximum
+- **Persistence:** Lost on n8n restart
+- **Context:** No conversation threading
+- **Cleanup:** Manual via /clear command
 
-### Technical Limitations
-- **Telegram Formatting**: Plain text only — code blocks break JSON parsing
-- **Progress Bars**: ASCII characters only (Unicode fails on mobile)
-- **Cost Tracking**: gilgamesh_costs.cost_usd column always returns 0
-- **Memory Scope**: Limited to 20 messages per conversation
+## Documentation Pipeline
 
-### Performance Notes
-- **Response Time**: Haiku ~2-3s, Sonnet ~5-8s
-- **Token Limits**: 200K context window for both models
-- **Rate Limits**: 5 requests/minute (Anthropic tier 1)
+### Update Workflow (/update)
+```
+Session Summary → Claude Processing → 3 Files Updated
+- AI-CONTEXT.md (master context)
+- changelog.md (version history)
+- troubleshoot.md (lessons learned)
+```
+
+### Sync Docs Workflow (/sync-docs)
+```
+Full Regeneration → Claude Processing → 7 Files Updated
+- All /update files PLUS
+- README.md
+- roadmap.md
+- current-state.md
+- service-catalog.md
+```
+
+### Integration Points
+- **Nextcloud:** File storage via app password
+- **GitHub:** Version control via API token
+- **Webhook Triggers:** doc-update, doc-sync
+
+## API Integration
+
+### Proxmox VE
+- **Endpoint:** https://192.168.10.5:8006/api2/json
+- **Authentication:** root@pam!gilgamesh token
+- **Node Name:** muzakkir (not kuromoon)
+- **Capabilities:** Container status, resource metrics, storage info
+
+### SSH Access
+- **Kuromoon (Proxmox):** Key-based auth, port 22
+- **CT 302 (Gaming):** Password auth (PermitRootLogin yes)
+- **Commands:** lm-sensors, docker ps, system monitoring
+
+### External APIs
+- **Claude:** Haiku/Sonnet models with web search
+- **GitHub:** Repository file updates
+- **Nextcloud:** File upload/download
+
+## Technical Constraints
+
+### Known Limitations
+- **Telegram Messages:** Plain text only (no markdown/code blocks)
+- **Cost Tracking Bug:** cost_usd column always returns 0
+- **Memory Persistence:** Lost on container restart
+- **Model Context:** Limited to 20 messages
+- **File Generation:** Text only, no binary/image support
+
+### Performance Issues
+- **Response Time:** 3-5 seconds for Haiku, 10-15 for Sonnet
+- **Rate Limiting:** Anthropic API limits apply
+- **Memory Usage:** n8n Data Tables grow over time
+- **Error Handling:** Basic retry logic only
+
+## 16-Week Evolution Plan (August 2026 Target)
+
+### Phase 1: Foundation (Weeks 1-4)
+#### Phase 38 - Ollama + ROCm Integration (CRITICAL)
+- **GPU:** AMD RX 6700 XT (IOMMU Group 18)
+- **Models:** Llama 3.3, Qwen 2.5, local inference
+- **Cost Impact:** Eliminate 70% of API calls
+- **Status:** Near Term #1 priority
+
+#### Phase 22 - Obsidian Knowledge Base (✅ COMPLETE)
+- **Vault:** C:\Users\muzak\Nextcloud\Obsidian\second-brain
+- **Plugins:** Dataview, Tasks, Templater, Calendar, Excalidraw, Kanban
+- **Integration:** Auto-sync via Nextcloud to CT 220
+
+### Phase 2: Intelligence (Weeks 5-8)
+#### Phase 7E - Extended Memory System
+- **Capacity:** 20+ message conversations
+- **Technology:** RAG (Retrieval Augmented Generation)
+- **Storage:** Obsidian vault integration
+- **Search:** Semantic similarity matching
+
+#### Phase 41 - Hybrid Routing Logic
+- **Local Models:** Simple queries, homelab-specific tasks
+- **API Models:** Complex reasoning, latest information
+- **Decision Tree:** Automated complexity assessment
+- **Fallback:** API when local model confidence low
+
+### Phase 3: Capabilities (Weeks 9-12)
+#### Phase 7F - File Generation
+- **Text Files:** Configs, scripts, documentation
+- **Code:** YAML, JSON, shell scripts, Python
+- **Diagrams:** Mermaid, ASCII art, network topology
+- **Templates:** Service deployments, monitoring rules
+
+#### Phase 7G - Vision API Integration
+- **Image Analysis:** Screenshot troubleshooting
+- **Diagram Recognition:** Network topology parsing
+- **OCR:** Text extraction from images
+- **Graph Reading:** Grafana dashboard analysis
+
+#### Phase 7H - Document Upload Processing
+- **PDF Support:** Manual uploads, knowledge extraction
+- **Text Files:** Configuration analysis
+- **Log Files:** Error pattern recognition
+- **Integration:** Obsidian vault storage
+
+### Phase 4: Refinement (Weeks 13-16)
+#### Phase 7I - Quality Assurance
+- **Comparison Testing:** Gilgamesh vs Claude Pro
+- **Accuracy Metrics:** Technical response quality
+- **Performance:** Response time benchmarking
+- **User Experience:** Feature parity assessment
+
+#### Phase 7J - Migration Complete
+- **Cost Target:** $5-10/month total
+- **Feature Parity:** Match Claude Pro capabilities
+- **Backup Access:** Claude Pro retained for comparison
+- **Success Validation:** 4-week production usage
+
+## Planned Features
+
+### Near-Term (Next 4 Weeks)
+
+#### MERLIN Reminder Agent (#1 Priority)
+- **Purpose:** Proactive infrastructure alerts
+- **Examples:** SSL renewals, backup test reminders, memory warnings
+- **Platform:** Separate n8n workflow with cron triggers
+- **Integration:** Shared Data Tables with Gilgamesh
+
+#### Proactive Monitoring
+- **Daily Summary:** Automated system health report
+- **Trend Analysis:** Resource usage patterns
+- **Predictive Alerts:** Capacity planning warnings
+- **Scheduled Reports:** Weekly infrastructure review
+
+### Medium-Term (4-8 Weeks)
+
+#### Web Chat UI
+- **Platform:** Homepage dashboard embedded chat
+- **Memory:** Shared with Telegram conversations
+- **Authentication:** Cloudflare Access integration
+- **Features:** File uploads, diagram viewing
+
+#### Advanced Context
+- **Knowledge Base:** Full Obsidian vault access
+- **Service Documentation:** Auto-generated from deployments
+- **Historical Data:** Past issue resolution database
+- **Learning:** Continuous improvement from interactions
+
+### Long-Term (8-16 Weeks)
+
+#### Multi-Modal Capabilities
+- **Voice Input:** Telegram voice message processing
+- **Image Output:** Generated diagrams and charts
+- **Video Analysis:** Screen recordings for troubleshooting
+- **Document Generation:** PDF reports with formatting
+
+#### Advanced Automation
+- **Service Deployment:** One-command container creation
+- **Configuration Management:** Automated updates with approval
+- **Incident Response:** Automated troubleshooting steps
+- **Capacity Management:** Predictive scaling recommendations
+
+## Agent Ecosystem (Fate/Grand Order Theme)
+
+### Active Servants
+| Servant | Class | Role | Platform | Status |
+|---------|--------|------|----------|--------|
+| Gilgamesh 👑 | Archer | Personal AI Assistant | Telegram | ✅ Active |
+| Caster (Da Vinci) 🎨 | Caster | Knowledge Curator | n8n/Nextcloud | ✅ Active |
+| Archer (EMIYA) 🏹 | Archer | Infrastructure Translator | n8n | ✅ Active |
+
+### Planned Servants (Priority Order)
+| Servant | Class | Role | Noble Phantasm | Implementation |
+|---------|--------|------|----------------|----------------|
+| MERLIN 🔮 | Caster | Reminders & Scheduler | Garden of Avalon | Phase 24+ |
+| Mash Kyrielight 🛡️ | Shielder | Gaming Server + Discord Bot | Lord Camelot | Phases 59-64 |
+| Guardian | — | Security Monitoring | — | TBD |
+| Nexus | — | Cross-platform Automation | — | TBD |
+| Scribe | — | Auto-documentation | — | TBD |
+| Midas | — | Cost Tracking & Optimization | — | TBD |
+| Oracle | — | Predictive Intelligence | — | TBD |
+
+### Mash Discord Bot (Phases 59-64)
+- **Platform:** Discord for gaming friends
+- **Commands:** !start, !stop, !status for game servers
+- **Announcements:** Player joins/leaves, game updates
+- **Personality:** "Senpai, PlayerX just joined Windrose!"
+- **Separation:** Gaming isolated from homelab admin
 
 ## Success Metrics
 
-### Quantitative Goals
-- **Response Quality**: 95% satisfaction compared to Claude Pro
-- **Cost Reduction**: Monthly spending under $10
-- **Response Time**: Average under 10 seconds
-- **Uptime**: 99.5% availability
+### Cost Reduction Target
+| Component | Current | Target | Annual Savings |
+|-----------|---------|--------|----------------|
+| Claude Pro | $20/month | $0/month | $240 |
+| API Usage | $10-20/month | $5-10/month | $60-120 |
+| **Total** | **$30-40/month** | **$5-10/month** | **$300-360** |
 
-### Qualitative Goals
-- **Knowledge Retention**: Multi-session conversation continuity
-- **Document Generation**: Code, configs, and documentation artifacts
-- **Visual Capabilities**: Image analysis and interpretation
-- **Proactive Intelligence**: System health insights and recommendations
+### Quality Benchmarks
+- **Response Accuracy:** Match Claude Pro for homelab queries
+- **Response Time:** < 5 seconds for 80% of queries
+- **Memory Retention:** 20+ message conversations
+- **Uptime:** 99%+ availability
+- **User Satisfaction:** Preference over Claude Web interface
 
-## Backup Strategy
+### Feature Parity Goals
+- [ ] 20+ message conversation memory
+- [ ] Knowledge base recall from Obsidian
+- [ ] Vision capabilities for screenshots
+- [ ] File generation (configs, scripts, docs)
+- [ ] Monthly cost under $10
+- [ ] Web chat interface
+- [ ] Document upload processing
+- [ ] Proactive monitoring alerts
 
-If local LLM quality proves insufficient:
-- **Hybrid Approach**: Keep Claude Pro for complex tasks
-- **Still Save**: $10-15/month with smart routing
-- **Gradual Migration**: Phase out Claude Pro over 6-12 months
+## Risk Mitigation
+
+### Backup Plan
+- **Claude Pro:** Retained for quality comparison
+- **API Access:** Maintained for complex queries
+- **Gradual Migration:** Phased rollover to minimize disruption
+- **Performance Monitoring:** Quality gates before full switch
+
+### Technical Risks
+- **GPU Performance:** RX 6700 XT may be insufficient for larger models
+- **Memory Constraints:** 32GB RAM limits model size
+- **Network Bandwidth:** Remote access may be slow for large responses
+- **Model Quality:** Local models may not match Claude's capabilities
+
+### Mitigation Strategies
+- **Hybrid Approach:** Local + API combination
+- **Model Selection:** Choose efficient models for available hardware
+- **Caching:** Store common responses locally
+- **Fallback Logic:** Automatic API fallback when local fails
