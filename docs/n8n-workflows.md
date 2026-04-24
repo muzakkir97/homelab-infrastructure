@@ -2,277 +2,283 @@
 
 ## Overview
 
-n8n automation platform runs on **CT 211** (192.168.30.211) and serves as the central hub for:
-- Gilgamesh AI agent operations
-- Documentation pipeline automation
-- System monitoring and alerting
-- Legacy workflows (being phased out)
-
-**Total Active Workflows: 7** (2 unpublished legacy workflows)
+n8n automation platform deployed on CT 211 (192.168.30.211) serving as the central automation hub for homelab infrastructure. All workflows focus on Gilgamesh AI agent functionality, documentation pipeline, and legacy integrations.
 
 ## Active Workflows
 
-### 1. Telegram Agent
-- **Purpose**: Main Gilgamesh AI bot with conversation handling, memory, routing, and menu system
-- **Trigger**: Telegram webhook (both messages and callback queries)
-- **Node Count**: 15 nodes
-- **Status**: ✅ Active
-- **Last Updated**: April 24, 2026 (Phase 15)
+### 1. Telegram Agent (Primary Workflow)
+- **Purpose:** Main Gilgamesh AI bot with chat, menu system, and slash commands
+- **Trigger Type:** Telegram Bot (webhook)
+- **Node Count:** 15
+- **Status:** ✅ Active (Published)
 
-#### Architecture Diagram
+#### Architecture Flow
 ```
-Telegram Webhook
-    ↓
-Callback Router (routes messages vs callbacks)
-    ↓                           ↓
-Message Handler            Callback Handler
-    ↓                           ↓
-Command Switch             Menu Actions
-    ↓                           ↓
-Claude API Route           SSH/API Calls
-    ↓                           ↓
-Memory Storage             Response Format
-    ↓                           ↓
-Response Send              Telegram Reply
+Telegram Trigger → Message Router → Smart Model Selection → Claude API → Response Formatting → Memory Storage → Telegram Response
+                      ↓
+                Callback Router → Menu Actions → API Calls → Format Results → Update Message
+                      ↓
+                Command Router → Slash Commands → Execute Action → Format Response
 ```
 
-#### Key Components
-- **Memory Management**: Last 20 messages stored in gilgamesh_memory table
-- **Smart Routing**: Haiku vs Sonnet based on complexity
-- **Command Processing**: 6 slash commands (/help, /clear, /memory, /cost, /alerts, /backup)
-- **Menu System**: Inline keyboards for homelab monitoring
-- **Cost Tracking**: Token usage logged to gilgamesh_costs table
+#### Key Nodes
+1. **Telegram Trigger:** Handles all update types (messages + callbacks)
+2. **Message/Callback Router:** Separates message types and callback queries
+3. **Smart Routing Logic:** Haiku vs Sonnet model selection
+4. **Claude API Integration:** Main AI processing with web search
+5. **Memory Management:** Store/retrieve last 20 messages from Data Tables
+6. **Cost Tracking:** Token usage logging (with known cost_usd bug)
+7. **Menu System:** Inline keyboard with homelab/gaming/tools submenus
+8. **Command Handler:** 8 slash commands (/help, /clear, /memory, etc.)
+9. **API Integrations:** Proxmox, SSH, system monitoring
 
-#### Dependencies
-- **Credentials**: Telegram Bot Token, Claude API Key, SSH keys
-- **External APIs**: Proxmox API, GitHub API, Nextcloud API
-- **SSH Access**: Kuromoon (port 22), CT 302 (password auth)
+#### Credentials Required
+- **Telegram Bot Token:** @JhinGilgamesh_bot authentication
+- **Claude API Key:** Anthropic API access
+- **Proxmox API Token:** root@pam!gilgamesh
+- **SSH Keys:** Kuromoon key-based, CT302 password-based
+- **n8n Database:** Local SQLite for Data Tables
+
+#### Known Issues
+- **Message Format:** Only plain text supported (JSON parsing constraint)
+- **Cost Tracking:** cost_usd column always returns 0
+- **Memory Persistence:** Lost on n8n restart
+- **Single Webhook:** All Telegram updates must use one trigger
 
 ### 2. Documentation Pipeline - Update
-- **Purpose**: Merge session summaries into 3 documentation files
-- **Trigger**: Webhook (doc-update) via `/update` command
-- **Node Count**: 7 nodes
-- **Status**: ✅ Active
-- **Last Updated**: April 19, 2026 (Phase 16.1)
+- **Purpose:** Process /update commands - merge session summaries into 3 core docs
+- **Trigger Type:** Webhook (doc-update)
+- **Node Count:** 7
+- **Status:** ✅ Active (Published)
 
-#### Architecture Diagram
+#### Architecture Flow
 ```
-Webhook Trigger (/update)
-    ↓
-Claude API (merge session into docs)
-    ↓
-Split Response (3 files: AI-CONTEXT, changelog, troubleshoot)
-    ↓
-Nextcloud Push (parallel file updates)
-    ↓
-GitHub Push (version control)
-    ↓
-Confirmation Response
+Webhook Trigger → Extract Summary → Claude Processing → File Generation → Nextcloud Upload → GitHub Push → Success Response
 ```
 
-#### File Targets
-1. **AI-CONTEXT.md**: Master context document
-2. **changelog.md**: Project history and milestones
-3. **troubleshoot.md**: Issues, solutions, and lessons learned
+#### Files Updated (3 Total)
+1. **AI-CONTEXT.md:** Master context document
+2. **changelog.md:** Version history and changes
+3. **troubleshoot.md:** Lessons learned and error resolutions
+
+#### Key Nodes
+1. **Webhook Trigger:** Receives session summary from Telegram workflow
+2. **Claude API:** Intelligent document merging
+3. **File Generation:** Create updated content for each file
+4. **Nextcloud HTTP Request:** Upload to cloud storage
+5. **GitHub API:** Push changes to repository
+6. **Response Handler:** Confirm success to Telegram
+
+#### Credentials Required
+- **Claude API Key:** Document processing
+- **Nextcloud App Password:** n8n-doc-pipeline
+- **GitHub API Token:** muzakkir97 with repo access
+- **Webhook Authentication:** Shared secret with main workflow
 
 ### 3. Documentation Pipeline - Sync Docs
-- **Purpose**: Complete regeneration of 7 documentation files from master context
-- **Trigger**: Webhook (doc-sync) via `/sync-docs` command
-- **Node Count**: 7 nodes
-- **Status**: ✅ Active
-- **Last Updated**: April 19, 2026 (Phase 16.2)
+- **Purpose:** Full documentation regeneration for /sync-docs command
+- **Trigger Type:** Webhook (doc-sync)
+- **Node Count:** 7
+- **Status:** ✅ Active (Published)
 
-#### Architecture Diagram
+#### Architecture Flow
 ```
-Webhook Trigger (/sync-docs)
-    ↓
-Claude API (regenerate all docs from AI-CONTEXT)
-    ↓
-Parse Response (7 files with delimiters)
-    ↓
-Parallel File Push (Nextcloud + GitHub)
-    ↓
-Completion Notification
+Webhook Trigger → Load Context → Claude Processing → Generate All Docs → Batch Upload → GitHub Push → Completion Report
 ```
 
-#### File Targets
-1. **AI-CONTEXT.md** (updated)
-2. **changelog.md** (updated)  
-3. **troubleshoot.md** (updated)
-4. **README.md** (regenerated)
-5. **roadmap.md** (regenerated)
-6. **current-state.md** (regenerated)
-7. **service-catalog.md** (regenerated)
+#### Files Updated (7 Total)
+1. **AI-CONTEXT.md** (from update pipeline)
+2. **changelog.md** (from update pipeline)  
+3. **troubleshoot.md** (from update pipeline)
+4. **README.md** (project overview)
+5. **roadmap.md** (phase planning)
+6. **current-state.md** (infrastructure status)
+7. **service-catalog.md** (container inventory)
 
-### 4. Service Down Alert
-- **Purpose**: Alertmanager webhook integration for critical system alerts
-- **Trigger**: HTTP webhook from Alertmanager (CT 205)
-- **Node Count**: 4 nodes
-- **Status**: ✅ Active
-- **Target**: Telegram notifications
+#### Key Nodes
+1. **Webhook Trigger:** Receives full sync request
+2. **Context Loader:** Read current AI-CONTEXT.md
+3. **Claude API:** Generate complete documentation set
+4. **Document Generator:** Create all 7 files with sanitized content
+5. **Batch Uploader:** Multiple Nextcloud/GitHub operations
+6. **Status Reporter:** Progress updates to Telegram
 
-#### Alert Flow
+#### Credentials Required
+- **Same as Update Pipeline**
+- **Extended GitHub Access:** Multiple file operations
+- **Rate Limiting:** Handle multiple API calls
+
+### 4. Service Down Alert (Monitoring Integration)
+- **Purpose:** Critical service failure notifications from Alertmanager
+- **Trigger Type:** HTTP Webhook from Alertmanager CT 205
+- **Node Count:** 8
+- **Status:** ✅ Active (Published)
+
+#### Architecture Flow
 ```
-Alertmanager → n8n Webhook → Format Alert → Telegram Send
+Alertmanager Webhook → Alert Parser → Severity Filter → Format Message → Telegram Notification → Discord Webhook → Log Entry
 ```
 
-#### Alert Types
-- **Critical**: Container down, high CPU/memory, disk space
-- **Warning**: Performance degradation, backup failures
-- **Recovery**: Service restoration notifications
+#### Alert Categories
+- **Critical:** Service completely down (Telegram + Discord)
+- **Warning:** Performance degradation (Discord only)
+- **Info:** Maintenance notifications (Discord only)
 
-## Legacy Workflows (Unpublished)
+#### Key Nodes
+1. **Webhook Receiver:** Alertmanager JSON payload
+2. **Alert Parser:** Extract service, severity, description
+3. **Severity Router:** Route based on alert level
+4. **Message Formatter:** Create human-readable notifications
+5. **Telegram Sender:** Critical alerts to Gilgamesh chat
+6. **Discord Webhook:** All alerts to #alerts channel
+7. **Alert Logger:** Store in n8n for trend analysis
 
-### 5. Update Nextcloud File
-- **Purpose**: Single file updates to Nextcloud (superseded by documentation pipeline)
-- **Trigger**: Webhook
-- **Node Count**: 5 nodes
-- **Status**: 🔄 Unpublished (Legacy)
-- **Replacement**: Documentation Pipeline - Update workflow
+#### Integration Points
+- **Alertmanager:** CT 205 webhook configuration
+- **Telegram:** Same bot as Gilgamesh (@JhinGilgamesh_bot)
+- **Discord:** Gaming server #alerts channel
+- **Prometheus:** Alert rule sources
 
-### 6. Push to GitHub
-- **Purpose**: Direct GitHub commits (superseded by documentation pipeline)
-- **Trigger**: Webhook  
-- **Node Count**: 4 nodes
-- **Status**: 🔄 Unpublished (Legacy)
-- **Replacement**: Documentation Pipeline workflows
+### 5. Update Nextcloud File (Legacy)
+- **Purpose:** Original file update mechanism before pipeline redesign
+- **Trigger Type:** Webhook
+- **Node Count:** 5
+- **Status:** 🟡 Inactive (Unpublished, kept for reference)
 
-### 7. Test SQLite
-- **Purpose**: Database testing and development
-- **Status**: 🗑️ Pending Deletion
-- **Note**: No longer needed, scheduled for cleanup
+#### Replacement
+- Superseded by "Documentation Pipeline - Update"
+- Maintained for rollback if needed
+- No active triggers or credentials
 
-## Credential Dependencies
+### 6. Push to GitHub (Legacy)
+- **Purpose:** Original GitHub push mechanism before pipeline integration
+- **Trigger Type:** Webhook  
+- **Node Count:** 4
+- **Status:** 🟡 Inactive (Unpublished, kept for reference)
 
-### Required Credentials Per Workflow
+#### Replacement
+- Functionality integrated into documentation pipelines
+- Simpler node structure but less robust
+- Credential configuration preserved
 
-| Workflow                    | Telegram | Claude | GitHub | Nextcloud | SSH | Proxmox |
-|-----------------------------|---------:|-------:|-------:|----------:|----:|--------:|
-| Telegram Agent              |    ✅    |   ✅   |   ✅   |     ✅    | ✅  |   ✅    |
-| Documentation Pipeline - Update |   ✅    |   ✅   |   ✅   |     ✅    | ❌  |   ❌    |
-| Documentation Pipeline - Sync |   ✅    |   ✅   |   ✅   |     ✅    | ❌  |   ❌    |
-| Service Down Alert          |    ✅    |   ❌   |   ❌   |     ❌    | ❌  |   ❌    |
+### 7. Test SQLite (Development)
+- **Purpose:** n8n Data Tables testing and debugging
+- **Trigger Type:** Manual
+- **Node Count:** 3
+- **Status:** 🔴 Pending Deletion
 
-### Credential Details
-- **Telegram Bot**: @JhinGilgamesh_bot token
-- **Claude API**: Anthropic API key (tier 1)
-- **GitHub API**: Personal access token (muzakkir97 account)
-- **Nextcloud**: App password (n8n-doc-pipeline)
-- **SSH Kuromoon**: Key-based authentication (root@192.168.10.5)
-- **SSH CT302**: Password authentication (root@192.168.30.212)
-- **Proxmox API**: root@pam!gilgamesh token
+## Workflow Dependencies
 
-## Technical Implementation Notes
+### Credential Management
+| Credential Name | Type | Used By | Purpose |
+|-----------------|------|---------|---------|
+| Telegram Bot Token | Generic Auth | Telegram Agent, Service Alerts | @JhinGilgamesh_bot access |
+| Claude API | Generic Auth | All documentation pipelines | Anthropic API |
+| Proxmox API Token | Generic Auth | Telegram Agent | Infrastructure monitoring |
+| SSH Password account | SSH | Telegram Agent | Kuromoon management |  
+| SSH CT302 Wings | SSH | Telegram Agent | Gaming server access |
+| Nextcloud App Password | Generic Auth | Documentation pipelines | File storage |
+| GitHub API Token | Generic Auth | Documentation pipelines | Repository access |
+| Discord Webhook | Webhook | Service Alerts | Gaming server notifications |
 
 ### n8n Data Tables
+| Table Name | Schema | Purpose | Retention |
+|------------|--------|---------|-----------|
+| gilgamesh_memory | id, chat_id, role, content, timestamp, tokens_used | Conversation history | 20 messages |
+| gilgamesh_costs | id, timestamp, model, input_tokens, output_tokens, cost_usd | Usage tracking | Unlimited |
 
-| Table Name        | Purpose              | Columns                                    |
-|-------------------|----------------------|--------------------------------------------|
-| gilgamesh_memory  | Conversation history | message_id, chat_id, role, content, timestamp |
-| gilgamesh_costs   | Token usage tracking | request_id, model, input_tokens, output_tokens, cost_usd |
+#### Known Data Issues
+- **cost_usd Column:** Always returns 0 (bug from earlier implementation)
+- **Memory Persistence:** Lost on container restart
+- **Schema Evolution:** Manual table recreation required for structure changes
 
-### API Integration Patterns
+## Workflow Troubleshooting
 
-#### Proxmox API Calls
-```javascript
-// Container status
-GET /api2/json/nodes/{node}/lxc
+### Common Issues and Resolutions
 
-// Storage information  
-GET /api2/json/nodes/{node}/storage/{storage}/status
-```
+#### Telegram Workflow Issues
+| Issue | Symptom | Resolution |
+|-------|---------|------------|
+| Claude API 404 | "Model not found" error | Use exact model ID: `claude-haiku-4-5-20251001` |
+| JSON parsing error | Webhook fails on complex formatting | Strip markdown/code blocks before Claude API |
+| Memory table empty | "At least one condition required" | Enable "Always Output Data" on DB nodes |
+| Callback query timeout | Menu buttons unresponsive | Handle callback_query acknowledgment separately |
+| SSH connection hang | Workflow stalls on system commands | Verify pfSense rules allow VLAN30→VLAN10 port 22 |
 
-#### GitHub API Pattern
-```javascript
-// File update
-PUT /repos/muzakkir97/homelab-infrastructure/contents/{path}
-{
-  "message": "Update via n8n pipeline",
-  "content": base64_encode(file_content),
-  "sha": current_file_sha
-}
-```
+#### Documentation Pipeline Issues  
+| Issue | Symptom | Resolution |
+|-------|---------|------------|
+| Nextcloud upload 401 | Authentication failed | Regenerate app password, ensure "n8n-doc-pipeline" |
+| GitHub push rejected | 403/404 errors | Verify token has repo access, user field populated |
+| Claude context overflow | Truncated responses | Split large documents, process in chunks |
+| File corruption | Malformed JSON/YAML | Add content validation before upload |
+| Webhook timeout | No response from trigger | Increase timeout, add retry logic |
 
-#### Claude API Structure
-```javascript
-{
-  "model": "claude-haiku-4-5-20251001",
-  "max_tokens": 4096,
-  "messages": conversation_history,
-  "tools": [{"type": "web_search"}]
-}
-```
+#### Infrastructure Dependencies
+| Issue | Symptom | Resolution |
+|-------|---------|------------|
+| CT 211 container down | All workflows offline | Check autostart, restart container |
+| Network connectivity | API calls failing | Verify VLAN 30 internet access, DNS resolution |
+| Proxmox API timeout | Monitoring data stale | Check Proxmox certificate, API token expiry |
+| SSH key authentication | Permission denied errors | Regenerate keys, verify authorized_keys |
+| Data Tables corruption | n8n startup errors | Recreate tables from scratch, lose history |
 
-### SSH Command Patterns
-
-#### Hardware Temperature Monitoring
-```bash
-# Kuromoon temperatures
-sensors | grep -E "(Core|edge)" | awk '{print $1" "$2" "$3}'
-```
-
-#### Docker Container Status
-```bash
-# Gaming servers on CT 302
-docker ps --format "table {{.Names}}\t{{.Status}}"
-```
-
-## Error Handling & Recovery
-
-### Common Issues and Solutions
-
-| Issue | Workflow | Resolution |
-|-------|----------|------------|
-| Claude API 404 | Telegram Agent | Use exact model ID: claude-haiku-4-5-20251001 |
-| n8n Data Table empty response | Telegram Agent | Enable "Always Output Data" on DB nodes |
-| SSH connection timeout | Telegram Agent | Verify pfSense firewall rules (port 22) |
-| GitHub 401 authentication | Documentation Pipeline | Ensure username field populated |
-| Nextcloud 401 unauthorized | Documentation Pipeline | Regenerate app password |
-| Telegram JSON parsing error | All workflows | Avoid backticks and complex formatting |
-
-### Monitoring and Alerting
+### Monitoring and Maintenance
 
 #### Workflow Health Checks
-- **Telegram Agent**: Response time monitoring via `/cost` command
-- **Documentation Pipeline**: GitHub commit verification
-- **Service Alerts**: Alertmanager integration status
+- **Execution History:** Review failed/successful runs daily
+- **Credential Expiry:** Rotate API keys quarterly
+- **Performance:** Monitor response times and timeout rates
+- **Data Tables:** Check memory growth and cleanup old entries
 
-#### Performance Metrics
-- **Average Response Time**: 3-8 seconds (model dependent)
-- **Success Rate**: 99.2% (excluding network timeouts)
-- **Memory Usage**: ~200MB for n8n container
-- **Storage Growth**: ~1MB/month for conversation logs
+#### Scheduled Maintenance
+- **Weekly:** Review workflow execution logs
+- **Monthly:** Update n8n container and node packages  
+- **Quarterly:** Credential rotation and security review
+- **Annually:** Complete workflow architecture review
 
-## Development Best Practices
+### Best Practices Learned
 
-### Node Configuration Standards
-1. **Always Output Data**: Enabled on all database and API nodes
-2. **Error Handling**: Try-catch blocks on external API calls
-3. **Timeout Settings**: 30 seconds for Claude API, 10 seconds for others
-4. **Credential Scoping**: Minimum required permissions
+#### Workflow Design
+- **Single Telegram Webhook:** All update types must use one trigger
+- **Error Handling:** Always enable "Always Output Data" for conditional flows
+- **Credential Security:** Use app passwords instead of main passwords
+- **Node Naming:** Descriptive names for debugging
+- **Documentation:** Comment complex expressions and routing logic
 
-### Testing Procedures
-1. **Isolated Testing**: Use test webhooks before production deployment
-2. **Data Validation**: Verify JSON structure before API calls  
-3. **Rollback Strategy**: Keep previous workflow versions published
-4. **Monitoring**: Enable execution logging for debugging
+#### API Integration
+- **Rate Limiting:** Implement delays between API calls
+- **Retry Logic:** Exponential backoff for failed requests
+- **Response Validation:** Check API response structure before processing
+- **Token Management:** Monitor usage against quotas
+- **Timeout Handling:** Set appropriate timeouts for external services
 
-### Security Considerations
-- **Credential Rotation**: Monthly for high-privilege tokens
-- **Webhook Validation**: IP whitelist for external triggers
-- **Data Sanitization**: Remove sensitive info from logs
-- **Access Control**: n8n admin panel behind Cloudflare Access
+#### Data Management
+- **Table Design:** Plan schema evolution carefully
+- **Data Retention:** Implement cleanup for growing tables
+- **Backup Strategy:** Export critical workflow data
+- **Version Control:** Export workflows for external backup
+- **Migration Planning:** Test data migration procedures
 
 ## Future Enhancements
 
 ### Planned Workflow Additions
-- **MERLIN Reminder Agent**: SSL renewal, backup verification alerts
-- **Monthly Infrastructure Audit**: Automated system health reports
-- **Gaming Discord Bot**: Server management for gaming friends
-- **AI News Scraper**: RSS/Reddit monitoring with Ollama evaluation
+1. **MERLIN Reminder Agent:** Proactive maintenance scheduling
+2. **Mash Discord Bot:** Gaming server management
+3. **Infrastructure Audit:** Monthly automated health checks
+4. **Cost Optimization:** Resource usage analysis and recommendations
+5. **Security Monitoring:** Automated threat detection and response
 
-### Optimization Targets
-- **Workflow Consolidation**: Merge similar functionalities
-- **Response Caching**: Cache repeated API responses
-- **Batch Processing**: Group similar operations
-- **Local LLM Integration**: Reduce external API dependency (Phase 38)
+### Architecture Improvements
+1. **Centralized Alerting:** Route all notifications through n8n
+2. **Workflow Templates:** Standardized patterns for new integrations
+3. **Error Handling:** Comprehensive failure recovery
+4. **Performance Optimization:** Reduce API calls and improve response times
+5. **Multi-tenancy:** Separate workflows for different service categories
+
+### Integration Roadmap
+1. **Obsidian Sync:** Knowledge base integration
+2. **Grafana Annotations:** Automated event marking
+3. **Vault Integration:** Dynamic secret retrieval
+4. **Backup Automation:** Intelligent backup scheduling
+5. **Service Discovery:** Automatic endpoint monitoring
