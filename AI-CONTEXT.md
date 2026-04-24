@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Phase 22 complete (Obsidian Knowledge Base). 14 LXC containers running.
+**Current Status:** Phase 39 complete (Open WebUI). 14 LXC containers + 1 VM running.
 
 ---
 
@@ -70,8 +70,8 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 | WiFi AP          | —        | TP-Link EAP610                            | TBD            | Purchased, pending setup             |
 
 ### GPU Notes (Kuromoon)
-- RX 6700 XT in IOMMU Group 18, audio in Group 19
-- Earmarked for Ollama/ROCm AI inference (Phase 38 — promoted to Near Term #2)
+- RX 6700 XT successfully passed through to VM 400 (ollama-gpu)
+- Running ROCm 6.1.3 runtime for AI inference
 - Idle baseline: CPU 48.5°C, GPU edge 46°C, GPU 5W with zero-RPM fan
 
 ---
@@ -125,6 +125,22 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 **Total: 14 LXC containers, all on VLAN 30, all autostart enabled**
 
+## 📦 Virtual Machine Inventory (Proxmox VM)
+
+| VMID | Name        | IP             | Subdomain                    | Autostart | Status     | Purpose                    |
+|------|-------------|----------------|------------------------------|-----------|------------|----------------------------|
+| 400  | ollama-gpu  | 192.168.30.221 | ollama.najhin-gaming.com     | ✅        | ✅ Running | GPU AI Inference (ROCm)    |
+
+**Total: 1 VM with RX 6700 XT passthrough**
+
+### VM 400 (ollama-gpu) Specifications
+- **OS:** Ubuntu 22.04 LTS
+- **Hardware:** 6 CPU cores, 8GB RAM, 100GB disk
+- **GPU:** RX 6700 XT passthrough (IOMMU Group 18)
+- **ROCm:** Version 6.1.3 installed and configured
+- **Models:** qwen2.5:14b (8.7GB), llama3.2 (2.0GB)
+- **Environment:** HSA_OVERRIDE_GFX_VERSION=10.3.0, OLLAMA_HOST=0.0.0.0
+
 ### Nextcloud Hub (CT 220)
 - **Root disk:** 100GB (resized from 20GB to resolve quota issues)
 - **Data location:** Currently on /var/lib/nextcloud (root disk)
@@ -134,6 +150,28 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Terraria** — terraria.najhin-gaming.com
 - **Minecraft** — mc.najhin-gaming.com  
 - **Windrose** — Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE
+
+---
+
+## 🤖 Ollama + Open WebUI (Phase 38/39)
+
+### Infrastructure
+- **VM 400:** ollama-gpu with RX 6700 XT passthrough
+- **Open WebUI:** Docker container on port 3000
+- **Models running:** qwen2.5:14b (primary), llama3.2 (backup)
+- **GPU utilization:** 100% GPU inference confirmed
+- **Access:** ollama.najhin-gaming.com via NPM SSL + Cloudflare Access
+
+### ROCm Configuration
+- **Runtime version:** 6.1.3 installed via amdgpu-install
+- **GPU override:** HSA_OVERRIDE_GFX_VERSION=10.3.0 for RX 6700 XT compatibility
+- **Ollama binding:** OLLAMA_HOST=0.0.0.0 for external access
+- **Performance:** GPU fully utilized during inference
+
+### Security
+- Cloudflare Access protection (email OTP)
+- NPM SSL termination
+- Internal Docker network isolation
 
 ---
 
@@ -180,8 +218,9 @@ second-brain/
 
 ### 4-Phase Plan
 
-#### Phase 1: Foundation (Weeks 1-4)
-- **Phase 38** — Ollama + ROCm on Kuromoon RX 6700 XT (CRITICAL — stop API bleeding)
+#### Phase 1: Foundation (Weeks 1-4) — ✅ IN PROGRESS
+- **Phase 38** — Ollama + ROCm on Kuromoon RX 6700 XT ✅ COMPLETE
+- **Phase 39** — Open WebUI frontend ✅ COMPLETE
 - **Phase 22** — Obsidian Knowledge Base ✅ COMPLETE
 
 #### Phase 2: Intelligence (Weeks 5-8)
@@ -446,7 +485,7 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Segmentation    | 5 VLANs with enforced firewall rules                                              |
 | DNS             | Pi-hole ad/tracker blocking (~489K domains)                                       |
 | VPN             | Tailscale (subnet router on pfSense, primary access)                              |
-| External Auth   | Cloudflare Access (email OTP) for Grafana, n8n, Vault, Vaultwarden (7 apps total) |
+| External Auth   | Cloudflare Access (email OTP) for Grafana, n8n, Vault, Vaultwarden, Ollama (8 apps total) |
 | External Access | Cloudflare Tunnel for Nextcloud                                                   |
 | Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                    |
 | Backup          | Automated daily backups with 7/4/2 retention                                     |
@@ -483,7 +522,8 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | 22      | Obsidian Knowledge Base                                   | ✅ Complete    | Apr 24, 2026     |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                     | ✅ Complete    | Apr 18, 2026     |
 | 24.1    | Service Update Manager (Docker + apt + Proxmox, approval-gated) | 📋 Planned | —               |
-| 38      | Ollama + ROCm on Kuromoon RX 6700 XT                      | 📋 Near Term #1 | —               |
+| 38      | Ollama + ROCm on Kuromoon RX 6700 XT                      | ✅ Complete    | Apr 24, 2026     |
+| 39      | Open WebUI Frontend                                       | ✅ Complete    | Apr 24, 2026     |
 | 58      | Windrose Server Deployment                                | ✅ Complete    | Apr 19, 2026     |
 
 ---
@@ -548,6 +588,15 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Nextcloud quota exceeded             | Resize CT 220 from 20GB to 100GB with `pct resize 220 rootfs +80G` |
 | Dataview queries no results         | Queries must target folder with individual notes, not same file |
 
+### Ollama & ROCm (Phases 38/39)
+
+| Issue                                | Resolution                                                      |
+|--------------------------------------|-----------------------------------------------------------------|
+| VM disk space insufficient           | Resize root disk from 20GB to 100GB with `lvextend` + `resize2fs` |
+| vfio modules not loading             | Add softdep lines to `/etc/modprobe.d/vfio.conf` and update-initramfs |
+| ROCm not detecting RX 6700 XT       | Set `HSA_OVERRIDE_GFX_VERSION=10.3.0` environment variable      |
+| Open WebUI not accessible externally | Set `OLLAMA_HOST=0.0.0.0` in environment, restart ollama service |
+
 ### Business & Learning
 
 | Issue                              | Resolution                                             |
@@ -563,7 +612,6 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ### Immediate
 | Task | Priority |
 |------|----------|
-| Begin Phase 38 (Ollama + ROCm) in next session | High |
 | Build MERLIN reminder agent (highest priority due to memory issues) | High |
 | Fix cost_usd column not being saved (investigate Save Cost node in main workflow) | High |
 | Share Windrose invite code NAJHINWINDROSE with friends | High |
@@ -572,6 +620,8 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Store new Nextcloud app password (n8n-doc-pipeline) in Vaultwarden | High |
 | Set $10 API limit in Anthropic Console (temporary) | High |
 | Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn) | High |
+| Store ollama-gpu root password in Vaultwarden | High |
+| Add Cloudflare Access icon for ollama.najhin-gaming.com | High |
 | Store Proxmox root password in Vaultwarden | High |
 | Store CT 302 root password in Vaultwarden | High |
 | Add remaining subscriptions to Obsidian vault | High |
@@ -622,6 +672,61 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 24, 2026
+Date: April 24, 2026
+Phase: 38 + 39 — Ollama ROCm + Open WebUI (COMPLETE)
+
+Topics Discussed
+
+Created VM 400 ollama-gpu with Ubuntu 22.04, 6 cores, 8GB RAM, 100GB disk
+Successfully passed through RX 6700 XT GPU to VM (IOMMU Group 18)
+Installed ROCm 6.1.3 runtime via amdgpu-install --usecase=rocm
+Deployed Ollama with GPU acceleration, confirmed 100% GPU utilization
+Installed qwen2.5:14b (8.7GB) and llama3.2 (2.0GB) models
+Deployed Open WebUI via Docker on port 3000
+Set up ollama.najhin-gaming.com subdomain via NPM with SSL
+Added Cloudflare Access protection (email OTP)
+Fixed multiple deployment issues: LVM resize, vfio modules, ROCm compatibility, external access
+
+Decisions Made
+
+VM specs: 6 CPU cores, 8GB RAM, 100GB root disk
+Primary model: qwen2.5:14b for complex reasoning
+Environment variables: HSA_OVERRIDE_GFX_VERSION=10.3.0, OLLAMA_HOST=0.0.0.0
+Security: Cloudflare Access same as other services
+Phase 38 and 39 marked complete - foundation ready for Gilgamesh evolution
+
+Changes to AI-CONTEXT.md
+
+Mark Phase 38 as ✅ Complete (April 24, 2026)
+Mark Phase 39 as ✅ Complete (April 24, 2026)  
+Add VM 400 to infrastructure inventory
+Update GPU notes - RX 6700 XT now in VM 400 for AI inference
+Add Ollama + Open WebUI section with technical details
+Update Gilgamesh Evolution Phase 1 as IN PROGRESS
+Update Cloudflare Access count to 8 apps total
+Update recent_updates with Phase 38/39 completion
+
+Changes to Other Docs
+
+roadmap.md: Move Phase 38 and 39 to Completed
+changelog.md: Add Phase 38/39 completion entry
+
+Errors & Resolutions
+
+VM disk space insufficient: Resized from 20GB to 100GB with lvextend + resize2fs
+vfio modules not loading: Added softdep lines to /etc/modprobe.d/vfio.conf
+ROCm not detecting GPU: Set HSA_OVERRIDE_GFX_VERSION=10.3.0 for RX 6700 XT
+Open WebUI external access blocked: Set OLLAMA_HOST=0.0.0.0, restart ollama
+
+Action Items
+
+Store ollama-gpu root password in Vaultwarden
+Add Cloudflare Access icon for ollama.najhin-gaming.com
+Test model performance and quality vs Claude API
+Plan Phase 7E (Extended Memory) integration
+Build MERLIN reminder agent (next priority)
 
 ### April 24, 2026
 Date: April 24, 2026
