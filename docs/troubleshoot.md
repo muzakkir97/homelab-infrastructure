@@ -4,6 +4,79 @@
 
 ---
 
+## 2026-04-24 — Extract Response Node Reading Wrong Data
+
+**Symptoms:** Extract Response Code node in Gilgamesh hybrid routing workflow throwing errors when trying to process Claude API responses, showing undefined references.
+
+**Root Cause:** After implementing merge node to combine Ollama and Claude routing paths, the Extract Response node was using generic `$json` reference instead of explicitly targeting the merged data from the correct source node.
+
+**Resolution:** Updated Extract Response node to explicitly reference the Merge node output:
+```javascript
+// Before (failing):
+const response = $json;
+
+// After (working):
+const response = $('Merge').first().json;
+```
+
+**Verification:** Tested hybrid routing with both simple and complex queries - Extract Response now correctly processes merged data from both routing paths.
+
+**Lesson:** When using merge nodes or complex routing in n8n workflows, always explicitly reference the source node using `$('NodeName').first().json` instead of generic `$json` to ensure proper data flow.
+
+---
+
+## 2026-04-24 — httpRequestWithAuthentication Not Supported in Code Nodes
+
+**Symptoms:** n8n Code node throwing error "httpRequestWithAuthentication is not a function" when attempting to make authenticated API calls to Claude within JavaScript code.
+
+**Root Cause:** Code nodes in n8n have limited helper functions available. The `httpRequestWithAuthentication` method is not accessible within the Code node execution environment, only in specific node types.
+
+**Resolution:** Replaced Code node API call with separate HTTP Request node configured with Claude API credential:
+- Removed JavaScript API call from Code node
+- Added dedicated HTTP Request node with Claude API authentication
+- Connected nodes in proper sequence for data flow
+
+**Verification:** Claude API calls now work correctly through dedicated HTTP Request node with proper credential management.
+
+**Lesson:** n8n Code nodes have limited API access capabilities. Use dedicated HTTP Request nodes with credentials for authenticated external API calls instead of trying to implement them in JavaScript code.
+
+---
+
+## 2026-04-24 — SSH to VM 400 Wrong Password Error
+
+**Symptoms:** n8n SSH connections to VM 400 (ollama-gpu) failing with "Authentication failed" error despite using stored root password.
+
+**Root Cause:** VM 400 was configured with a regular user account (muzakkir) with sudo privileges, not direct root access. The root password was different from the user password, and SSH was configured to use the user account for security.
+
+**Resolution:** Updated SSH configuration in n8n to use correct credentials:
+- Username: muzakkir (not root)
+- Password: User account password (different from root password)
+- Commands requiring root: Use `sudo` prefix
+
+**Verification:** SSH connection to VM 400 now successful with proper user authentication and sudo access for privileged commands.
+
+**Lesson:** VM configurations may use non-root user accounts with sudo access for security. Always verify the actual user account configuration rather than assuming root access is available or uses the same password.
+
+---
+
+## 2026-04-24 — Open WebUI JSON Parse Error with NPM Proxy
+
+**Symptoms:** Open WebUI showing JSON parsing errors when streaming responses through Nginx Proxy Manager. Browser console showing "Unexpected token" errors during model responses.
+
+**Root Cause:** NPM default configuration includes proxy buffering, which interferes with streaming JSON responses from Ollama/Open WebUI. The buffering breaks the real-time streaming of JSON chunks during model inference.
+
+**Resolution:** Added NPM advanced configuration for ollama.najhin-gaming.com proxy host:
+```nginx
+proxy_buffering off;
+```
+Added to Advanced tab → Custom Nginx Configuration
+
+**Verification:** Open WebUI now streams responses correctly without JSON parsing errors. Model responses display in real-time without buffering delays.
+
+**Lesson:** When proxying streaming applications (AI models, real-time APIs), disable proxy buffering in NPM advanced configuration to prevent breaking streaming JSON responses.
+
+---
+
 ## 2026-04-24 — Open WebUI Not Accessible Externally
 
 **Symptoms:** Open WebUI container running on VM 400 port 3000, but not accessible from external browsers via ollama.najhin-gaming.com. NPM proxy returning connection refused errors.
