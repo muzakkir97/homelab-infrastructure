@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** April 24, 2026
+> **Last Updated:** April 25, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Phase 22 complete (Obsidian Knowledge Base). 14 LXC containers running.
+**Current Status:** Phase 16.3 complete (Da Vinci Documentation Pipeline). 14 LXC containers running.
 
 ---
 
@@ -130,6 +130,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Root disk:** 100GB (resized from 20GB to resolve quota issues)
 - **Data location:** Currently on /var/lib/nextcloud (root disk)
 - **Planned migration:** Move data directory to /mnt/data-storage (7.3TB HDD) during future phase
+- **WebDAV base URL:** https://cloud.najhin-gaming.com/remote.php/dav/files/admin/
 
 ### Gaming Servers (Docker on CT 302)
 - **Terraria** — terraria.najhin-gaming.com
@@ -227,8 +228,13 @@ Theme: Homelab agents named after Fate/Grand Order servants, discussed April 21-
 | Servant | Class | Role | Platform | Status |
 |---------|-------|------|----------|--------|
 | Gilgamesh 👑 | Archer | Personal AI Assistant | Telegram (@JhinGilgamesh_bot) | ✅ Active |
-| Caster (Da Vinci) 🎨 | Caster | Knowledge Curator | n8n/Nextcloud | ✅ Active |
-| Archer (EMIYA) 🏹 | Archer | Infrastructure Translator | n8n | ✅ Active |
+
+### Planned Agents
+
+| Servant | Class | Role | Platform | Status |
+|---------|-------|------|----------|--------|
+| Caster (Da Vinci) 🎨 | Caster | Knowledge Curator | n8n/Nextcloud | 📋 Planned (Stage 2: RAG) |
+| Archer (EMIYA) 🏹 | Archer | Infrastructure Translator | n8n | 📋 Planned |
 
 ### Planned Agents (Priority Order)
 
@@ -339,13 +345,14 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 - gilgamesh_costs.cost_usd column always returns 0 (pre-existing bug from earlier phases)
 - Cost calculation uses estimated token rates (Sonnet $3/$15 per 1M input/output tokens)
 
-### n8n Workflows (Count: 7)
+### n8n Workflows (Count: 8)
 
 | Workflow                    | Purpose                             | Nodes | Trigger         |
 |-----------------------------|-------------------------------------|-------|-----------------|
 | Telegram Agent              | Main bot, menu, commands            | 15    | Telegram        |
 | Documentation Pipeline - Update | Session summary → 3 files     | 7     | Webhook         |
 | Documentation Pipeline - Sync Docs | Full doc regeneration → 7 files | 7  | Webhook         |
+| Da Vinci Documentation Pipeline | Raw staging summaries → formatted docs | 11 | Webhook |
 | Update Nextcloud File       | Legacy (unpublished)                | 5     | Webhook         |
 | Push to GitHub              | Legacy (unpublished)                | 4     | Webhook         |
 
@@ -375,13 +382,20 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 
 ---
 
-## 🔧 Documentation Pipeline (Phase 16.1/16.2)
+## 🔧 Documentation Pipeline (Phase 16.1/16.2/16.3)
 
 ### Architecture
 ```
 Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
                     ↓
                Nextcloud + GitHub
+```
+
+#### Da Vinci Documentation Pipeline (Phase 16.3)
+```
+Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API → Formatted AI-CONTEXT.md
+                                                    ↓
+                                              Nextcloud + GitHub
 ```
 
 ### Commands
@@ -395,11 +409,13 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 
 | Component    | Details                              |
 |--------------|--------------------------------------|
-| Webhooks     | doc-update, doc-sync                 |
+| Webhooks     | doc-update, doc-sync, da-vinci       |
 | Telegram     | Route /update and /sync-docs         |
 | Claude API   | Documentation merging intelligence   |
-| Nextcloud    | File storage via app password        |
-| GitHub       | Version control via API push        |
+| Nextcloud    | File storage via admin user          |
+| GitHub       | Version control via API push         |
+| Da Vinci     | Async processing (she/her pronouns)  |
+| Staging file | AI-CONTEXT-staging.md (rolling append) |
 
 ### File Coverage (sync-docs)
 - AI-CONTEXT.md, changelog.md, troubleshoot.md (from /update)
@@ -481,13 +497,13 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | 15      | Gilgamesh Additional Slash Commands                       | ✅ Complete    | Apr 24, 2026     |
 | 16.1    | Documentation Pipeline - Update Workflow                  | ✅ Complete    | Apr 19, 2026     |
 | 16.2    | Documentation Pipeline - Sync Docs Workflow               | ✅ Complete    | Apr 19, 2026     |
+| 16.3    | Da Vinci Documentation Pipeline                           | ✅ Complete    | Apr 25, 2026     |
 | 22      | Obsidian Knowledge Base                                   | ✅ Complete    | Apr 24, 2026     |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                     | ✅ Complete    | Apr 18, 2026     |
 | 24.1    | Service Update Manager (Docker + apt + Proxmox, approval-gated) | 📋 Planned | —               |
-| 38      | Ollama + ROCm on Kuromoon RX 6700 XT                      | 📋 Near Term #1 | —               |
-| 58      | Windrose Server Deployment                                | ✅ Complete    | Apr 19, 2026     |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT                      | ✅ Complete    | Apr 24, 2026     |
 | 39      | Open WebUI                                                | ✅ Complete    | Apr 24, 2026     |
+| 58      | Windrose Server Deployment                                | ✅ Complete    | Apr 19, 2026     |
 
 ---
 
@@ -566,21 +582,19 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ### Immediate
 | Task | Priority |
 |------|----------|
-| Begin Phase 38 (Ollama + ROCm) in next session | High |
 | Build MERLIN reminder agent (highest priority due to memory issues) | High |
 | Fix cost_usd column not being saved (investigate Save Cost node in main workflow) | High |
 | Share Windrose invite code NAJHINWINDROSE with friends | High |
 | Monitor RAM usage with Windrose running on CT 302 | High |
 | Set Bitwarden app on phone with passwords.najhin-gaming.com server | High |
-| Store new Nextcloud app password (n8n-doc-pipeline) in Vaultwarden | High |
 | Set $10 API limit in Anthropic Console (temporary) | High |
 | Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn) | High |
-| Store Proxmox root password in Vaultwarden | High |
-| Store CT 302 root password in Vaultwarden | High |
+| Store VM 400 root password in Vaultwarden | High |
 | Add remaining subscriptions to Obsidian vault | High |
 | Fix Total by Category query in Obsidian dashboard (backtick issue) | High |
-| Store ollama-gpu root password in Vaultwarden | High |
-| Add Cloudflare Access icon for ollama.najhin-gaming.com | Low |
+| Store Nextcloud app password in Vault kv/nextcloud | High |
+| Store GitHub token in Vault kv/github | High |
+| Update Cloudflare Access icons (7 apps including Ollama) | High |
 
 ### Infrastructure
 | Task | Priority |
@@ -594,6 +608,7 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Retire Update Nextcloud File and Push to GitHub workflows (unpublish) | Medium |
 | Create muzakkir97/homelab-private repo | Medium |
 | Set up Backblaze B2 account | Medium |
+| Phase 27 (Vault + n8n) enables n8n to fetch secrets directly | Medium |
 
 ### Gilgamesh & Documentation
 | Task | Priority |
@@ -604,6 +619,7 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram) | Medium |
 | Integrate Vault secrets into n8n Gilgamesh workflow | Medium |
 | Document all future agent additions in Fate Agent section | Medium |
+| Build Da Vinci Stage 2 (RAG) alongside Phase 7E | Medium |
 
 ### Infrastructure
 | Task | Priority |
@@ -613,7 +629,6 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 | Remove legacy LAN 192.168.1.0/24 (after switch migration) | Medium |
 | WiFi Access Point setup (EAP610 purchased) | Medium |
 | Homepage security (Cloudflare Access) | Low |
-| Update Cloudflare Access app icons (all 7 apps) | Low |
 | Off-site backup (Backblaze B2) | Low |
 | Nextcloud 2FA (TOTP) | Low |
 
@@ -627,6 +642,96 @@ Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 25, 2026
+Date: April 24-25, 2026
+Phase: 16.3 — Da Vinci Documentation Pipeline (COMPLETE)
+
+Topics Discussed
+- Reviewed pending tasks: VM 400 passwords, Bitwarden phone
+  setup, cost_usd bug, Obsidian subscriptions, Cloudflare icons
+- Test SQLite workflow confirmed deleted
+- Generated full homelab roadmap as Obsidian Kanban board
+  (homelab-roadmap-kanban.md, 7 columns, all phases)
+- Reviewed planned AI agent roster (Fate/GO ecosystem)
+- Clarified Da Vinci and EMIYA are NOT deployed — Gilgamesh
+  is the only active agent currently
+- Confirmed Da Vinci is canonically female (she/her)
+- All agents route through Gilgamesh (@JhinGilgamesh_bot)
+- Researched documentation agent patterns online
+- Designed Da Vinci Stage 1 (async /update fix) and
+  Stage 2 (RAG/knowledge recall, planned with Phase 7E)
+- Built Phase 16.3 — Da Vinci Documentation Pipeline
+- Created AI-CONTEXT-staging.md in Nextcloud (rolling append)
+- Fixed Nextcloud WebDAV username (admin not muzakkir)
+- Built 11-node Da Vinci n8n workflow
+- Fixed multiple issues during build
+- Full end-to-end test passed
+- AI-CONTEXT.md accidentally overwritten by test — restored
+  from backup, resynced to GitHub
+- Stored Nextcloud app password and GitHub token task deferred
+  to Phase 27 (Vault + n8n integration)
+
+Decisions Made
+- Da Vinci is an n8n workflow, not a separate LXC
+- All agents route through Gilgamesh bot
+- Staging file is rolling append — raw summaries preserved
+- Da Vinci Stage 2 (RAG) planned alongside Phase 7E
+- Da Vinci and EMIYA status corrected to Planned/Not deployed
+- Nextcloud WebDAV username is admin throughout
+- Download link in Da Vinci notification uses Nextcloud web UI
+  URL, not raw WebDAV (Cloudflare Access blocks raw WebDAV)
+- Nextcloud app password and GitHub token to be stored in
+  Vault kv/nextcloud and kv/github (Phase 27)
+
+Changes to AI-CONTEXT.md
+- Mark Phase 16.3 as Complete (April 25, 2026)
+- Correct agent table: Da Vinci and EMIYA from Active to
+  Planned (not yet deployed)
+- Add Da Vinci pronouns: she/her
+- Add AI-CONTEXT-staging.md to infrastructure notes
+- Update Nextcloud WebDAV username to admin throughout
+- WebDAV base URL: https://cloud.najhin-gaming.com/remote.php/dav/files/admin/
+- Add Da Vinci Stage 2 (RAG) planned alongside Phase 7E
+- Add new n8n workflow: Da Vinci Documentation Pipeline
+  (8th workflow, 11 nodes)
+- Update n8n workflow count from 7 to 8
+- Add pending task: Store Nextcloud app password + GitHub
+  token in Vault kv/nextcloud and kv/github
+- Add pending task: Phase 27 (Vault + n8n) enables n8n to
+  fetch secrets directly — eliminates manual copy-paste
+- Update Cloudflare Access icons pending list to 7 apps
+  (added Ollama)
+
+Changes to Other Docs
+- roadmap.md: Move Phase 16.3 to Completed (April 25, 2026)
+- changelog.md: Add Phase 16.3 completion entry
+- service-catalog.md: Add Da Vinci Documentation Pipeline
+
+Errors & Resolutions
+- Nextcloud 401: Username was muzakkir, should be admin
+- n8n HTTP Request JSON invalid: Moved Claude API call to
+  Code node using this.helpers.httpRequest
+- Write AI-CONTEXT empty body: Use explicit node reference
+  $('Extract Response').first().json.updatedDoc
+- Push to GitHub auth failed: Replaced HTTP Request node
+  with Code node
+- URL typo: cloud.najhin.gaming.com → cloud.najhin-gaming.com
+- Cloudflare Access blocks raw WebDAV download link: Use
+  Nextcloud web UI URL instead
+- AI-CONTEXT.md overwritten by test run: Restored from local
+  backup on Minimoon, resynced to GitHub via curl from CT 211
+
+Action Items
+- [ ] Store Nextcloud app password in Vault kv/nextcloud
+- [ ] Store GitHub token in Vault kv/github
+- [ ] Store VM 400 root password in Vaultwarden
+- [ ] Set Bitwarden on phone
+- [ ] Add remaining subscriptions to Obsidian
+- [ ] Fix Obsidian dashboard backtick query
+- [ ] Update Cloudflare Access icons (7 apps incl. Ollama)
+- [ ] Fix cost_usd column bug in Save Cost node
+- [ ] Next phase: MERLIN reminder agent
 
 ###Date: April 24, 2026
 Phase: 38 — Ollama + ROCm Local LLM (COMPLETE)
@@ -889,4 +994,4 @@ Begin Phase 38 planning after Phase 14 complete
 
 ---
 
-*Last updated: April 24, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: April 25, 2026 — Update this file at the end of each session before pushing to GitHub*
