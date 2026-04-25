@@ -183,7 +183,7 @@ second-brain/
 - **Subscription tracker:** Individual notes per subscription in 04-personal/subscriptions/
 - **Dashboard:** Dataview queries showing subscription costs and totals at 04-personal/dashboard
 - **Session summaries:** Template at 05-templates/session-summary.md for homelab documentation
-- **6 subscriptions tracked:** Claude Pro, GitHub Copilot, Spotify, Netflix, Cloudflare Pro, Anthropic API (costs updated when known)
+- **6 subscriptions tracked:** Claude Pro, Anthropic API, Fantia, YouTube Premium, Cloudflare Domain, TIME Internet (costs updated when known)
 
 ---
 
