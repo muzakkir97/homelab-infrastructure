@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Midas CFO Agent deployed and active. 14 LXC containers + 1 KVM VM running.
+**Current Status:** Midas CFO Agent and MERLIN Reminders deployed and active. 14 LXC containers + 1 KVM VM running.
 
 ---
 
@@ -279,6 +279,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 | Gilgamesh 👑     | Archer | Personal AI Assistant                                                | Telegram (@JhinGilgamesh_bot) | ✅ Active            |
 | Da Vinci 🎨      | Caster | Chief Intelligence Officer (Stage 1 doc pipeline active; Stage 2 RAG planned) | n8n/Nextcloud        | ⚡ Partial — Stage 1 active |
 | Midas 💰         | Caster | CFO — Cost Tracking & Optimization                                   | n8n                           | ✅ Active            |
+| MERLIN 🔮        | Caster | Reminders & Scheduler                                                | n8n                           | ⚡ Partial — daily checks active |
 
 ### Final 9-Agent Roster (Locked April 25, 2026)
 
@@ -287,7 +288,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 | Gilgamesh 👑         | Archer   | Personal AI Assistant                  | Telegram      | —           | ✅ Active  |
 | Da Vinci 🎨          | Caster   | Chief Intelligence Officer             | n8n/Nextcloud | —           | ⚡ Partial |
 | Midas 💰             | Caster   | CFO — Cost Tracking & Optimization     | n8n           | 1st         | ✅ Active  |
-| MERLIN 🔮            | Caster   | Reminders & Scheduler                  | n8n           | 2nd         | 📋 Planned |
+| MERLIN 🔮            | Caster   | Reminders & Scheduler                  | n8n           | 2nd         | ⚡ Partial |
 | Guardian 🛡          | —        | Security Monitoring                    | n8n           | 3rd         | 📋 Planned |
 | Mash Kyrielight 🛡️  | Shielder | Gaming Server Manager + Wellbeing      | Discord       | 4th         | 📋 Planned |
 | Nexus 🔗             | —        | Cross-platform Automation              | n8n           | 5th         | 📋 Planned |
@@ -345,6 +346,24 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Midas touch turns everything to gold → cost optimization
 - King of wealth → perfect CFO role
 
+### MERLIN — Reminders & Scheduler
+
+**Why Merlin:**
+- Clairvoyance (sees the future → knows what you'll forget)
+- Garden of Avalon (creates safe space → maintenance windows)
+- Illusion magic (reminds you gently, not annoyingly)
+
+**What MERLIN Does:**
+- SSL certificate renewal reminders (expires in X days)
+- Backup restore test reminders (overdue by X days)
+- Loki/Prometheus memory limit warnings (OOM in X days)
+- Scheduled maintenance windows
+- Proactive infrastructure health checks
+
+**Current Implementation:**
+- Daily 8am checks: SSL expiry (hardcoded July 14, 2026), Backup restore test (baseline 2026-01-01), Prometheus memory usage, Vault seal status
+- Cloudflare API integration pending (token truncated issue in Vault kv/cloudflare)
+
 ### EMIYA — CTO / Infrastructure Engineer
 
 **10 core features:**
@@ -368,20 +387,6 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 **Role:** Dedicated web scraper replacing web scraping from EMIYA scope.
 **Sources:** RSS feeds, Reddit, news sites, homelab tool trackers.
 **Output:** Telegram alerts for relevant findings, Obsidian storage for research notes.
-
-### MERLIN — Reminders & Scheduler
-
-**Why Merlin:**
-- Clairvoyance (sees the future → knows what you'll forget)
-- Garden of Avalon (creates safe space → maintenance windows)
-- Illusion magic (reminds you gently, not annoyingly)
-
-**What MERLIN Does:**
-- SSL certificate renewal reminders (expires in X days)
-- Backup restore test reminders (overdue by X days)
-- Loki/Prometheus memory limit warnings (OOM in X days)
-- Scheduled maintenance windows
-- Proactive infrastructure health checks
 
 ### Mash — Gaming Discord Bot
 
@@ -440,7 +445,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - **Inline keyboard menu:** Full menu system with all submenus working
 - **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
 - **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
-- **Slash commands:** 8 commands for direct actions
+- **Slash commands:** 9 commands for direct actions
 
 ### Slash Commands
 
@@ -476,7 +481,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - Ollama queries cost $0 (local inference)
 - command_type derived from Telegram message text directly
 
-### n8n Workflows (Count: 9)
+### n8n Workflows (Count: 12)
 
 | Workflow                            | Purpose                                | Nodes | Trigger  |
 |-------------------------------------|----------------------------------------|-------|----------|
@@ -486,6 +491,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Da Vinci Documentation Pipeline     | Raw staging summaries → formatted docs | 11    | Webhook  |
 | Midas — CFO Report                  | /midas command cost analysis           | 6     | Webhook  |
 | Midas — Daily Brief                 | 9am scheduled cost summary             | 4     | Schedule |
+| MERLIN — Reminders                  | 8am daily infrastructure checks        | 8     | Schedule |
 | Update Nextcloud File               | Legacy (unpublished)                   | 5     | Webhook  |
 | Push to GitHub                      | Legacy (unpublished)                   | 4     | Webhook  |
 
@@ -578,6 +584,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 |--------------------|-----------------|---------------------|-----------|------------------------------------------------------------------|
 | @JhinGilgamesh_bot | Telegram        | n8n CT 211          | ✅ Active  | Personal AI agent — chat, homelab control, /update, /sync-docs   |
 | Midas              | Telegram        | n8n CT 211          | ✅ Active  | CFO cost tracking — /midas reports, 9am daily briefs            |
+| MERLIN             | Telegram        | n8n CT 211          | ✅ Active  | Reminders — 8am daily infrastructure checks                      |
 | Homelab Alerts     | Telegram        | Alertmanager CT 205 | ✅ Active  | Critical alerts (host down, high CPU/memory/disk)                |
 | Homelab Alerts     | Discord webhook | Alertmanager CT 205 | ✅ Active  | Warning-level alerts to #alerts channel                          |
 
@@ -670,6 +677,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 41      | Gilgamesh + Ollama Hybrid Routing                                | ✅ Complete      | Apr 24, 2026 |
 | 58      | Windrose Server Deployment                                       | ✅ Complete      | Apr 19, 2026 |
 | Midas   | Midas CFO Agent                                                  | ✅ Complete      | Apr 27, 2026 |
+| MERLIN  | MERLIN Reminders Agent                                           | ✅ Complete      | Apr 27, 2026 |
 
 ---
 
@@ -718,6 +726,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Da Vinci grounding bug               | Use direct node references; increase max_tokens to 32000         |
 | Open WebUI JSON parse error          | Add `proxy_buffering off` to NPM advanced config for streaming   |
 | input.first()/input.last() unreliable | After Merge node, use direct node references like `$('Extract Response').first().json` |
+| Ollama tokens always 0               | Call Ollama node already maps prompt_eval_count → input_tokens — read data.input_tokens not data.prompt_eval_count |
+| Loki not being scraped               | Add scrape job to Prometheus config for CT 204                  |
 
 ### HashiCorp Vault (Phase 13)
 
@@ -729,6 +739,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Vault fails to start in LXC      | Add `disable_mlock = true` to vault.hcl                         |
 | Token auth issues in shell       | Use `vault login <token>` not `export VAULT_TOKEN=`             |
 | Vault sealed after reboot        | `pct exec 213 -- vault operator unseal`                         |
+| Cloudflare token truncated       | kv/cloudflare only stores 7 chars — re-store full token         |
 
 ### Obsidian & Knowledge Management
 
@@ -753,7 +764,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Ollama running on CPU not GPU            | Add `HSA_OVERRIDE_GFX_VERSION=10.3.0` and render/video group membership |
 | Open WebUI no models available           | Set `OLLAMA_HOST=0.0.0.0`; point container to 172.17.0.1:11434          |
 | SSH to VM 400 permission denied as root  | Use `muzakkir` user with sudo — root SSH is disabled                    |
-| Ollama tokens always 0                   | Call Ollama node maps prompt_eval_count → input_tokens — read data.input_tokens not data.prompt_eval_count |
 
 ### Monitoring & Alerts
 
@@ -770,7 +780,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                                        | Priority |
 |---------------------------------------------------------------------------------------------|----------|
-| Build MERLIN reminder agent (next in build order after Midas completion)                   | High     |
+| Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
+| Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                | High     |
+| Activate MERLIN workflow (toggle on)                                                       | High     |
 | Monitor Windrose RAM usage — stop Docker container when not playing                         | High     |
 | Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)                         | High     |
 | Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
@@ -790,6 +802,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Task                                                                                        | Priority |
 |---------------------------------------------------------------------------------------------|----------|
 | Build Monthly Infrastructure Audit cron workflow (assign new phase number — NOT 16.3)      | High     |
+| Build Guardian security monitoring agent (next after MERLIN)                               | High     |
 | Build Mash Discord bot (Phases 59-64)                                                       | High     |
 | Document Sherlock Holmes agent design (sources, scraping targets, output, Obsidian integration) | Medium |
 | /update redesign — file attachment via Telegram, push to GitHub + Nextcloud                 | Medium   |
@@ -820,6 +833,59 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 27, 2026
+
+Date: April 27, 2026
+Phase: Midas Complete + MERLIN Complete
+
+Topics Discussed
+
+Investigated 80% RAM alert — traced to Windrose (8.9GB) + VM 400 (7.9GB)
+Raised Prometheus HighMemoryUsage threshold from 80% to 85%
+Fixed Ollama token capture in Extract Response node
+Added command_type column to gilgamesh_costs
+Built Midas — CFO Report workflow (/midas command, 6 nodes)
+Built Midas — Daily Brief workflow (9am scheduled, 4 nodes)
+Built MERLIN — Reminders workflow (8am daily, parallel checks)
+Fixed Loki not being scraped by Prometheus (added scrape job)
+
+Decisions Made
+
+Memory alert threshold: 80% → 85%
+Ollama token fields: read data.input_tokens / data.output_tokens (already mapped by Call Ollama)
+command_type derived from Telegram Trigger message text directly
+Midas webhook path: midas-report, USD to MYR rate: 4.7, spend limit: $10
+SSL check: hardcoded July 14 2026 expiry (Cloudflare auto-renews), revisit in MERLIN v2
+Backup restore test baseline: 2026-01-01 (never tested), update manually after each test
+MERLIN reads Check Prometheus Memory and Check Vault Seal by direct node reference
+Midas v2 planned: revisit missing design discussion in future session
+
+Changes to AI-CONTEXT.md
+
+Add to n8n workflows table: Midas — CFO Report (webhook, /midas), Midas — Daily Brief (scheduled 9am), MERLIN — Reminders (scheduled 8am) — total now 12 workflows
+Update gilgamesh_costs schema: command_type column added (Text)
+Update Prometheus alert: HighMemoryUsage threshold now 85%
+Add Loki scrape job fix to Key Lessons Learned
+Add Windrose RAM note: ~9GB RAM baseline, stop docker container when not playing
+Update agent roster: Midas ✅ Active (CFO report + daily brief), MERLIN ⚡ Partial (daily checks active, Cloudflare API pending)
+Add to pending tasks: Schedule backup restore test (CT 207 recommended), fix Cloudflare Vault token (truncated — only 7 chars stored)
+
+Errors & Resolutions
+
+Ollama tokens always 0: Call Ollama already maps to input_tokens/output_tokens — read those not prompt_eval_count
+command_type node reference error: Derive from Telegram Trigger directly
+Midas webhook 404: Activate workflow first
+Aggregate Alerts Prometheus not found: Use direct node reference $('Check Prometheus Memory') instead of merged items
+SSL checker API empty: Use hardcoded expiry date instead
+Cloudflare Vault token truncated: kv/cloudflare stores api-token as 7 chars only — needs to be re-stored with full token
+
+Action Items
+
+Schedule backup restore test on CT 207, update lastTestDate in MERLIN
+Fix Cloudflare API token in Vault (get full token from Cloudflare dashboard, re-store)
+Activate MERLIN workflow (toggle on)
+Next: Obsidian 22.1 or Guardian agent
 
 ### April 27, 2026
 
