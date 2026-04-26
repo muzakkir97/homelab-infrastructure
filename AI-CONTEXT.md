@@ -183,7 +183,7 @@ second-brain/
 - **Subscription tracker:** Individual notes per subscription in 04-personal/subscriptions/
 - **Dashboard:** Dataview queries showing subscription costs and totals at 04-personal/dashboard
 - **Session summaries:** Template at 05-templates/session-summary.md for homelab documentation
-- **6 subscriptions tracked:** Claude Pro, Anthropic API, Fantia, YouTube Premium, Cloudflare Domain, TIME Internet (costs updated when known)
+- **6 subscriptions tracked:** Claude Pro, Anthropic API, Fantia, YouTube Premium, Cloudflare Domain, TIME Internet
 
 ---
 
@@ -503,7 +503,7 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 | Segmentation    | 5 VLANs with enforced firewall rules                                                                                                                                                               |
 | DNS             | Pi-hole ad/tracker blocking (~489K domains)                                                                                                                                                        |
 | VPN             | Tailscale (subnet router on pfSense, primary access)                                                                                                                                               |
-| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Homepage, Nextcloud (7 apps total)                                                |
+| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Homepage, Nextcloud (7 apps total)                                                   |
 | External Access | Cloudflare Tunnel for all external services                                                                                                                                                        |
 | Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                                                                                                                                      |
 | Backup          | Automated daily backups with 7/4/2 retention                                                                                                                                                       |
@@ -605,7 +605,7 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 | Wrong repo architecture/codename | Hardcode `amd64` and `bookworm` in repo entry                  |
 | Vault fails to start in LXC      | Add `disable_mlock = true` to vault.hcl                        |
 | Token auth issues in shell       | Use `vault login <token>` not `export VAULT_TOKEN=`            |
-| Vault sealed after reboot        | `pct exec 213 -- vault operator unseal`                       |
+| Vault sealed after reboot        | `pct exec 213 -- vault operator unseal`                        |
 
 ### Obsidian & Knowledge Management
 
@@ -616,10 +616,10 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 
 ### Cloudflare Access & Security
 
-| Issue                                     | Resolution                                           |
-|-------------------------------------------|------------------------------------------------------|
-| Bitwarden HTTP 525 from phone            | Cloudflare Access blocking API — bypass /api/, /identity/ paths |
-| n8n Access OTP not triggering            | Cached session — test in incognito mode             |
+| Issue                         | Resolution                                                      |
+|-------------------------------|-----------------------------------------------------------------|
+| Bitwarden HTTP 525 from phone | Cloudflare Access blocking API — bypass /api/, /identity/ paths |
+| n8n Access OTP not triggering | Cached session — test in incognito mode                         |
 
 ### Business & Learning
 
@@ -635,13 +635,13 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 
 ### Immediate
 
-| Task                                                                              | Priority |
-|-----------------------------------------------------------------------------------|----------|
-| Build MERLIN reminder agent (highest priority due to memory issues)               | High     |
-| Share Windrose invite code NAJHINWINDROSE with friends                            | High     |
-| Monitor RAM usage with Windrose running on CT 302                                 | High     |
-| Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)               | High     |
-| Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | High |
+| Task                                                                                        | Priority |
+|---------------------------------------------------------------------------------------------|----------|
+| Build MERLIN reminder agent (highest priority due to memory issues)                         | High     |
+| Share Windrose invite code NAJHINWINDROSE with friends                                      | High     |
+| Monitor RAM usage with Windrose running on CT 302                                           | High     |
+| Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)                         | High     |
+| Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | High     |
 
 ### Infrastructure
 
@@ -691,6 +691,62 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 26, 2026
+
+Date: April 26, 2026
+Phase: Planning - Obsidian Expansion + EMIYA Design
+
+## Key Decisions
+
+1. Homepage: 4 separate tabs (Homelab, Health, Finance, Settings)
+2. Budget: Monthly + weekly tracking, percentage-based (15% groceries)
+3. Grocery lists: Budget-aware (tight month = pasar mode, cheaper alternatives)
+4. Price tracking: Yes, compare pasar vs supermarket
+5. Shopping: Telegram checklist only (not homepage)
+6. EMIYA: Full CTO/Infrastructure Engineer (10 core features)
+7. New agent: Sherlock Holmes for web scraping
+8. Budget settings: User-adjustable percentages in Settings tab
+
+## Agent Status CORRECTED
+
+✅ Active:
+- Gilgamesh (Telegram bot)
+- Da Vinci (doc pipeline only - PARTIAL)
+
+📋 Planned (Priority Order):
+1. MERLIN - Reminders
+2. Sherlock Holmes - Web scraper
+3. EMIYA - CTO/Infrastructure (Phases 24.1-24.8, 8 sub-phases)
+
+New Tier 2 agents: Midas (CFO), Chiron (Career), Medea (QA), Waver (PM)
+
+## New Phases Added
+
+- 22.15: Price Database (2-3h)
+- 22.16: Homepage Settings Tab (1-2h)
+- 24.1-24.8: EMIYA deployment (24-32h total, 5 critical phases)
+- 16: /update Redesign (file upload) - NEEDED SOON
+
+## Changes to AI-CONTEXT.md
+
+- Fix agent table: EMIYA "Active" → "Planned"
+- Add Sherlock Holmes (Ruler, web scraper)
+- Add EMIYA complete role (10 features, formal/professional)
+- Add 4 new Tier 2 agents
+- Add Phases 22.15, 22.16, 24.1-24.8
+- Budget config: 15% groceries, adjustable
+
+## Action Items
+
+Immediate:
+- Correct agent status in AI-CONTEXT.md
+- Prioritize Phase 16 (/update file upload) SOON
+- Begin Phase 22.1 (Vault Structure) next session
+
+High Priority:
+- Phase 22.8 (Food Tracking - BP 140/100 urgent)
+- Phase 24.1-24.5 (EMIYA critical features)
 
 ### April 26, 2026
 
