@@ -739,11 +739,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 |---------------------------------------------------------------------------------------------|----------|
 | Build Midas agent first (CFO, cost tracking) — confirmed build order: Midas before MERLIN  | High     |
 | Build MERLIN reminder agent second (SSL reminders, backup test, maintenance windows)        | High     |
-| Share Windrose invite code NAJHINWINDROSE with friends                                      | High     |
 | Monitor RAM usage with Windrose running on CT 302                                           | High     |
 | Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)                         | High     |
-| Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME)| High     |
-| Fix Da Vinci grounding — fetch current AI-CONTEXT.md from Nextcloud before Claude API call | High     |
+| Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
 
 ### Infrastructure
 
@@ -751,8 +749,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 |------------------------------------------------------------------------------|----------|
 | Address local-lvm thin pool overprovisioning (during infrastructure cleanup) | Medium   |
 | Plan Phase 24.1 (EMIYA Foundation) in dedicated session                      | Medium   |
-| Delete old disconnected /update nodes from Telegram Agent workflow           | Medium   |
-| Retire Update Nextcloud File and Push to GitHub workflows (unpublish)        | Medium   |
 | Create muzakkir97/homelab-private repo                                       | Medium   |
 | Set up Backblaze B2 account                                                  | Medium   |
 | Phase 27 (Vault + n8n) enables n8n to fetch secrets directly                 | Medium   |
@@ -769,7 +765,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Integrate Vault secrets into n8n Gilgamesh workflow (Phase 27)                              | Medium   |
 | Build Da Vinci Stage 2 (RAG) alongside Phase 7E                                             | Medium   |
 
-### Infrastructure
+### Infrastructure (Network & Services)
 
 | Task                                                               | Priority |
 |--------------------------------------------------------------------|----------|
