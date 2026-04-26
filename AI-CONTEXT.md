@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Maintenance & Bug Fix Sprint complete. 14 LXC containers running.
+**Current Status:** Maintenance & Bug Fix Sprint + AI-CONTEXT audit complete. 14 LXC containers + 1 KVM VM running.
 
 ---
 
@@ -76,9 +76,10 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 
 ### GPU Notes (Kuromoon)
 
-- RX 6700 XT in IOMMU Group 18, audio in Group 19
-- Earmarked for Ollama/ROCm AI inference (Phase 38 — promoted to Near Term #2)
+- RX 6700 XT passed through to VM 400 (ollama-gpu) for Ollama/ROCm AI inference
+- IOMMU Group 18 (GPU), Group 19 (audio) — both passed through
 - Idle baseline: CPU 48.5°C, GPU edge 46°C, GPU 5W with zero-RPM fan
+- HSA_OVERRIDE_GFX_VERSION=10.3.0 set via systemd override for gfx1031 compatibility
 
 ---
 
@@ -110,35 +111,46 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 ---
 
-## 📦 Container Inventory (Proxmox LXC)
+## 📦 Infrastructure Inventory (Proxmox)
 
-| CTID | Name                    | IP             | Subdomain                     | Autostart | Status    |
-|------|-------------------------|----------------|-------------------------------|-----------|-----------|
-| 201  | nginx-proxy-manager     | 192.168.30.201 | —                             | ✅         | ✅ Running |
-| 202  | monitoring-prometheus   | 192.168.30.202 | —                             | ✅         | ✅ Running |
-| 203  | monitoring-grafana      | 192.168.30.203 | grafana.najhin-gaming.com     | ✅         | ✅ Running |
-| 204  | monitoring-loki         | 192.168.30.204 | —                             | ✅         | ✅ Running |
-| 205  | monitoring-alertmanager | 192.168.30.205 | —                             | ✅         | ✅ Running |
-| 206  | monitoring-uptime       | 192.168.30.206 | —                             | ✅         | ✅ Running |
-| 207  | network-ddns            | 192.168.30.207 | —                             | ✅         | ✅ Running |
-| 208  | dashboard-homepage      | 192.168.30.208 | home.najhin-gaming.com        | ✅         | ✅ Running |
-| 211  | automation-n8n          | 192.168.30.211 | n8n.najhin-gaming.com         | ✅         | ✅ Running |
-| 213  | vault                   | 192.168.30.213 | vault.najhin-gaming.com       | ✅         | ✅ Running |
-| 214  | password-vaultwarden    | 192.168.30.214 | passwords.najhin-gaming.com   | ✅         | ✅ Running |
-| 220  | nextcloud-hub           | 192.168.30.220 | cloud.najhin-gaming.com       | ✅         | ✅ Running |
-| 300  | gaming-panel            | 192.168.30.210 | —                             | ✅         | ✅ Running |
-| 302  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅         | ✅ Running |
-| 400  | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
+> **Note:** CTID 201–302 are LXC containers. VMID 400 is a KVM virtual machine with PCIe GPU passthrough — it is NOT an LXC container.
 
-**Total: 14 LXC containers, all on VLAN 30, all autostart enabled**
+| ID   | Type | Name                    | IP             | Subdomain                     | Autostart | Status     |
+|------|------|-------------------------|----------------|-------------------------------|-----------|------------|
+| 201  | LXC  | nginx-proxy-manager     | 192.168.30.201 | —                             | ✅         | ✅ Running |
+| 202  | LXC  | monitoring-prometheus   | 192.168.30.202 | —                             | ✅         | ✅ Running |
+| 203  | LXC  | monitoring-grafana      | 192.168.30.203 | grafana.najhin-gaming.com     | ✅         | ✅ Running |
+| 204  | LXC  | monitoring-loki         | 192.168.30.204 | —                             | ✅         | ✅ Running |
+| 205  | LXC  | monitoring-alertmanager | 192.168.30.205 | —                             | ✅         | ✅ Running |
+| 206  | LXC  | monitoring-uptime       | 192.168.30.206 | —                             | ✅         | ✅ Running |
+| 207  | LXC  | network-ddns            | 192.168.30.207 | —                             | ✅         | ✅ Running |
+| 208  | LXC  | dashboard-homepage      | 192.168.30.208 | home.najhin-gaming.com        | ✅         | ✅ Running |
+| 211  | LXC  | automation-n8n          | 192.168.30.211 | n8n.najhin-gaming.com         | ✅         | ✅ Running |
+| 213  | LXC  | vault                   | 192.168.30.213 | vault.najhin-gaming.com       | ✅         | ✅ Running |
+| 214  | LXC  | password-vaultwarden    | 192.168.30.214 | passwords.najhin-gaming.com   | ✅         | ✅ Running |
+| 220  | LXC  | nextcloud-hub           | 192.168.30.220 | cloud.najhin-gaming.com       | ✅         | ✅ Running |
+| 300  | LXC  | gaming-panel            | 192.168.30.210 | —                             | ✅         | ✅ Running |
+| 302  | LXC  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅         | ✅ Running |
+| 400  | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
+
+**Total: 14 LXC containers + 1 KVM VM (VM 400 ollama-gpu), all on VLAN 30, all autostart enabled**
 
 ### Nextcloud Hub (CT 220)
 
 - **Root disk:** 100GB (resized from 20GB to resolve quota issues)
-- **Data location:** Currently on /var/lib/nextcloud (root disk)
 - **Version:** 33.0.2
+- **Data location:** Currently on /var/lib/nextcloud (root disk)
 - **Planned migration:** Move data directory to /mnt/data-storage (7.3TB HDD) during future phase
 - **WebDAV base URL:** https://cloud.najhin-gaming.com/remote.php/dav/files/admin/
+
+### ollama-gpu (VM 400)
+
+- **Type:** KVM VM with PCIe passthrough — NOT an LXC
+- **GPU:** RX 6700 XT 12GB (2d:00.0) + audio (2d:00.1) passed through
+- **OS:** Ubuntu 22.04
+- **SSH:** `ssh muzakkir@192.168.30.221` — use `muzakkir` user, not root
+- **Ollama models:** qwen3:14b (primary, 9.3GB), llama3.2:latest (secondary, 3B)
+- **Open WebUI:** Docker container, connects via 172.17.0.1:11434
 
 ### Gaming Servers (Docker on CT 302)
 
@@ -154,7 +166,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 - **Path:** C:\\Users\\muzak\\Nextcloud\\Obsidian\\second-brain (auto-syncs to CT 220)
 - **Platform:** Obsidian on Minimoon (Gaming PC)
-- **Sync:** Via Nextcloud - changes sync automatically between local vault and cloud
+- **Sync:** Via Nextcloud — changes sync automatically between local vault and cloud
 
 ### Plugins Installed
 
@@ -185,6 +197,23 @@ second-brain/
 - **Session summaries:** Template at 05-templates/session-summary.md for homelab documentation
 - **6 subscriptions tracked:** Claude Pro, Anthropic API, Fantia, YouTube Premium, Cloudflare Domain, TIME Internet
 
+### Homepage Dashboard Design (Planned — Phases 22.15/22.16)
+
+4 separate tabs:
+- **Homelab tab** — container status, metrics, alerts
+- **Health tab** — BP tracking, food log, exercise
+- **Finance tab** — budget overview, subscription costs, weekly spending
+- **Settings tab** — user-adjustable budget percentages
+
+### Budget Configuration (Planned)
+
+- Monthly budget tracked as percentage of income
+- Default allocation: 15% groceries (~RM 450/month, ~RM 112.50/week)
+- All percentages user-adjustable in Settings tab
+- Grocery lists are budget-aware: tight month triggers pasar mode with cheaper alternatives and price comparisons (pasar vs supermarket)
+- Shopping checklist is Telegram-only — not on the homepage dashboard
+- Phases 22.15 (Price Database) and 22.16 (Homepage Settings Tab) cover implementation
+
 ---
 
 ## 🔮 Gilgamesh Evolution Roadmap
@@ -198,13 +227,13 @@ second-brain/
 
 #### Phase 1: Foundation (Weeks 1-4)
 
-- **Phase 38** — Ollama + ROCm on Kuromoon RX 6700 XT ✅ COMPLETE (CRITICAL — stop API bleeding)
+- **Phase 38** — Ollama + ROCm on Kuromoon RX 6700 XT ✅ COMPLETE
 - **Phase 22** — Obsidian Knowledge Base ✅ COMPLETE
 
 #### Phase 2: Intelligence (Weeks 5-8)
 
+- **Phase 41** — Hybrid Routing (Ollama + Haiku + Sonnet) ✅ COMPLETE
 - **Phase 7E** — Extended Memory (20+ message conversations via RAG)
-- **Phase 41** — Hybrid Routing (local/API based on complexity)
 
 #### Phase 3: Capabilities (Weeks 9-12)
 
@@ -235,73 +264,110 @@ second-brain/
 
 ### Backup Plan
 
-Keep Claude Pro if quality insufficient, still save $10-15/month with hybrid approach
+Keep Claude Pro if quality insufficient, still save $10-15/month with hybrid approach.
 
 ---
 
 ## 🎴 Fate Grand Order Agent Ecosystem
 
-Theme: Homelab agents named after Fate/Grand Order servants, discussed April 21-22, 2026
+Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked April 25, 2026.
 
 ### Active Agents
 
-| Servant      | Class  | Role                  | Platform                      | Status   |
-|--------------|--------|-----------------------|-------------------------------|----------|
-| Gilgamesh 👑 | Archer | Personal AI Assistant | Telegram (@JhinGilgamesh_bot) | ✅ Active |
+| Servant          | Class  | Role                                                                 | Platform                      | Status              |
+|------------------|--------|----------------------------------------------------------------------|-------------------------------|---------------------|
+| Gilgamesh 👑     | Archer | Personal AI Assistant                                                | Telegram (@JhinGilgamesh_bot) | ✅ Active            |
+| Da Vinci 🎨      | Caster | Chief Intelligence Officer (Stage 1 doc pipeline active; Stage 2 RAG planned) | n8n/Nextcloud        | ⚡ Partial — Stage 1 active |
 
-### Planned Agents
+### Final 9-Agent Roster (Locked April 25, 2026)
 
-| Servant              | Class  | Role                      | Platform      | Status                    |
-|----------------------|--------|---------------------------|---------------|---------------------------|
-| Caster (Da Vinci) 🎨 | Caster | Knowledge Curator         | n8n/Nextcloud | 📋 Planned (Stage 2: RAG) |
-| Archer (EMIYA) 🏹    | Archer | Infrastructure Translator | n8n           | 📋 Planned                |
+| Servant              | Class    | Role                                   | Platform      | Build Order | Status    |
+|----------------------|----------|----------------------------------------|---------------|-------------|-----------|
+| Gilgamesh 👑         | Archer   | Personal AI Assistant                  | Telegram      | —           | ✅ Active  |
+| Da Vinci 🎨          | Caster   | Chief Intelligence Officer             | n8n/Nextcloud | —           | ⚡ Partial |
+| Midas 💰             | Caster   | CFO — Cost Tracking & Optimization     | n8n           | 1st         | 📋 Planned |
+| MERLIN 🔮            | Caster   | Reminders & Scheduler                  | n8n           | 2nd         | 📋 Planned |
+| Guardian 🛡          | —        | Security Monitoring                    | n8n           | 3rd         | 📋 Planned |
+| Mash Kyrielight 🛡️  | Shielder | Gaming Server Manager + Wellbeing      | Discord       | 4th         | 📋 Planned |
+| Nexus 🔗             | —        | Cross-platform Automation              | n8n           | 5th         | 📋 Planned |
+| Oracle 🔮            | —        | Predictive Intelligence (internal + external) | n8n    | 6th         | 📋 Planned |
+| EMIYA 🏹             | Archer   | CTO — Infrastructure Engineer          | n8n           | TBD         | 📋 Planned |
+| Sherlock Holmes 🔍   | Ruler    | Web Scraper & Research Agent           | n8n           | TBD         | 📋 Planned |
 
-### Planned Agents (Priority Order)
+**Notes:**
+- Scribe absorbed into Da Vinci (documentation is Da Vinci's domain)
+- Oracle absorbs Zhuge Liang
+- Sherlock Holmes added April 26 as dedicated web scraper — web scraping removed from EMIYA scope
+- **Build order is firm: Midas first, then MERLIN, Guardian, Mash, Nexus, Oracle**
 
-Phase 2: Safety Net (High Priority)
+### Tier 2 Agents (Planned — Build After Core Roster)
 
-| Servant             | Class    | Role                              | Noble Phantasm     | Priority                              |
-|---------------------|----------|-----------------------------------|--------------------|---------------------------------------|
-| MERLIN 🔮           | Caster   | Reminders & Scheduler             | *Garden of Avalon* | #1 (user keeps forgetting everything) |
-| Mash Kyrielight 🛡️ | Shielder | Gaming Server Manager + Wellbeing | *Lord Camelot*     | High (Phases 59-64)                   |
-| Guardian            | —        | Security Monitoring               | —                  | Medium                                |
+| Servant | Role          | Notes                            |
+|---------|---------------|----------------------------------|
+| Chiron  | Career Coach  | Career transition support        |
+| Medea   | QA Engineer   | Quality assurance for all agents |
+| Waver   | Project Manager | Sprint planning, task tracking |
 
-Phase 3: Efficiency
+### Da Vinci — Chief Intelligence Officer
 
-- Nexus — Cross-platform Automation
-- Scribe — Auto-documentation
-- Midas — Cost Tracking & Optimization
+**Role scope:**
+- Documentation: maintains AI-CONTEXT.md, changelog.md, troubleshoot.md via /update and /sync-docs
+- Obsidian writes: session summaries written to vault via Nextcloud WebDAV
+- RAG retrieval (Stage 2): queries Qdrant vector database for knowledge recall across all agents
+- Observability logs: all agents log activity to Da Vinci
+- Security intelligence (Stage 3, planned): threat feed monitoring
+- Tech news morning brief (Stage 3, planned): homelab-relevant AI and infrastructure news
 
-Phase 4: Intelligence
+**Stage 2 stack:** Qdrant + nomic-embed-text + n8n native RAG nodes on VM 400. Folder `04-personal/` excluded from RAG indexing.
 
-- Oracle — Predictive Intelligence
+**Pronouns:** she/her
 
-### Merlin Details (Reminder Agent — #1 Priority)
+**Technical notes:**
+- Direct node references required: use `$('Extract Response').first().json.updatedDoc` instead of `$json` after Merge node
+- max_tokens set to 32000 to prevent AI-CONTEXT.md being replaced with hallucinated content
+- Grounding fix pending: add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
 
-Why Merlin:
+### EMIYA — CTO / Infrastructure Engineer
 
+**10 core features:**
+1. Proxmox VM and LXC lifecycle management (create, start, stop, delete — approval-gated)
+2. Alert translation (Alertmanager alerts converted to plain English via Telegram)
+3. Container updates (Docker image updates, apt upgrades — approval-gated)
+4. Proactive monitoring (anomaly detection, trend alerts before things break)
+5. Security management (threat detection, firewall rule suggestions)
+6. Performance optimization (identify bottlenecks, suggest resource reallocation)
+7. Backup verification (confirm backup integrity, alert on failures)
+8. Change management (track all infrastructure changes, generate audit log)
+9. Service health reporting (daily infrastructure summary to Telegram)
+10. Pre-flight checks via Da Vinci before executing any changes
+
+**Design rule:** EMIYA proposes → Muzakkir approves → EMIYA executes. No autonomous destructive actions.
+
+**Deployment:** 8 sub-phases (24.1–24.8), estimated 24–32 hours total. Phases 24.1–24.5 are critical path.
+
+### Sherlock Holmes — Web Scraper & Research Agent
+
+**Role:** Dedicated web scraper replacing web scraping from EMIYA scope.
+**Sources:** RSS feeds, Reddit, news sites, homelab tool trackers.
+**Output:** Telegram alerts for relevant findings, Obsidian storage for research notes.
+
+### MERLIN — Reminders & Scheduler
+
+**Why Merlin:**
 - Clairvoyance (sees the future → knows what you'll forget)
 - Garden of Avalon (creates safe space → maintenance windows)
 - Illusion magic (reminds you gently, not annoyingly)
 
-What Merlin Does:
-
+**What MERLIN Does:**
 - SSL certificate renewal reminders (expires in X days)
 - Backup restore test reminders (overdue by X days)
 - Loki/Prometheus memory limit warnings (OOM in X days)
 - Scheduled maintenance windows
 - Proactive infrastructure health checks
 
-### Mash Details (Gaming Discord Bot)
+### Mash — Gaming Discord Bot
 
-Why Mash:
-
-- Protects the team (gaming friends)
-- Keeps everyone safe and organized
-- Announces player activity
-
-What Mash Does:
-
+**What Mash Does:**
 - Discord bot commands: !start, !stop, !status
 - Announces player joins/leaves
 - Scheduled game night reminders
@@ -309,40 +375,54 @@ What Mash Does:
 - Game update notifications
 - Personality: "Senpai, PlayerX just joined Windrose!"
 
-Implementation: Phases 59-64 (Gaming Platform Pipeline)
+**Implementation:** Phases 59-64 (Gaming Platform Pipeline)
 
 ### Design Principles
 
 - Gilgamesh = Telegram-only (homelab admin)
 - Mash = Discord-only (gaming with friends)
-- Keep gaming separate from homelab admin
+- All agents log activity to Da Vinci
 - All agents use Fate/GO servant theming for consistency
+- Build Midas first — no agent should spend tokens without cost visibility
 
 ---
 
-## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15)
+## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15/41)
 
 ### Architecture
 
 ```
-Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
-                                     ↓
-                              Memory (n8n Data Tables)
-                                     ↓
-                              /update → Nextcloud → GitHub
-                              /sync-docs → Full Doc Pipeline
+Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
+                                                    ↓
+                               ┌────────────────────┼──────────────────┐
+                               ▼                    ▼                  ▼
+                         Ollama qwen3:14b      Haiku 4.5           Sonnet 4
+                         (simple, local)    (Ollama fallback)    (complex queries)
+                               └────────────────────┼──────────────────┘
+                                                    ▼
+                                          Memory (n8n Data Tables)
+                                                    ↓
+                                          /update → Da Vinci → Nextcloud → GitHub
+                                          /sync-docs → Full Doc Pipeline
 ```
+
+### Smart Routing (Phase 41 — COMPLETE)
+
+- **Ollama qwen3:14b** — Primary route for simple queries (local, free, fast)
+- **Haiku 4.5** — Fallback if Ollama is down or unavailable
+- **Sonnet 4** — Complex queries: triggered by complexity keywords or messages over 50 words
+- Routing logic runs in a Route Check If node before calling any model
 
 ### Features
 
 - **Conversation memory:** Last 20 messages stored in n8n Data Tables
-- **Smart routing:** Simple inputs → Haiku 4.5, complex queries → Sonnet 4
+- **Smart routing:** Ollama (local, primary) → Haiku (fallback) → Sonnet (complex)
 - **Web search:** Real-time information via Claude's web_search tool
-- **Cost tracking:** Token usage logged to gilgamesh_costs table
+- **Cost tracking:** Token usage logged to gilgamesh_costs table; cost_usd calculated from token rates
 - **Inline keyboard menu:** Full menu system with all submenus working
 - **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
 - **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
-- **Slash commands:** 6 additional commands for direct actions
+- **Slash commands:** 8 commands for direct actions
 
 ### Slash Commands
 
@@ -359,49 +439,54 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 
 ### Technical Details
 
-| Component     | Value                     |
-|---------------|---------------------------|
-| Telegram Bot  | @JhinGilgamesh_bot        |
-| Chat ID       | 518832696                 |
-| Haiku Model   | claude-haiku-4-5-20251001 |
-| Sonnet Model  | claude-sonnet-4-20250514  |
-| n8n Container | CT 211, 192.168.30.211    |
-| Proxmox API   | root@pam!gilgamesh token  |
-| Proxmox node  | muzakkir (not kuromoon)   |
+| Component     | Value                                                              |
+|---------------|--------------------------------------------------------------------|
+| Telegram Bot  | @JhinGilgamesh_bot                                                 |
+| Chat ID       | 518832696                                                          |
+| Ollama Model  | qwen3:14b (primary local model, 9.3GB, 12GB VRAM, VM 400)         |
+| Haiku Model   | claude-haiku-4-5-20251001 (Ollama fallback)                        |
+| Sonnet Model  | claude-sonnet-4-20250514 (complex queries)                         |
+| n8n Container | CT 211, 192.168.30.211                                             |
+| Proxmox API   | root@pam!gilgamesh token                                           |
+| Proxmox node  | muzakkir (not kuromoon)                                            |
 
 ### Cost Tracking Note
 
-- cost_usd now calculated from token rates: Sonnet $3/$15 per 1M input/output tokens, Haiku $0.80/$1 per 1M tokens
+- cost_usd calculated from token rates: Sonnet $3/$15 per 1M input/output tokens, Haiku $0.80/$1 per 1M tokens
 - Ollama tokens captured: prompt_eval_count + eval_count from parsed response
+- Ollama queries cost $0 (local inference)
 
-### n8n Workflows (Count: 8)
+### n8n Workflows (Count: 6)
 
-| Workflow                           | Purpose                                | Nodes | Trigger  |
-|------------------------------------|----------------------------------------|-------|----------|
-| Telegram Agent                     | Main bot, menu, commands               | 15    | Telegram |
-| Documentation Pipeline - Update    | Session summary → 3 files              | 7     | Webhook  |
-| Documentation Pipeline - Sync Docs | Full doc regeneration → 7 files        | 7     | Webhook  |
-| Da Vinci Documentation Pipeline    | Raw staging summaries → formatted docs | 11    | Webhook  |
-| Update Nextcloud File              | Legacy (unpublished)                   | 5     | Webhook  |
-| Push to GitHub                     | Legacy (unpublished)                   | 4     | Webhook  |
+| Workflow                            | Purpose                                | Nodes | Trigger  |
+|-------------------------------------|----------------------------------------|-------|----------|
+| Telegram Agent                      | Main bot, menu, commands, hybrid routing | 15+  | Telegram |
+| Documentation Pipeline — Update     | Session summary → 3 files              | 7     | Webhook  |
+| Documentation Pipeline — Sync Docs  | Full doc regeneration → 7 files        | 7     | Webhook  |
+| Da Vinci Documentation Pipeline     | Raw staging summaries → formatted docs | 11    | Webhook  |
+| Update Nextcloud File               | Legacy (unpublished)                   | 5     | Webhook  |
+| Push to GitHub                      | Legacy (unpublished)                   | 4     | Webhook  |
+
+> Note: Hybrid routing (Phase 41) is integrated into the Telegram Agent workflow — it is not a separate workflow.
 
 ### Inline Keyboard Menu Status
 
-| Menu Item         | Status    |
-|-------------------|-----------|
-| Main Menu         | ✅ Working |
-| Homelab → Status  | ✅ Working |
-| Homelab → Metrics | ✅ Working |
-| Homelab → Temps   | ✅ Working |
-| Homelab → Storage | ✅ Working |
-| Gaming submenu    | ✅ Working |
-| Gilgamesh submenu | ✅ Working |
-| Tools submenu     | ✅ Working |
-| Help              | ✅ Working |
+| Menu Item         | Status     |
+|-------------------|------------|
+| Main Menu         | ✅ Working  |
+| Homelab → Status  | ✅ Working  |
+| Homelab → Metrics | ✅ Working  |
+| Homelab → Temps   | ✅ Working  |
+| Homelab → Storage | ✅ Working  |
+| Gaming submenu    | ✅ Working  |
+| Gilgamesh submenu | ✅ Working  |
+| Tools submenu     | ✅ Working  |
+| Help              | ✅ Working  |
 
 ### SSH & API Access
 
 - **SSH to Kuromoon:** CT 211 → 192.168.10.5:22 (pfSense rule added)
+- **SSH to VM 400:** `ssh muzakkir@192.168.30.221` — use muzakkir user, not root
 - **SSH to CT 302:** Password auth enabled (PermitRootLogin yes)
 - **Proxmox API:** root@pam!gilgamesh token
 - **Storage IDs:** kinmoon-nfs (not kinmoon-smb in Proxmox)
@@ -418,37 +503,39 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Claude API → Response
 ### Architecture
 
 ```
-Session Summary → Claude → AI-CONTEXT.md + changelog.md + troubleshoot.md
-                    ↓
-               Nextcloud + GitHub
+Session Summary → /update → Da Vinci workflow → Claude API → AI-CONTEXT.md + changelog.md + troubleshoot.md
+                                                                     ↓
+                                                              Nextcloud + GitHub
 ```
 
 #### Da Vinci Documentation Pipeline (Phase 16.3)
 
 ```
-Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API → Formatted AI-CONTEXT.md
-                                                    ↓
-                                              Nextcloud + GitHub
+Raw summaries → AI-CONTEXT-staging.md (rolling append)
+                         ↓
+               Da Vinci n8n workflow → Claude API (max_tokens: 32000)
+                         ↓
+               Formatted AI-CONTEXT.md → Nextcloud + GitHub
 ```
 
 ### Commands
 
 | Command    | Purpose                                   | Files Updated |
 |------------|-------------------------------------------|---------------|
-| /update    | Every session - merge summary into docs   | 3 files       |
-| /sync-docs | Deployment sessions - regenerate all docs | 7 files       |
+| /update    | Every session — merge summary into docs   | 3 files       |
+| /sync-docs | Deployment sessions — regenerate all docs | 7 files       |
 
 ### Pipeline Components
 
-| Component    | Details                                |
-|--------------|----------------------------------------|
-| Webhooks     | doc-update, doc-sync, da-vinci         |
-| Telegram     | Route /update and /sync-docs           |
-| Claude API   | Documentation merging intelligence     |
-| Nextcloud    | File storage via admin user            |
-| GitHub       | Version control via API push           |
-| Da Vinci     | Async processing (she/her pronouns)    |
-| Staging file | AI-CONTEXT-staging.md (rolling append) |
+| Component    | Details                                         |
+|--------------|-------------------------------------------------|
+| Webhooks     | doc-update, doc-sync, da-vinci                  |
+| Telegram     | Routes /update and /sync-docs                   |
+| Claude API   | Documentation merging intelligence              |
+| Nextcloud    | File storage via admin user                     |
+| GitHub       | Version control via API push                    |
+| Da Vinci     | Async processing (she/her pronouns)             |
+| Staging file | AI-CONTEXT-staging.md in Nextcloud (rolling append) |
 
 ### File Coverage (sync-docs)
 
@@ -457,19 +544,19 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 
 ### Da Vinci Technical Notes
 
-- **Direct node references:** Use $('Extract Response').first().json.updatedDoc instead of $json after Merge node
+- **Direct node references:** Use `$('Extract Response').first().json.updatedDoc` — do NOT rely on `$json` after Merge node
 - **max_tokens:** 32000 (prevents AI-CONTEXT.md being replaced with hallucinated content)
-- **Grounding fix:** Explicit node targeting prevents unreliable input.first()/input.first()/input.last() after merging
+- **Grounding fix pending:** Add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
 
 ---
 
 ## 🤖 Bots & Integrations
 
-| Bot                | Platform        | Source              | Status   | Purpose                                                        |
-|--------------------|-----------------|---------------------|----------|----------------------------------------------------------------|
-| @JhinGilgamesh_bot | Telegram        | n8n CT 211          | ✅ Active | Personal AI agent — chat, homelab control, /update, /sync-docs |
-| Homelab Alerts     | Telegram        | Alertmanager CT 205 | ✅ Active | Critical alerts (host down, high CPU/memory/disk)              |
-| Homelab Alerts     | Discord webhook | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel                        |
+| Bot                | Platform        | Source              | Status    | Purpose                                                          |
+|--------------------|-----------------|---------------------|-----------|------------------------------------------------------------------|
+| @JhinGilgamesh_bot | Telegram        | n8n CT 211          | ✅ Active  | Personal AI agent — chat, homelab control, /update, /sync-docs   |
+| Homelab Alerts     | Telegram        | Alertmanager CT 205 | ✅ Active  | Critical alerts (host down, high CPU/memory/disk)                |
+| Homelab Alerts     | Discord webhook | Alertmanager CT 205 | ✅ Active  | Warning-level alerts to #alerts channel                          |
 
 **Planned:** Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n.
 
@@ -497,18 +584,18 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 
 ## 🔒 Security Architecture
 
-| Layer           | Implementation                                                                                                                                                                                     |
-|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Perimeter       | ISP Router → pfSense firewall                                                                                                                                                                      |
-| Segmentation    | 5 VLANs with enforced firewall rules                                                                                                                                                               |
-| DNS             | Pi-hole ad/tracker blocking (~489K domains)                                                                                                                                                        |
-| VPN             | Tailscale (subnet router on pfSense, primary access)                                                                                                                                               |
-| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Homepage, Nextcloud (7 apps total)                                                   |
-| External Access | Cloudflare Tunnel for all external services                                                                                                                                                        |
-| Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                                                                                                                                      |
-| Backup          | Automated daily backups with 7/4/2 retention                                                                                                                                                       |
-| Secrets         | HashiCorp Vault (CT 213, vault.najhin-gaming.com). KV engine at kv/. Secrets: kv/gilgamesh, kv/cloudflare, kv/proxmox, kv/alertmanager, kv/github, kv/nextcloud, kv/n8n, kv/pihole (8 paths total) |
-| Passwords       | Vaultwarden (CT 214, passwords.najhin-gaming.com). Personal password manager with Bitwarden clients. API bypassed in Cloudflare Access (/api/, /identity/ paths).                                  |
+| Layer           | Implementation                                                                                                                                                                                       |
+|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Perimeter       | ISP Router → pfSense firewall                                                                                                                                                                        |
+| Segmentation    | 5 VLANs with enforced firewall rules                                                                                                                                                                 |
+| DNS             | Pi-hole ad/tracker blocking (~489K domains)                                                                                                                                                          |
+| VPN             | Tailscale (subnet router on pfSense, primary access)                                                                                                                                                 |
+| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Homepage, Nextcloud (7 apps total)                                                     |
+| External Access | Cloudflare Tunnel for all external services                                                                                                                                                          |
+| Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                                                                                                                                        |
+| Backup          | Automated daily backups with 7/4/2 retention                                                                                                                                                         |
+| Secrets         | HashiCorp Vault (CT 213, vault.najhin-gaming.com). KV engine at kv/. Secrets: kv/gilgamesh, kv/cloudflare, kv/proxmox, kv/alertmanager, kv/github, kv/nextcloud, kv/n8n, kv/pihole (8 paths total)  |
+| Passwords       | Vaultwarden (CT 214, passwords.najhin-gaming.com). Personal password manager with Bitwarden clients. API bypassed in Cloudflare Access (/api/, /identity/ paths).                                    |
 
 ### Vault Notes
 
@@ -519,36 +606,46 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 
 ## 📋 Project Phase History
 
-| Phase   | Title                                                           | Status     | Completed    |
-|---------|-----------------------------------------------------------------|------------|--------------|
-| 1       | Proxmox VE Installation                                         | ✅ Complete | Jan 2026     |
-| 2       | pfSense Firewall & VLAN Setup                                   | ✅ Complete | Jan 2026     |
-| 3       | Core Services (Pi-hole, NPM, Tailscale, DDNS)                   | ✅ Complete | Jan 2026     |
-| 4       | External Access & SSL                                           | ✅ Complete | Feb 2026     |
-| 5       | Monitoring Stack                                                | ✅ Complete | Feb 2026     |
-| 6A-6D   | Gaming Platform (Pterodactyl, Terraria, Minecraft)              | ✅ Complete | Feb 2026     |
-| 6E      | Homepage Dashboard                                              | ✅ Complete | Mar 2026     |
-| 6F      | Infrastructure Audit, VLAN Migration & Firewall Hardening       | ✅ Complete | Mar 9, 2026  |
-| 7       | Nextcloud Deployment                                            | ✅ Complete | Mar 8, 2026  |
-| 7A      | Backup Strategy                                                 | ✅ Complete | Mar 13, 2026 |
-| 7B      | n8n Workflow Automation                                         | ✅ Complete | Apr 2, 2026  |
-| 7C      | Gilgamesh Telegram Bot + GitHub Integration                     | ✅ Complete | Apr 2, 2026  |
-| 7D      | Gilgamesh Enhancements (Memory, Routing, Web Search)            | ✅ Complete | Apr 6, 2026  |
-| 7D-Sec  | Cloudflare Access for n8n                                       | ✅ Complete | Apr 7, 2026  |
-| 7D-Menu | Gilgamesh Inline Keyboard Menu                                  | ✅ Complete | Apr 24, 2026 |
-| 9       | NAS Deployment (Kinmoon)                                        | ✅ Complete | Mar 3, 2026  |
-| 13      | HashiCorp Vault — Secrets Manager                               | ✅ Complete | Apr 18, 2026 |
-| 14      | Secrets Management & Integration                                | ✅ Complete | Apr 24, 2026 |
-| 15      | Gilgamesh Additional Slash Commands                             | ✅ Complete | Apr 24, 2026 |
-| 16.1    | Documentation Pipeline - Update Workflow                        | ✅ Complete | Apr 19, 2026 |
-| 16.2    | Documentation Pipeline - Sync Docs Workflow                     | ✅ Complete | Apr 19, 2026 |
-| 16.3    | Da Vinci Documentation Pipeline                                 | ✅ Complete | Apr 25, 2026 |
-| 22      | Obsidian Knowledge Base                                         | ✅ Complete | Apr 24, 2026 |
-| 23      | Vaultwarden + Secrets Audit & Cleanup                           | ✅ Complete | Apr 18, 2026 |
-| 24.1    | Service Update Manager (Docker + apt + Proxmox, approval-gated) | 📋 Planned | —            |
-| 38      | Ollama + ROCm on Kuromoon RX 6700 XT                            | ✅ Complete | Apr 24, 2026 |
-| 39      | Open WebUI                                                      | ✅ Complete | Apr 24, 2026 |
-| 58      | Windrose Server Deployment                                      | ✅ Complete | Apr 19, 2026 |
+| Phase   | Title                                                            | Status          | Completed    |
+|---------|------------------------------------------------------------------|-----------------|--------------|
+| 1       | Proxmox VE Installation                                          | ✅ Complete      | Jan 2026     |
+| 2       | pfSense Firewall & VLAN Setup                                    | ✅ Complete      | Jan 2026     |
+| 3       | Core Services (Pi-hole, NPM, Tailscale, DDNS)                    | ✅ Complete      | Jan 2026     |
+| 4       | External Access & SSL                                            | ✅ Complete      | Feb 2026     |
+| 5       | Monitoring Stack                                                 | ✅ Complete      | Feb 2026     |
+| 6A-6D   | Gaming Platform (Pterodactyl, Terraria, Minecraft)               | ✅ Complete      | Feb 2026     |
+| 6E      | Homepage Dashboard                                               | ✅ Complete      | Mar 2026     |
+| 6F      | Infrastructure Audit, VLAN Migration & Firewall Hardening        | ✅ Complete      | Mar 9, 2026  |
+| 7       | Nextcloud Deployment                                             | ✅ Complete      | Mar 8, 2026  |
+| 7A      | Backup Strategy                                                  | ✅ Complete      | Mar 13, 2026 |
+| 7B      | n8n Workflow Automation                                          | ✅ Complete      | Apr 2, 2026  |
+| 7C      | Gilgamesh Telegram Bot + GitHub Integration                      | ✅ Complete      | Apr 2, 2026  |
+| 7D      | Gilgamesh Enhancements (Memory, Routing, Web Search)             | ✅ Complete      | Apr 6, 2026  |
+| 7D-Sec  | Cloudflare Access for n8n                                        | ✅ Complete      | Apr 7, 2026  |
+| 7D-Menu | Gilgamesh Inline Keyboard Menu                                   | ✅ Complete      | Apr 24, 2026 |
+| 9       | NAS Deployment (Kinmoon)                                         | ✅ Complete      | Mar 3, 2026  |
+| 13      | HashiCorp Vault — Secrets Manager                                | ✅ Complete      | Apr 18, 2026 |
+| 14      | Secrets Management & Integration                                 | ✅ Complete      | Apr 24, 2026 |
+| 15      | Gilgamesh Additional Slash Commands                              | ✅ Complete      | Apr 24, 2026 |
+| 16.1    | Documentation Pipeline — Update Workflow                         | ✅ Complete      | Apr 19, 2026 |
+| 16.2    | Documentation Pipeline — Sync Docs Workflow                      | ✅ Complete      | Apr 19, 2026 |
+| 16.3    | Da Vinci Documentation Pipeline                                  | ✅ Complete      | Apr 25, 2026 |
+| 22      | Obsidian Knowledge Base                                          | ✅ Complete      | Apr 24, 2026 |
+| 22.15   | Price Database Tracking                                          | 📋 Planned       | —            |
+| 22.16   | Homepage Settings Tab                                            | 📋 Planned       | —            |
+| 23      | Vaultwarden + Secrets Audit & Cleanup                            | ✅ Complete      | Apr 18, 2026 |
+| 24.1    | EMIYA Foundation (Proxmox API + SSH + approval gate)             | 📋 Planned       | —            |
+| 24.2    | EMIYA Alert Translation (Alertmanager to plain English)          | 📋 Planned       | —            |
+| 24.3    | EMIYA Container Updates (Docker + apt + Proxmox, approval-gated) | 📋 Planned      | —            |
+| 24.4    | EMIYA Proactive Monitoring (anomaly detection)                   | 📋 Planned       | —            |
+| 24.5    | EMIYA Security Management (threat detection)                     | 📋 Planned       | —            |
+| 24.6    | EMIYA Performance Optimization                                   | 📋 Planned       | —            |
+| 24.7    | EMIYA Backup Verification                                        | 📋 Planned       | —            |
+| 24.8    | EMIYA Change Management                                          | 📋 Planned       | —            |
+| 38      | Ollama + ROCm on Kuromoon RX 6700 XT                             | ✅ Complete      | Apr 24, 2026 |
+| 39      | Open WebUI                                                       | ✅ Complete      | Apr 24, 2026 |
+| 41      | Gilgamesh + Ollama Hybrid Routing                                | ✅ Complete      | Apr 24, 2026 |
+| 58      | Windrose Server Deployment                                       | ✅ Complete      | Apr 19, 2026 |
 
 ---
 
@@ -583,51 +680,54 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 
 ### n8n & Gilgamesh
 
-| Issue                               | Resolution                                                       |
-|-------------------------------------|------------------------------------------------------------------|
-| n8n Data Tables schema caching bug  | Delete and recreate the table entirely                           |
-| Claude API 404 model not found      | Use exact model ID: `claude-haiku-4-5-20251001`                  |
-| Web search partial response capture | Add Extract Response Code node, filter by `type === "text"`      |
-| Expression scoping issues           | Use Code node with `this.helpers.httpRequest`, reference `$json` |
-| NFS fails for LXC backups           | UID namespace mapping (100000-165536); use SMB instead           |
-| pfSense rule not working            | Place new rules BEFORE RFC1918 block rules                       |
-| n8n GitHub credential 401           | User field (`muzakkir97`) must be populated                      |
-| Telegram single webhook constraint  | All update types (message + callback) must use one trigger       |
-| Answer Callback node loses data     | Bypass it; handle callback acknowledgment separately             |
-| Da Vinci grounding bug              | Use direct node references, increase max_tokens to 32000         |
+| Issue                                | Resolution                                                       |
+|--------------------------------------|------------------------------------------------------------------|
+| n8n Data Tables schema caching bug   | Delete and recreate the table entirely                           |
+| Claude API 404 model not found       | Use exact model ID: `claude-haiku-4-5-20251001`                  |
+| Web search partial response capture  | Add Extract Response Code node, filter by `type === "text"`      |
+| Expression scoping issues            | Use Code node with `this.helpers.httpRequest`, reference `$json` |
+| NFS fails for LXC backups            | UID namespace mapping (100000-165536); use SMB instead           |
+| pfSense rule not working             | Place new rules BEFORE RFC1918 block rules                       |
+| n8n GitHub credential 401            | User field (`muzakkir97`) must be populated                      |
+| Telegram single webhook constraint   | All update types (message + callback) must use one trigger       |
+| Answer Callback node loses data      | Bypass it; handle callback acknowledgment separately             |
+| Da Vinci grounding bug               | Use direct node references; increase max_tokens to 32000         |
+| Open WebUI JSON parse error          | Add `proxy_buffering off` to NPM advanced config for streaming   |
 
 ### HashiCorp Vault (Phase 13)
 
-| Issue                            | Resolution                                                     |
-|----------------------------------|----------------------------------------------------------------|
-| apt fails in new LXC             | Run `echo "nameserver 192.168.30.10" > /etc/resolv.conf` first |
-| HashiCorp repo setup fails       | Install `lsb-release` before adding repo                       |
-| Wrong repo architecture/codename | Hardcode `amd64` and `bookworm` in repo entry                  |
-| Vault fails to start in LXC      | Add `disable_mlock = true` to vault.hcl                        |
-| Token auth issues in shell       | Use `vault login <token>` not `export VAULT_TOKEN=`            |
-| Vault sealed after reboot        | `pct exec 213 -- vault operator unseal`                        |
+| Issue                            | Resolution                                                      |
+|----------------------------------|-----------------------------------------------------------------|
+| apt fails in new LXC             | Run `echo "nameserver 192.168.30.10" > /etc/resolv.conf` first  |
+| HashiCorp repo setup fails       | Install `lsb-release` before adding repo                        |
+| Wrong repo architecture/codename | Hardcode `amd64` and `bookworm` in repo entry                   |
+| Vault fails to start in LXC      | Add `disable_mlock = true` to vault.hcl                         |
+| Token auth issues in shell       | Use `vault login <token>` not `export VAULT_TOKEN=`             |
+| Vault sealed after reboot        | `pct exec 213 -- vault operator unseal`                         |
 
 ### Obsidian & Knowledge Management
 
-| Issue                       | Resolution                                                         |
-|-----------------------------|--------------------------------------------------------------------|
+| Issue                       | Resolution                                                          |
+|-----------------------------|---------------------------------------------------------------------|
 | Nextcloud quota exceeded    | Resize CT 220 from 20GB to 100GB with `pct resize 220 rootfs +80G` |
-| Dataview queries no results | Queries must target folder with individual notes, not same file    |
+| Dataview queries no results | Queries must target folder with individual notes, not same file     |
 
 ### Cloudflare Access & Security
 
-| Issue                         | Resolution                                                      |
-|-------------------------------|-----------------------------------------------------------------|
-| Bitwarden HTTP 525 from phone | Cloudflare Access blocking API — bypass /api/, /identity/ paths |
-| n8n Access OTP not triggering | Cached session — test in incognito mode                         |
+| Issue                         | Resolution                                                       |
+|-------------------------------|------------------------------------------------------------------|
+| Bitwarden HTTP 525 from phone | Cloudflare Access blocking API — bypass /api/, /identity/ paths  |
+| n8n Access OTP not triggering | Cached session — test in incognito mode                          |
 
-### Business & Learning
+### Ollama & GPU
 
-| Issue                                                         | Resolution |
-|---------------------------------------------------------------|------------|
-| MVP = Minimum Viable Product (basic version for validation)   |            |
-| n8n business priority sits below gaming (health/mental focus) |            |
-| Gaming pipeline is self-care, not distraction                 |            |
+| Issue                                    | Resolution                                                              |
+|------------------------------------------|-------------------------------------------------------------------------|
+| ROCm full SDK ran out of disk space      | Use minimal runtime only; extend LVM with `lvextend -l +100%FREE`       |
+| amdgpu still bound after blacklist       | Add `softdep amdgpu pre: vfio-pci` to vfio.conf, rebuild initramfs     |
+| Ollama running on CPU not GPU            | Add `HSA_OVERRIDE_GFX_VERSION=10.3.0` and render/video group membership |
+| Open WebUI no models available           | Set `OLLAMA_HOST=0.0.0.0`; point container to 172.17.0.1:11434          |
+| SSH to VM 400 permission denied as root  | Use `muzakkir` user with sudo — root SSH is disabled                    |
 
 ---
 
@@ -637,20 +737,21 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 
 | Task                                                                                        | Priority |
 |---------------------------------------------------------------------------------------------|----------|
-| Build MERLIN reminder agent (highest priority due to memory issues)                         | High     |
+| Build Midas agent first (CFO, cost tracking) — confirmed build order: Midas before MERLIN  | High     |
+| Build MERLIN reminder agent second (SSL reminders, backup test, maintenance windows)        | High     |
 | Share Windrose invite code NAJHINWINDROSE with friends                                      | High     |
 | Monitor RAM usage with Windrose running on CT 302                                           | High     |
 | Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)                         | High     |
-| Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | High     |
+| Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME)| High     |
+| Fix Da Vinci grounding — fetch current AI-CONTEXT.md from Nextcloud before Claude API call | High     |
 
 ### Infrastructure
 
 | Task                                                                         | Priority |
 |------------------------------------------------------------------------------|----------|
 | Address local-lvm thin pool overprovisioning (during infrastructure cleanup) | Medium   |
-| Plan Phase 24.1 (Service Update Manager) in dedicated session                | Medium   |
+| Plan Phase 24.1 (EMIYA Foundation) in dedicated session                      | Medium   |
 | Delete old disconnected /update nodes from Telegram Agent workflow           | Medium   |
-| Delete Test SQLite workflow from n8n                                         | Medium   |
 | Retire Update Nextcloud File and Push to GitHub workflows (unpublish)        | Medium   |
 | Create muzakkir97/homelab-private repo                                       | Medium   |
 | Set up Backblaze B2 account                                                  | Medium   |
@@ -658,15 +759,15 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 
 ### Gilgamesh & Documentation
 
-| Task                                                                            | Priority |
-|---------------------------------------------------------------------------------|----------|
-| Build Phase 16.3 — Monthly Infrastructure Audit cron workflow                   | High     |
-| Build Mash Discord bot (Phases 59-64)                                           | High     |
-| /update redesign — file attachment via Telegram, push to GitHub + Nextcloud     | Medium   |
-| Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram) | Medium   |
-| Integrate Vault secrets into n8n Gilgamesh workflow                             | Medium   |
-| Document all future agent additions in Fate Agent section                       | Medium   |
-| Build Da Vinci Stage 2 (RAG) alongside Phase 7E                                 | Medium   |
+| Task                                                                                        | Priority |
+|---------------------------------------------------------------------------------------------|----------|
+| Build Monthly Infrastructure Audit cron workflow (assign new phase number — NOT 16.3)      | High     |
+| Build Mash Discord bot (Phases 59-64)                                                       | High     |
+| Document Sherlock Holmes agent design (sources, scraping targets, output, Obsidian integration) | Medium |
+| /update redesign — file attachment via Telegram, push to GitHub + Nextcloud                 | Medium   |
+| Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram)             | Medium   |
+| Integrate Vault secrets into n8n Gilgamesh workflow (Phase 27)                              | Medium   |
+| Build Da Vinci Stage 2 (RAG) alongside Phase 7E                                             | Medium   |
 
 ### Infrastructure
 
@@ -695,58 +796,70 @@ Raw summaries → AI-CONTEXT-staging.md → Da Vinci n8n workflow → Claude API
 ### April 26, 2026
 
 Date: April 26, 2026
-Phase: Planning - Obsidian Expansion + EMIYA Design
+Phase: AI-CONTEXT.md Audit & Correction Sprint
 
-## Key Decisions
+Topics Discussed
 
-1. Homepage: 4 separate tabs (Homelab, Health, Finance, Settings)
-2. Budget: Monthly + weekly tracking, percentage-based (15% groceries)
-3. Grocery lists: Budget-aware (tight month = pasar mode, cheaper alternatives)
-4. Price tracking: Yes, compare pasar vs supermarket
-5. Shopping: Telegram checklist only (not homepage)
-6. EMIYA: Full CTO/Infrastructure Engineer (10 core features)
-7. New agent: Sherlock Holmes for web scraping
-8. Budget settings: User-adjustable percentages in Settings tab
+Cross-referenced AI-CONTEXT.md against all recent session logs and conversation history.
+Found 15 errors: 4 critical (wrong data), 8 significant (missing content), 3 minor.
+Generated corrected AI-CONTEXT.md manually.
 
-## Agent Status CORRECTED
+Decisions Made
 
-✅ Active:
-- Gilgamesh (Telegram bot)
-- Da Vinci (doc pipeline only - PARTIAL)
+Phase 41 confirmed complete April 24, 2026 (Hybrid Routing).
+Gilgamesh routing is Ollama qwen3:14b first, Haiku fallback, Sonnet for complex.
+qwen3:14b is the primary local model (upgraded from qwen2.5:14b April 24).
+VM 400 is KVM VM with PCIe passthrough, not an LXC container.
+Final 9-agent roster locked: Gilgamesh, Da Vinci, Midas, MERLIN, Guardian, Mash, Nexus, Oracle, EMIYA.
+Sherlock Holmes added as 10th agent (dedicated web scraper, Ruler class).
+Scribe absorbed into Da Vinci. Oracle absorbs Zhuge Liang.
+Build order: Midas first, then MERLIN, Guardian, Mash, Nexus, Oracle.
+Da Vinci role: Chief Intelligence Officer (not Knowledge Curator).
+EMIYA role: CTO / Infrastructure Engineer with 10 core features.
+Tier 2 agents planned: Chiron (Career), Medea (QA), Waver (PM).
+New phases: 22.15, 22.16, 24.1 through 24.8.
+Monthly Infrastructure Audit cron workflow to get new phase number (not 16.3 — already taken).
+n8n workflow count corrected to 6 (Hybrid Routing integrated into Telegram Agent, not separate).
+Obsidian homepage 4-tab design and budget config (15% groceries) documented.
 
-📋 Planned (Priority Order):
-1. MERLIN - Reminders
-2. Sherlock Holmes - Web scraper
-3. EMIYA - CTO/Infrastructure (Phases 24.1-24.8, 8 sub-phases)
+Changes to AI-CONTEXT.md
 
-New Tier 2 agents: Midas (CFO), Chiron (Career), Medea (QA), Waver (PM)
+Full replacement with corrected version — all 15 audit errors resolved.
 
-## New Phases Added
+Errors & Resolutions
 
-- 22.15: Price Database (2-3h)
-- 22.16: Homepage Settings Tab (1-2h)
-- 24.1-24.8: EMIYA deployment (24-32h total, 5 critical phases)
-- 16: /update Redesign (file upload) - NEEDED SOON
+15 documentation errors found and corrected — see audit summary from April 26 session.
 
-## Changes to AI-CONTEXT.md
+Action Items
 
-- Fix agent table: EMIYA "Active" → "Planned"
-- Add Sherlock Holmes (Ruler, web scraper)
-- Add EMIYA complete role (10 features, formal/professional)
-- Add 4 new Tier 2 agents
-- Add Phases 22.15, 22.16, 24.1-24.8
-- Budget config: 15% groceries, adjustable
+Push corrected AI-CONTEXT.md to GitHub via /sync-docs or manual upload.
+Run /sync-docs to regenerate all docs from corrected base.
+Begin Phase 22.1 (Vault Structure Expansion) in next session.
 
-## Action Items
+### April 26, 2026
 
-Immediate:
-- Correct agent status in AI-CONTEXT.md
-- Prioritize Phase 16 (/update file upload) SOON
-- Begin Phase 22.1 (Vault Structure) next session
+Date: April 26, 2026
+Phase: Planning — Obsidian Expansion + EMIYA Design
 
-High Priority:
-- Phase 22.8 (Food Tracking - BP 140/100 urgent)
-- Phase 24.1-24.5 (EMIYA critical features)
+Topics Discussed
+
+Obsidian 16-phase expansion plan.
+Homepage dashboard: 4 separate tabs (Homelab, Health, Finance, Settings).
+Finance and health integration: budget-aware grocery lists.
+EMIYA redesigned from Infrastructure Translator to full CTO with 10 core features.
+Agent ecosystem clarified and corrected.
+Price tracking system: database for pasar vs supermarket comparisons.
+Sherlock Holmes introduced as dedicated web scraper.
+
+Decisions Made
+
+Homepage: 4 separate tabs, not main page widgets.
+Budget: monthly + weekly tracking, percentage-based (15% groceries default, adjustable).
+Grocery lists are budget-aware. Shopping checklist is Telegram-only.
+EMIYA is CTO/Infrastructure Engineer (not web scraper — that is Sherlock Holmes).
+New Tier 2 agents: Midas (CFO), Chiron (Career), Chiron (Career), Medea (QA), Waver (PM).
+Phases 22.15, 22.16, 24.1-24.8 added to plan.
+Phase 16 (/update file upload redesign) needed soon.
 
 ### April 26, 2026
 
@@ -755,422 +868,107 @@ Phase: Maintenance & Bug Fix Sprint
 
 Topics Discussed
 
-- Fixed Da Vinci grounding bug (AI-CONTEXT.md being replaced with hallucinated content)
-- Restored AI-CONTEXT.md from Claude Project files
-- Fixed cost_usd always saving as 0 in Save Cost node
-- Fixed Ollama token counts always returning 0 in Call Ollama node
-- Set up Bitwarden on phone (fixed Cloudflare Access blocking API paths)
-- Fixed n8n Cloudflare Access OTP (cached session issue)
-- Added Cloudflare Access icons for all 7 apps
-- Updated Obsidian subscription tracker (6 subscriptions)
-- Cleaned up n8n legacy workflows and disconnected nodes
-- Updated Nextcloud 33.0.0 → 33.0.2
-- Stored credentials in Vault and Vaultwarden
-- Set $10 API spend limit in Anthropic Console
+Fixed Da Vinci grounding bug (AI-CONTEXT.md being replaced with hallucinated content).
+Restored AI-CONTEXT.md from Claude Project files.
+Fixed cost_usd always saving as 0 in Save Cost node.
+Fixed Ollama token counts always returning 0 in Call Ollama node.
+Set up Bitwarden on phone (fixed Cloudflare Access blocking API paths).
+Fixed n8n Cloudflare Access OTP (cached session issue).
+Added Cloudflare Access icons for all 7 apps.
+Updated Obsidian subscription tracker (6 subscriptions).
+Cleaned up n8n legacy workflows and disconnected nodes.
+Updated Nextcloud 33.0.0 to 33.0.2.
+Stored credentials in Vault and Vaultwarden.
+Set $10 API spend limit in Anthropic Console.
 
 Decisions Made
 
-- Da Vinci fix: use direct node references instead of input.first()/input.first()/input.last()
-- max_tokens bumped to 32000 in Da Vinci Claude API call
-- cost_usd calculated from token rates (Sonnet $3/$15, Haiku $0.80/$1 per 1M)
-- Ollama tokens use parsed.prompt_eval_count and parsed.eval_count
-- Vaultwarden API paths bypassed in Cloudflare Access (/api/, /identity/)
-- All Cloudflare Access apps use Email OTP with muzakkir.kholil06@gmail.com only
-- Nextcloud updates are EMIYA's future responsibility (Phase 24.1)
-- Vault reseals on reboot — manual unseal required each time
-
-Changes to AI-CONTEXT.md
-
-- Update Da Vinci workflow: direct node references, max_tokens 32000
-- Add lesson: input.first()/input.first()/input.last() unreliable after Merge node
-- Mark credentials stored: kv/nextcloud, kv/github, VM 400, Proxmox, CT 302 passwords
-- Update Cloudflare Access: Email OTP policy, muzakkir.kholil06@gmail.com only
-- Add Vaultwarden bypass apps for /api and /identity paths
-- Update Nextcloud version to 33.0.2
-- Add 6 Obsidian subscription entries
-- Update cost tracking: cost_usd calculated, Ollama tokens captured
-- Add pending: Update YouTube Premium, Cloudflare Domain, TIME costs when known
-
-Changes to Other Docs
-
-- changelog.md: Add maintenance sprint entry
-- troubleshoot.md: Add Da Vinci grounding fix
-- troubleshoot.md: Add Bitwarden 525 — Cloudflare Access blocking API paths
-- troubleshoot.md: Add Vault sealed on reboot resolution
+Da Vinci fix: use direct node references instead of input.first() after Merge node.
+max_tokens bumped to 32000 in Da Vinci Claude API call.
+cost_usd calculated from token rates (Sonnet $3/$15, Haiku $0.80/$1 per 1M).
+Ollama tokens use parsed.prompt_eval_count and parsed.eval_count.
+Vaultwarden API paths bypassed in Cloudflare Access (/api/, /identity/).
+All Cloudflare Access apps use Email OTP with muzakkir.kholil06@gmail.com only.
+Vault reseals on reboot — manual unseal required each time.
 
 Errors & Resolutions
 
-- AI-CONTEXT.md replaced with hallucination: Use direct node references, increase max_tokens to 32000
-- Bitwarden HTTP 525: Cloudflare Access blocking API — add bypass for /api and /identity
-- n8n Access not triggering: Cached session — test in incognito
-- Vault sealed after reboot: pct exec 213 -- vault operator unseal
-
-Action Items
-
-- Update subscription costs in Obsidian when known
-- Export homelab diagram from Claude Design
-- Next: Phase 41 (Hybrid Routing) or Phase 27 (Vault + n8n)
-- Build Midas agent first in build order
+AI-CONTEXT.md replaced with hallucination: Use direct node references, increase max_tokens to 32000.
+Bitwarden HTTP 525: Cloudflare Access blocking API paths — add bypass for /api and /identity.
+n8n Access not triggering: Cached session — test in incognito.
+Vault sealed after reboot: pct exec 213 -- vault operator unseal.
 
 ### April 25, 2026
 
 Date: April 24-25, 2026
-Phase: 16.3 — Da Vinci Documentation Pipeline (COMPLETE)
+Phase: 16.3 — Da Vinci Documentation Pipeline (COMPLETE) + Architecture Planning
 
 Topics Discussed
 
-- Reviewed pending tasks: VM 400 passwords, Bitwarden phone  
-  setup, cost_usd bug, Obsidian subscriptions, Cloudflare icons
-- Test SQLite workflow confirmed deleted
-- Generated full homelab roadmap as Obsidian Kanban board  
-  (homelab-roadmap-kanban.md, 7 columns, all phases)
-- Reviewed planned AI agent roster (Fate/GO ecosystem)
-- Clarified Da Vinci and EMIYA are NOT deployed — Gilgamesh  
-  is the only active agent currently
-- Confirmed Da Vinci is canonically female (she/her)
-- All agents route through Gilgamesh (@JhinGilgamesh_bot)
-- Researched documentation agent patterns online
-- Designed Da Vinci Stage 1 (async /update fix) and  
-  Stage 2 (RAG/knowledge recall, planned with Phase 7E)
-- Built Phase 16.3 — Da Vinci Documentation Pipeline
-- Created AI-CONTEXT-staging.md in Nextcloud (rolling append)
-- Fixed Nextcloud WebDAV username (admin not muzakkir)
-- Built 11-node Da Vinci n8n workflow
-- Fixed multiple issues during build
-- Full end-to-end test passed
-- AI-CONTEXT.md accidentally overwritten by test — restored  
-  from backup, resynced to GitHub
-- Stored Nextcloud app password and GitHub token task deferred  
-  to Phase 27 (Vault + n8n integration)
+Built Phase 16.3 Da Vinci Documentation Pipeline (11-node n8n workflow).
+Created AI-CONTEXT-staging.md in Nextcloud (rolling append staging file).
+Fixed Nextcloud WebDAV username (admin, not muzakkir).
+Full end-to-end test passed.
+Final 9-agent Fate ecosystem designed and locked.
+Da Vinci Stage 2 stack decided: Qdrant + nomic-embed-text + n8n native RAG on VM 400.
+Universal agent design rules established.
+Build order locked: Midas first.
 
 Decisions Made
 
-- Da Vinci is an n8n workflow, not a separate LXC
-- All agents route through Gilgamesh bot
-- Staging file is rolling append — raw summaries preserved
-- Da Vinci Stage 2 (RAG) planned alongside Phase 7E
-- Da Vinci and EMIYA status corrected to Planned/Not deployed
-- Nextcloud WebDAV username is admin throughout
-- Download link in Da Vinci notification uses Nextcloud web UI  
-  URL, not raw WebDAV (Cloudflare Access blocks raw WebDAV)
-- Nextcloud app password and GitHub token to be stored in  
-  Vault kv/nextcloud and kv/github (Phase 27)
-
-Changes to AI-CONTEXT.md
-
-- Mark Phase 16.3 as Complete (April 25, 2026)
-- Correct agent table: Da Vinci and EMIYA from Active to  
-  Planned (not yet deployed)
-- Add Da Vinci pronouns: she/her
-- Add AI-CONTEXT-staging.md to infrastructure notes
-- Update Nextcloud WebDAV username to admin throughout
-- WebDAV base URL: https://cloud.najhin-gaming.com/remote.php/dav/files/admin/
-- Add Da Vinci Stage 2 (RAG) planned alongside Phase 7E
-- Add new n8n workflow: Da Vinci Documentation Pipeline  
-  (8th workflow, 11 nodes)
-- Update n8n workflow count from 7 to 8
-- Add pending task: Store Nextcloud app password + GitHub  
-  token in Vault kv/nextcloud and kv/github
-- Add pending task: Phase 27 (Vault + n8n) enables n8n to  
-  fetch secrets directly — eliminates manual copy-paste
-- Update Cloudflare Access icons pending list to 7 apps  
-  (added Ollama)
-
-Changes to Other Docs
-
-- roadmap.md: Move Phase 16.3 to Completed (April 25, 2026)
-- changelog.md: Add Phase 16.3 completion entry
-- service-catalog.md: Add Da Vinci Documentation Pipeline
+Da Vinci is an n8n workflow, not a separate LXC.
+All agents route through Gilgamesh bot.
+Staging file is rolling append — raw summaries preserved.
+Da Vinci Stage 2 (RAG) planned alongside Phase 7E.
+Nextcloud WebDAV username is admin throughout.
+Download link uses Nextcloud web UI URL, not raw WebDAV (Cloudflare Access blocks raw WebDAV).
+Scribe absorbed into Da Vinci. Oracle absorbs Zhuge Liang.
+Build order: Midas first, then MERLIN, Guardian, Mash, Nexus, Oracle.
 
 Errors & Resolutions
 
-- Nextcloud 401: Username was muzakkir, should be admin
-- n8n HTTP Request JSON invalid: Moved Claude API call to  
-  Code node using this.helpers.httpRequest
-- Write AI-CONTEXT empty body: Use explicit node reference  
-  $('Extract Response').first().json.updatedDoc
-- Push to GitHub auth failed: Replaced HTTP Request node  
-  with Code node
-- URL typo: cloud.najhin.gaming.com → cloud.najhin-gaming.com
-- Cloudflare Access blocks raw WebDAV download link: Use  
-  Nextcloud web UI URL instead
-- AI-CONTEXT.md overwritten by test run: Restored from local  
-  backup on Minimoon, resynced to GitHub via curl from CT 211
-
-Action Items
-
-- [ ] Store Nextcloud app password in Vault kv/nextcloud
-- [ ] Store GitHub token in Vault kv/github
-- [ ] Store VM 400 root password in Vaultwarden
-- [ ] Set Bitwarden on phone
-- [ ] Add remaining subscriptions to Obsidian
-- [ ] Fix Obsidian dashboard backtick query
-- [ ] Update Cloudflare Access icons (7 apps incl. Ollama)
-- [ ] Fix cost_usd column bug in Save Cost node
-- [ ] Next phase: MERLIN reminder agent
-
-###Date: April 24, 2026
-Phase: 38 — Ollama + ROCm Local LLM (COMPLETE)
-39 — Open WebUI (COMPLETE)
-
-Topics Discussed
-
-Deployed Ollama with ROCm GPU acceleration on RX 6700 XT
-Created VM 400 (ollama-gpu) with PCIe passthrough on Proxmox
-Installed Ubuntu 22.04, ROCm 6.1.3 runtime, Ollama
-Pulled qwen2.5:14b (9GB, fits in 12GB VRAM) and llama3.2:latest
-Deployed Open WebUI via Docker
-Exposed via NPM at ollama.najhin-gaming.com with SSL + Cloudflare Access
-
-Decisions Made
-
-VM 400 named ollama-gpu, static IP 192.168.30.221, VLAN 30
-GPU passthrough: 2d:00.0 (RX 6700 XT) + 2d:00.1 (audio)
-ROCm minimal runtime only (not full SDK) to save disk space
-HSA_OVERRIDE_GFX_VERSION=10.3.0 set via systemd override for gfx1031
-OLLAMA_HOST=0.0.0.0 set so Docker container can reach Ollama API
-Open WebUI connects via Docker bridge 172.17.0.1:11434
-Primary model: qwen2.5:14b (14B fits in 12GB VRAM comfortably)
-Secondary model: llama3.2 3B for fast/light tasks
-VM autostart enabled
-
-Changes to AI-CONTEXT.md
-
-Add VM 400 (ollama-gpu) to container inventory:
-VMID 400, ollama-gpu, 192.168.30.221, ollama.najhin-gaming.com, autostart on, running
-Mark Phase 38 as Complete (April 24, 2026)
-Mark Phase 39 as Complete (April 24, 2026)
-Add Ollama models: qwen2.5:14b, llama3.2:latest
-Add new pending task: Store ollama-gpu VM password in Vaultwarden
-Add new pending task: Add ollama.najhin-gaming.com to Cloudflare Access icons pending list
-
-Changes to Other Docs
-
-roadmap.md: Move Phase 38 and 39 to Completed (April 24, 2026)
-changelog.md: Add Phase 38 + 39 completion entry
-service-catalog.md: Add ollama-gpu VM and Open WebUI service
-
-Errors & Resolutions
-
-ROCm full SDK ran out of disk space: LVM only used 28GB of 60GB —
-fixed with lvextend -l +100%FREE and resize2fs
-amdgpu still bound after blacklist: Added softdep amdgpu pre: vfio-pci
-to vfio.conf, rebuilt initramfs, rebooted
-Ollama running 100% CPU not GPU: Added HSA_OVERRIDE_GFX_VERSION=10.3.0
-and group membership (render, video) via systemd override
-Open WebUI no models available: Ollama bound to 127.0.0.1 only —
-set OLLAMA_HOST=0.0.0.0 and pointed container to 172.17.0.1:11434
-
-Action Items
-
-Store ollama-gpu VM root password in Vaultwarden
-Add ollama.najhin-gaming.com Cloudflare Access icon
-Begin Phase 41 (Gilgamesh + Ollama Hybrid routing) in future session
+Nextcloud 401: Username was muzakkir, should be admin.
+n8n HTTP Request JSON invalid: Moved Claude API call to Code node.
+Write AI-CONTEXT empty body: Use explicit node reference $('Extract Response').first().json.updatedDoc.
+Push to GitHub auth failed: Replaced HTTP Request node with Code node.
+Cloudflare Access blocks raw WebDAV download link: Use Nextcloud web UI URL instead.
+AI-CONTEXT.md overwritten by test run: Restored from local backup on Minimoon.
 
 ### April 24, 2026
 
 Date: April 24, 2026
-Phase: 22 — Obsidian Knowledge Base (COMPLETE)
+Phase: 38 — Ollama + ROCm Local LLM (COMPLETE) / 39 — Open WebUI (COMPLETE) / 41 — Hybrid Routing (COMPLETE)
 
 Topics Discussed
 
-Installed Obsidian on Minimoon, vault at Nextcloud/Obsidian/second-brain
-Installed and enabled 6 plugins: Dataview, Tasks, Templater, Calendar, Excalidraw, Kanban
-Created folder structure: 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 05-templates, 06-archive
-Created session summary template in 05-templates
-Built subscription tracker dashboard using Dataview (separate notes per subscription)
-Fixed Nextcloud quota issue — root disk was 99% full (20GB), resized to 100GB
-Discovered thin pool overprovisioning warning on local-lvm
-Discussed long term fix: move Nextcloud data directory to /mnt/data-storage (7.3TB HDD)
-Windrose ground loot discussion — no config option exists in Early Access to remove existing world loot; fresh world reset is the only clean option
-Planned Phase 24.1 — Service Update Manager (Docker + apt + Proxmox, approval-gated via Gilgamesh)
+Deployed Ollama with ROCm GPU acceleration on RX 6700 XT (VM 400 ollama-gpu).
+Installed Ubuntu 22.04, ROCm 6.1.3 runtime, Ollama.
+Pulled qwen2.5:14b and llama3.2:latest, then upgraded to qwen3:14b.
+Deployed Open WebUI via Docker.
+Fixed Open WebUI JSON parse error (proxy_buffering off in NPM).
+Fixed SSH to VM 400 (muzakkir user, not root).
+Updated Open WebUI to latest version.
+Built Phase 41 hybrid routing in Telegram Agent workflow.
 
 Decisions Made
 
-Vault location: C:\\Users\\muzak\\Nextcloud\\Obsidian\\second-brain (auto-syncs to CT 220)
-Subscription entries as individual notes inside 04-personal/subscriptions/
-Dashboard note at 04-personal/dashboard
-Nextcloud data dir migration deferred — handle per phase order
-Phase 24.1 scope: all updates (Docker, apt, Proxmox) with Telegram approval gate
-Phase 38 (Ollama + ROCm) to be done in next chat session
-
-Changes to AI-CONTEXT.md
-
-Mark Phase 22 as Complete (April 24, 2026)
-Add Obsidian vault details: path C:\\Users\\muzak\\Nextcloud\\Obsidian\\second-brain
-Add 6 plugins list under Obsidian section
-Add folder structure to Obsidian section
-Add Phase 24.1 to planned phases: Service Update Manager (Docker + apt + Proxmox, approval-gated)
-Add pending task: Move Nextcloud data directory to /mnt/data-storage (long term)
-Add pending task: Nextcloud 33.0.2 update available
-Add pending task: local-lvm thin pool overprovisioning — address during infrastructure cleanup
-Update CT 220 disk size from 20GB to 100GB
-
-Changes to Other Docs
-
-roadmap.md: Move Phase 22 to Completed (April 24, 2026)
-roadmap.md: Add Phase 24.1 — Service Update Manager to planned phases
-changelog.md: Add Phase 22 completion entry
+VM 400 named ollama-gpu, static IP 192.168.30.221, VLAN 30. KVM VM with PCIe passthrough.
+GPU passthrough: 2d:00.0 (RX 6700 XT) + 2d:00.1 (audio).
+HSA_OVERRIDE_GFX_VERSION=10.3.0 set via systemd override for gfx1031.
+OLLAMA_HOST=0.0.0.0 set so Docker container can reach Ollama API.
+Open WebUI connects via Docker bridge 172.17.0.1:11434.
+Primary model: qwen3:14b (upgraded from qwen2.5:14b). Secondary: llama3.2:latest.
+Routing logic: complex keywords or over 50 words = Sonnet, otherwise Ollama, Haiku as fallback if Ollama down.
+Hybrid routing integrated into Telegram Agent — not a separate workflow.
 
 Errors & Resolutions
 
-Nextcloud sync errors (quota exceeded): CT 220 root disk was 99% full — resized from 20GB to 100GB with pct resize 220 rootfs +80G
-Dataview no results: queries must point to folder containing individual subscription notes, not the same file
-
-Action Items
-
-Add remaining subscriptions to 04-personal/subscriptions/
-Fix Total by Category query (backtick issue in dashboard)
-Update Nextcloud to 33.0.2
-Move Nextcloud data dir to /mnt/data-storage (deferred, per phase)
-Address local-lvm thin pool overprovisioning (deferred, infrastructure cleanup)
-Begin Phase 38 (Ollama + ROCm) in next session
-Plan Phase 24.1 (Service Update Manager) in dedicated session
-
-### April 24, 2026
-
-Date: April 24, 2026
-Phase: 15 — Gilgamesh Additional Slash Commands (COMPLETE)
-
-Topics Discussed
-
-Built 6 new slash commands for Gilgamesh Telegram bot
-Removed /temps and /storage from scope (redundant with menu)
-Removed /logs from scope (not practical without proper filtering)
-
-Decisions Made
-
-/temps and /storage dropped — already in menu system
-/logs dropped — defer to future dedicated menu action
-Cost calculation uses estimated token rates (Sonnet $3/$15 per 1M) because cost_usd column in gilgamesh_costs table has always been 0 (pre-existing bug from earlier phases)
-Always Output Data enabled on Get Alerts and Clear Memory DB nodes to handle empty responses
-
-Changes to AI-CONTEXT.md
-
-Mark Phase 15 as Complete (April 24, 2026)
-Add 6 new commands to Gilgamesh features section: /help, /clear, /memory, /cost, /alerts, /backup
-Note: gilgamesh_costs.cost_usd column always 0 — cost estimated from token counts
-
-Changes to Other Docs
-
-roadmap.md: Move Phase 15 to Completed
-changelog.md: Add Phase 15 completion entry
-
-Errors & Resolutions
-
-Clear Memory DB "at least one condition required": Added role is not empty condition
-Send Clear Confirmation wrong chat_id: Used $('Get Chat ID').first().json.chat_id instead of $json.message.chat.id
-Clear Memory DB no output when table empty: Enabled Always Output Data
-Format Cost SyntaxError: Removed toLocaleString() and emojis from Code node
-Get Alerts no output on empty array: Enabled Always Output Data
-Format Alerts "Active Alerts: undefined": Added Array.isArray() check before using alerts
-
-Action Items
-
-Save and Publish Telegram Agent workflow
-Run /sync-docs to push updated docs to GitHub
-Fix cost_usd column not being saved (investigate Save Cost node in main workflow)
-Begin Phase 22 (Obsidian) next session
-
-### April 24, 2026
-
-Date: April 24, 2026
-Phase: 7D-Menu + Phase 14 — Gilgamesh Inline Keyboard Menu (COMPLETE)
-
-Topics Discussed
-
-Built all remaining Gilgamesh menu actions
-Homelab → Metrics (Proxmox API)
-Homelab → Temps (SSH to Kuromoon, lm-sensors)
-Homelab → Storage (Proxmox API)
-Gaming servers status (SSH to CT 302, docker ps)
-Gilgamesh info panel (static)
-Tools quick links (static)
-Help command reference (static)
-
-Decisions Made
-
-SSH key auth set up from CT 211 to Kuromoon (port 22 pfSense rule added)
-SSH password auth set up from n8n to CT 302 (PermitRootLogin yes)
-Proxmox root password set for SSH access from n8n
-Progress bars use = and - ASCII characters (Unicode block chars don't render on Telegram mobile)
-Gaming submenu shows direct status (no submenu layer)
-kinmoon storage ID is kinmoon-nfs not kinmoon-smb
-SSH credentials: "SSH Password account" (Kuromoon), "SSH CT302 Wings" (CT 302)
-
-Changes to AI-CONTEXT.md
-
-Mark Phase 7D-Menu as ✅ Complete (April 24, 2026)
-Mark Phase 14 as ✅ Complete (April 24, 2026)
-Update Inline Keyboard Menu Status table — all items ✅ Working
-Add SSH credentials to n8n credential list
-Add pfSense rule: TCP 22 from 192.168.30.211 to 192.168.10.5 (n8n SSH to Kuromoon)
-Add PermitRootLogin yes on CT 302
-
-Changes to Other Docs
-
-roadmap.md: Move 7D-Menu and Phase 14 to Completed
-changelog.md: Add Phase 14 completion entry
-
-Errors & Resolutions
-
-Format Metrics callback_query undefined: Pull inputData from $('Callback Router').first().json instead of $json
-Send Metrics invalid JSON: Use "Using Fields Below" body mode instead of raw JSON
-SSH hanging from CT 211 to Kuromoon: pfSense blocking port 22 VLAN30→VLAN10, added firewall rule
-SSH password auth failing on CT 302: PermitRootLogin prohibit-password — changed to PermitRootLogin yes
-Get Game Servers invalid syntax: {{.Names}} parsed as n8n expression — switch Command field to Fixed mode
-kinmoon-smb showing N/A: Storage ID is kinmoon-nfs in Proxmox
-
-Action Items
-
-Push updated docs to GitHub via /sync-docs
-Store Proxmox root password in Vaultwarden
-Store CT 302 root password in Vaultwarden
-Begin Phase 15 (additional slash commands) or Phase 22 (Obsidian) next session
-
-### April 23, 2026
-
-Date: April 23, 2026
-Phase: Gilgamesh Evolution + Claude Design Discovery
-
-Topics Discussed
-
-Fate Grand Order AI agent ecosystem (Gilgamesh, Da Vinci, EMIYA active; MERLIN, Mash, Guardian, Nexus, Scribe, Midas, Oracle planned)
-Claude API cost limit hit, need to control spending
-Long-term goal: Replace claude.ai with Gilgamesh by August 2026 (16-week roadmap)
-Target cost: $30-40/month → $5-10/month
-Claude Design discovered (launched April 17, 2026) - new visual design tool
-Created homelab infrastructure diagram using Claude Design
-AI News Scraper idea for tracking new homelab-ready tools
-
-Decisions Made
-
-PRIMARY GOAL: Gilgamesh replaces Claude Web in 16 weeks, save $240-360/year
-Phase 38 (Ollama + ROCm) promoted to Near Term #2 (CRITICAL)
-Phase 41 (Hybrid Routing) promoted to Near Term #6
-Six new Gilgamesh phases: 7E Extended Memory, 7F File Generation, 7G Vision API, 7H Document Upload, 7I Quality Assurance, 7J Migration
-Phase 7K added: AI News Scraper (RSS/Reddit scraping, Ollama evaluation, Telegram alerts, Obsidian storage)
-Claude Design strategy: Use sparingly (1-2 projects/week), high-value only (LinkedIn, GitHub, milestones), do NOT automate
-Phase 7F scope: Automate text/code/Mermaid diagrams, keep marketing graphics manual via Claude Design
-
-Changes to AI-CONTEXT.md
-
-Add Gilgamesh Evolution Roadmap section (4 phases over 16 weeks, cost projection table, success criteria)
-Add Fate Grand Order Agent Ecosystem section (active + planned servants with roles)
-Phase 38 promoted to Near Term #2, Phase 41 to Near Term #6
-Updated recent_updates with Fate agents, Gilgamesh Evolution goal, Phase 38 promotion, Claude Design discovery
-
-Errors & Resolutions
-
-Claude search missed Fate roster initially, used conversation_search with specific names (Merlin, Mash) to find it
-
-Action Items
-
-Download updated roadmap.md and push to GitHub
-Send condensed summary via /update to Gilgamesh
-Set $10 API spend limit in Anthropic Console (temporary safety)
-Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)
-Begin Phase 38 planning after Phase 14 complete
+ROCm full SDK ran out of disk space: Use minimal runtime; extend LVM.
+amdgpu still bound after blacklist: Added softdep amdgpu pre: vfio-pci.
+Ollama running 100% CPU not GPU: Added HSA_OVERRIDE_GFX_VERSION=10.3.0 and group membership.
+Open WebUI no models available: Set OLLAMA_HOST=0.0.0.0.
+SSH to VM 400 permission denied: VM uses muzakkir user not root.
+Open WebUI JSON parse error: proxy_buffering off needed in NPM advanced config for streaming.
 
 ---
 
