@@ -454,7 +454,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - **Inline keyboard menu:** Full menu system with all submenus working
 - **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
 - **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
-- **Slash commands:** 9 commands for direct actions
+- **Slash commands:** 10 commands for direct actions
 
 ### Slash Commands
 
@@ -469,6 +469,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | /update    | Session summary   | Merges session into docs (3 files)            |
 | /sync-docs | Full regeneration | Regenerates all documentation (7 files)       |
 | /midas     | CFO report        | Cost analysis and savings summary             |
+| /daily     | Daily notes       | Creates Obsidian daily note (defaults today)  |
 
 ### Technical Details
 
@@ -852,7 +853,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ### April 27, 2026
 
 Date: April 27, 2026
-Phase: Midas + MERLIN + Obsidian 22.1 + 22.2 Complete
+Phase: Midas CFO Agent, MERLIN Reminders, and Obsidian Daily Creator active. 14 LXC containers + 1 KVM VM running.
 
 Topics Discussed
 
@@ -910,159 +911,6 @@ Action Items
 - Activate MERLIN workflow (toggle on in n8n)
 - Next session: Phase 22.3 or Guardian agent
 
-### April 27, 2026
-
-Date: April 27, 2026
-Phase: Midas ✅ + MERLIN ✅ + Obsidian Phase 22.1 ✅
-Topics Discussed
-
-Investigated 80% RAM alert — Windrose 8.9GB + VM 400 7.9GB — normal baseline
-Raised Prometheus HighMemoryUsage threshold 80% → 85%
-Fixed Ollama token capture in Extract Response node
-Added command_type column to gilgamesh_costs Data Table
-Built Midas — CFO Report workflow (/midas, 6 nodes)
-Built Midas — Daily Brief workflow (9am scheduled, 4 nodes)
-Fixed Loki not scraped by Prometheus — added scrape job to prometheus.yml
-Built MERLIN — Reminders workflow (8am daily, parallel SSL/Memory/Vault/Backup checks)
-Completed Obsidian Phase 22.1 — vault structure expansion
-
-Decisions Made
-
-Memory alert threshold: 80% → 85%
-Ollama tokens: read data.input_tokens / data.output_tokens (already mapped by Call Ollama)
-command_type: derived from Telegram Trigger message text directly
-Midas webhook path: midas-report, USD to MYR: 4.7, spend limit: $10
-SSL check: hardcoded July 14 2026 expiry — revisit in MERLIN v2 with proper Cloudflare API
-Backup restore test baseline: 2026-01-01 (never tested) — update manually after each test
-MERLIN reads nodes directly by name ($('Check Prometheus Memory')) not merged items
-Midas v2: revisit in future session for missing design discussion
-Obsidian vault structure: 10 folders + HOME master index + 7 _index files
-
-Changes to AI-CONTEXT.md
-
-n8n workflows: add Midas — CFO Report (webhook /midas-report), Midas — Daily Brief (scheduled 9am), MERLIN — Reminders (scheduled 8am) — total now 12 workflows
-gilgamesh_costs schema: command_type column added (Text)
-Prometheus: HighMemoryUsage threshold now 85%
-Key Lessons: add Loki scrape job fix, Ollama token field names fix
-Windrose: ~9GB RAM baseline — stop container when not playing
-Agent roster: Midas ✅ Active (CFO report + daily brief active), MERLIN ✅ Active (daily checks active, Cloudflare API pending)
-Obsidian vault structure updated — 10 folders, HOME note, _index files in all folders
-Phase 22.1 marked complete April 27 2026
-Pending: Schedule backup restore test CT 207, fix Cloudflare Vault token (currently truncated to 7 chars)
-
-Errors & Resolutions
-
-Ollama tokens always 0: read data.input_tokens/output_tokens not prompt_eval_count/eval_count
-Aggregate Alerts Prometheus not found: use $('Check Prometheus Memory').first().json directly
-SSL checker API returns empty: use hardcoded expiry date instead
-Cloudflare Vault token truncated: stored as 7 chars only — needs full token re-stored
-MERLIN Aggregate Alerts i.error.includes not a function: error field is object not string
-
-Action Items
-
-Schedule backup restore test on CT 207, update lastTestDate in MERLIN Aggregate Alerts
-Fix Cloudflare API token in Vault (get full token from Cloudflare dashboard, re-store with: pct exec 213 -- env VAULT_ADDR=http://127.0.0.1:8200 vault kv put kv/cloudflare api-token="FULL_TOKEN")
-Activate MERLIN workflow (toggle on in n8n)
-Next session: Phase 22.2 — Daily Notes + Morning Briefing
-
-### April 27, 2026
-
-Date: April 27, 2026
-Phase: Midas Complete + MERLIN Complete
-
-Topics Discussed
-
-Investigated 80% RAM alert — traced to Windrose (8.9GB) + VM 400 (7.9GB)
-Raised Prometheus HighMemoryUsage threshold from 80% to 85%
-Fixed Ollama token capture in Extract Response node
-Added command_type column to gilgamesh_costs
-Built Midas — CFO Report workflow (/midas command, 6 nodes)
-Built Midas — Daily Brief workflow (9am scheduled, 4 nodes)
-Built MERLIN — Reminders workflow (8am daily, parallel checks)
-Fixed Loki not being scraped by Prometheus (added scrape job)
-
-Decisions Made
-
-Memory alert threshold: 80% → 85%
-Ollama token fields: read data.input_tokens / data.output_tokens (already mapped by Call Ollama)
-command_type derived from Telegram Trigger message text directly
-Midas webhook path: midas-report, USD to MYR rate: 4.7, spend limit: $10
-SSL check: hardcoded July 14 2026 expiry (Cloudflare auto-renews), revisit in MERLIN v2
-Backup restore test baseline: 2026-01-01 (never tested), update manually after each test
-MERLIN reads Check Prometheus Memory and Check Vault Seal by direct node reference
-Midas v2 planned: revisit missing design discussion in future session
-
-Changes to AI-CONTEXT.md
-
-Add to n8n workflows table: Midas — CFO Report (webhook, /midas), Midas — Daily Brief (scheduled 9am), MERLIN — Reminders (scheduled 8am) — total now 12 workflows
-Update gilgamesh_costs schema: command_type column added (Text)
-Update Prometheus alert: HighMemoryUsage threshold now 85%
-Add Loki scrape job fix to Key Lessons Learned
-Add Windrose RAM note: ~9GB RAM baseline, stop docker container when not playing
-Update agent roster: Midas ✅ Active (CFO report + daily brief active), MERLIN ✅ Active (daily checks active, Cloudflare API pending)
-Add to pending tasks: Schedule backup restore test (CT 207 recommended), fix Cloudflare Vault token (truncated — only 7 chars stored)
-
-Errors & Resolutions
-
-Ollama tokens always 0: Call Ollama already maps to input_tokens/output_tokens — read those not prompt_eval_count
-command_type node reference error: Derive from Telegram Trigger directly
-Midas webhook 404: Activate workflow first
-Aggregate Alerts Prometheus not found: Use direct node reference $('Check Prometheus Memory') instead of merged items
-SSL checker API empty: Use hardcoded expiry date instead
-Cloudflare Vault token truncated: kv/cloudflare stores api-token as 7 chars only — needs to be re-stored with full token
-
-Action Items
-
-Schedule backup restore test on CT 207, update lastTestDate in MERLIN
-Fix Cloudflare API token in Vault (get full token from Cloudflare dashboard, re-store)
-Activate MERLIN workflow (toggle on)
-Next: Obsidian 22.1 or Guardian agent
-
-### April 27, 2026
-
-Date: April 27, 2026
-Phase: Midas — CFO Agent (Phase Gilgamesh Agent #1)
-
-Topics Discussed
-
-Investigated Discord memory warning (80.2%) — traced to Windrose consuming 8.9GB RAM + VM 400 at 7.9GB
-Raised Prometheus HighMemoryUsage alert threshold from 80% to 85%
-Fixed Ollama token capture in Extract Response node (was reading wrong field names)
-Added command_type column to gilgamesh_costs Data Table
-Built Midas — CFO Report workflow (6 nodes, /midas command)
-Built Midas — Daily Brief workflow (4 nodes, 9am scheduled)
-
-Decisions Made
-
-Memory alert threshold: 80% → 85% (Windrose is new baseline)
-Windrose consumes ~9GB RAM when running — stop when not playing to save RAM
-Ollama tokens read from data.input_tokens / data.output_tokens (already mapped by Call Ollama node)
-command_type derived from Telegram message text directly (not Variables and context node)
-Midas webhook path: midas-report
-USD to MYR rate hardcoded: 4.7
-API spend limit: $10 (matches Anthropic Console setting)
-Ollama savings calculated at Haiku equivalent rate
-
-Changes to AI-CONTEXT.md
-
-Add Midas — CFO Report to n8n workflows table (total now 12 workflows)
-Add Midas — Daily Brief to n8n workflows table
-Update gilgamesh_costs schema: add command_type column (Text)
-Update Prometheus alert threshold: HighMemoryUsage now 85%
-Add Windrose RAM note: ~9GB RAM, stop when not playing
-Update Ollama token fix in Key Lessons Learned
-
-Errors & Resolutions
-
-Ollama tokens always 0: Call Ollama node already maps prompt_eval_count → input_tokens — read data.input_tokens not data.prompt_eval_count
-command_type referenced node doesn't exist: Derive from Telegram Trigger directly instead
-Midas webhook 404: Workflow must be activated first
-
-Action Items
-
-Build MERLIN reminder agent (next in build order)
-Monitor Windrose RAM — stop docker container when not playing
-
 ### April 26, 2026
 
 Date: April 26, 2026
@@ -1105,68 +953,6 @@ Action Items
 Push corrected AI-CONTEXT.md to GitHub via /sync-docs or manual upload.
 Run /sync-docs to regenerate all docs from corrected base.
 Begin Phase 22.1 (Vault Structure Expansion) in next session.
-
-### April 26, 2026
-
-Date: April 26, 2026
-Phase: Planning — Obsidian Expansion + EMIYA Design
-
-Topics Discussed
-
-Obsidian 16-phase expansion plan.
-Homepage dashboard: 4 separate tabs (Homelab, Health, Finance, Settings).
-Finance and health integration: budget-aware grocery lists.
-EMIYA redesigned from Infrastructure Translator to full CTO with 10 core features.
-Agent ecosystem clarified and corrected.
-Price tracking system: database for pasar vs supermarket comparisons.
-Sherlock Holmes introduced as dedicated web scraper.
-
-Decisions Made
-
-Homepage: 4 separate tabs, not main page widgets.
-Budget: monthly + weekly tracking, percentage-based (15% groceries default, adjustable).
-Grocery lists are budget-aware. Shopping checklist is Telegram-only.
-EMIYA is CTO/Infrastructure Engineer (not web scraper — that is Sherlock Holmes).
-New Tier 2 agents: Midas (CFO), Chiron (Career), Chiron (Career), Medea (QA), Waver (PM).
-Phases 22.15, 22.16, 24.1-24.8 added to plan.
-Phase 16 (/update file upload redesign) needed soon.
-
-### April 26, 2026
-
-Date: April 26, 2026
-Phase: Maintenance & Bug Fix Sprint
-
-Topics Discussed
-
-Fixed Da Vinci grounding bug (AI-CONTEXT.md being replaced with hallucinated content).
-Restored AI-CONTEXT.md from Claude Project files.
-Fixed cost_usd always saving as 0 in Save Cost node.
-Fixed Ollama token counts always returning 0 in Call Ollama node.
-Set up Bitwarden on phone (fixed Cloudflare Access blocking API paths).
-Fixed n8n Cloudflare Access OTP (cached session issue).
-Added Cloudflare Access icons for all 7 apps.
-Updated Obsidian subscription tracker (6 subscriptions).
-Cleaned up n8n legacy workflows and disconnected nodes.
-Updated Nextcloud 33.0.0 to 33.0.2.
-Stored credentials in Vault and Vaultwarden.
-Set $10 API spend limit in Anthropic Console.
-
-Decisions Made
-
-Da Vinci fix: use direct node references instead of input.first() after Merge node.
-max_tokens bumped to 32000 in Da Vinci Claude API call.
-cost_usd calculated from token rates (Sonnet $3/$15, Haiku $0.80/$1 per 1M).
-Ollama tokens use parsed.prompt_eval_count and parsed.eval_count.
-Vaultwarden API paths bypassed in Cloudflare Access (/api/, /identity/).
-All Cloudflare Access apps use Email OTP with muzakkir.kholil06@gmail.com only.
-Vault reseals on reboot — manual unseal required each time.
-
-Errors & Resolutions
-
-AI-CONTEXT.md replaced with hallucination: Use direct node references, increase max_tokens to 32000.
-Bitwarden HTTP 525: Cloudflare Access blocking API paths — add bypass for /api and /identity.
-n8n Access not triggering: Cached session — test in incognito.
-Vault sealed after reboot: pct exec 213 -- vault operator unseal.
 
 ### April 25, 2026
 
