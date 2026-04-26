@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Midas CFO Agent and MERLIN Reminders deployed and active. 14 LXC containers + 1 KVM VM running.
+**Current Status:** Midas CFO Agent, MERLIN Reminders, and Obsidian Daily Creator active. 14 LXC containers + 1 KVM VM running.
 
 ---
 
@@ -177,7 +177,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 5. **Excalidraw** — Diagrams and sketches
 6. **Kanban** — Kanban boards for project management
 
-### Folder Structure
+### Folder Structure (Phase 22.1 Complete)
 
 ```
 second-brain/
@@ -185,17 +185,26 @@ second-brain/
 ├── 01-homelab/        # Infrastructure documentation
 ├── 02-career/         # Career transition materials
 ├── 03-knowledge/      # Learning notes, references
-├── 04-personal/       # Personal management (subscriptions, finance)
+├── 04-personal/       # Personal management, subscriptions, finance
+│   ├── subscriptions/ # Individual notes per subscription
+│   ├── finance/       # Budget tracking, grocery lists
+│   ├── grocery/       # Shopping lists and meal planning
+│   └── health/        # Blood pressure tracking, food logs
 ├── 05-templates/      # Note templates
-└── 06-archive/        # Completed or outdated notes
+├── 06-archive/        # Completed or outdated notes
+├── 07-daily/          # Daily notes from Phase 22.2
+├── 08-projects/       # Active projects and goals
+├── 09-meetings/       # Meeting notes and agendas
+└── 10-reference/      # Quick reference materials
 ```
 
-### Key Features
+### Key Features (Phase 22.1 + 22.2)
 
-- **Subscription tracker:** Individual notes per subscription in 04-personal/subscriptions/
-- **Dashboard:** Dataview queries showing subscription costs and totals at 04-personal/dashboard
-- **Session summaries:** Template at 05-templates/session-summary.md for homelab documentation
-- **6 subscriptions tracked:** Claude Pro, Anthropic API, Fantia, YouTube Premium, Cloudflare Domain, TIME Internet
+- **Subscription tracker:** 6 subscriptions tracked in 04-personal/subscriptions/
+- **Dashboard:** Dataview queries at 04-personal/dashboard showing costs and totals
+- **Daily notes:** Auto-created at midnight via n8n (Phase 22.2)
+- **Morning briefing:** 7am Telegram summary via MERLIN
+- **/daily command:** Gilgamesh creates immediate daily notes
 
 ### Homepage Dashboard Design (Planned — Phases 22.15/22.16)
 
@@ -492,6 +501,8 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Midas — CFO Report                  | /midas command cost analysis           | 6     | Webhook  |
 | Midas — Daily Brief                 | 9am scheduled cost summary             | 4     | Schedule |
 | MERLIN — Reminders                  | 8am daily infrastructure checks        | 8     | Schedule |
+| Daily Note Creator                  | Midnight Obsidian daily notes          | 4     | Schedule |
+| Morning Briefing                    | 7am daily summary to Telegram          | 5     | Schedule |
 | Update Nextcloud File               | Legacy (unpublished)                   | 5     | Webhook  |
 | Push to GitHub                      | Legacy (unpublished)                   | 4     | Webhook  |
 
@@ -585,6 +596,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | @JhinGilgamesh_bot | Telegram        | n8n CT 211          | ✅ Active  | Personal AI agent — chat, homelab control, /update, /sync-docs   |
 | Midas              | Telegram        | n8n CT 211          | ✅ Active  | CFO cost tracking — /midas reports, 9am daily briefs            |
 | MERLIN             | Telegram        | n8n CT 211          | ✅ Active  | Reminders — 8am daily infrastructure checks                      |
+| Daily Note Creator | Nextcloud WebDAV| n8n CT 211          | ✅ Active  | Midnight daily note creation in Obsidian vault                  |
+| Morning Briefing   | Telegram        | n8n CT 211          | ✅ Active  | 7am daily summary to Telegram                                   |
 | Homelab Alerts     | Telegram        | Alertmanager CT 205 | ✅ Active  | Critical alerts (host down, high CPU/memory/disk)                |
 | Homelab Alerts     | Discord webhook | Alertmanager CT 205 | ✅ Active  | Warning-level alerts to #alerts channel                          |
 
@@ -662,6 +675,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 16.3    | Da Vinci Documentation Pipeline                                  | ✅ Complete      | Apr 25, 2026 |
 | 22      | Obsidian Knowledge Base                                          | ✅ Complete      | Apr 24, 2026 |
 | 22.1    | Obsidian Vault Structure Expansion                               | ✅ Complete      | Apr 27, 2026 |
+| 22.2    | Obsidian Daily Notes + Morning Briefing                         | ✅ Complete      | Apr 27, 2026 |
 | 22.15   | Price Database Tracking                                          | 📋 Planned       | —            |
 | 22.16   | Homepage Settings Tab                                            | 📋 Planned       | —            |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                            | ✅ Complete      | Apr 18, 2026 |
@@ -838,6 +852,67 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ### April 27, 2026
 
 Date: April 27, 2026
+Phase: Midas + MERLIN + Obsidian 22.1 + 22.2 Complete
+
+Topics Discussed
+
+- 80% RAM alert — Windrose 8.9GB + VM 400 7.9GB — normal baseline, raised Prometheus threshold 80% to 85%
+- Fixed Ollama token capture (read data.input_tokens not prompt_eval_count)
+- Added command_type column to gilgamesh_costs
+- Built Midas CFO Report workflow (/midas, webhook midas-report, 6 nodes)
+- Built Midas Daily Brief (9am scheduled, 4 nodes)
+- Fixed Loki not scraped by Prometheus — added scrape job to prometheus.yml
+- Built MERLIN Reminders (8am daily: SSL Jul 14 2026, Proxmox memory 85%, Vault seal, backup restore test)
+- Completed Obsidian 22.1: 10 folders, HOME note, _index files, subfolders finance/grocery/health/subscriptions
+- Completed Obsidian 22.2: Daily Note Creator midnight, Morning Briefing 7am, /daily command
+- Planned Phase 22.9: reminders + voice notes Claude API + notebook photo vision
+- Planned Phase 22.11: Nextcloud Calendar CalDAV integration
+
+Decisions Made
+
+- Memory alert threshold: 80% → 85%
+- Ollama tokens: read data.input_tokens / data.output_tokens (already mapped by Call Ollama)
+- command_type: derived from Telegram Trigger message text directly
+- Midas webhook: midas-report, USD to MYR: 4.7, spend limit: $10
+- SSL check: hardcoded July 14 2026 expiry — revisit in MERLIN v2
+- Backup restore test baseline: 2026-01-01 (never tested)
+- MERLIN reads nodes directly by name ($('Check Prometheus Memory')) not merged items
+- Midas v2: revisit in future session for missing design discussion
+- Obsidian vault: 10 folders + HOME master index + 7 _index files
+- Daily notes: midnight creation via n8n, 7am morning briefing, /daily command
+- Phase 22.9 and 22.11 planned for future expansion
+
+Changes to AI-CONTEXT.md
+
+- n8n workflows: add Midas CFO Report (webhook midas-report), Midas Daily Brief (9am), MERLIN Reminders (8am), Daily Note Creator (midnight), Morning Briefing (7am) — total now 12 workflows
+- gilgamesh_costs schema: command_type column added (Text)
+- Prometheus: HighMemoryUsage threshold now 85%
+- Key Lessons: add Loki scrape job fix, Ollama token field names fix
+- Windrose: ~9GB RAM baseline — stop container when not playing
+- Agent roster: Midas ✅ Active, MERLIN ✅ Active
+- Obsidian vault structure updated — 10 folders, HOME note, _index files
+- Phases 22.1 and 22.2 marked complete April 27 2026
+- Daily Note Creator and Morning Briefing active
+- Pending: Schedule backup restore test CT 207, fix Cloudflare Vault token
+
+Errors & Resolutions
+
+- Ollama tokens always 0: read data.input_tokens/output_tokens not prompt_eval_count/eval_count
+- Aggregate Alerts Prometheus not found: use $('Check Prometheus Memory').first().json directly
+- SSL checker API returns empty: use hardcoded expiry date instead
+- Cloudflare Vault token truncated: stored as 7 chars only — needs full token re-stored
+- MERLIN Aggregate Alerts error.includes not a function: error field is object not string
+
+Action Items
+
+- Schedule backup restore test on CT 207, update lastTestDate in MERLIN
+- Fix Cloudflare API token in Vault (get full token from dashboard, re-store)
+- Activate MERLIN workflow (toggle on in n8n)
+- Next session: Phase 22.3 or Guardian agent
+
+### April 27, 2026
+
+Date: April 27, 2026
 Phase: Midas ✅ + MERLIN ✅ + Obsidian Phase 22.1 ✅
 Topics Discussed
 
@@ -924,7 +999,7 @@ Update gilgamesh_costs schema: command_type column added (Text)
 Update Prometheus alert: HighMemoryUsage threshold now 85%
 Add Loki scrape job fix to Key Lessons Learned
 Add Windrose RAM note: ~9GB RAM baseline, stop docker container when not playing
-Update agent roster: Midas ✅ Active (CFO report + daily brief), MERLIN ✅ Active (daily checks active, Cloudflare API pending)
+Update agent roster: Midas ✅ Active (CFO report + daily brief active), MERLIN ✅ Active (daily checks active, Cloudflare API pending)
 Add to pending tasks: Schedule backup restore test (CT 207 recommended), fix Cloudflare Vault token (truncated — only 7 chars stored)
 
 Errors & Resolutions
