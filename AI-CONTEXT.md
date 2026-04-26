@@ -279,7 +279,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 | Gilgamesh 👑     | Archer | Personal AI Assistant                                                | Telegram (@JhinGilgamesh_bot) | ✅ Active            |
 | Da Vinci 🎨      | Caster | Chief Intelligence Officer (Stage 1 doc pipeline active; Stage 2 RAG planned) | n8n/Nextcloud        | ⚡ Partial — Stage 1 active |
 | Midas 💰         | Caster | CFO — Cost Tracking & Optimization                                   | n8n                           | ✅ Active            |
-| MERLIN 🔮        | Caster | Reminders & Scheduler                                                | n8n                           | ⚡ Partial — daily checks active |
+| MERLIN 🔮        | Caster | Reminders & Scheduler                                                | n8n                           | ✅ Active            |
 
 ### Final 9-Agent Roster (Locked April 25, 2026)
 
@@ -288,7 +288,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 | Gilgamesh 👑         | Archer   | Personal AI Assistant                  | Telegram      | —           | ✅ Active  |
 | Da Vinci 🎨          | Caster   | Chief Intelligence Officer             | n8n/Nextcloud | —           | ⚡ Partial |
 | Midas 💰             | Caster   | CFO — Cost Tracking & Optimization     | n8n           | 1st         | ✅ Active  |
-| MERLIN 🔮            | Caster   | Reminders & Scheduler                  | n8n           | 2nd         | ⚡ Partial |
+| MERLIN 🔮            | Caster   | Reminders & Scheduler                  | n8n           | 2nd         | ✅ Active  |
 | Guardian 🛡          | —        | Security Monitoring                    | n8n           | 3rd         | 📋 Planned |
 | Mash Kyrielight 🛡️  | Shielder | Gaming Server Manager + Wellbeing      | Discord       | 4th         | 📋 Planned |
 | Nexus 🔗             | —        | Cross-platform Automation              | n8n           | 5th         | 📋 Planned |
@@ -300,7 +300,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Scribe absorbed into Da Vinci (documentation is Da Vinci's domain)
 - Oracle absorbs Zhuge Liang
 - Sherlock Holmes added April 26 as dedicated web scraper — web scraping removed from EMIYA scope
-- **Build order is firm: Midas complete, MERLIN next, then Guardian, Mash, Nexus, Oracle**
+- **Build order is firm: Midas complete, MERLIN complete, then Guardian, Mash, Nexus, Oracle**
 
 ### Tier 2 Agents (Planned — Build After Core Roster)
 
@@ -661,6 +661,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 16.2    | Documentation Pipeline — Sync Docs Workflow                      | ✅ Complete      | Apr 19, 2026 |
 | 16.3    | Da Vinci Documentation Pipeline                                  | ✅ Complete      | Apr 25, 2026 |
 | 22      | Obsidian Knowledge Base                                          | ✅ Complete      | Apr 24, 2026 |
+| 22.1    | Obsidian Vault Structure Expansion                               | ✅ Complete      | Apr 27, 2026 |
 | 22.15   | Price Database Tracking                                          | 📋 Planned       | —            |
 | 22.16   | Homepage Settings Tab                                            | 📋 Planned       | —            |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                            | ✅ Complete      | Apr 18, 2026 |
@@ -837,6 +838,61 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ### April 27, 2026
 
 Date: April 27, 2026
+Phase: Midas ✅ + MERLIN ✅ + Obsidian Phase 22.1 ✅
+Topics Discussed
+
+Investigated 80% RAM alert — Windrose 8.9GB + VM 400 7.9GB — normal baseline
+Raised Prometheus HighMemoryUsage threshold 80% → 85%
+Fixed Ollama token capture in Extract Response node
+Added command_type column to gilgamesh_costs Data Table
+Built Midas — CFO Report workflow (/midas, 6 nodes)
+Built Midas — Daily Brief workflow (9am scheduled, 4 nodes)
+Fixed Loki not scraped by Prometheus — added scrape job to prometheus.yml
+Built MERLIN — Reminders workflow (8am daily, parallel SSL/Memory/Vault/Backup checks)
+Completed Obsidian Phase 22.1 — vault structure expansion
+
+Decisions Made
+
+Memory alert threshold: 80% → 85%
+Ollama tokens: read data.input_tokens / data.output_tokens (already mapped by Call Ollama)
+command_type: derived from Telegram Trigger message text directly
+Midas webhook path: midas-report, USD to MYR: 4.7, spend limit: $10
+SSL check: hardcoded July 14 2026 expiry — revisit in MERLIN v2 with proper Cloudflare API
+Backup restore test baseline: 2026-01-01 (never tested) — update manually after each test
+MERLIN reads nodes directly by name ($('Check Prometheus Memory')) not merged items
+Midas v2: revisit in future session for missing design discussion
+Obsidian vault structure: 10 folders + HOME master index + 7 _index files
+
+Changes to AI-CONTEXT.md
+
+n8n workflows: add Midas — CFO Report (webhook /midas-report), Midas — Daily Brief (scheduled 9am), MERLIN — Reminders (scheduled 8am) — total now 12 workflows
+gilgamesh_costs schema: command_type column added (Text)
+Prometheus: HighMemoryUsage threshold now 85%
+Key Lessons: add Loki scrape job fix, Ollama token field names fix
+Windrose: ~9GB RAM baseline — stop container when not playing
+Agent roster: Midas ✅ Active (CFO report + daily brief active), MERLIN ✅ Active (daily checks active, Cloudflare API pending)
+Obsidian vault structure updated — 10 folders, HOME note, _index files in all folders
+Phase 22.1 marked complete April 27 2026
+Pending: Schedule backup restore test CT 207, fix Cloudflare Vault token (currently truncated to 7 chars)
+
+Errors & Resolutions
+
+Ollama tokens always 0: read data.input_tokens/output_tokens not prompt_eval_count/eval_count
+Aggregate Alerts Prometheus not found: use $('Check Prometheus Memory').first().json directly
+SSL checker API returns empty: use hardcoded expiry date instead
+Cloudflare Vault token truncated: stored as 7 chars only — needs full token re-stored
+MERLIN Aggregate Alerts i.error.includes not a function: error field is object not string
+
+Action Items
+
+Schedule backup restore test on CT 207, update lastTestDate in MERLIN Aggregate Alerts
+Fix Cloudflare API token in Vault (get full token from Cloudflare dashboard, re-store with: pct exec 213 -- env VAULT_ADDR=http://127.0.0.1:8200 vault kv put kv/cloudflare api-token="FULL_TOKEN")
+Activate MERLIN workflow (toggle on in n8n)
+Next session: Phase 22.2 — Daily Notes + Morning Briefing
+
+### April 27, 2026
+
+Date: April 27, 2026
 Phase: Midas Complete + MERLIN Complete
 
 Topics Discussed
@@ -868,7 +924,7 @@ Update gilgamesh_costs schema: command_type column added (Text)
 Update Prometheus alert: HighMemoryUsage threshold now 85%
 Add Loki scrape job fix to Key Lessons Learned
 Add Windrose RAM note: ~9GB RAM baseline, stop docker container when not playing
-Update agent roster: Midas ✅ Active (CFO report + daily brief), MERLIN ⚡ Partial (daily checks active, Cloudflare API pending)
+Update agent roster: Midas ✅ Active (CFO report + daily brief), MERLIN ✅ Active (daily checks active, Cloudflare API pending)
 Add to pending tasks: Schedule backup restore test (CT 207 recommended), fix Cloudflare Vault token (truncated — only 7 chars stored)
 
 Errors & Resolutions
@@ -914,7 +970,7 @@ Ollama savings calculated at Haiku equivalent rate
 
 Changes to AI-CONTEXT.md
 
-Add Midas — CFO Report to n8n workflows table (total now 9 workflows)
+Add Midas — CFO Report to n8n workflows table (total now 12 workflows)
 Add Midas — Daily Brief to n8n workflows table
 Update gilgamesh_costs schema: add command_type column (Text)
 Update Prometheus alert threshold: HighMemoryUsage now 85%
