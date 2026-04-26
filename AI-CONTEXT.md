@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** April 26, 2026
+> **Last Updated:** April 27, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Maintenance & Bug Fix Sprint + AI-CONTEXT audit complete. 14 LXC containers + 1 KVM VM running.
+**Current Status:** Midas CFO Agent deployed and active. 14 LXC containers + 1 KVM VM running.
 
 ---
 
@@ -156,7 +156,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 - **Terraria** — terraria.najhin-gaming.com
 - **Minecraft** — mc.najhin-gaming.com
-- **Windrose** — Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE
+- **Windrose** — Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE, **consumes ~9GB RAM when running**
 
 ---
 
@@ -278,6 +278,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 |------------------|--------|----------------------------------------------------------------------|-------------------------------|---------------------|
 | Gilgamesh 👑     | Archer | Personal AI Assistant                                                | Telegram (@JhinGilgamesh_bot) | ✅ Active            |
 | Da Vinci 🎨      | Caster | Chief Intelligence Officer (Stage 1 doc pipeline active; Stage 2 RAG planned) | n8n/Nextcloud        | ⚡ Partial — Stage 1 active |
+| Midas 💰         | Caster | CFO — Cost Tracking & Optimization                                   | n8n                           | ✅ Active            |
 
 ### Final 9-Agent Roster (Locked April 25, 2026)
 
@@ -285,7 +286,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 |----------------------|----------|----------------------------------------|---------------|-------------|-----------|
 | Gilgamesh 👑         | Archer   | Personal AI Assistant                  | Telegram      | —           | ✅ Active  |
 | Da Vinci 🎨          | Caster   | Chief Intelligence Officer             | n8n/Nextcloud | —           | ⚡ Partial |
-| Midas 💰             | Caster   | CFO — Cost Tracking & Optimization     | n8n           | 1st         | 📋 Planned |
+| Midas 💰             | Caster   | CFO — Cost Tracking & Optimization     | n8n           | 1st         | ✅ Active  |
 | MERLIN 🔮            | Caster   | Reminders & Scheduler                  | n8n           | 2nd         | 📋 Planned |
 | Guardian 🛡          | —        | Security Monitoring                    | n8n           | 3rd         | 📋 Planned |
 | Mash Kyrielight 🛡️  | Shielder | Gaming Server Manager + Wellbeing      | Discord       | 4th         | 📋 Planned |
@@ -298,7 +299,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Scribe absorbed into Da Vinci (documentation is Da Vinci's domain)
 - Oracle absorbs Zhuge Liang
 - Sherlock Holmes added April 26 as dedicated web scraper — web scraping removed from EMIYA scope
-- **Build order is firm: Midas first, then MERLIN, Guardian, Mash, Nexus, Oracle**
+- **Build order is firm: Midas complete, MERLIN next, then Guardian, Mash, Nexus, Oracle**
 
 ### Tier 2 Agents (Planned — Build After Core Roster)
 
@@ -326,6 +327,23 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Direct node references required: use `$('Extract Response').first().json.updatedDoc` instead of `$json` after Merge node
 - max_tokens set to 32000 to prevent AI-CONTEXT.md being replaced with hallucinated content
 - Grounding fix pending: add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
+
+### Midas — CFO (Cost Tracking & Optimization)
+
+**Two workflows:**
+1. **CFO Report** — `/midas` command shows token usage, costs by model, savings from Ollama
+2. **Daily Brief** — 9am scheduled summary to Telegram
+
+**Features:**
+- Tracks Gilgamesh costs (Sonnet, Haiku, Ollama)
+- USD to MYR conversion (hardcoded rate: 4.7)
+- Ollama savings calculated at Haiku equivalent rate
+- $10 monthly API spend limit monitoring
+- command_type tracking for detailed cost breakdown
+
+**Why Midas:**
+- Midas touch turns everything to gold → cost optimization
+- King of wealth → perfect CFO role
 
 ### EMIYA — CTO / Infrastructure Engineer
 
@@ -418,7 +436,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - **Conversation memory:** Last 20 messages stored in n8n Data Tables
 - **Smart routing:** Ollama (local, primary) → Haiku (fallback) → Sonnet (complex)
 - **Web search:** Real-time information via Claude's web_search tool
-- **Cost tracking:** Token usage logged to gilgamesh_costs table; cost_usd calculated from token rates
+- **Cost tracking:** Token usage logged to gilgamesh_costs table with command_type; cost_usd calculated from token rates
 - **Inline keyboard menu:** Full menu system with all submenus working
 - **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
 - **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
@@ -436,6 +454,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | /backup    | Backup status     | Last backup times for all containers          |
 | /update    | Session summary   | Merges session into docs (3 files)            |
 | /sync-docs | Full regeneration | Regenerates all documentation (7 files)       |
+| /midas     | CFO report        | Cost analysis and savings summary             |
 
 ### Technical Details
 
@@ -453,10 +472,11 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 ### Cost Tracking Note
 
 - cost_usd calculated from token rates: Sonnet $3/$15 per 1M input/output tokens, Haiku $0.80/$1 per 1M tokens
-- Ollama tokens captured: prompt_eval_count + eval_count from parsed response
+- Ollama tokens captured: data.input_tokens + data.output_tokens from Call Ollama node response
 - Ollama queries cost $0 (local inference)
+- command_type derived from Telegram message text directly
 
-### n8n Workflows (Count: 6)
+### n8n Workflows (Count: 9)
 
 | Workflow                            | Purpose                                | Nodes | Trigger  |
 |-------------------------------------|----------------------------------------|-------|----------|
@@ -464,6 +484,8 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Documentation Pipeline — Update     | Session summary → 3 files              | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs  | Full doc regeneration → 7 files        | 7     | Webhook  |
 | Da Vinci Documentation Pipeline     | Raw staging summaries → formatted docs | 11    | Webhook  |
+| Midas — CFO Report                  | /midas command cost analysis           | 6     | Webhook  |
+| Midas — Daily Brief                 | 9am scheduled cost summary             | 4     | Schedule |
 | Update Nextcloud File               | Legacy (unpublished)                   | 5     | Webhook  |
 | Push to GitHub                      | Legacy (unpublished)                   | 4     | Webhook  |
 
@@ -555,6 +577,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Bot                | Platform        | Source              | Status    | Purpose                                                          |
 |--------------------|-----------------|---------------------|-----------|------------------------------------------------------------------|
 | @JhinGilgamesh_bot | Telegram        | n8n CT 211          | ✅ Active  | Personal AI agent — chat, homelab control, /update, /sync-docs   |
+| Midas              | Telegram        | n8n CT 211          | ✅ Active  | CFO cost tracking — /midas reports, 9am daily briefs            |
 | Homelab Alerts     | Telegram        | Alertmanager CT 205 | ✅ Active  | Critical alerts (host down, high CPU/memory/disk)                |
 | Homelab Alerts     | Discord webhook | Alertmanager CT 205 | ✅ Active  | Warning-level alerts to #alerts channel                          |
 
@@ -646,6 +669,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 39      | Open WebUI                                                       | ✅ Complete      | Apr 24, 2026 |
 | 41      | Gilgamesh + Ollama Hybrid Routing                                | ✅ Complete      | Apr 24, 2026 |
 | 58      | Windrose Server Deployment                                       | ✅ Complete      | Apr 19, 2026 |
+| Midas   | Midas CFO Agent                                                  | ✅ Complete      | Apr 27, 2026 |
 
 ---
 
@@ -693,6 +717,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Answer Callback node loses data      | Bypass it; handle callback acknowledgment separately             |
 | Da Vinci grounding bug               | Use direct node references; increase max_tokens to 32000         |
 | Open WebUI JSON parse error          | Add `proxy_buffering off` to NPM advanced config for streaming   |
+| input.first()/input.last() unreliable | After Merge node, use direct node references like `$('Extract Response').first().json` |
 
 ### HashiCorp Vault (Phase 13)
 
@@ -728,6 +753,14 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Ollama running on CPU not GPU            | Add `HSA_OVERRIDE_GFX_VERSION=10.3.0` and render/video group membership |
 | Open WebUI no models available           | Set `OLLAMA_HOST=0.0.0.0`; point container to 172.17.0.1:11434          |
 | SSH to VM 400 permission denied as root  | Use `muzakkir` user with sudo — root SSH is disabled                    |
+| Ollama tokens always 0                   | Call Ollama node maps prompt_eval_count → input_tokens — read data.input_tokens not data.prompt_eval_count |
+
+### Monitoring & Alerts
+
+| Issue                       | Resolution                                                |
+|-----------------------------|---------------------------------------------------------|
+| High memory alerts at 80%  | Raise threshold to 85% (Windrose baseline ~9GB RAM)      |
+| Prometheus HighMemoryUsage  | Updated rule from 80% to 85% in alerting configuration   |
 
 ---
 
@@ -737,9 +770,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                                        | Priority |
 |---------------------------------------------------------------------------------------------|----------|
-| Build Midas agent first (CFO, cost tracking) — confirmed build order: Midas before MERLIN  | High     |
-| Build MERLIN reminder agent second (SSL reminders, backup test, maintenance windows)        | High     |
-| Monitor RAM usage with Windrose running on CT 302                                           | High     |
+| Build MERLIN reminder agent (next in build order after Midas completion)                   | High     |
+| Monitor Windrose RAM usage — stop Docker container when not playing                         | High     |
 | Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)                         | High     |
 | Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
 
@@ -788,6 +820,51 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 27, 2026
+
+Date: April 27, 2026
+Phase: Midas — CFO Agent (Phase Gilgamesh Agent #1)
+
+Topics Discussed
+
+Investigated Discord memory warning (80.2%) — traced to Windrose consuming 8.9GB RAM + VM 400 at 7.9GB
+Raised Prometheus HighMemoryUsage alert threshold from 80% to 85%
+Fixed Ollama token capture in Extract Response node (was reading wrong field names)
+Added command_type column to gilgamesh_costs Data Table
+Built Midas — CFO Report workflow (6 nodes, /midas command)
+Built Midas — Daily Brief workflow (4 nodes, 9am scheduled)
+
+Decisions Made
+
+Memory alert threshold: 80% → 85% (Windrose is new baseline)
+Windrose consumes ~9GB RAM when running — stop when not playing to save RAM
+Ollama tokens read from data.input_tokens / data.output_tokens (already mapped by Call Ollama node)
+command_type derived from Telegram message text directly (not Variables and context node)
+Midas webhook path: midas-report
+USD to MYR rate hardcoded: 4.7
+API spend limit: $10 (matches Anthropic Console setting)
+Ollama savings calculated at Haiku equivalent rate
+
+Changes to AI-CONTEXT.md
+
+Add Midas — CFO Report to n8n workflows table (total now 9 workflows)
+Add Midas — Daily Brief to n8n workflows table
+Update gilgamesh_costs schema: add command_type column (Text)
+Update Prometheus alert threshold: HighMemoryUsage now 85%
+Add Windrose RAM note: ~9GB RAM, stop when not playing
+Update Ollama token fix in Key Lessons Learned
+
+Errors & Resolutions
+
+Ollama tokens always 0: Call Ollama node already maps prompt_eval_count → input_tokens — read data.input_tokens not data.prompt_eval_count
+command_type referenced node doesn't exist: Derive from Telegram Trigger directly instead
+Midas webhook 404: Workflow must be activated first
+
+Action Items
+
+Build MERLIN reminder agent (next in build order)
+Monitor Windrose RAM — stop docker container when not playing
 
 ### April 26, 2026
 
@@ -968,4 +1045,4 @@ Open WebUI JSON parse error: proxy_buffering off needed in NPM advanced config f
 
 ---
 
-*Last updated: April 26, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: April 27, 2026 — Update this file at the end of each session before pushing to GitHub*
