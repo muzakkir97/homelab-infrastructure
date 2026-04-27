@@ -1,265 +1,249 @@
-# 🏠 Homelab Infrastructure Project
+# 🏗️ Homelab Infrastructure Project
 
-[![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Documentation Status](https://img.shields.io/badge/docs-up%20to%20date-brightgreen.svg)](https://github.com/muzakkir97/homelab-infrastructure)
-[![Infrastructure Status](https://img.shields.io/badge/infrastructure-operational-success.svg)](current-state.md)
-[![Containers Running](https://img.shields.io/badge/containers-14%20LXC%20%2B%201%20VM-blue.svg)](service-catalog.md)
+[![Infrastructure](https://img.shields.io/badge/Infrastructure-Proxmox%20VE-orange)](https://www.proxmox.com/)
+[![Monitoring](https://img.shields.io/badge/Monitoring-Prometheus%20%2B%20Grafana-blue)](https://prometheus.io/)
+[![Automation](https://img.shields.io/badge/Automation-n8n-ff6d5a)](https://n8n.io/)
+[![AI](https://img.shields.io/badge/AI-Ollama%20%2B%20ROCm-green)](https://ollama.ai/)
+[![Gaming](https://img.shields.io/badge/Gaming-Pterodactyl-yellow)](https://pterodactyl.io/)
+[![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
 
-> **Enterprise-grade homelab for career transition from Customer Service Engineering to Cloud Engineering / DevOps**
+> **Enterprise-grade homelab for career transition from Customer Service Engineer (F-Secure, cybersecurity) to Cloud Engineering / DevOps**
+
+---
 
 ## 🎯 Project Goals
 
-This homelab serves as both a learning environment and professional portfolio, demonstrating enterprise infrastructure practices in a home environment. The project showcases skills in virtualization, networking, monitoring, automation, security, and DevOps practices required for cloud engineering roles.
+This homelab serves as both a **learning environment** and **professional portfolio** for my transition to Cloud Engineering/DevOps. The infrastructure demonstrates enterprise-grade practices, automation, monitoring, and security implementations suitable for production environments.
 
-**Primary Objective:** Career transition from Customer Service Engineer (F-Secure, cybersecurity) to Cloud Engineering / DevOps through hands-on infrastructure experience.
+**Current Status:** 14 LXC containers + 1 KVM VM running across 5 VLANs with complete monitoring, automation, and AI integration.
 
 ## 👤 About Me
 
-| Field | Details |
-|-------|---------|
-| **Name** | Muzakkir Kholil |
+| Field            | Details                                              |
+|------------------|------------------------------------------------------|
+| **Name**         | Muzakkir Kholil                                      |
 | **Current Role** | Customer Service Engineer @ F-Secure (cybersecurity) |
-| **Location** | Petaling Jaya, Selangor, Malaysia |
-| **Target Role** | Cloud Engineering / DevOps |
-| **Domain** | najhin-gaming.com (Cloudflare managed) |
+| **Location**     | Petaling Jaya, Selangor, Malaysia                    |
+| **Target Role**  | Cloud Engineering / DevOps                           |
+| **Domain**       | najhin-gaming.com (Cloudflare)                       |
+| **GitHub**       | github.com/muzakkir97                                |
 
 ## 🏗️ Architecture Overview
 
-### Network Topology
 ```
 Internet → ISP Router → pfSense Firewall
                             ↓
-                     802.1Q Trunk
+                    802.1Q Trunk to Switch
                             ↓
-                  TP-Link Managed Switch
-                            ↓
-        ┌─────────┬─────────┬─────────┬─────────┐
+        ┌─────────┬─────────┬─────────┬─────────┬─────────┐
       VLAN10    VLAN20    VLAN30    VLAN40    VLAN50
       Mgmt      Main     Services    DMZ     Malware
+   (Proxmox)  (Clients) (Containers) (Future) (Isolated)
 ```
 
 ### VLAN Design
 
-| VLAN | Name | Subnet | Purpose |
-|------|------|---------|----------|
-| 10 | MGMT | 192.168.10.0/24 | Infrastructure (Proxmox, pfSense, NAS) |
-| 20 | MAIN | 192.168.20.0/24 | Client devices |
-| 30 | SERVICES | 192.168.30.0/24 | All service containers + Pi-hole |
-| 40 | DMZ | 192.168.40.0/24 | Future public-facing services |
-| 50 | MALWARE | 192.168.50.0/24 | Isolated security lab |
+| VLAN ID | Name            | Subnet              | Purpose                                |
+|---------|-----------------|---------------------|----------------------------------------|
+| 10      | VLAN10_MGMT     | 192.168.x.x/24     | Infrastructure (Proxmox, pfSense, NAS) |
+| 20      | VLAN20_MAIN     | 192.168.x.x/24     | Client devices                         |
+| 30      | VLAN30_SERVICES | 192.168.x.x/24     | All service containers + Pi-hole       |
+| 40      | VLAN40_DMZ      | 192.168.x.x/24     | Future public-facing services          |
+| 50      | VLAN50_MALWARE  | 192.168.x.x/24     | Isolated security lab (air-gapped)     |
 
 ## 🖥️ Hardware Inventory
 
-| Device | Hostname | Specs | Role |
-|--------|----------|-------|------|
-| **Proxmox Server** | Kuromoon | Ryzen 5 5600X, 32GB RAM, RX 6700 XT 12GB | Hypervisor |
-| **pfSense Firewall** | — | AC8F Mini PC, Intel N100 | Router, Firewall |
-| **Managed Switch** | — | TP-Link TL-SG108E | Layer 2, VLANs |
-| **NAS** | Kinmoon | UGREEN DXP2800, 3.6TB WD Purple | Backup storage |
-| **DNS Server** | — | Raspberry Pi 4 | Pi-hole (~489K domains blocked) |
-| **Gaming PC** | Minimoon | Ryzen 7 7800X3D, RX 9070 XT 16GB | Gaming only |
-| **WiFi AP** | — | TP-Link EAP610 | Wireless access (pending setup) |
+| Device           | Hostname | Specs                                    | Role                              |
+|------------------|----------|------------------------------------------|-----------------------------------|
+| Proxmox Server   | Kuromoon | Ryzen 5 5600X, 32GB RAM, RX 6700 XT 12GB | Hypervisor                        |
+| pfSense Firewall | —        | AC8F Mini PC, Intel N100                 | Router, Firewall                  |
+| Managed Switch   | —        | TP-Link TL-SG108E                        | Layer 2, VLANs                    |
+| NAS              | Kinmoon  | UGREEN DXP2800, 3.6TB WD Purple          | Backups (SMB target)              |
+| DNS Server       | —        | Raspberry Pi 4                           | Pi-hole (~489K domains blocked)   |
+| Gaming PC        | Minimoon | Ryzen 7 7800X3D, RX 9070 XT 16GB         | **Gaming only — never homelab**   |
+| WiFi AP          | —        | TP-Link EAP610                           | Purchased, pending setup          |
+
+### GPU Passthrough Notes
+- RX 6700 XT passed through to VM 400 (ollama-gpu) for AI inference
+- IOMMU isolation with zero-RPM fan control when idle
+- HSA_OVERRIDE_GFX_VERSION=10.3.0 for gfx1031 compatibility
 
 ## 📦 Container Inventory
 
-**Total: 14 LXC containers + 1 KVM VM**
+**Total: 14 LXC containers + 1 KVM VM, all autostart enabled**
 
-### Core Infrastructure (VLAN 30)
-| ID | Name | Purpose | External Access |
-|----|------|---------|----------------|
-| 201 | nginx-proxy-manager | Reverse proxy | Internal only |
-| 202 | monitoring-prometheus | Metrics collection | Internal only |
-| 203 | monitoring-grafana | Metrics visualization | grafana.najhin-gaming.com |
-| 204 | monitoring-loki | Log aggregation | Internal only |
-| 205 | monitoring-alertmanager | Alert management | Internal only |
-| 206 | monitoring-uptime | Uptime monitoring | Internal only |
-| 207 | network-ddns | Dynamic DNS updates | Internal only |
-| 208 | dashboard-homepage | Infrastructure dashboard | home.najhin-gaming.com |
-| 211 | automation-n8n | Workflow automation | n8n.najhin-gaming.com |
-| 213 | vault | Secrets management | vault.najhin-gaming.com |
-| 214 | password-vaultwarden | Password manager | passwords.najhin-gaming.com |
-| 220 | nextcloud-hub | File sync & collaboration | cloud.najhin-gaming.com |
-| 300 | gaming-panel | Pterodactyl panel | Internal only |
-| 302 | gaming-wings-1 | Game servers | terraria/mc.najhin-gaming.com |
-| 400 | ollama-gpu | AI inference (KVM VM) | ollama.najhin-gaming.com |
+| ID   | Type | Name                    | Subdomain                     | Purpose                    |
+|------|------|-------------------------|-------------------------------|----------------------------|
+| 201  | LXC  | nginx-proxy-manager     | —                             | Reverse proxy, SSL         |
+| 202  | LXC  | monitoring-prometheus   | —                             | Metrics collection         |
+| 203  | LXC  | monitoring-grafana      | grafana.[DOMAIN]              | Metrics visualization      |
+| 204  | LXC  | monitoring-loki         | —                             | Log aggregation            |
+| 205  | LXC  | monitoring-alertmanager | —                             | Alert routing              |
+| 206  | LXC  | monitoring-uptime       | —                             | Uptime monitoring          |
+| 207  | LXC  | network-ddns            | —                             | Dynamic DNS updates        |
+| 208  | LXC  | dashboard-homepage      | home.[DOMAIN]                 | Infrastructure dashboard   |
+| 211  | LXC  | automation-n8n          | n8n.[DOMAIN]                  | Workflow automation        |
+| 213  | LXC  | vault                   | vault.[DOMAIN]                | Secrets management         |
+| 214  | LXC  | password-vaultwarden    | passwords.[DOMAIN]            | Password manager           |
+| 220  | LXC  | nextcloud-hub           | cloud.[DOMAIN]                | File sync, knowledge base  |
+| 300  | LXC  | gaming-panel            | —                             | Pterodactyl panel          |
+| 302  | LXC  | gaming-wings-1          | terraria/mc.[DOMAIN]          | Game servers (Docker)      |
+| 400  | VM   | ollama-gpu              | ollama.[DOMAIN]               | Local LLM with GPU         |
 
-## 🤖 Gilgamesh AI Agent
+## 🤖 Gilgamesh AI Agent Ecosystem
 
-**Advanced Telegram bot** providing infrastructure management and personal assistance through intelligent routing:
+**Theme:** Fate/Grand Order servants as homelab agents
 
-### Smart Hybrid Architecture
-- **Ollama qwen3:14b** — Primary local LLM (free, fast, privacy-focused)
-- **Claude Haiku 4.5** — Fallback for availability
-- **Claude Sonnet 4** — Complex queries and advanced reasoning
+### Active Agents
 
-### Key Features
-- **Conversation Memory** — Retains context across 20+ messages
-- **Cost Optimization** — Routes simple queries to free local model
-- **Web Search** — Real-time information access
-- **Infrastructure Control** — Container status, metrics, alerts
-- **Documentation Pipeline** — Automated session summaries and doc updates
+| Agent          | Role                                | Platform | Status              |
+|----------------|-------------------------------------|----------|---------------------|
+| Gilgamesh 👑   | Personal AI Assistant               | Telegram | ✅ Active            |
+| Da Vinci 🎨    | Chief Intelligence Officer          | n8n      | ⚡ Partial (Stage 1) |
+| Midas 💰       | CFO — Cost Tracking & Optimization | n8n      | ✅ Active            |
+| MERLIN 🔮      | Reminders & Scheduler               | n8n      | ✅ Active            |
 
-### Slash Commands
-```
-/help      - Quick reference guide
-/clear     - Reset conversation memory
-/memory    - View recent conversation
-/cost      - Token usage and cost tracking
-/alerts    - Active system alerts
-/backup    - Backup job status
-/update    - Generate session summary
-/sync-docs - Full documentation regeneration
-```
+### Gilgamesh Features
 
-## 🎮 Gaming Platform
+- **Smart routing:** Ollama qwen3:14b (local) → Claude Haiku (fallback) → Claude Sonnet (complex)
+- **Conversation memory:** Last 20 messages with cost tracking
+- **Web search:** Real-time information via Claude's web_search tool
+- **Infrastructure control:** Container status, metrics, alerts, backups
+- **Documentation pipeline:** Session summaries → GitHub via /update and /sync-docs
+- **Slash commands:** 10 commands for direct homelab management
 
-Self-hosted gaming infrastructure with automated management:
-
-### Supported Games
-- **Terraria** — terraria.najhin-gaming.com
-- **Minecraft** — mc.najhin-gaming.com
-- **Windrose** — 4-player co-op, managed via Pterodactyl
-
-### Management
-- Pterodactyl Panel for server lifecycle
-- Automated backups and updates
-- Resource monitoring and scaling
-- Discord integration (planned)
+### Cost Optimization Goal
+**Replace Claude.ai Pro ($30-40/month) with Gilgamesh by August 2026**
+- Target cost: $5-10/month (local LLM + occasional API)
+- Projected annual savings: $300-360
 
 ## 📊 Monitoring Stack
 
-Comprehensive observability with Prometheus ecosystem:
+| Component    | Purpose                   | Container |
+|--------------|---------------------------|-----------|
+| Prometheus   | Metrics collection        | CT 202    |
+| Grafana      | Visualization dashboards  | CT 203    |
+| Loki         | Log aggregation           | CT 204    |
+| Alertmanager | Alert routing & silencing | CT 205    |
+| Uptime Kuma  | Service availability      | CT 206    |
 
-### Components
-- **Prometheus** — Metrics collection and storage
-- **Grafana** — Visualization and dashboards
-- **Loki** — Log aggregation and analysis
-- **Alertmanager** — Alert routing (Telegram + Discord)
-- **Uptime Kuma** — Service availability monitoring
-
-### Key Metrics
-- Container resource utilization
-- Network performance
-- Storage capacity and I/O
-- Temperature monitoring
-- Service availability
+**Alerting:** Telegram (critical) + Discord (warnings) with plain English translations
 
 ## 🔒 Security Architecture
 
-### Defense in Depth
-| Layer | Implementation |
-|-------|---------------|
-| **Perimeter** | pfSense firewall with VLAN segmentation |
-| **DNS Security** | Pi-hole blocking 489K+ domains |
-| **VPN Access** | Tailscale mesh network |
-| **External Auth** | Cloudflare Access with Email OTP |
-| **Secrets** | HashiCorp Vault + Vaultwarden |
-| **Backup** | Automated daily with 7/4/2 retention |
-| **Network Isolation** | 5 VLANs with enforced firewall rules |
-
-### External Access
-All public services secured through:
-- Cloudflare Tunnel (no exposed ports)
-- Cloudflare Access authentication
-- Let's Encrypt SSL certificates
-- Email OTP verification
+| Layer           | Implementation                                                                          |
+|-----------------|-----------------------------------------------------------------------------------------|
+| Perimeter       | ISP Router → pfSense firewall with VLAN segmentation                                   |
+| DNS Security    | Pi-hole blocking ~489K malicious/tracking domains                                       |
+| VPN Access      | Tailscale subnet router for secure remote access                                        |
+| External Auth   | Cloudflare Access with Email OTP for 7 public services                                  |
+| Secrets Mgmt    | HashiCorp Vault (8 secret paths) + Vaultwarden password manager                        |
+| Network Segm.   | 5 VLANs with enforced firewall rules and isolated malware lab                          |
+| Backup Security | Automated daily backups with 7/4/2 retention to NAS and local storage                  |
 
 ## 💾 Backup Strategy
 
-### Automated Backup Jobs
-- **Small Containers** — Daily 02:00 to NAS (SMB/CIFS)
-- **Large Containers** — Daily 02:30 to local storage (7.3TB HDD)
-- **Retention Policy** — 7 daily, 4 weekly, 2 monthly snapshots
+| Job              | Schedule | Storage                  | Retention                     |
+|------------------|----------|--------------------------|-------------------------------|
+| Small Containers | 02:00    | NAS (SMB)                | 7 daily, 4 weekly, 2 monthly |
+| Large Containers | 02:30    | Local HDD (7.3TB)        | 7 daily, 4 weekly, 2 monthly |
 
-### Storage Architecture
-- **Primary** — NVMe SSDs (137GB + 899GB ZFS)
-- **Backup** — 3.6TB NAS + 7.3TB local HDD
-- **Future** — Backblaze B2 off-site backup (planned)
+**Coverage:** All containers backed up nightly with automated monitoring and alerting
 
-## 📈 Project Status
+## 📚 Knowledge Management (Obsidian)
 
-### Completed Phases (34 total)
-- ✅ Core Infrastructure (Proxmox, pfSense, VLANs)
-- ✅ Monitoring & Alerting Stack
-- ✅ Gaming Platform (Pterodactyl + servers)
-- ✅ Backup Strategy & Implementation
-- ✅ Secrets Management (Vault + Vaultwarden)
-- ✅ AI Agent (Gilgamesh) with Hybrid Routing
-- ✅ Local LLM (Ollama + ROCm on GPU)
-- ✅ Documentation Pipeline Automation
-- ✅ Knowledge Management (Obsidian + Nextcloud)
+- **Vault:** Auto-synced via Nextcloud to Gaming PC
+- **Structure:** 10 organized folders with templates and automation
+- **Features:** Daily notes (auto-created), subscription tracking, health logs
+- **Integration:** n8n creates daily notes, morning briefings via Telegram
+- **Plugins:** Dataview, Tasks, Templater, Calendar, Excalidraw, Kanban
 
-### In Progress
-- 🔄 EMIYA Infrastructure Agent (CTO automation)
-- 🔄 Midas Cost Tracking Agent (CFO automation)
-- 🔄 Enhanced observability and alerting
+## 📋 Project Phases
 
-### Planned Features
-- 🔜 Advanced AI agents (MERLIN, Guardian, Mash)
-- 🔜 Gaming Discord bot integration
-- 🔜 Homepage dashboard enhancements
-- 🔜 Price tracking and budget management
-- 🔜 Career development portfolio
-- 🔜 Advanced security monitoring
+### ✅ Completed (25 phases)
+- **Phase 1-6F:** Core infrastructure, monitoring, gaming platform
+- **Phase 7-7D:** Nextcloud, backups, AI agent foundation  
+- **Phase 9:** NAS deployment
+- **Phase 13-15:** Vault secrets management, Gilgamesh enhancements
+- **Phase 16.1-16.3:** Documentation pipeline with Da Vinci
+- **Phase 22-22.2:** Obsidian knowledge base with daily automation
+- **Phase 23:** Vaultwarden password manager
+- **Phase 38-41:** Local LLM with GPU acceleration and hybrid routing
+- **Phase 58:** Windrose game server
+- **Midas & MERLIN:** Active cost tracking and reminder agents
 
-## 💡 Skills Demonstrated
+### 🚧 In Progress
+- **Guardian Agent:** Security monitoring (next agent to build)
+- **Phase 7E:** Extended memory for 20+ message conversations
+- **Da Vinci Stage 2:** RAG retrieval from knowledge base
+
+### 📋 Planned (45+ phases)
+- **EMIYA Agent:** Infrastructure automation with approval gates
+- **Gaming Platform:** Discord bot, automated tournaments
+- **AI Evolution:** Vision API, document processing, quality assurance
+- **Infrastructure:** WiFi deployment, off-site backups, cleanup
+
+## 🚀 Skills Demonstrated
 
 ### Infrastructure & DevOps
-- **Virtualization** — Proxmox VE with LXC containers and KVM VMs
-- **Networking** — VLANs, firewall rules, DNS, VPN mesh networks
-- **Monitoring** — Prometheus ecosystem, log aggregation, alerting
-- **Automation** — n8n workflow automation, Infrastructure as Code practices
-- **Security** — Defense in depth, secrets management, access control
+- **Virtualization:** Proxmox VE with LXC containers and KVM VMs
+- **Networking:** VLANs, firewall rules, DNS management, VPN
+- **Monitoring:** Prometheus, Grafana, Loki, Alertmanager stack
+- **Backup & DR:** Automated backup strategies with retention policies
+- **Security:** Network segmentation, secrets management, access controls
 
-### Cloud Technologies
-- **Containerization** — Docker, container orchestration
-- **Storage** — ZFS, LVM, distributed storage concepts
-- **Backup & Recovery** — Automated backup strategies, disaster recovery
-- **CI/CD** — Automated documentation pipeline, version control integration
+### Automation & Development  
+- **Workflow Automation:** n8n with 12 active workflows
+- **AI Integration:** Local LLMs, API routing, cost optimization
+- **Documentation:** Automated pipeline with Git integration
+- **Scripting:** Bash, systemd services, configuration management
 
-### Programming & Integration
-- **API Integration** — REST APIs, webhooks, authentication
-- **Scripting** — Bash, system administration automation
-- **Database** — Vector databases, data persistence
-- **AI/ML** — Local LLM deployment, GPU acceleration (ROCm)
+### Cloud & Modern Practices
+- **Containerization:** Docker, container orchestration
+- **Infrastructure as Code:** Configuration management, version control
+- **GitOps:** Automated documentation, change tracking
+- **Monitoring & Observability:** Metrics, logs, alerts, dashboards
+- **Cost Optimization:** Resource allocation, usage tracking
 
-## 📚 Documentation Structure
+## 📁 Documentation Structure
 
 ```
 homelab-infrastructure/
-├── README.md              # This file - project overview
-├── roadmap.md             # Detailed phase planning and status
+├── README.md              # This overview (public)
+├── roadmap.md             # Complete phase roadmap
 ├── current-state.md       # Live infrastructure snapshot
-├── service-catalog.md     # Complete service directory
-├── changelog.md           # Session-by-session changes
-├── troubleshooting.md     # Common issues and solutions
-└── AI-CONTEXT.md         # Master context for AI assistants
+├── service-catalog.md     # All services with access details
+├── docs/
+│   ├── troubleshoot.md    # Common issues and solutions
+│   └── changelog.md       # Recent changes and updates
+└── LICENSE                # MIT License
 ```
 
-## 🚀 Long-term Vision
+## 🔮 Long-term Vision
 
-### Phase 1: Foundation (Complete)
-Reliable infrastructure with monitoring, backup, and basic automation.
+**Goal:** Enterprise-grade homelab demonstrating production-ready skills for Cloud Engineering/DevOps roles.
 
-### Phase 2: Intelligence (In Progress)
-AI-powered infrastructure management with cost optimization and predictive maintenance.
+**Target State by August 2026:**
+- Complete AI agent ecosystem replacing external services
+- Advanced automation with infrastructure self-healing
+- Comprehensive gaming platform with tournament automation
+- Professional portfolio showcasing modern DevOps practices
 
-### Phase 3: Platform (Planned)
-Self-service infrastructure platform with advanced automation and integration.
+**Career Impact:**
+- Hands-on experience with enterprise tools and practices
+- Demonstrable automation and monitoring expertise  
+- Cost optimization and resource management skills
+- Documentation and process improvement experience
 
-### Phase 4: Portfolio (Future)
-Professional showcase demonstrating enterprise-ready cloud engineering skills.
+## 📞 Contact
 
-## 🔗 Connect
-
-- **GitHub:** [muzakkir97/homelab-infrastructure](https://github.com/muzakkir97/homelab-infrastructure)
-- **LinkedIn:** Regular project updates and technical articles
-- **Email:** Available via GitHub profile
+- **GitHub:** [@muzakkir97](https://github.com/muzakkir97)
+- **LinkedIn:** [muzakkir-kholil](https://linkedin.com/in/muzakkir-kholil)
+- **Email:** muzakkir.kholil06@gmail.com
+- **Domain:** najhin-gaming.com
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-*Infrastructure operational since January 2026 • Last updated: April 26, 2026*
