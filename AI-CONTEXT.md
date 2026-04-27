@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Midas CFO Agent, MERLIN Reminders, and Obsidian Daily Creator active. 14 LXC containers + 1 KVM VM running.
+**Current Status:** Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing active. Obsidian Phases 22.1 and 22.2 complete. 14 LXC containers + 1 KVM VM running.
 
 ---
 
@@ -115,23 +115,23 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 > **Note:** CTID 201–302 are LXC containers. VMID 400 is a KVM virtual machine with PCIe GPU passthrough — it is NOT an LXC container.
 
-| ID   | Type | Name                    | IP             | Subdomain                     | Autostart | Status     |
-|------|------|-------------------------|----------------|-------------------------------|-----------|------------|
-| 201  | LXC  | nginx-proxy-manager     | 192.168.30.201 | —                             | ✅         | ✅ Running |
-| 202  | LXC  | monitoring-prometheus   | 192.168.30.202 | —                             | ✅         | ✅ Running |
-| 203  | LXC  | monitoring-grafana      | 192.168.30.203 | grafana.najhin-gaming.com     | ✅         | ✅ Running |
-| 204  | LXC  | monitoring-loki         | 192.168.30.204 | —                             | ✅         | ✅ Running |
-| 205  | LXC  | monitoring-alertmanager | 192.168.30.205 | —                             | ✅         | ✅ Running |
-| 206  | LXC  | monitoring-uptime       | 192.168.30.206 | —                             | ✅         | ✅ Running |
-| 207  | LXC  | network-ddns            | 192.168.30.207 | —                             | ✅         | ✅ Running |
-| 208  | LXC  | dashboard-homepage      | 192.168.30.208 | home.najhin-gaming.com        | ✅         | ✅ Running |
-| 211  | LXC  | automation-n8n          | 192.168.30.211 | n8n.najhin-gaming.com         | ✅         | ✅ Running |
-| 213  | LXC  | vault                   | 192.168.30.213 | vault.najhin-gaming.com       | ✅         | ✅ Running |
-| 214  | LXC  | password-vaultwarden    | 192.168.30.214 | passwords.najhin-gaming.com   | ✅         | ✅ Running |
-| 220  | LXC  | nextcloud-hub           | 192.168.30.220 | cloud.najhin-gaming.com       | ✅         | ✅ Running |
-| 300  | LXC  | gaming-panel            | 192.168.30.210 | —                             | ✅         | ✅ Running |
-| 302  | LXC  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅         | ✅ Running |
-| 400  | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
+| ID  | Type | Name                    | IP             | Subdomain                     | Autostart | Status    |
+|-----|------|-------------------------|----------------|-------------------------------|-----------|-----------|
+| 201 | LXC  | nginx-proxy-manager     | 192.168.30.201 | —                             | ✅         | ✅ Running |
+| 202 | LXC  | monitoring-prometheus   | 192.168.30.202 | —                             | ✅         | ✅ Running |
+| 203 | LXC  | monitoring-grafana      | 192.168.30.203 | grafana.najhin-gaming.com     | ✅         | ✅ Running |
+| 204 | LXC  | monitoring-loki         | 192.168.30.204 | —                             | ✅         | ✅ Running |
+| 205 | LXC  | monitoring-alertmanager | 192.168.30.205 | —                             | ✅         | ✅ Running |
+| 206 | LXC  | monitoring-uptime       | 192.168.30.206 | —                             | ✅         | ✅ Running |
+| 207 | LXC  | network-ddns            | 192.168.30.207 | —                             | ✅         | ✅ Running |
+| 208 | LXC  | dashboard-homepage      | 192.168.30.208 | home.najhin-gaming.com        | ✅         | ✅ Running |
+| 211 | LXC  | automation-n8n          | 192.168.30.211 | n8n.najhin-gaming.com         | ✅         | ✅ Running |
+| 213 | LXC  | vault                   | 192.168.30.213 | vault.najhin-gaming.com       | ✅         | ✅ Running |
+| 214 | LXC  | password-vaultwarden    | 192.168.30.214 | passwords.najhin-gaming.com   | ✅         | ✅ Running |
+| 220 | LXC  | nextcloud-hub           | 192.168.30.220 | cloud.najhin-gaming.com       | ✅         | ✅ Running |
+| 300 | LXC  | gaming-panel            | 192.168.30.210 | —                             | ✅         | ✅ Running |
+| 302 | LXC  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅         | ✅ Running |
+| 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
 
 **Total: 14 LXC containers + 1 KVM VM (VM 400 ollama-gpu), all on VLAN 30, all autostart enabled**
 
@@ -209,6 +209,7 @@ second-brain/
 ### Homepage Dashboard Design (Planned — Phases 22.15/22.16)
 
 4 separate tabs:
+
 - **Homelab tab** — container status, metrics, alerts
 - **Health tab** — BP tracking, food log, exercise
 - **Finance tab** — budget overview, subscription costs, weekly spending
@@ -283,29 +284,30 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 
 ### Active Agents
 
-| Servant          | Class  | Role                                                                 | Platform                      | Status              |
-|------------------|--------|----------------------------------------------------------------------|-------------------------------|---------------------|
-| Gilgamesh 👑     | Archer | Personal AI Assistant                                                | Telegram (@JhinGilgamesh_bot) | ✅ Active            |
-| Da Vinci 🎨      | Caster | Chief Intelligence Officer (Stage 1 doc pipeline active; Stage 2 RAG planned) | n8n/Nextcloud        | ⚡ Partial — Stage 1 active |
-| Midas 💰         | Caster | CFO — Cost Tracking & Optimization                                   | n8n                           | ✅ Active            |
-| MERLIN 🔮        | Caster | Reminders & Scheduler                                                | n8n                           | ✅ Active            |
+| Servant      | Class  | Role                                                                          | Platform                      | Status                     |
+|--------------|--------|-------------------------------------------------------------------------------|-------------------------------|----------------------------|
+| Gilgamesh 👑 | Archer | Personal AI Assistant                                                         | Telegram (@JhinGilgamesh_bot) | ✅ Active                   |
+| Da Vinci 🎨  | Caster | Chief Intelligence Officer (Stage 1 doc pipeline active; Stage 2 RAG planned) | n8n/Nextcloud                 | ⚡ Partial — Stage 1 active |
+| Midas 💰     | Caster | CFO — Cost Tracking & Optimization                                            | n8n                           | ✅ Active                   |
+| MERLIN 🔮    | Caster | Reminders & Scheduler                                                         | n8n                           | ✅ Active                   |
 
 ### Final 9-Agent Roster (Locked April 25, 2026)
 
-| Servant              | Class    | Role                                   | Platform      | Build Order | Status    |
-|----------------------|----------|----------------------------------------|---------------|-------------|-----------|
-| Gilgamesh 👑         | Archer   | Personal AI Assistant                  | Telegram      | —           | ✅ Active  |
-| Da Vinci 🎨          | Caster   | Chief Intelligence Officer             | n8n/Nextcloud | —           | ⚡ Partial |
-| Midas 💰             | Caster   | CFO — Cost Tracking & Optimization     | n8n           | 1st         | ✅ Active  |
-| MERLIN 🔮            | Caster   | Reminders & Scheduler                  | n8n           | 2nd         | ✅ Active  |
-| Guardian 🛡          | —        | Security Monitoring                    | n8n           | 3rd         | 📋 Planned |
-| Mash Kyrielight 🛡️  | Shielder | Gaming Server Manager + Wellbeing      | Discord       | 4th         | 📋 Planned |
-| Nexus 🔗             | —        | Cross-platform Automation              | n8n           | 5th         | 📋 Planned |
-| Oracle 🔮            | —        | Predictive Intelligence (internal + external) | n8n    | 6th         | 📋 Planned |
-| EMIYA 🏹             | Archer   | CTO — Infrastructure Engineer          | n8n           | TBD         | 📋 Planned |
-| Sherlock Holmes 🔍   | Ruler    | Web Scraper & Research Agent           | n8n           | TBD         | 📋 Planned |
+| Servant             | Class    | Role                                          | Platform      | Build Order | Status     |
+|---------------------|----------|-----------------------------------------------|---------------|-------------|------------|
+| Gilgamesh 👑        | Archer   | Personal AI Assistant                         | Telegram      | —           | ✅ Active   |
+| Da Vinci 🎨         | Caster   | Chief Intelligence Officer                    | n8n/Nextcloud | —           | ⚡ Partial  |
+| Midas 💰            | Caster   | CFO — Cost Tracking & Optimization            | n8n           | 1st         | ✅ Active   |
+| MERLIN 🔮           | Caster   | Reminders & Scheduler                         | n8n           | 2nd         | ✅ Active   |
+| Guardian 🛡         | —        | Security Monitoring                           | n8n           | 3rd         | 📋 Planned |
+| Mash Kyrielight 🛡️ | Shielder | Gaming Server Manager + Wellbeing             | Discord       | 4th         | 📋 Planned |
+| Nexus 🔗            | —        | Cross-platform Automation                     | n8n           | 5th         | 📋 Planned |
+| Oracle 🔮           | —        | Predictive Intelligence (internal + external) | n8n           | 6th         | 📋 Planned |
+| EMIYA 🏹            | Archer   | CTO — Infrastructure Engineer                 | n8n           | TBD         | 📋 Planned |
+| Sherlock Holmes 🔍  | Ruler    | Web Scraper & Research Agent                  | n8n           | TBD         | 📋 Planned |
 
 **Notes:**
+
 - Scribe absorbed into Da Vinci (documentation is Da Vinci's domain)
 - Oracle absorbs Zhuge Liang
 - Sherlock Holmes added April 26 as dedicated web scraper — web scraping removed from EMIYA scope
@@ -313,15 +315,16 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 
 ### Tier 2 Agents (Planned — Build After Core Roster)
 
-| Servant | Role          | Notes                            |
-|---------|---------------|----------------------------------|
-| Chiron  | Career Coach  | Career transition support        |
-| Medea   | QA Engineer   | Quality assurance for all agents |
-| Waver   | Project Manager | Sprint planning, task tracking |
+| Servant | Role            | Notes                            |
+|---------|-----------------|----------------------------------|
+| Chiron  | Career Coach    | Career transition support        |
+| Medea   | QA Engineer     | Quality assurance for all agents |
+| Waver   | Project Manager | Sprint planning, task tracking   |
 
 ### Da Vinci — Chief Intelligence Officer
 
 **Role scope:**
+
 - Documentation: maintains AI-CONTEXT.md, changelog.md, troubleshoot.md via /update and /sync-docs
 - Obsidian writes: session summaries written to vault via Nextcloud WebDAV
 - RAG retrieval (Stage 2): queries Qdrant vector database for knowledge recall across all agents
@@ -334,6 +337,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 **Pronouns:** she/her
 
 **Technical notes:**
+
 - Direct node references required: use `$('Extract Response').first().json.updatedDoc` instead of `$json` after Merge node
 - max_tokens set to 32000 to prevent AI-CONTEXT.md being replaced with hallucinated content
 - Grounding fix pending: add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
@@ -341,10 +345,12 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 ### Midas — CFO (Cost Tracking & Optimization)
 
 **Two workflows:**
+
 1. **CFO Report** — `/midas` command shows token usage, costs by model, savings from Ollama
 2. **Daily Brief** — 9am scheduled summary to Telegram
 
 **Features:**
+
 - Tracks Gilgamesh costs (Sonnet, Haiku, Ollama)
 - USD to MYR conversion (hardcoded rate: 4.7)
 - Ollama savings calculated at Haiku equivalent rate
@@ -352,17 +358,20 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - command_type tracking for detailed cost breakdown
 
 **Why Midas:**
+
 - Midas touch turns everything to gold → cost optimization
 - King of wealth → perfect CFO role
 
 ### MERLIN — Reminders & Scheduler
 
 **Why Merlin:**
+
 - Clairvoyance (sees the future → knows what you'll forget)
 - Garden of Avalon (creates safe space → maintenance windows)
 - Illusion magic (reminds you gently, not annoyingly)
 
 **What MERLIN Does:**
+
 - SSL certificate renewal reminders (expires in X days)
 - Backup restore test reminders (overdue by X days)
 - Loki/Prometheus memory limit warnings (OOM in X days)
@@ -370,21 +379,23 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Proactive infrastructure health checks
 
 **Current Implementation:**
+
 - Daily 8am checks: SSL expiry (hardcoded July 14, 2026), Backup restore test (baseline 2026-01-01), Prometheus memory usage, Vault seal status
 - Cloudflare API integration pending (token truncated issue in Vault kv/cloudflare)
 
 ### EMIYA — CTO / Infrastructure Engineer
 
 **10 core features:**
-1. Proxmox VM and LXC lifecycle management (create, start, stop, delete — approval-gated)
-2. Alert translation (Alertmanager alerts converted to plain English via Telegram)
-3. Container updates (Docker image updates, apt upgrades — approval-gated)
-4. Proactive monitoring (anomaly detection, trend alerts before things break)
-5. Security management (threat detection, firewall rule suggestions)
-6. Performance optimization (identify bottlenecks, suggest resource reallocation)
-7. Backup verification (confirm backup integrity, alert on failures)
-8. Change management (track all infrastructure changes, generate audit log)
-9. Service health reporting (daily infrastructure summary to Telegram)
+
+ 1. Proxmox VM and LXC lifecycle management (create, start, stop, delete — approval-gated)
+ 2. Alert translation (Alertmanager alerts converted to plain English via Telegram)
+ 3. Container updates (Docker image updates, apt upgrades — approval-gated)
+ 4. Proactive monitoring (anomaly detection, trend alerts before things break)
+ 5. Security management (threat detection, firewall rule suggestions)
+ 6. Performance optimization (identify bottlenecks, suggest resource reallocation)
+ 7. Backup verification (confirm backup integrity, alert on failures)
+ 8. Change management (track all infrastructure changes, generate audit log)
+ 9. Service health reporting (daily infrastructure summary to Telegram)
 10. Pre-flight checks via Da Vinci before executing any changes
 
 **Design rule:** EMIYA proposes → Muzakkir approves → EMIYA executes. No autonomous destructive actions.
@@ -400,6 +411,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 ### Mash — Gaming Discord Bot
 
 **What Mash Does:**
+
 - Discord bot commands: !start, !stop, !status
 - Announces player joins/leaves
 - Scheduled game night reminders
@@ -454,7 +466,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - **Inline keyboard menu:** Full menu system with all submenus working
 - **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
 - **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
-- **Slash commands:** 10 commands for direct actions
+- **Slash commands:** 11 commands for direct actions
 
 ### Slash Commands
 
@@ -473,16 +485,16 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 ### Technical Details
 
-| Component     | Value                                                              |
-|---------------|--------------------------------------------------------------------|
-| Telegram Bot  | @JhinGilgamesh_bot                                                 |
-| Chat ID       | 518832696                                                          |
-| Ollama Model  | qwen3:14b (primary local model, 9.3GB, 12GB VRAM, VM 400)         |
-| Haiku Model   | claude-haiku-4-5-20251001 (Ollama fallback)                        |
-| Sonnet Model  | claude-sonnet-4-20250514 (complex queries)                         |
-| n8n Container | CT 211, 192.168.30.211                                             |
-| Proxmox API   | root@pam!gilgamesh token                                           |
-| Proxmox node  | muzakkir (not kuromoon)                                            |
+| Component     | Value                                                     |
+|---------------|-----------------------------------------------------------|
+| Telegram Bot  | @JhinGilgamesh_bot                                        |
+| Chat ID       | 518832696                                                 |
+| Ollama Model  | qwen3:14b (primary local model, 9.3GB, 12GB VRAM, VM 400) |
+| Haiku Model   | claude-haiku-4-5-20251001 (Ollama fallback)               |
+| Sonnet Model  | claude-sonnet-4-20250514 (complex queries)                |
+| n8n Container | CT 211, 192.168.30.211                                    |
+| Proxmox API   | root@pam!gilgamesh token                                  |
+| Proxmox node  | muzakkir (not kuromoon)                                   |
 
 ### Cost Tracking Note
 
@@ -493,35 +505,35 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 ### n8n Workflows (Count: 12)
 
-| Workflow                            | Purpose                                | Nodes | Trigger  |
-|-------------------------------------|----------------------------------------|-------|----------|
-| Telegram Agent                      | Main bot, menu, commands, hybrid routing | 15+  | Telegram |
-| Documentation Pipeline — Update     | Session summary → 3 files              | 7     | Webhook  |
-| Documentation Pipeline — Sync Docs  | Full doc regeneration → 7 files        | 7     | Webhook  |
-| Da Vinci Documentation Pipeline     | Raw staging summaries → formatted docs | 11    | Webhook  |
-| Midas — CFO Report                  | /midas command cost analysis           | 6     | Webhook  |
-| Midas — Daily Brief                 | 9am scheduled cost summary             | 4     | Schedule |
-| MERLIN — Reminders                  | 8am daily infrastructure checks        | 8     | Schedule |
-| Daily Note Creator                  | Midnight Obsidian daily notes          | 4     | Schedule |
-| Morning Briefing                    | 7am daily summary to Telegram          | 5     | Schedule |
-| Update Nextcloud File               | Legacy (unpublished)                   | 5     | Webhook  |
-| Push to GitHub                      | Legacy (unpublished)                   | 4     | Webhook  |
+| Workflow                           | Purpose                                  | Nodes | Trigger  |
+|------------------------------------|------------------------------------------|-------|----------|
+| Telegram Agent                     | Main bot, menu, commands, hybrid routing | 15+   | Telegram |
+| Documentation Pipeline — Update    | Session summary → 3 files                | 7     | Webhook  |
+| Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
+| Da Vinci Documentation Pipeline    | Raw staging summaries → formatted docs   | 11    | Webhook  |
+| Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
+| Midas — Daily Brief                | 9am scheduled cost summary               | 4     | Schedule |
+| MERLIN — Reminders                 | 8am daily infrastructure checks          | 8     | Schedule |
+| Daily Note Creator                 | Midnight Obsidian daily notes            | 4     | Schedule |
+| Morning Briefing                   | 7am daily summary to Telegram            | 5     | Schedule |
+| Update Nextcloud File              | Legacy (unpublished)                     | 5     | Webhook  |
+| Push to GitHub                     | Legacy (unpublished)                     | 4     | Webhook  |
 
 > Note: Hybrid routing (Phase 41) is integrated into the Telegram Agent workflow — it is not a separate workflow.
 
 ### Inline Keyboard Menu Status
 
-| Menu Item         | Status     |
-|-------------------|------------|
-| Main Menu         | ✅ Working  |
-| Homelab → Status  | ✅ Working  |
-| Homelab → Metrics | ✅ Working  |
-| Homelab → Temps   | ✅ Working  |
-| Homelab → Storage | ✅ Working  |
-| Gaming submenu    | ✅ Working  |
-| Gilgamesh submenu | ✅ Working  |
-| Tools submenu     | ✅ Working  |
-| Help              | ✅ Working  |
+| Menu Item         | Status    |
+|-------------------|-----------|
+| Main Menu         | ✅ Working |
+| Homelab → Status  | ✅ Working |
+| Homelab → Metrics | ✅ Working |
+| Homelab → Temps   | ✅ Working |
+| Homelab → Storage | ✅ Working |
+| Gaming submenu    | ✅ Working |
+| Gilgamesh submenu | ✅ Working |
+| Tools submenu     | ✅ Working |
+| Help              | ✅ Working |
 
 ### SSH & API Access
 
@@ -567,14 +579,14 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ### Pipeline Components
 
-| Component    | Details                                         |
-|--------------|-------------------------------------------------|
-| Webhooks     | doc-update, doc-sync, da-vinci                  |
-| Telegram     | Routes /update and /sync-docs                   |
-| Claude API   | Documentation merging intelligence              |
-| Nextcloud    | File storage via admin user                     |
-| GitHub       | Version control via API push                    |
-| Da Vinci     | Async processing (she/her pronouns)             |
+| Component    | Details                                             |
+|--------------|-----------------------------------------------------|
+| Webhooks     | doc-update, doc-sync, da-vinci                      |
+| Telegram     | Routes /update and /sync-docs                       |
+| Claude API   | Documentation merging intelligence                  |
+| Nextcloud    | File storage via admin user                         |
+| GitHub       | Version control via API push                        |
+| Da Vinci     | Async processing (she/her pronouns)                 |
 | Staging file | AI-CONTEXT-staging.md in Nextcloud (rolling append) |
 
 ### File Coverage (sync-docs)
@@ -592,15 +604,15 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 🤖 Bots & Integrations
 
-| Bot                | Platform        | Source              | Status    | Purpose                                                          |
-|--------------------|-----------------|---------------------|-----------|------------------------------------------------------------------|
-| @JhinGilgamesh_bot | Telegram        | n8n CT 211          | ✅ Active  | Personal AI agent — chat, homelab control, /update, /sync-docs   |
-| Midas              | Telegram        | n8n CT 211          | ✅ Active  | CFO cost tracking — /midas reports, 9am daily briefs            |
-| MERLIN             | Telegram        | n8n CT 211          | ✅ Active  | Reminders — 8am daily infrastructure checks                      |
-| Daily Note Creator | Nextcloud WebDAV| n8n CT 211          | ✅ Active  | Midnight daily note creation in Obsidian vault                  |
-| Morning Briefing   | Telegram        | n8n CT 211          | ✅ Active  | 7am daily summary to Telegram                                   |
-| Homelab Alerts     | Telegram        | Alertmanager CT 205 | ✅ Active  | Critical alerts (host down, high CPU/memory/disk)                |
-| Homelab Alerts     | Discord webhook | Alertmanager CT 205 | ✅ Active  | Warning-level alerts to #alerts channel                          |
+| Bot                | Platform         | Source              | Status   | Purpose                                                        |
+|--------------------|------------------|---------------------|----------|----------------------------------------------------------------|
+| @JhinGilgamesh_bot | Telegram         | n8n CT 211          | ✅ Active | Personal AI agent — chat, homelab control, /update, /sync-docs |
+| Midas              | Telegram         | n8n CT 211          | ✅ Active | CFO cost tracking — /midas reports, 9am daily briefs           |
+| MERLIN             | Telegram         | n8n CT 211          | ✅ Active | Reminders — 8am daily infrastructure checks                    |
+| Daily Note Creator | Nextcloud WebDAV | n8n CT 211          | ✅ Active | Midnight daily note creation in Obsidian vault                 |
+| Morning Briefing   | Telegram         | n8n CT 211          | ✅ Active | 7am daily summary to Telegram                                  |
+| Homelab Alerts     | Telegram         | Alertmanager CT 205 | ✅ Active | Critical alerts (host down, high CPU/memory/disk)              |
+| Homelab Alerts     | Discord webhook  | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel                        |
 
 **Planned:** Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n.
 
@@ -628,18 +640,18 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 🔒 Security Architecture
 
-| Layer           | Implementation                                                                                                                                                                                       |
-|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Perimeter       | ISP Router → pfSense firewall                                                                                                                                                                        |
-| Segmentation    | 5 VLANs with enforced firewall rules                                                                                                                                                                 |
-| DNS             | Pi-hole ad/tracker blocking (~489K domains)                                                                                                                                                          |
-| VPN             | Tailscale (subnet router on pfSense, primary access)                                                                                                                                                 |
-| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Homepage, Nextcloud (7 apps total)                                                     |
-| External Access | Cloudflare Tunnel for all external services                                                                                                                                                          |
-| Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                                                                                                                                        |
-| Backup          | Automated daily backups with 7/4/2 retention                                                                                                                                                         |
-| Secrets         | HashiCorp Vault (CT 213, vault.najhin-gaming.com). KV engine at kv/. Secrets: kv/gilgamesh, kv/cloudflare, kv/proxmox, kv/alertmanager, kv/github, kv/nextcloud, kv/n8n, kv/pihole (8 paths total)  |
-| Passwords       | Vaultwarden (CT 214, passwords.najhin-gaming.com). Personal password manager with Bitwarden clients. API bypassed in Cloudflare Access (/api/, /identity/ paths).                                    |
+| Layer           | Implementation                                                                                                                                                                                     |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Perimeter       | ISP Router → pfSense firewall                                                                                                                                                                      |
+| Segmentation    | 5 VLANs with enforced firewall rules                                                                                                                                                               |
+| DNS             | Pi-hole ad/tracker blocking (~489K domains)                                                                                                                                                        |
+| VPN             | Tailscale (subnet router on pfSense, primary access)                                                                                                                                               |
+| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Homepage, Nextcloud (7 apps total)                                                   |
+| External Access | Cloudflare Tunnel for all external services                                                                                                                                                        |
+| Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                                                                                                                                      |
+| Backup          | Automated daily backups with 7/4/2 retention                                                                                                                                                       |
+| Secrets         | HashiCorp Vault (CT 213, vault.najhin-gaming.com). KV engine at kv/. Secrets: kv/gilgamesh, kv/cloudflare, kv/proxmox, kv/alertmanager, kv/github, kv/nextcloud, kv/n8n, kv/pihole (8 paths total) |
+| Passwords       | Vaultwarden (CT 214, passwords.najhin-gaming.com). Personal password manager with Bitwarden clients. API bypassed in Cloudflare Access (/api/, /identity/ paths).                                  |
 
 ### Vault Notes
 
@@ -650,50 +662,51 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📋 Project Phase History
 
-| Phase   | Title                                                            | Status          | Completed    |
-|---------|------------------------------------------------------------------|-----------------|--------------|
-| 1       | Proxmox VE Installation                                          | ✅ Complete      | Jan 2026     |
-| 2       | pfSense Firewall & VLAN Setup                                    | ✅ Complete      | Jan 2026     |
-| 3       | Core Services (Pi-hole, NPM, Tailscale, DDNS)                    | ✅ Complete      | Jan 2026     |
-| 4       | External Access & SSL                                            | ✅ Complete      | Feb 2026     |
-| 5       | Monitoring Stack                                                 | ✅ Complete      | Feb 2026     |
-| 6A-6D   | Gaming Platform (Pterodactyl, Terraria, Minecraft)               | ✅ Complete      | Feb 2026     |
-| 6E      | Homepage Dashboard                                               | ✅ Complete      | Mar 2026     |
-| 6F      | Infrastructure Audit, VLAN Migration & Firewall Hardening        | ✅ Complete      | Mar 9, 2026  |
-| 7       | Nextcloud Deployment                                             | ✅ Complete      | Mar 8, 2026  |
-| 7A      | Backup Strategy                                                  | ✅ Complete      | Mar 13, 2026 |
-| 7B      | n8n Workflow Automation                                          | ✅ Complete      | Apr 2, 2026  |
-| 7C      | Gilgamesh Telegram Bot + GitHub Integration                      | ✅ Complete      | Apr 2, 2026  |
-| 7D      | Gilgamesh Enhancements (Memory, Routing, Web Search)             | ✅ Complete      | Apr 6, 2026  |
-| 7D-Sec  | Cloudflare Access for n8n                                        | ✅ Complete      | Apr 7, 2026  |
-| 7D-Menu | Gilgamesh Inline Keyboard Menu                                   | ✅ Complete      | Apr 24, 2026 |
-| 9       | NAS Deployment (Kinmoon)                                         | ✅ Complete      | Mar 3, 2026  |
-| 13      | HashiCorp Vault — Secrets Manager                                | ✅ Complete      | Apr 18, 2026 |
-| 14      | Secrets Management & Integration                                 | ✅ Complete      | Apr 24, 2026 |
-| 15      | Gilgamesh Additional Slash Commands                              | ✅ Complete      | Apr 24, 2026 |
-| 16.1    | Documentation Pipeline — Update Workflow                         | ✅ Complete      | Apr 19, 2026 |
-| 16.2    | Documentation Pipeline — Sync Docs Workflow                      | ✅ Complete      | Apr 19, 2026 |
-| 16.3    | Da Vinci Documentation Pipeline                                  | ✅ Complete      | Apr 25, 2026 |
-| 22      | Obsidian Knowledge Base                                          | ✅ Complete      | Apr 24, 2026 |
-| 22.1    | Obsidian Vault Structure Expansion                               | ✅ Complete      | Apr 27, 2026 |
-| 22.2    | Obsidian Daily Notes + Morning Briefing                         | ✅ Complete      | Apr 27, 2026 |
-| 22.15   | Price Database Tracking                                          | 📋 Planned       | —            |
-| 22.16   | Homepage Settings Tab                                            | 📋 Planned       | —            |
-| 23      | Vaultwarden + Secrets Audit & Cleanup                            | ✅ Complete      | Apr 18, 2026 |
-| 24.1    | EMIYA Foundation (Proxmox API + SSH + approval gate)             | 📋 Planned       | —            |
-| 24.2    | EMIYA Alert Translation (Alertmanager to plain English)          | 📋 Planned       | —            |
-| 24.3    | EMIYA Container Updates (Docker + apt + Proxmox, approval-gated) | 📋 Planned      | —            |
-| 24.4    | EMIYA Proactive Monitoring (anomaly detection)                   | 📋 Planned       | —            |
-| 24.5    | EMIYA Security Management (threat detection)                     | 📋 Planned       | —            |
-| 24.6    | EMIYA Performance Optimization                                   | 📋 Planned       | —            |
-| 24.7    | EMIYA Backup Verification                                        | 📋 Planned       | —            |
-| 24.8    | EMIYA Change Management                                          | 📋 Planned       | —            |
-| 38      | Ollama + ROCm on Kuromoon RX 6700 XT                             | ✅ Complete      | Apr 24, 2026 |
-| 39      | Open WebUI                                                       | ✅ Complete      | Apr 24, 2026 |
-| 41      | Gilgamesh + Ollama Hybrid Routing                                | ✅ Complete      | Apr 24, 2026 |
-| 58      | Windrose Server Deployment                                       | ✅ Complete      | Apr 19, 2026 |
-| Midas   | Midas CFO Agent                                                  | ✅ Complete      | Apr 27, 2026 |
-| MERLIN  | MERLIN Reminders Agent                                           | ✅ Complete      | Apr 27, 2026 |
+| Phase   | Title                                                            | Status     | Completed    |
+|---------|------------------------------------------------------------------|------------|--------------|
+| 1       | Proxmox VE Installation                                          | ✅ Complete | Jan 2026     |
+| 2       | pfSense Firewall & VLAN Setup                                    | ✅ Complete | Jan 2026     |
+| 3       | Core Services (Pi-hole, NPM, Tailscale, DDNS)                    | ✅ Complete | Jan 2026     |
+| 4       | External Access & SSL                                            | ✅ Complete | Feb 2026     |
+| 5       | Monitoring Stack                                                 | ✅ Complete | Feb 2026     |
+| 6A-6D   | Gaming Platform (Pterodactyl, Terraria, Minecraft)               | ✅ Complete | Feb 2026     |
+| 6E      | Homepage Dashboard                                               | ✅ Complete | Mar 2026     |
+| 6F      | Infrastructure Audit, VLAN Migration & Firewall Hardening        | ✅ Complete | Mar 9, 2026  |
+| 7       | Nextcloud Deployment                                             | ✅ Complete | Mar 8, 2026  |
+| 7A      | Backup Strategy                                                  | ✅ Complete | Mar 13, 2026 |
+| 7B      | n8n Workflow Automation                                          | ✅ Complete | Apr 2, 2026  |
+| 7C      | Gilgamesh Telegram Bot + GitHub Integration                      | ✅ Complete | Apr 2, 2026  |
+| 7D      | Gilgamesh Enhancements (Memory, Routing, Web Search)             | ✅ Complete | Apr 6, 2026  |
+| 7D-Sec  | Cloudflare Access for n8n                                        | ✅ Complete | Apr 7, 2026  |
+| 7D-Menu | Gilgamesh Inline Keyboard Menu                                   | ✅ Complete | Apr 24, 2026 |
+| 9       | NAS Deployment (Kinmoon)                                         | ✅ Complete | Mar 3, 2026  |
+| 13      | HashiCorp Vault — Secrets Manager                                | ✅ Complete | Apr 18, 2026 |
+| 14      | Secrets Management & Integration                                 | ✅ Complete | Apr 24, 2026 |
+| 15      | Gilgamesh Additional Slash Commands                              | ✅ Complete | Apr 24, 2026 |
+| 16.1    | Documentation Pipeline — Update Workflow                         | ✅ Complete | Apr 19, 2026 |
+| 16.2    | Documentation Pipeline — Sync Docs Workflow                      | ✅ Complete | Apr 19, 2026 |
+| 16.3    | Da Vinci Documentation Pipeline                                  | ✅ Complete | Apr 25, 2026 |
+| 22      | Obsidian Knowledge Base                                          | ✅ Complete | Apr 24, 2026 |
+| 22.1    | Obsidian Vault Structure Expansion                               | ✅ Complete | Apr 27, 2026 |
+| 22.2    | Obsidian Daily Notes + Morning Briefing                          | ✅ Complete | Apr 27, 2026 |
+| 22.8A   | Button Menu System + Community Nodes                             | ✅ Complete | Apr 27, 2026 |
+| 22.15   | Price Database Tracking                                          | 📋 Planned | —            |
+| 22.16   | Homepage Settings Tab                                            | 📋 Planned | —            |
+| 23      | Vaultwarden + Secrets Audit & Cleanup                            | ✅ Complete | Apr 18, 2026 |
+| 24.1    | EMIYA Foundation (Proxmox API + SSH + approval gate)             | 📋 Planned | —            |
+| 24.2    | EMIYA Alert Translation (Alertmanager to plain English)          | 📋 Planned | —            |
+| 24.3    | EMIYA Container Updates (Docker + apt + Proxmox, approval-gated) | 📋 Planned | —            |
+| 24.4    | EMIYA Proactive Monitoring (anomaly detection)                   | 📋 Planned | —            |
+| 24.5    | EMIYA Security Management (threat detection)                     | 📋 Planned | —            |
+| 24.6    | EMIYA Performance Optimization                                   | 📋 Planned | —            |
+| 24.7    | EMIYA Backup Verification                                        | 📋 Planned | —            |
+| 24.8    | EMIYA Change Management                                          | 📋 Planned | —            |
+| 38      | Ollama + ROCm on Kuromoon RX 6700 XT                             | ✅ Complete | Apr 24, 2026 |
+| 39      | Open WebUI                                                       | ✅ Complete | Apr 24, 2026 |
+| 41      | Gilgamesh + Ollama Hybrid Routing                                | ✅ Complete | Apr 24, 2026 |
+| 58      | Windrose Server Deployment                                       | ✅ Complete | Apr 19, 2026 |
+| Midas   | Midas CFO Agent                                                  | ✅ Complete | Apr 27, 2026 |
+| MERLIN  | MERLIN Reminders Agent                                           | ✅ Complete | Apr 27, 2026 |
 
 ---
 
@@ -728,65 +741,73 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ### n8n & Gilgamesh
 
-| Issue                                | Resolution                                                       |
-|--------------------------------------|------------------------------------------------------------------|
-| n8n Data Tables schema caching bug   | Delete and recreate the table entirely                           |
-| Claude API 404 model not found       | Use exact model ID: `claude-haiku-4-5-20251001`                  |
-| Web search partial response capture  | Add Extract Response Code node, filter by `type === "text"`      |
-| Expression scoping issues            | Use Code node with `this.helpers.httpRequest`, reference `$json` |
-| NFS fails for LXC backups            | UID namespace mapping (100000-165536); use SMB instead           |
-| pfSense rule not working             | Place new rules BEFORE RFC1918 block rules                       |
-| n8n GitHub credential 401            | User field (`muzakkir97`) must be populated                      |
-| Telegram single webhook constraint   | All update types (message + callback) must use one trigger       |
-| Answer Callback node loses data      | Bypass it; handle callback acknowledgment separately             |
-| Da Vinci grounding bug               | Use direct node references; increase max_tokens to 32000         |
-| Open WebUI JSON parse error          | Add `proxy_buffering off` to NPM advanced config for streaming   |
-| input.first()/input.last() unreliable | After Merge node, use direct node references like `$('Extract Response').first().json` |
-| Ollama tokens always 0               | Call Ollama node already maps prompt_eval_count → input_tokens — read data.input_tokens not data.prompt_eval_count |
-| Loki not being scraped               | Add scrape job to Prometheus config for CT 204                  |
+| Issue                                 | Resolution                                                                                                         |
+|---------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| n8n Data Tables schema caching bug    | Delete and recreate the table entirely                                                                             |
+| Claude API 404 model not found        | Use exact model ID: `claude-haiku-4-5-20251001`                                                                    |
+| Web search partial response capture   | Add Extract Response Code node, filter by `type === "text"`                                                        |
+| Expression scoping issues             | Use Code node with `this.helpers.httpRequest`, reference `$json`                                                   |
+| NFS fails for LXC backups             | UID namespace mapping (100000-165536); use SMB instead                                                             |
+| pfSense rule not working              | Place new rules BEFORE RFC1918 block rules                                                                         |
+| n8n GitHub credential 401             | User field (`muzakkir97`) must be populated                                                                        |
+| Telegram single webhook constraint    | All update types (message + callback) must use one trigger                                                         |
+| Answer Callback node loses data       | Bypass it; handle callback acknowledgment separately                                                               |
+| Da Vinci grounding bug                | Use direct node references; increase max_tokens to 32000                                                           |
+| Open WebUI JSON parse error           | Add `proxy_buffering off` to NPM advanced config for streaming                                                     |
+| input.first()/input.last() unreliable | After Merge node, use direct node references like `$('Extract Response').first().json`                             |
+| Ollama tokens always 0                | Call Ollama node already maps prompt_eval_count → input_tokens — read data.input_tokens not data.prompt_eval_count |
+| Loki not being scraped                | Add scrape job to Prometheus config for CT 204                                                                     |
 
 ### HashiCorp Vault (Phase 13)
 
-| Issue                            | Resolution                                                      |
-|----------------------------------|-----------------------------------------------------------------|
-| apt fails in new LXC             | Run `echo "nameserver 192.168.30.10" > /etc/resolv.conf` first  |
-| HashiCorp repo setup fails       | Install `lsb-release` before adding repo                        |
-| Wrong repo architecture/codename | Hardcode `amd64` and `bookworm` in repo entry                   |
-| Vault fails to start in LXC      | Add `disable_mlock = true` to vault.hcl                         |
-| Token auth issues in shell       | Use `vault login <token>` not `export VAULT_TOKEN=`             |
-| Vault sealed after reboot        | `pct exec 213 -- vault operator unseal`                         |
-| Cloudflare token truncated       | kv/cloudflare only stores 7 chars — re-store full token         |
+| Issue                            | Resolution                                                     |
+|----------------------------------|----------------------------------------------------------------|
+| apt fails in new LXC             | Run `echo "nameserver 192.168.30.10" > /etc/resolv.conf` first |
+| HashiCorp repo setup fails       | Install `lsb-release` before adding repo                       |
+| Wrong repo architecture/codename | Hardcode `amd64` and `bookworm` in repo entry                  |
+| Vault fails to start in LXC      | Add `disable_mlock = true` to vault.hcl                        |
+| Token auth issues in shell       | Use `vault login <token>` not `export VAULT_TOKEN=`            |
+| Vault sealed after reboot        | `pct exec 213 -- vault operator unseal`                        |
+| Cloudflare token truncated       | kv/cloudflare only stores 7 chars — re-store full token        |
 
 ### Obsidian & Knowledge Management
 
-| Issue                       | Resolution                                                          |
-|-----------------------------|---------------------------------------------------------------------|
+| Issue                       | Resolution                                                         |
+|-----------------------------|--------------------------------------------------------------------|
 | Nextcloud quota exceeded    | Resize CT 220 from 20GB to 100GB with `pct resize 220 rootfs +80G` |
-| Dataview queries no results | Queries must target folder with individual notes, not same file     |
+| Dataview queries no results | Queries must target folder with individual notes, not same file    |
 
 ### Cloudflare Access & Security
 
-| Issue                         | Resolution                                                       |
-|-------------------------------|------------------------------------------------------------------|
-| Bitwarden HTTP 525 from phone | Cloudflare Access blocking API — bypass /api/, /identity/ paths  |
-| n8n Access OTP not triggering | Cached session — test in incognito mode                          |
+| Issue                         | Resolution                                                      |
+|-------------------------------|-----------------------------------------------------------------|
+| Bitwarden HTTP 525 from phone | Cloudflare Access blocking API — bypass /api/, /identity/ paths |
+| n8n Access OTP not triggering | Cached session — test in incognito mode                         |
 
 ### Ollama & GPU
 
-| Issue                                    | Resolution                                                              |
-|------------------------------------------|-------------------------------------------------------------------------|
-| ROCm full SDK ran out of disk space      | Use minimal runtime only; extend LVM with `lvextend -l +100%FREE`       |
-| amdgpu still bound after blacklist       | Add `softdep amdgpu pre: vfio-pci` to vfio.conf, rebuild initramfs     |
-| Ollama running on CPU not GPU            | Add `HSA_OVERRIDE_GFX_VERSION=10.3.0` and render/video group membership |
-| Open WebUI no models available           | Set `OLLAMA_HOST=0.0.0.0`; point container to 172.17.0.1:11434          |
-| SSH to VM 400 permission denied as root  | Use `muzakkir` user with sudo — root SSH is disabled                    |
+| Issue                                   | Resolution                                                              |
+|-----------------------------------------|-------------------------------------------------------------------------|
+| ROCm full SDK ran out of disk space     | Use minimal runtime only; extend LVM with `lvextend -l +100%FREE`       |
+| amdgpu still bound after blacklist      | Add `softdep amdgpu pre: vfio-pci` to vfio.conf, rebuild initramfs      |
+| Ollama running on CPU not GPU           | Add `HSA_OVERRIDE_GFX_VERSION=10.3.0` and render/video group membership |
+| Open WebUI no models available          | Set `OLLAMA_HOST=0.0.0.0`; point container to 172.17.0.1:11434          |
+| SSH to VM 400 permission denied as root | Use `muzakkir` user with sudo — root SSH is disabled                    |
 
 ### Monitoring & Alerts
 
-| Issue                       | Resolution                                                |
-|-----------------------------|---------------------------------------------------------|
-| High memory alerts at 80%  | Raise threshold to 85% (Windrose baseline ~9GB RAM)      |
-| Prometheus HighMemoryUsage  | Updated rule from 80% to 85% in alerting configuration   |
+| Issue                      | Resolution                                             |
+|----------------------------|--------------------------------------------------------|
+| High memory alerts at 80%  | Raise threshold to 85% (Windrose baseline ~9GB RAM)    |
+| Prometheus HighMemoryUsage | Updated rule from 80% to 85% in alerting configuration |
+
+### n8n Community Nodes
+
+| Issue                           | Resolution                                                      |
+|---------------------------------|-----------------------------------------------------------------|
+| Dockerfile npm install breaks   | n8n uses pnpm catalog — use Settings → Community Nodes UI only  |
+| chat_id undefined on callbacks  | Use callback_query?.message?.chat?.id \|\| message?.chat?.id     |
+| Inline keyboard not showing     | Use HTTP Request node, not Telegram node for reply_markup       |
 
 ---
 
@@ -797,8 +818,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Task                                                                                        | Priority |
 |---------------------------------------------------------------------------------------------|----------|
 | Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
-| Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                | High     |
-| Activate MERLIN workflow (toggle on)                                                       | High     |
+| Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
+| Activate MERLIN workflow (toggle on)                                                        | High     |
 | Monitor Windrose RAM usage — stop Docker container when not playing                         | High     |
 | Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)                         | High     |
 | Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
@@ -815,16 +836,16 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ### Gilgamesh & Documentation
 
-| Task                                                                                        | Priority |
-|---------------------------------------------------------------------------------------------|----------|
-| Build Monthly Infrastructure Audit cron workflow (assign new phase number — NOT 16.3)      | High     |
-| Build Guardian security monitoring agent (next after MERLIN)                               | High     |
-| Build Mash Discord bot (Phases 59-64)                                                       | High     |
-| Document Sherlock Holmes agent design (sources, scraping targets, output, Obsidian integration) | Medium |
-| /update redesign — file attachment via Telegram, push to GitHub + Nextcloud                 | Medium   |
-| Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram)             | Medium   |
-| Integrate Vault secrets into n8n Gilgamesh workflow (Phase 27)                              | Medium   |
-| Build Da Vinci Stage 2 (RAG) alongside Phase 7E                                             | Medium   |
+| Task                                                                                            | Priority |
+|-------------------------------------------------------------------------------------------------|----------|
+| Build Monthly Infrastructure Audit cron workflow (assign new phase number — NOT 16.3)           | High     |
+| Build Guardian security monitoring agent (next after MERLIN)                                    | High     |
+| Build Mash Discord bot (Phases 59-64)                                                           | High     |
+| Document Sherlock Holmes agent design (sources, scraping targets, output, Obsidian integration) | Medium   |
+| /update redesign — file attachment via Telegram, push to GitHub + Nextcloud                     | Medium   |
+| Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram)                 | Medium   |
+| Integrate Vault secrets into n8n Gilgamesh workflow (Phase 27)                                  | Medium   |
+| Build Da Vinci Stage 2 (RAG) alongside Phase 7E                                                 | Medium   |
 
 ### Infrastructure (Network & Services)
 
@@ -845,10 +866,65 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Fedora dual-boot on Minimoon (kernel 6.12+ for RDNA 4)                     | Deferred |
 | Old P400S build repurpose (Z270E + i7-7700K)                               | Deferred |
 | Claude Project auto-sync — revisit if Anthropic releases Project Files API | Deferred |
+| Fix Homelab → Temps SSH bug                                                | Deferred |
 
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 27, 2026
+
+Date: April 27, 2026
+Phase: 22.8A — Complete Button Menu + Community Nodes Install
+
+Topics Discussed
+
+- Community nodes research and installation
+- n8n node audit (built-in vs community)
+- Workflow canvas clutter discussion and refactor plan
+- Phase 22.8A: converted all slash commands to buttons
+- Mode switching system design for food/BP logging
+- Phase 22.8B, 22.8C design planning
+
+Decisions Made
+
+- Ollama and Qdrant are built-in to n8n — no community nodes needed
+- Community nodes install method: Settings → Community Nodes UI only. Dockerfile npm install breaks due to n8n pnpm catalog internals
+- 3 community nodes installed: @mendable/n8n-nodes-firecrawl v2.1.1, n8n-nodes-puppeteer v1.5.0, n8n-nodes-tesseractjs v1.5.1
+- Mode switching system: food_logging mode and bp_logging mode via gilgamesh_session_state Data Table
+- /update command mode deferred — will implement later
+- All parameterless slash commands converted to inline keyboard buttons
+- Health submenu added to main menu with 4 placeholder buttons
+- Homelab submenu: Alerts and Backup buttons added
+- Gilgamesh submenu: Memory, Cost, Sync Docs, Clear buttons added
+- chat_id bug fixed across Format Memory, Format Cost, Format Alerts, Format Backup, Get Chat ID, Trigger Sync Docs — all now handle both message and callback_query contexts using: $('Telegram Trigger').first().json.callback_query?.message?.chat?.id || $('Telegram Trigger').first().json.message?.chat?.id
+- Temps button broken — pre-existing SSH bug, deferred
+- Send Health node pattern: must use HTTP Request node (same as Send Gilgamesh) not Telegram node, because inline keyboard requires JSON.stringify reply_markup via direct Telegram API call
+
+Changes to AI-CONTEXT.md
+
+- n8n community nodes section: update installed nodes to include @mendable/n8n-nodes-firecrawl v2.1.1, n8n-nodes-puppeteer v1.5.0, n8n-nodes-tesseractjs v1.5.1. Install method: UI only.
+- Inline Keyboard Menu Status: all submenus now fully working including Health (placeholder), Gilgamesh (Memory, Cost, Sync Docs, Clear), Homelab (Alerts, Backup added)
+- Known bug: Homelab → Temps SSH command returns no output — deferred
+- n8n built-in nodes note: Ollama Chat Model, Ollama Embeddings, Qdrant Vector Store are all built-in — no community node needed
+- Phase 22.8A marked complete April 27, 2026
+- Pending: Phase 22.8B (health tracking build), Phase 22.8C (homepage widgets)
+- Add Deferred task: Fix Homelab → Temps SSH bug
+
+Errors & Resolutions
+
+- Dockerfile npm install -g: EUNSUPPORTEDPROTOCOL — n8n uses pnpm catalog internally. Fix: use UI installer instead
+- npm install into /usr/local/lib/node_modules/n8n: same error. Fix: UI only
+- Send Health node showing no keyboard: used Telegram node instead of HTTP Request. Fix: duplicate Send Gilgamesh (HTTP Request pattern) instead
+- chat_id undefined on button callbacks: all Format/handler nodes used $json.message.chat.id which fails for callback_query. Fix: use callback_query?.message?.chat?.id || message?.chat?.id pattern
+
+Action Items
+
+- [ ] Fix Homelab → Temps SSH bug (deferred, separate session)
+- [ ] Begin Phase 22.8B: health tracking (food log, BP, medication, daily summary)
+- [ ] Create gilgamesh_session_state Data Table for mode switching
+- [ ] Create health Data Tables: health_food_log, health_bp_log, health_medication_log
+- [ ] Phase 22.8C: homepage health + homelab widgets via n8n webhooks (after 22.8B)
 
 ### April 27, 2026
 
@@ -864,7 +940,7 @@ Topics Discussed
 - Built Midas Daily Brief (9am scheduled, 4 nodes)
 - Fixed Loki not scraped by Prometheus — added scrape job to prometheus.yml
 - Built MERLIN Reminders (8am daily: SSL Jul 14 2026, Proxmox memory 85%, Vault seal, backup restore test)
-- Completed Obsidian 22.1: 10 folders, HOME note, _index files, subfolders finance/grocery/health/subscriptions
+- Completed Obsidian 22.1: 10 folders, HOME note, \_index files, subfolders finance/grocery/health/subscriptions
 - Completed Obsidian 22.2: Daily Note Creator midnight, Morning Briefing 7am, /daily command
 - Planned Phase 22.9: reminders + voice notes Claude API + notebook photo vision
 - Planned Phase 22.11: Nextcloud Calendar CalDAV integration
@@ -879,7 +955,7 @@ Decisions Made
 - Backup restore test baseline: 2026-01-01 (never tested)
 - MERLIN reads nodes directly by name ($('Check Prometheus Memory')) not merged items
 - Midas v2: revisit in future session for missing design discussion
-- Obsidian vault: 10 folders + HOME master index + 7 _index files
+- Obsidian vault: 10 folders + HOME master index + 7 \_index files
 - Daily notes: midnight creation via n8n, 7am morning briefing, /daily command
 - Phase 22.9 and 22.11 planned for future expansion
 
@@ -891,7 +967,7 @@ Changes to AI-CONTEXT.md
 - Key Lessons: add Loki scrape job fix, Ollama token field names fix
 - Windrose: ~9GB RAM baseline — stop container when not playing
 - Agent roster: Midas ✅ Active, MERLIN ✅ Active
-- Obsidian vault structure updated — 10 folders, HOME note, _index files
+- Obsidian vault structure updated — 10 folders, HOME note, \_index files
 - Phases 22.1 and 22.2 marked complete April 27 2026
 - Daily Note Creator and Morning Briefing active
 - Pending: Schedule backup restore test CT 207, fix Cloudflare Vault token
