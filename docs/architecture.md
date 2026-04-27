@@ -1,295 +1,245 @@
-# Architecture Documentation
+# Homelab Infrastructure Architecture
+
+> **Last Updated:** April 27, 2026  
+> **Purpose:** Complete network and system architecture documentation  
+> **Owner:** Muzakkir Kholil  
+
+## Hardware Specifications
+
+### Core Infrastructure
+
+| Device           | Hostname | Specifications                           | IP Address     | Role                              |
+|------------------|----------|------------------------------------------|----------------|-----------------------------------|
+| **Proxmox Server** | Kuromoon | AMD Ryzen 5 5600X, 32GB RAM, RX 6700 XT 12GB | 192.168.10.5   | Primary hypervisor                |
+| **pfSense Firewall** | —        | AC8F Mini PC, Intel N100, 8GB RAM       | 192.168.10.1   | Router, firewall, VPN gateway    |
+| **Managed Switch** | —        | TP-Link TL-SG108E (8-port managed)      | 192.168.1.20   | Layer 2 switching, VLAN tagging  |
+| **NAS Storage**  | Kinmoon  | UGREEN DXP2800, 3.6TB WD Purple         | 192.168.10.15  | Backup storage (SMB/NFS)          |
+| **DNS Server**   | —        | Raspberry Pi 4, 4GB RAM                 | 192.168.30.10  | Pi-hole DNS filtering             |
+| **Gaming PC**    | Minimoon | AMD Ryzen 7 7800X3D, RX 9070 XT 16GB    | 192.168.20.101 | **Gaming only — never homelab**  |
+| **WiFi AP**      | —        | TP-Link EAP610 (WiFi 6)                 | TBD            | Wireless access (pending setup)  |
+
+### GPU Passthrough Configuration (Kuromoon)
+
+- **Primary GPU:** RX 6700 XT 12GB passed through to VM 400 (ollama-gpu)
+- **IOMMU Groups:** Group 18 (GPU), Group 19 (audio) — both passed through
+- **Driver Configuration:** amdgpu blacklisted, vfio-pci claimed
+- **Performance:** Idle baseline CPU 48.5°C, GPU edge 46°C, GPU 5W with zero-RPM fan
+- **ROCm Configuration:** HSA_OVERRIDE_GFX_VERSION=10.3.0 for gfx1031 compatibility
 
 ## Network Topology
 
-### High-Level Overview
-
-```
-Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
-                                              ↓
-                                    802.1Q Trunk (igc2)
-                                              ↓
-                                    TP-Link TL-SG108E
-                                              ↓
-                    ┌─────────┬─────────┬─────────┬─────────┐
-                  VLAN10   VLAN20   VLAN30   VLAN40   VLAN50
-                  Mgmt     Main    Services   DMZ    Malware
-```
-
 ### Router-on-a-Stick Design
 
-The infrastructure uses a router-on-a-stick topology with pfSense handling inter-VLAN routing through a single 802.1Q trunk connection to the managed switch. This design provides:
-
-- Centralized routing and firewall control
-- VLAN segmentation for security
-- Scalable network architecture
-- Single point of configuration
-
-### Physical Hardware Layout
-
 ```
-[Internet] ── [ISP Router] ── [pfSense AC8F] ── [TP-Link TL-SG108E]
-                                                       │
-                ┌──────────────┬─────────────┬─────────┴─────────┐
-                │              │             │                   │
-           [Kuromoon]    [Kinmoon NAS]  [Pi-hole]         [Gaming PC]
-            Proxmox        Backup       DNS Server          Minimoon
-         192.168.10.5   192.168.10.15  192.168.30.10   192.168.20.101
+Internet (1Gbps Fiber)
+         ↓
+ISP Router (192.168.100.1)
+         ↓ WAN DHCP
+pfSense Firewall (192.168.10.1)
+         ↓ 802.1Q Trunk (igc2)
+TP-Link TL-SG108E Switch
+         ↓
+┌────────┬────────┬────────┬────────┬────────┐
+│ VLAN10 │ VLAN20 │ VLAN30 │ VLAN40 │ VLAN50 │
+│  Mgmt  │  Main  │Services│  DMZ   │Malware │
+└────────┴────────┴────────┴────────┴────────┘
 ```
 
-## VLAN Design
+### VLAN Segmentation
 
-### VLAN Segmentation Table
+| VLAN ID | Name            | Subnet          | Gateway      | Purpose                                | Devices |
+|---------|-----------------|-----------------|--------------|----------------------------------------|---------|
+| **10**  | VLAN10_MGMT     | 192.168.10.0/24 | 192.168.10.1 | Infrastructure management              | 3       |
+| **20**  | VLAN20_MAIN     | 192.168.20.0/24 | 192.168.20.1 | Client devices, workstations          | 2       |
+| **30**  | VLAN30_SERVICES | 192.168.30.0/24 | 192.168.30.1 | All service containers + Pi-hole      | 15      |
+| **40**  | VLAN40_DMZ      | 192.168.40.0/24 | 192.168.40.1 | Future public-facing services          | 0       |
+| **50**  | VLAN50_MALWARE  | 192.168.50.0/24 | 192.168.50.1 | Isolated security lab (air-gapped)    | 0       |
 
-| VLAN ID | Name            | Subnet          | Gateway      | Purpose                                |
-|---------|-----------------|-----------------|--------------|----------------------------------------|
-| 10      | VLAN10_MGMT     | 192.168.10.0/24 | 192.168.10.1 | Infrastructure (Proxmox, pfSense, NAS) |
-| 20      | VLAN20_MAIN     | 192.168.20.0/24 | 192.168.20.1 | Client devices                         |
-| 30      | VLAN30_SERVICES | 192.168.30.0/24 | 192.168.30.1 | All service containers + Pi-hole       |
-| 40      | VLAN40_DMZ      | 192.168.40.0/24 | 192.168.40.1 | Future public-facing services          |
-| 50      | VLAN50_MALWARE  | 192.168.50.0/24 | 192.168.50.1 | Isolated security lab (air-gapped)     |
+**Device Distribution:**
+- **VLAN 10:** Kuromoon (192.168.10.5), pfSense (192.168.10.1), Kinmoon NAS (192.168.10.15)
+- **VLAN 20:** Minimoon Gaming PC (192.168.20.101), Switch management (192.168.1.20 — pending migration)
+- **VLAN 30:** 14 LXC containers (201-302) + 1 KVM VM (400) + Pi-hole (192.168.30.10)
+- **VLAN 40/50:** Reserved for future expansion
 
-### Network Segmentation Strategy
+### Firewall Rules Overview
 
-- **Management Network (VLAN 10):** Critical infrastructure components requiring administrative access
-- **Main Network (VLAN 20):** End-user devices and workstations
-- **Services Network (VLAN 30):** All containerized services and internal applications
-- **DMZ (VLAN 40):** Reserved for future public-facing services requiring internet exposure
-- **Malware Lab (VLAN 50):** Completely isolated environment for security testing
-
-## Firewall Architecture
-
-### Inter-VLAN Security Policies
-
+#### Inter-VLAN Policies
 ```
-VLAN20 (Main) ──────────────────────→ VLAN30 (Services) ✅ ALLOW
-VLAN20 (Main) ──X────────────────────→ VLAN10 (Mgmt)    ❌ DENY
-VLAN30 (Services) ──────────────────→ VLAN10 (Mgmt)    ✅ ALLOW (limited)
-VLAN10 (Mgmt) ──────────────────────→ All VLANs        ✅ ALLOW
-VLAN50 (Malware) ──X────────────────→ All VLANs        ❌ DENY (air-gapped)
-All VLANs ──────────────────────────→ Internet         ✅ ALLOW
+VLAN20 → VLAN10: BLOCKED (clients cannot reach management)
+VLAN20 → VLAN30: ALLOWED (clients can reach services)
+VLAN30 → VLAN10: ALLOWED (services need management access)
+VLAN30 → VLAN20: BLOCKED (services cannot reach clients)
+VLAN40 → ALL: RESTRICTED (DMZ isolation)
+VLAN50 → ALL: BLOCKED (malware lab air-gap)
 ```
 
-### Key Firewall Rules
-
-1. **Default Deny All:** All inter-VLAN traffic blocked by default
-2. **Management Access Control:** VLAN 20 cannot access VLAN 10 (admin isolation)
-3. **Service Access:** VLAN 20 can access VLAN 30 services
-4. **Malware Isolation:** VLAN 50 completely air-gapped
-5. **Internet Access:** All VLANs can reach internet through pfSense
-
-### pfSense Configuration Notes
-
-- **WAN Interface:** DHCP from ISP router
-- **LAN Interface:** 802.1Q trunk on igc2 (Intel i226-V NIC)
-- **VLAN Interfaces:** All VLANs configured as virtual interfaces
-- **DNS Resolver:** Forwarding to Pi-hole (192.168.30.10)
+#### pfSense Rule Structure
+1. **Anti-Lockout Rule** (WAN access to pfSense GUI)
+2. **VLAN-specific rules** (ordered by VLAN ID)
+3. **RFC1918 block rules** (deny private IP ranges to WAN)
+4. **Default deny** (implicit)
 
 ## Storage Architecture
 
-### ZFS Configuration (Proxmox Host)
+### Proxmox Storage Pools
 
-```
-Storage Pool Layout:
-├── vmpool-fast (ZFS) - 899 GB NVMe SSD
-│   ├── Fast container storage
-│   └── High-performance workloads
-├── local-lvm (LVM-Thin) - 137 GB NVMe SSD
-│   ├── Container root filesystems
-│   └── System storage
-└── data-storage (ext4) - 7.2 TB HDD
-    ├── Large container data
-    └── Local backup target
-```
+| Storage ID    | Type      | Protocol | Capacity | Usage                           | Containers |
+|---------------|-----------|----------|----------|---------------------------------|------------|
+| **local-lvm** | LVM-Thin  | Direct   | 137 GB   | Container root disks            | All LXC    |
+| **vmpool-fast** | ZFS      | Direct   | 899 GB   | High-performance VM storage     | VM 400     |
+| **data-storage** | Directory | Direct  | 7.2 TB   | Large container data            | CT 220, 302|
+| **kinmoon-smb** | SMB/CIFS | Network  | 3.6 TB   | Backup storage (NAS)            | Backups    |
 
-### Storage Allocation Strategy
+### ZFS Configuration
+- **Pool:** vmpool-fast on NVMe SSD
+- **Compression:** lz4 (default)
+- **Snapshots:** Enabled for VM backups
+- **Thin provisioning:** Enabled
 
-| Storage Pool    | Type      | Capacity | Use Case                    | Performance Profile |
-|----------------|-----------|---------|-----------------------------|-------------------|
-| vmpool-fast    | ZFS       | 899 GB  | High-performance containers | High IOPS, low latency |
-| local-lvm      | LVM-Thin  | 137 GB  | Root filesystems           | Standard performance |
-| data-storage   | ext4 HDD  | 7.2 TB  | Data storage, backups      | High capacity |
-| kinmoon-smb    | NAS       | 3.6 TB  | Network backup target      | Network attached |
+### Backup Strategy
 
-### Backup Storage Design
+| Job              | Schedule | Target Storage   | Containers                                  | Retention        |
+|------------------|----------|------------------|---------------------------------------------|------------------|
+| Small Containers | 02:00    | kinmoon-smb (NAS)| 201,202,203,204,205,206,207,214,300         | 7d/4w/2m         |
+| Large Containers | 02:30    | data-storage     | 220,302                                     | 7d/4w/2m         |
 
-```
-Backup Flow:
-Small Containers (≤20GB) ──────→ kinmoon-smb (NAS via SMB/CIFS)
-Large Containers (>20GB) ──────→ data-storage (Local HDD)
+**Backup Verification:** Restore testing scheduled via MERLIN agent (CT 207 recommended)
 
-Retention Policy: 7 daily, 4 weekly, 2 monthly
-Schedule: 02:00 (small), 02:30 (large)
-```
+## Service Inventory
+
+### Core Services (14 LXC + 1 VM)
+
+| ID  | Type | Name                    | IP             | Subdomain                     | Role                    |
+|-----|------|-------------------------|----------------|-------------------------------|-------------------------|
+| 201 | LXC  | nginx-proxy-manager     | 192.168.30.201 | —                             | Reverse proxy, SSL     |
+| 202 | LXC  | monitoring-prometheus   | 192.168.30.202 | —                             | Metrics collection      |
+| 203 | LXC  | monitoring-grafana      | 192.168.30.203 | grafana.najhin-gaming.com     | Metrics visualization   |
+| 204 | LXC  | monitoring-loki         | 192.168.30.204 | —                             | Log aggregation         |
+| 205 | LXC  | monitoring-alertmanager | 192.168.30.205 | —                             | Alert routing           |
+| 206 | LXC  | monitoring-uptime       | 192.168.30.206 | —                             | Service monitoring      |
+| 207 | LXC  | network-ddns            | 192.168.30.207 | —                             | Dynamic DNS updates     |
+| 208 | LXC  | dashboard-homepage      | 192.168.30.208 | home.najhin-gaming.com        | Infrastructure dashboard|
+| 211 | LXC  | automation-n8n          | 192.168.30.211 | n8n.najhin-gaming.com         | Workflow automation     |
+| 213 | LXC  | vault                   | 192.168.30.213 | vault.najhin-gaming.com       | Secrets management      |
+| 214 | LXC  | password-vaultwarden    | 192.168.30.214 | passwords.najhin-gaming.com   | Password manager        |
+| 220 | LXC  | nextcloud-hub           | 192.168.30.220 | cloud.najhin-gaming.com       | File storage, collaboration|
+| 300 | LXC  | gaming-panel            | 192.168.30.210 | —                             | Game server management  |
+| 302 | LXC  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | Game server instances   |
+| 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | Local AI inference      |
+
+**All services:** VLAN 30, autostart enabled, 100% uptime target
 
 ## External Access Architecture
 
 ### Cloudflare Tunnel Configuration
 
 ```
-Cloudflare Edge ──── Cloudflared Daemon ──── Nginx Proxy Manager ──── Services
-      │                    (CT 201)              (CT 201)
-      │
-   SSL/TLS                                   ┌── grafana.domain.com
-  Termination                                ├── n8n.domain.com
-                                            ├── vault.domain.com
-                                            ├── passwords.domain.com
-                                            ├── cloud.domain.com
-                                            ├── home.domain.com
-                                            └── ollama.domain.com
+Internet → Cloudflare Edge → Tunnel → nginx-proxy-manager (CT 201) → Backend Services
 ```
 
-### Cloudflare Access Integration
+**Tunneled Services (7 total):**
+- Grafana (grafana.najhin-gaming.com)
+- n8n (n8n.najhin-gaming.com)  
+- Vault (vault.najhin-gaming.com)
+- Vaultwarden (passwords.najhin-gaming.com)
+- Ollama (ollama.najhin-gaming.com)
+- Homepage (home.najhin-gaming.com)
+- Nextcloud (cloud.najhin-gaming.com)
 
-- **Authentication:** Email OTP to muzakkir.kholil06@gmail.com
-- **Protected Applications:** 7 services behind Cloudflare Access
-- **Bypass Rules:** Vaultwarden API paths (/api/, /identity/) for mobile app compatibility
+### Cloudflare Access Security
 
-### Tailscale VPN Access
+**Protection:** All 7 services behind Cloudflare Access with Email OTP
+**Authorized Email:** muzakkir.kholil06@gmail.com (single user)
+**Bypass Paths:** 
+- Vaultwarden API (/api/, /identity/ — mobile app compatibility)
 
-```
-Tailscale Network: 100.x.x.x/24
-├── pfSense as Subnet Router
-├── Direct access to VLAN subnets
-└── Administrative access path (primary)
-```
+### VPN Access (Primary)
+
+**Tailscale Configuration:**
+- **Subnet Router:** pfSense with subnet advertisement
+- **Advertised Subnets:** 192.168.10.0/24, 192.168.20.0/24, 192.168.30.0/24
+- **Primary Use:** Administrative access to management VLAN
+- **Client Access:** All homelab services via private IPs
 
 ## DNS Architecture
 
-### DNS Resolution Flow
-
-```
-Client Query ──→ pfSense DNS Resolver ──→ Pi-hole ──→ Upstream DNS
-     │              (192.168.x.1)        (192.168.30.10)   (Cloudflare)
-     │                     │                    │
-     └── Internal DNS ─────┘                    │
-                                               │
-                                     ┌─── Ad Blocking
-                                     └─── ~489K domains blocked
-```
-
-### DNS Configuration
-
-- **Primary DNS:** Pi-hole (192.168.30.10)
-- **Secondary DNS:** pfSense DNS Resolver
+### Pi-hole Configuration
+- **Container:** Raspberry Pi 4 (192.168.30.10)
+- **Blocklists:** ~489,000 domains blocked
 - **Upstream DNS:** Cloudflare (1.1.1.1, 1.0.0.1)
-- **Ad Blocking:** ~489,000 domains blocked
-- **Local Resolution:** Internal domain names resolved locally
+- **DHCP:** Disabled (pfSense handles DHCP)
 
-## Hardware Architecture
-
-### Server Specifications
-
-#### Kuromoon (Proxmox Host)
+### DNS Resolution Flow
 ```
-CPU: AMD Ryzen 5 5600X (6C/12T, 3.7-4.6GHz)
-RAM: 32GB DDR4
-GPU: AMD RX 6700 XT 12GB (Passed through to VM 400)
-Storage: 
-  ├── 1TB NVMe SSD (System + Fast Storage)
-  └── 8TB HDD (Data Storage)
-Network: Integrated Gigabit Ethernet
-Role: Hypervisor, Container Host
+Client → pfSense DNS Resolver → Pi-hole (192.168.30.10) → Cloudflare DNS
 ```
 
-#### pfSense Firewall (AC8F Mini PC)
-```
-CPU: Intel N100 (4C/4T, up to 3.4GHz)
-RAM: 8GB DDR4
-Storage: 128GB eMMC
-Network: 4x Intel i226-V 2.5GbE (only igc2/igc3 functional)
-Role: Router, Firewall, VPN Gateway
-```
+**pfSense DNS Resolver:**
+- **Forwarding Mode:** Query forwarding to Pi-hole
+- **Domain Overrides:** *.najhin-gaming.com → Cloudflare
+- **Local Resolution:** homelab.local domain (internal)
 
-#### Kinmoon (UGREEN NAS)
-```
-Model: UGREEN DXP2800
-CPU: Intel Celeron N5105
-RAM: 8GB
-Storage: 2x 3.6TB WD Purple (RAID 1 equivalent)
-Network: Gigabit Ethernet
-Role: Network Attached Storage, Backup Target
-```
+## Security Architecture
 
-#### Minimoon (Gaming PC)
-```
-CPU: AMD Ryzen 7 7800X3D (8C/16T)
-GPU: AMD RX 9070 XT 16GB
-RAM: 32GB DDR5
-Storage: 2TB NVMe SSD
-Role: Gaming Only (Strictly no homelab usage)
-```
+### Defense in Depth
 
-### Network Hardware
+| Layer           | Implementation                                                      |
+|-----------------|---------------------------------------------------------------------|
+| **Perimeter**   | ISP Router → pfSense firewall                                       |
+| **Segmentation** | 5 VLANs with enforced inter-VLAN firewall rules                    |
+| **DNS Security** | Pi-hole ad/tracker blocking (~489K domains)                        |
+| **VPN Access**   | Tailscale (subnet router on pfSense)                               |
+| **External Auth** | Cloudflare Access (Email OTP, single authorized user)              |
+| **External Access** | Cloudflare Tunnel for all internet-facing services               |
+| **Admin Access** | Tailscale only (VLAN 20 blocked from VLAN 10)                      |
+| **Secrets**     | HashiCorp Vault (CT 213) with 8 KV secret paths                    |
+| **Passwords**   | Vaultwarden (CT 214) personal password manager                     |
 
-#### TP-Link TL-SG108E Managed Switch
-```
-Ports: 8x Gigabit Ethernet
-VLAN Support: 802.1Q tagging
-Management: Web-based configuration
-Current IP: 192.168.1.20 (planned migration to 192.168.10.20)
-```
+### Secrets Management (Vault)
 
-#### TP-Link EAP610 WiFi Access Point
-```
-Standard: WiFi 6 (802.11ax)
-Speed: Up to 1.2Gbps
-Status: Purchased, pending installation
-Power: PoE+ required
-```
+**KV Engine Paths (8 total):**
+- kv/gilgamesh — Telegram bot tokens, Claude API keys
+- kv/cloudflare — DNS API tokens (pending fix — token truncated)
+- kv/proxmox — API tokens for automation
+- kv/alertmanager — Webhook URLs
+- kv/github — API tokens for documentation pipeline
+- kv/nextcloud — Admin credentials, WebDAV
+- kv/n8n — Service credentials
+- kv/pihole — Admin passwords
 
-## Container Architecture (Proxmox)
+**Security Note:** Vault reseals on reboot — manual unseal required: `pct exec 213 -- vault operator unseal`
 
-### Container Distribution by Purpose
+## Network Interfaces
 
-```
-Infrastructure Services (VLAN 30):
-├── CT 201: nginx-proxy-manager (Reverse Proxy)
-├── CT 207: network-ddns (Dynamic DNS)
-└── CT 208: dashboard-homepage (Internal Dashboard)
+### pfSense Interface Mapping
+- **WAN (igc0):** ISP Router connection (DHCP)
+- **LAN (igc2):** 802.1Q trunk to managed switch
+- **igc1, igc3:** Available (Intel i226-V driver issues on igc0/igc1)
 
-Monitoring Stack (VLAN 30):
-├── CT 202: monitoring-prometheus (Metrics Collection)
-├── CT 203: monitoring-grafana (Visualization)
-├── CT 204: monitoring-loki (Log Aggregation)
-├── CT 205: monitoring-alertmanager (Alert Management)
-└── CT 206: monitoring-uptime (Uptime Monitoring)
+### Known Network Issues
+- **Intel i226-V:** FreeBSD driver compatibility issues
+- **Double NAT:** Port forwarding required on both ISP router and pfSense
+- **Tailscale Ping:** Use `tailscale ping` instead of ICMP ping for testing
 
-Automation & Security (VLAN 30):
-├── CT 211: automation-n8n (Workflow Automation)
-├── CT 213: vault (Secrets Management)
-└── CT 214: password-vaultwarden (Password Manager)
+## Monitoring & Observability
 
-Data & Collaboration (VLAN 30):
-└── CT 220: nextcloud-hub (File Sync, Collaboration)
+### Prometheus Metrics Stack
+- **Prometheus:** CT 202 (metrics collection)
+- **Grafana:** CT 203 (visualization) 
+- **Loki:** CT 204 (log aggregation)
+- **Alertmanager:** CT 205 (alert routing)
 
-Gaming Platform (VLAN 30):
-├── CT 300: gaming-panel (Pterodactyl Panel)
-└── CT 302: gaming-wings-1 (Game Servers)
+### Alert Thresholds
+- **High Memory:** 85% (raised from 80% due to Windrose baseline ~9GB)
+- **High CPU:** 85% for 5 minutes
+- **High Disk:** 90%
+- **Service Down:** Immediate alert
 
-AI & Machine Learning (VLAN 30):
-└── VM 400: ollama-gpu (Local LLM with GPU Passthrough)
-```
+### Alert Routing
+- **Critical Alerts:** Telegram (via Alertmanager webhook)
+- **Warning Alerts:** Discord #alerts channel
+- **Planned:** Route all alerts through n8n for central processing
 
-### Resource Allocation Summary
+---
 
-```
-Total Containers: 14 LXC + 1 KVM VM
-Total Memory Allocation: ~16GB
-Total Storage Usage: ~400GB
-All containers: autostart enabled
-Network: All on VLAN 30 except infrastructure
-```
-
-### GPU Passthrough Architecture (VM 400)
-
-```
-Host GPU (Kuromoon) ──── VFIO Passthrough ──── VM 400 (ollama-gpu)
-RX 6700 XT 12GB              │                  Ubuntu 22.04
-                             │                  ROCm 6.1.3
-IOMMU Groups:               │                  Ollama Server
-├── Group 18: GPU (2d:00.0) ├─── Passed ────→ HSA_OVERRIDE_GFX_VERSION=10.3.0
-└── Group 19: Audio (2d:00.1)                 qwen3:14b (9.3GB model)
-```
-
-This architecture provides enterprise-grade network segmentation, robust security, scalable storage, and comprehensive monitoring while maintaining clear separation between production services and personal use systems.
+*This architecture supports 14 LXC containers + 1 KVM VM with 100% uptime, hybrid cloud access, and enterprise-grade security for career development and learning.*
