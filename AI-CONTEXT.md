@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** April 27, 2026
+> **Last Updated:** April 28, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing active. Obsidian Phases 22.1 and 22.2 complete. 14 LXC containers + 1 KVM VM running.
+**Current Status:** Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. 14 LXC containers + 1 KVM VM running.
 
 ---
 
@@ -198,12 +198,13 @@ second-brain/
 └── 10-reference/      # Quick reference materials
 ```
 
-### Key Features (Phase 22.1 + 22.2)
+### Key Features (Phase 22.1 + 22.2 + 22.8B)
 
 - **Subscription tracker:** 6 subscriptions tracked in 04-personal/subscriptions/
 - **Dashboard:** Dataview queries at 04-personal/dashboard showing costs and totals
 - **Daily notes:** Auto-created at midnight via n8n (Phase 22.2)
 - **Morning briefing:** 7am Telegram summary via MERLIN
+- **Health tracking:** Food log, BP log, medication log via Gilgamesh buttons (Phase 22.8B)
 - **/daily command:** Gilgamesh creates immediate daily notes
 
 ### Homepage Dashboard Design (Planned — Phases 22.15/22.16)
@@ -467,6 +468,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
 - **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
 - **Slash commands:** 11 commands for direct actions
+- **Health tracking:** Food log, BP log, medication log via interactive button prompts (Phase 22.8B)
 
 ### Slash Commands
 
@@ -519,7 +521,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Update Nextcloud File              | Legacy (unpublished)                     | 5     | Webhook  |
 | Push to GitHub                     | Legacy (unpublished)                     | 4     | Webhook  |
 
-> Note: Hybrid routing (Phase 41) is integrated into the Telegram Agent workflow — it is not a separate workflow.
+> Note: Hybrid routing (Phase 41) is integrated into the Telegram Agent workflow — it is not a separate workflow. Health tracking (Phase 22.8B) is also integrated into the Telegram Agent workflow.
 
 ### Inline Keyboard Menu Status
 
@@ -528,12 +530,26 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Main Menu         | ✅ Working |
 | Homelab → Status  | ✅ Working |
 | Homelab → Metrics | ✅ Working |
-| Homelab → Temps   | ✅ Working |
+| Homelab → Temps   | ⚠️ SSH Bug |
 | Homelab → Storage | ✅ Working |
+| Homelab → Alerts  | ✅ Working |
+| Homelab → Backup  | ✅ Working |
 | Gaming submenu    | ✅ Working |
 | Gilgamesh submenu | ✅ Working |
 | Tools submenu     | ✅ Working |
+| Health submenu    | ✅ Working |
 | Help              | ✅ Working |
+
+### n8n Data Tables
+
+| Table Name               | Purpose                                          | Key Columns                          |
+|--------------------------|--------------------------------------------------|--------------------------------------|
+| gilgamesh_memory         | Conversation history (last 20 messages)         | id, timestamp, user, message, response |
+| gilgamesh_costs          | Token usage and cost tracking                   | id, timestamp, model, tokens, cost_usd, command_type |
+| gilgamesh_session_state  | Mode switching for health tracking              | chat_id, mode, updated_at            |
+| health_food_log          | Food logging entries                            | id, logged_at, food_item, notes, chat_id |
+| health_bp_log            | Blood pressure readings                         | id, logged_at, systolic, diastolic, notes, chat_id |
+| health_med_log           | Medication tracking                             | id, logged_at, medication, dosage, notes, chat_id |
 
 ### SSH & API Access
 
@@ -611,6 +627,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | MERLIN             | Telegram         | n8n CT 211          | ✅ Active | Reminders — 8am daily infrastructure checks                    |
 | Daily Note Creator | Nextcloud WebDAV | n8n CT 211          | ✅ Active | Midnight daily note creation in Obsidian vault                 |
 | Morning Briefing   | Telegram         | n8n CT 211          | ✅ Active | 7am daily summary to Telegram                                  |
+| Health Tracking    | Obsidian WebDAV  | n8n CT 211          | ✅ Active | Food/BP/medication logging via Gilgamesh buttons               |
 | Homelab Alerts     | Telegram         | Alertmanager CT 205 | ✅ Active | Critical alerts (host down, high CPU/memory/disk)              |
 | Homelab Alerts     | Discord webhook  | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel                        |
 
@@ -690,6 +707,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 22.1    | Obsidian Vault Structure Expansion                               | ✅ Complete | Apr 27, 2026 |
 | 22.2    | Obsidian Daily Notes + Morning Briefing                          | ✅ Complete | Apr 27, 2026 |
 | 22.8A   | Button Menu System + Community Nodes                             | ✅ Complete | Apr 27, 2026 |
+| 22.8B   | Health Tracking (Food/BP/Medication Logging)                     | ✅ Complete | Apr 28, 2026 |
 | 22.15   | Price Database Tracking                                          | 📋 Planned | —            |
 | 22.16   | Homepage Settings Tab                                            | 📋 Planned | —            |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                            | ✅ Complete | Apr 18, 2026 |
@@ -809,6 +827,16 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | chat_id undefined on callbacks  | Use callback_query?.message?.chat?.id \|\| message?.chat?.id     |
 | Inline keyboard not showing     | Use HTTP Request node, not Telegram node for reply_markup       |
 
+### Health Tracking & Obsidian Integration
+
+| Issue                                   | Resolution                                                    |
+|-----------------------------------------|---------------------------------------------------------------|
+| [object Object] in Obsidian            | Fetch Daily Note Response Format must be Text, use .data field |
+| UTC time in health logs                 | Add 8 * 60 * 60 * 1000ms offset for MYT timezone              |
+| Duplicate appendText declaration        | Replace entire Code node with clean version                    |
+| Fetch Daily Note URL not resolving     | Must use {{ }} expression wrapper in WebDAV URL               |
+| JSON body invalid in health summary     | Switch to Using Fields Below mode in HTTP Request              |
+
 ---
 
 ## ❓ Pending Tasks
@@ -839,7 +867,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Task                                                                                            | Priority |
 |-------------------------------------------------------------------------------------------------|----------|
 | Build Monthly Infrastructure Audit cron workflow (assign new phase number — NOT 16.3)           | High     |
-| Build Guardian security monitoring agent (next after MERLIN)                                    | High     |
+| Build Guardian security monitoring agent (next after health tracking)                           | High     |
 | Build Mash Discord bot (Phases 59-64)                                                           | High     |
 | Document Sherlock Holmes agent design (sources, scraping targets, output, Obsidian integration) | Medium   |
 | /update redesign — file attachment via Telegram, push to GitHub + Nextcloud                     | Medium   |
@@ -871,6 +899,55 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### April 28, 2026
+
+Date: April 28, 2026
+Phase: 22.8B — Health Tracking Build (COMPLETE)
+
+Topics Discussed
+
+- Karpathy's LLM Wiki, Agentic Engineering, Dobby concept, Context Rot, System Prompt Learning applied to homelab
+- Da Vinci as Obsidian librarian/gatekeeper — confirmed architecture
+- Phase priority reorganisation — Da Vinci Stage 2 before 7E and EMIYA
+- Phase 22.8B: full health tracking system built and tested
+
+Decisions Made
+
+- Health data writes to both n8n Data Tables (fast queries) and Obsidian daily notes (long-term)
+- Da Vinci Stage 2 must be built before more agents write to Obsidian
+- Mode switching via gilgamesh_session_state Data Table
+- Cancel button on all health prompts via health_cancel callback
+- MYT time via UTC+8 offset in Code nodes
+- WebDAV GET then PUT pattern for Obsidian append
+- Fetch Daily Note Response Format set to Text, body concatenated via .data field
+- Format Today Summary uses plain text (no emojis) to avoid JSON issues
+
+Changes to AI-CONTEXT.md
+
+- Add 4 new Data Tables: gilgamesh_session_state, health_food_log, health_bp_log, health_med_log
+- n8n workflows count: add health tracking nodes to Telegram Agent workflow (not a separate workflow)
+- Phase 22.8B marked complete April 28, 2026
+- Pending: Phase 22.8C (homepage widgets), Guardian agent, Da Vinci Stage 2
+- Add Karpathy concepts to project context: LLM Wiki (Da Vinci Stage 2), Agentic Engineering (EMIYA design), Dobby (future home automation phase), Context Rot (justifies Da Vinci Stage 2 before 7E), System Prompt Learning (/update pipeline)
+- Phase priority order updated: 22.8C → Guardian → Da Vinci Stage 2 → 7E → EMIYA 24.1
+
+Errors & Resolutions
+
+- [object Object] in Obsidian: Fetch Daily Note Response Format must be Text, use .data field in PUT body
+- appendText duplicate declaration: replaced entire code block with clean version
+- UTC time in Obsidian: add 8 * 60 * 60 * 1000ms offset to loggedAt
+- Clear Mode type error: wrap chatId with Number() for numeric column filter
+- Fetch Daily Note URL not resolving: must use {{ }} expression wrapper
+- Format Today Summary illegal return: code was truncated, replaced with complete version
+- JSON body invalid in Send Today Summary: switch to Using Fields Below mode
+
+Action Items
+
+- [ ] Update ROADMAP.md: add 22.8B (complete), 22.8C, fix Da Vinci Stage 2 placement
+- [ ] Clean up 2026-04-28.md in Nextcloud (remove old UTC test entries)
+- [ ] Begin Phase 22.8C (homepage health + homelab widgets) next session
+- [ ] Guardian agent after 22.8C
 
 ### April 27, 2026
 
@@ -1104,4 +1181,4 @@ Open WebUI JSON parse error: proxy_buffering off needed in NPM advanced config f
 
 ---
 
-*Last updated: April 27, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: April 28, 2026 — Update this file at the end of each session before pushing to GitHub*
