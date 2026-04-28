@@ -949,6 +949,54 @@ Action Items
 - [ ] Begin Phase 22.8C (homepage health + homelab widgets) next session
 - [ ] Guardian agent after 22.8C
 
+### April 28, 2026 (Post-deployment Review)
+
+Date: April 28, 2026
+Phase: 22.8B complete + Post-deployment review
+
+Topics Discussed
+- Phase 22.8B full health tracking deployed and tested
+- Post-deployment review established as standard practice
+- Medication flow redesigned: MERLIN owns daily logging, Health menu owns management
+- health_med_list Data Table design confirmed (medication + active)
+- Karpathy concepts mapped to homelab
+- Vision API options researched — Llama 3.2 Vision 11B confirmed free, local, runs on RX 6700 XT via Ollama
+- Broader life ledger concept designed replacing narrow food log
+- Multi-agent communication design flagged for dedicated session
+
+Decisions Made
+- Medication daily logging moves to MERLIN (8am dynamic buttons)
+- Health menu Medication button = management only (add/remove/view)
+- health_med_list table: medication + active columns, managed via Gilgamesh not n8n UI
+- Vision model: Llama 3.2 Vision 11B via Ollama on VM 400 (free, local, no API cost)
+- Qwen2.5-VL-7B as alternative vision model option
+- Replace health_food_log with broader life_log table (single table for all personal logging)
+- life_log columns: log_date, category, item, amount_myr, notes, photo_path, logged_at
+- Phase 22.8E = Life Ledger (replaces narrow food expense design)
+- Midas expanded scope: personal spending by category + API costs
+- Da Vinci writes structured life_log entries to Obsidian daily note
+- Post-deployment review session is now standard after each phase
+
+Changes to AI-CONTEXT.md
+- Phase 22.8B marked complete April 28, 2026
+- Phase 22.8C: homepage health + homelab widgets (next)
+- Phase 22.8D: MERLIN medication check + Medication management menu
+- Phase 22.8E: Life Ledger (photo + text logging, life_log table, Llama 3.2 Vision, multi-agent routing)
+- New planned table: health_med_list (medication, active)
+- New planned table: life_log (replaces health_food_log for expenses)
+- Vision model planned: Llama 3.2 Vision 11B on VM 400 via Ollama
+- Midas Phase 2: personal spending reports by category
+- MERLIN expanded: daily medication check with dynamic inline buttons
+- New session topic queued: Multi-Agent communication design
+
+Action Items
+- [ ] Update ROADMAP.md: 22.8B complete, add 22.8C/D/E, fix Da Vinci Stage 2 placement
+- [ ] Clean up 2026-04-28.md in Nextcloud (remove UTC test entries)
+- [ ] Create health_med_list Data Table when ready to add meds
+- [ ] Pull Llama 3.2 Vision on VM 400: ollama pull llama3.2-vision
+- [ ] New session: Multi-Agent communication design
+- [ ] Next deployment session: Phase 22.8C homepage widgets
+
 ### April 27, 2026
 
 Date: April 27, 2026
@@ -1026,7 +1074,7 @@ Decisions Made
 
 - Memory alert threshold: 80% → 85%
 - Ollama tokens: read data.input_tokens / data.output_tokens (already mapped by Call Ollama)
-- command_type: derived from Telegram Trigger message text directly
+- command_type: derived from Telegram message text directly
 - Midas webhook: midas-report, USD to MYR: 4.7, spend limit: $10
 - SSL check: hardcoded July 14 2026 expiry — revisit in MERLIN v2
 - Backup restore test baseline: 2026-01-01 (never tested)
