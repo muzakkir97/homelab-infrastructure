@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** April 28, 2026
+> **Last Updated:** May 9, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. 14 LXC containers + 1 KVM VM running.
+**Current Status:** Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. 14 LXC containers + 1 KVM VM running. Hardware upgraded with 128GB DDR4 ordered.
 
 ---
 
@@ -66,10 +66,10 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 
 | Device           | Hostname | Specs                                    | IP Address     | Role                              |
 |------------------|----------|------------------------------------------|----------------|-----------------------------------|
-| Proxmox Server   | Kuromoon | Ryzen 5 5600X, 32GB RAM, RX 6700 XT 12GB | 192.168.10.5   | Hypervisor                        |
+| Proxmox Server   | Kuromoon | Ryzen 5 5600X, 128GB DDR4, RX 6700 XT 12GB | 192.168.10.5   | Hypervisor                        |
 | pfSense Firewall | —        | AC8F Mini PC, Intel N100                 | 192.168.10.1   | Router, Firewall                  |
 | Managed Switch   | —        | TP-Link TL-SG108E                        | 192.168.1.20   | Layer 2, VLANs                    |
-| NAS              | Kinmoon  | UGREEN DXP2800, 3.6TB WD Purple          | 192.168.10.15  | Backups (SMB target: kinmoon-nfs) |
+| NAS              | Kinmoon  | UGREEN DXP2800, 5.4TB RAID 1            | 192.168.10.100 | Backups (RAID 1, ext4)           |
 | DNS Server       | —        | Raspberry Pi 4                           | 192.168.30.10  | Pi-hole (~489K domains blocked)   |
 | Gaming PC        | Minimoon | Ryzen 7 7800X3D, RX 9070 XT 16GB         | 192.168.20.101 | **Gaming only — never homelab**   |
 | WiFi AP          | —        | TP-Link EAP610                           | TBD            | Purchased, pending setup          |
@@ -77,9 +77,17 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 ### GPU Notes (Kuromoon)
 
 - RX 6700 XT passed through to VM 400 (ollama-gpu) for Ollama/ROCm AI inference
-- IOMMU Group 18 (GPU), Group 19 (audio) — both passed through
+- PCIe addresses: GPU (0d:00.0), Audio (0d:00.1) — updated after motherboard change
+- ASUS TUF B550M-E motherboard with AMD-V/SVM and IOMMU enabled
 - Idle baseline: CPU 48.5°C, GPU edge 46°C, GPU 5W with zero-RPM fan
 - HSA_OVERRIDE_GFX_VERSION=10.3.0 set via systemd override for gfx1031 compatibility
+
+### RAM Upgrade (Ordered May 9, 2026)
+
+- **Current:** 32GB DDR4 (2x16GB)
+- **Ordered:** 4x32GB Corsair Vengeance LPX DDR4-3200 from Taobao
+- **Future Total:** 128GB DDR4 (32GB per DIMM slot on ASUS TUF B550M-E)
+- **Purpose:** VM/LXC density, large AI models, multiple workloads
 
 ---
 
@@ -146,7 +154,8 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 ### ollama-gpu (VM 400)
 
 - **Type:** KVM VM with PCIe passthrough — NOT an LXC
-- **GPU:** RX 6700 XT 12GB (2d:00.0) + audio (2d:00.1) passed through
+- **GPU:** RX 6700 XT 12GB (0d:00.0) + audio (0d:00.1) passed through
+- **PCIe config:** hostpci0=0000:0d:00.0,pcie=1,rombar=0 hostpci1=0000:0d:00.1,pcie=1
 - **OS:** Ubuntu 22.04
 - **SSH:** `ssh muzakkir@192.168.30.221` — use `muzakkir` user, not root
 - **Ollama models:** qwen3:14b (primary, 9.3GB), llama3.2:latest (secondary, 3B)
@@ -641,17 +650,25 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Job              | Schedule | Storage                  | Containers                                  | Retention                    |
 |------------------|----------|--------------------------|---------------------------------------------|------------------------------|
-| Small Containers | 02:00    | kinmoon-smb (NAS)        | 201, 202, 203, 204, 205, 206, 207, 214, 300 | 7 daily, 4 weekly, 2 monthly |
+| Small Containers | 02:00    | kinmoon-nfs (NAS)        | 201, 202, 203, 204, 205, 206, 207, 214, 300 | 7 daily, 4 weekly, 2 monthly |
 | Large Containers | 02:30    | data-storage (Local HDD) | 220, 302                                    | 7 daily, 4 weekly, 2 monthly |
 
 ### Storage
 
 | Name         | Type       | Protocol | Capacity | Purpose                 |
 |--------------|------------|----------|----------|-------------------------|
-| kinmoon-smb  | NAS        | SMB/CIFS | 3.6 TB   | Small container backups |
+| kinmoon-nfs  | NAS RAID 1 | NFS      | 2.6 TB   | Small container backups |
 | data-storage | Local HDD  | Direct   | 7.2 TB   | Large container backups |
 | local-lvm    | Local NVMe | LVM-Thin | 137 GB   | Container root disks    |
 | vmpool-fast  | Local NVMe | ZFS      | 899 GB   | Fast container storage  |
+
+### NAS Configuration
+
+- **Model:** UGREEN DXP2800 (2-bay)
+- **RAID:** RAID 1 (mirrored drives for redundancy)
+- **Filesystem:** ext4
+- **NFS export:** /volume1/proxmox-backups
+- **Status:** Normal (healthy, drives synced)
 
 ---
 
@@ -729,6 +746,15 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 🐛 Key Lessons Learned
+
+### Hardware & Recovery
+
+| Issue                                   | Resolution                                                  |
+|-----------------------------------------|-------------------------------------------------------------|
+| GPU PCIe address change after motherboard | Update VM config: qm set 400 --hostpci0 0000:0d:00.0,pcie=1 |
+| KVM virtualization not available       | Enable AMD-V (SVM Mode) and IOMMU in UEFI settings         |
+| Boot timeout after BIOS changes        | Disable systemd-networkd-wait-online.service               |
+| RAID conversion with active mount       | Unmount NFS share before NAS factory reset                 |
 
 ### Network & VLANs
 
@@ -861,6 +887,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Create muzakkir97/homelab-private repo                                       | Medium   |
 | Set up Backblaze B2 account                                                  | Medium   |
 | Phase 27 (Vault + n8n) enables n8n to fetch secrets directly                 | Medium   |
+| Install 128GB DDR4 RAM upgrade when Taobao delivery arrives                  | Medium   |
+| Clean up temp backups (saves 6.9GB local storage) - optional                 | Low      |
 
 ### Gilgamesh & Documentation
 
@@ -895,59 +923,137 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Old P400S build repurpose (Z270E + i7-7700K)                               | Deferred |
 | Claude Project auto-sync — revisit if Anthropic releases Project Files API | Deferred |
 | Fix Homelab → Temps SSH bug                                                | Deferred |
+| DOCP RAM optimization for 128GB kit                                         | Deferred |
 
 ---
 
 ## 📝 Session Log (Recent)
 
-### April 28, 2026
+### May 9, 2026
 
-Date: April 28, 2026
-Phase: 22.8B — Health Tracking Build (COMPLETE)
+Date: May 9, 2026
+Session Type: Hardware Recovery + Infrastructure Upgrade
 
-Topics Discussed
-
-- Karpathy's LLM Wiki, Agentic Engineering, Dobby concept, Context Rot, System Prompt Learning applied to homelab
-- Da Vinci as Obsidian librarian/gatekeeper — confirmed architecture
-- Phase priority reorganisation — Da Vinci Stage 2 before 7E and EMIYA
-- Phase 22.8B: full health tracking system built and tested
+Topics Covered
+- Kuromoon hardware recovery after shop cleaning (thermal paste residue removal)
+- VM 400 GPU passthrough fix (PCIe address update after motherboard change)
+- BIOS virtualization configuration (AMD-V/SVM enable)
+- Boot timeout fix (systemd-networkd-wait-online.service)
+- RAID 1 setup on Kinmoon NAS (UGREEN DXP2800)
+- NFS share configuration and Proxmox mount
+- Backup restoration (May 4 backups to new RAID array)
+- RAM upgrade purchase (4x32GB Corsair Vengeance DDR4 from Taobao)
 
 Decisions Made
+- Keep existing backup retention policy: 7 daily, 4 weekly, 2 monthly (not simplified to 7-day only)
+- Purchased 4x32GB Corsair Vengeance DDR4 from Taobao → total 128GB when installed (massive upgrade from current 32GB)
+- DOCP RAM optimization deferred to future session
+- Temp backups cleanup optional (saves 6.9GB local storage)
 
-- Health data writes to both n8n Data Tables (fast queries) and Obsidian daily notes (long-term)
-- Da Vinci Stage 2 must be built before more agents write to Obsidian
-- Mode switching via gilgamesh_session_state Data Table
-- Cancel button on all health prompts via health_cancel callback
-- MYT time via UTC+8 offset in Code nodes
-- WebDAV GET then PUT pattern for Obsidian append
-- Fetch Daily Note Response Format set to Text, body concatenated via .data field
-- Format Today Summary uses plain text (no emojis) to avoid JSON issues
+Hardware Changes
+Kuromoon (Proxmox):
+- Motherboard: ASUS TUF B550M-E (mATX, 4 DIMM slots, confirmed operational)
+- GPU PCIe address changed: 2d:00.0 → 0d:00.0 (RX 6700 XT)
+- BIOS settings updated: AMD-V enabled, IOMMU enabled
+- Boot services: Disabled systemd-networkd-wait-online.service
+- VM 400 hostpci configuration updated to new PCIe addresses
 
-Changes to AI-CONTEXT.md
+Kinmoon NAS (UGREEN DXP2800):
+- RAID configuration: RAID 1 (2-drive mirror)
+- Storage Pool 1: 2.7TB total, 2.6TB usable
+- Volume 1: ext4 filesystem
+- NFS share: /volume1/proxmox-backups
+- NAS IP: 192.168.10.100 (changed from 192.168.10.15 after factory reset)
+- Status: Normal (healthy, sync complete)
 
-- Add 4 new Data Tables: gilgamesh_session_state, health_food_log, health_bp_log, health_med_log
-- n8n workflows count: add health tracking nodes to Telegram Agent workflow (not a separate workflow)
-- Phase 22.8B marked complete April 28, 2026
-- Pending: Phase 22.8C (homepage widgets), Guardian agent, Da Vinci Stage 2
-- Add Karpathy concepts to project context: LLM Wiki (Da Vinci Stage 2), Agentic Engineering (EMIYA design), Dobby (future home automation phase), Context Rot (justifies Da Vinci Stage 2 before 7E), System Prompt Learning (/update pipeline)
-- Phase priority order updated: 22.8C → Guardian → Da Vinci Stage 2 → 7E → EMIYA 24.1
+Configuration Changes
+VM 400 GPU Passthrough:
+```
+qm set 400 --delete hostpci0
+qm set 400 --delete hostpci1
+qm set 400 --hostpci0 0000:0d:00.0,pcie=1,rombar=0
+qm set 400 --hostpci1 0000:0d:00.1,pcie=1
+```
+
+Boot Timeout Fix:
+```
+systemctl disable systemd-networkd-wait-online.service
+```
+
+NFS Mount (Proxmox):
+- Storage ID: kinmoon-nfs
+- Server: 192.168.10.100
+- Export: /volume1/proxmox-backups
+- Content: VZDump backup file
+- Mount point: /mnt/pve/kinmoon-nfs
+
+Backup Strategy:
+- Schedule: Daily at 02:00
+- Retention: 7 daily, 4 weekly, 2 monthly
+- Storage: kinmoon-nfs (RAID 1 mirrored)
+- Containers: 201,202,203,204,205,206,207,214,300
+- Backup size: 6.9GB (May 4 backups restored)
+
+Verification Results
+✅ All 14 LXC containers running
+✅ VM 400 running with GPU passthrough (RX 6700 XT recognized by ROCm)
+✅ Ollama models intact (qwen3:14b, llama3.2)
+✅ Gilgamesh Telegram bot responding
+✅ ZFS pool vmpool healthy (no errors)
+✅ RAID 1 status: Normal (2 drives mirrored)
+✅ NFS mount operational (write test successful)
+✅ May 4 backups (6.9GB) restored to NAS
 
 Errors & Resolutions
+Issue 1: VM 400 failed to start after motherboard change
+- Error: GPU passthrough using old PCIe address (2d:00.0)
+- Resolution: Updated hostpci0/1 to new addresses (0d:00.0, 0d:00.1)
 
-- [object Object] in Obsidian: Fetch Daily Note Response Format must be Text, use .data field in PUT body
-- appendText duplicate declaration: replaced entire code block with clean version
-- UTC time in Obsidian: add 8 * 60 * 60 * 1000ms offset to loggedAt
-- Clear Mode type error: wrap chatId with Number() for numeric column filter
-- Fetch Daily Note URL not resolving: must use {{ }} expression wrapper
-- Format Today Summary illegal return: code was truncated, replaced with complete version
-- JSON body invalid in Send Today Summary: switch to Using Fields Below mode
+Issue 2: "KVM virtualisation configured, but not available"
+- Cause: New ASUS TUF B550M-E motherboard had virtualization disabled
+- Resolution: Enabled AMD-V (SVM Mode) and IOMMU in UEFI settings
+
+Issue 3: System hung at boot after BIOS changes
+- Symptom: "clean, recovering journal" screen, 90-120 second wait
+- Cause: systemd-networkd-wait-online.service waiting for network
+- Resolution: Disabled the service, boot time optimized
+
+Issue 4: NFS volume locked during RAID conversion
+- Cause: Proxmox had NFS mounted while trying to delete volume
+- Resolution: umount /mnt/pve/kinmoon-nfs before NAS factory reset
+
+Changes to AI-CONTEXT.md
+Update Hardware fleet section:
+- Kuromoon: 32GB → 128GB DDR4 (4x32GB Corsair Vengeance ordered from Taobao)
+- Kuromoon motherboard: ASUS TUF B550M-E (mATX, 4 DIMM slots)
+- GPU PCIe addresses updated: 0d:00.0 (GPU), 0d:00.1 (audio)
+- Kinmoon: IP address changed 192.168.10.15 → 192.168.10.100
+- Kinmoon: 3.6TB WD Purple → 5.4TB RAID 1 configuration
+- Kinmoon: Updated purpose "Backups (RAID 1, ext4)"
+
+Update Infrastructure section:
+- VM 400 PCIe config updated to new addresses
+- ollama-gpu SSH note unchanged (muzakkir user)
+
+Update Backup Strategy:
+- kinmoon-nfs Storage: "NAS RAID 1" type, "NFS" protocol, "2.6 TB" capacity
+- NAS Configuration subsection added with RAID 1 details
+
+Update Key Lessons Learned:
+- Add Hardware & Recovery section with 4 new entries
+- GPU PCIe address fix, virtualization enable, boot timeout, RAID mount
+
+Update Pending Tasks:
+- Add "Install 128GB DDR4 RAM upgrade when Taobao delivery arrives" (Medium priority)
+- Add "Clean up temp backups (saves 6.9GB local storage) - optional" (Low priority)
+- Add "DOCP RAM optimization for 128GB kit" to Deferred section
 
 Action Items
-
-- [ ] Update ROADMAP.md: add 22.8B (complete), 22.8C, fix Da Vinci Stage 2 placement
-- [ ] Clean up 2026-04-28.md in Nextcloud (remove old UTC test entries)
-- [ ] Begin Phase 22.8C (homepage health + homelab widgets) next session
-- [ ] Guardian agent after 22.8C
+- [ ] Install RAM upgrade when delivery arrives from Taobao
+- [ ] Monitor system stability with new motherboard
+- [ ] Test backup restore from RAID 1 NFS share
+- [ ] Consider DOCP optimization after RAM upgrade
+- [ ] Clean up temp backups when storage space needed
 
 ### April 28, 2026 (Post-deployment Review)
 
@@ -997,13 +1103,56 @@ Action Items
 - [ ] New session: Multi-Agent communication design
 - [ ] Next deployment session: Phase 22.8C homepage widgets
 
+### April 28, 2026
+
+Date: April 28, 2026
+Phase: 22.8B — Health Tracking Build (COMPLETE)
+
+Topics Discussed
+- Karpathy's LLM Wiki, Agentic Engineering, Dobby concept, Context Rot, System Prompt Learning applied to homelab
+- Da Vinci as Obsidian librarian/gatekeeper — confirmed architecture
+- Phase priority reorganisation — Da Vinci Stage 2 before 7E and EMIYA
+- Phase 22.8B: full health tracking system built and tested
+
+Decisions Made
+- Health data writes to both n8n Data Tables (fast queries) and Obsidian daily notes (long-term)
+- Da Vinci Stage 2 must be built before more agents write to Obsidian
+- Mode switching via gilgamesh_session_state Data Table
+- Cancel button on all health prompts via health_cancel callback
+- MYT time via UTC+8 offset in Code nodes
+- WebDAV GET then PUT pattern for Obsidian append
+- Fetch Daily Note Response Format set to Text, body concatenated via .data field
+- Format Today Summary uses plain text (no emojis) to avoid JSON issues
+
+Changes to AI-CONTEXT.md
+- Add 4 new Data Tables: gilgamesh_session_state, health_food_log, health_bp_log, health_med_log
+- n8n workflows count: add health tracking nodes to Telegram Agent workflow (not a separate workflow)
+- Phase 22.8B marked complete April 28, 2026
+- Pending: Phase 22.8C (homepage widgets), Guardian agent, Da Vinci Stage 2
+- Add Karpathy concepts to project context: LLM Wiki (Da Vinci Stage 2), Agentic Engineering (EMIYA design), Dobby (future home automation phase), Context Rot (justifies Da Vinci Stage 2 before 7E), System Prompt Learning (/update pipeline)
+- Phase priority order updated: 22.8C → Guardian → Da Vinci Stage 2 → 7E → EMIYA 24.1
+
+Errors & Resolutions
+- [object Object] in Obsidian: Fetch Daily Note Response Format must be Text, use .data field in PUT body
+- appendText duplicate declaration: replaced entire code block with clean version
+- UTC time in Obsidian: add 8 * 60 * 60 * 1000ms offset to loggedAt
+- Clear Mode type error: wrap chatId with Number() for numeric column filter
+- Fetch Daily Note URL not resolving: must use {{ }} expression wrapper
+- Format Today Summary illegal return: code was truncated, replaced with complete version
+- JSON body invalid in Send Today Summary: switch to Using Fields Below mode
+
+Action Items
+- [ ] Update ROADMAP.md: add 22.8B (complete), 22.8C, fix Da Vinci Stage 2 placement
+- [ ] Clean up 2026-04-28.md in Nextcloud (remove old UTC test entries)
+- [ ] Begin Phase 22.8C (homepage health + homelab widgets) next session
+- [ ] Guardian agent after 22.8C
+
 ### April 27, 2026
 
 Date: April 27, 2026
 Phase: 22.8A — Complete Button Menu + Community Nodes Install
 
 Topics Discussed
-
 - Community nodes research and installation
 - n8n node audit (built-in vs community)
 - Workflow canvas clutter discussion and refactor plan
@@ -1012,7 +1161,6 @@ Topics Discussed
 - Phase 22.8B, 22.8C design planning
 
 Decisions Made
-
 - Ollama and Qdrant are built-in to n8n — no community nodes needed
 - Community nodes install method: Settings → Community Nodes UI only. Dockerfile npm install breaks due to n8n pnpm catalog internals
 - 3 community nodes installed: @mendable/n8n-nodes-firecrawl v2.1.1, n8n-nodes-puppeteer v1.5.0, n8n-nodes-tesseractjs v1.5.1
@@ -1027,7 +1175,6 @@ Decisions Made
 - Send Health node pattern: must use HTTP Request node (same as Send Gilgamesh) not Telegram node, because inline keyboard requires JSON.stringify reply_markup via direct Telegram API call
 
 Changes to AI-CONTEXT.md
-
 - n8n community nodes section: update installed nodes to include @mendable/n8n-nodes-firecrawl v2.1.1, n8n-nodes-puppeteer v1.5.0, n8n-nodes-tesseractjs v1.5.1. Install method: UI only.
 - Inline Keyboard Menu Status: all submenus now fully working including Health (placeholder), Gilgamesh (Memory, Cost, Sync Docs, Clear), Homelab (Alerts, Backup added)
 - Known bug: Homelab → Temps SSH command returns no output — deferred
@@ -1037,14 +1184,12 @@ Changes to AI-CONTEXT.md
 - Add Deferred task: Fix Homelab → Temps SSH bug
 
 Errors & Resolutions
-
 - Dockerfile npm install -g: EUNSUPPORTEDPROTOCOL — n8n uses pnpm catalog internally. Fix: use UI installer instead
 - npm install into /usr/local/lib/node_modules/n8n: same error. Fix: UI only
 - Send Health node showing no keyboard: used Telegram node instead of HTTP Request. Fix: duplicate Send Gilgamesh (HTTP Request pattern) instead
 - chat_id undefined on button callbacks: all Format/handler nodes used $json.message.chat.id which fails for callback_query. Fix: use callback_query?.message?.chat?.id || message?.chat?.id pattern
 
 Action Items
-
 - [ ] Fix Homelab → Temps SSH bug (deferred, separate session)
 - [ ] Begin Phase 22.8B: health tracking (food log, BP, medication, daily summary)
 - [ ] Create gilgamesh_session_state Data Table for mode switching
@@ -1057,7 +1202,6 @@ Date: April 27, 2026
 Phase: Midas CFO Agent, MERLIN Reminders, and Obsidian Daily Creator active. 14 LXC containers + 1 KVM VM running.
 
 Topics Discussed
-
 - 80% RAM alert — Windrose 8.9GB + VM 400 7.9GB — normal baseline, raised Prometheus threshold 80% to 85%
 - Fixed Ollama token capture (read data.input_tokens not prompt_eval_count)
 - Added command_type column to gilgamesh_costs
@@ -1071,7 +1215,6 @@ Topics Discussed
 - Planned Phase 22.11: Nextcloud Calendar CalDAV integration
 
 Decisions Made
-
 - Memory alert threshold: 80% → 85%
 - Ollama tokens: read data.input_tokens / data.output_tokens (already mapped by Call Ollama)
 - command_type: derived from Telegram message text directly
@@ -1085,7 +1228,6 @@ Decisions Made
 - Phase 22.9 and 22.11 planned for future expansion
 
 Changes to AI-CONTEXT.md
-
 - n8n workflows: add Midas CFO Report (webhook midas-report), Midas Daily Brief (9am), MERLIN Reminders (8am), Daily Note Creator (midnight), Morning Briefing (7am) — total now 12 workflows
 - gilgamesh_costs schema: command_type column added (Text)
 - Prometheus: HighMemoryUsage threshold now 85%
@@ -1098,7 +1240,6 @@ Changes to AI-CONTEXT.md
 - Pending: Schedule backup restore test CT 207, fix Cloudflare Vault token
 
 Errors & Resolutions
-
 - Ollama tokens always 0: read data.input_tokens/output_tokens not prompt_eval_count/eval_count
 - Aggregate Alerts Prometheus not found: use $('Check Prometheus Memory').first().json directly
 - SSL checker API returns empty: use hardcoded expiry date instead
@@ -1106,127 +1247,11 @@ Errors & Resolutions
 - MERLIN Aggregate Alerts error.includes not a function: error field is object not string
 
 Action Items
-
 - Schedule backup restore test on CT 207, update lastTestDate in MERLIN
 - Fix Cloudflare API token in Vault (get full token from dashboard, re-store)
 - Activate MERLIN workflow (toggle on in n8n)
 - Next session: Phase 22.3 or Guardian agent
 
-### April 26, 2026
-
-Date: April 26, 2026
-Phase: AI-CONTEXT.md Audit & Correction Sprint
-
-Topics Discussed
-
-Cross-referenced AI-CONTEXT.md against all recent session logs and conversation history.
-Found 15 errors: 4 critical (wrong data), 8 significant (missing content), 3 minor.
-Generated corrected AI-CONTEXT.md manually.
-
-Decisions Made
-
-Phase 41 confirmed complete April 24, 2026 (Hybrid Routing).
-Gilgamesh routing is Ollama qwen3:14b first, Haiku fallback, Sonnet for complex.
-qwen3:14b is the primary local model (upgraded from qwen2.5:14b April 24).
-VM 400 is KVM VM with PCIe passthrough, not an LXC container.
-Final 9-agent roster locked: Gilgamesh, Da Vinci, Midas, MERLIN, Guardian, Mash, Nexus, Oracle, EMIYA.
-Sherlock Holmes added as 10th agent (dedicated web scraper, Ruler class).
-Scribe absorbed into Da Vinci. Oracle absorbs Zhuge Liang.
-Build order: Midas first, then MERLIN, Guardian, Mash, Nexus, Oracle.
-Da Vinci role: Chief Intelligence Officer (not Knowledge Curator).
-EMIYA role: CTO / Infrastructure Engineer with 10 core features.
-Tier 2 agents planned: Chiron (Career), Medea (QA), Waver (PM).
-New phases: 22.15, 22.16, 24.1 through 24.8.
-Monthly Infrastructure Audit cron workflow to get new phase number (not 16.3 — already taken).
-n8n workflow count corrected to 6 (Hybrid Routing integrated into Telegram Agent, not separate).
-Obsidian homepage 4-tab design and budget config (15% groceries) documented.
-
-Changes to AI-CONTEXT.md
-
-Full replacement with corrected version — all 15 audit errors resolved.
-
-Errors & Resolutions
-
-15 documentation errors found and corrected — see audit summary from April 26 session.
-
-Action Items
-
-Push corrected AI-CONTEXT.md to GitHub via /sync-docs or manual upload.
-Run /sync-docs to regenerate all docs from corrected base.
-Begin Phase 22.1 (Vault Structure Expansion) in next session.
-
-### April 25, 2026
-
-Date: April 24-25, 2026
-Phase: 16.3 — Da Vinci Documentation Pipeline (COMPLETE) + Architecture Planning
-
-Topics Discussed
-
-Built Phase 16.3 Da Vinci Documentation Pipeline (11-node n8n workflow).
-Created AI-CONTEXT-staging.md in Nextcloud (rolling append staging file).
-Fixed Nextcloud WebDAV username (admin, not muzakkir).
-Full end-to-end test passed.
-Final 9-agent Fate ecosystem designed and locked.
-Da Vinci Stage 2 stack decided: Qdrant + nomic-embed-text + n8n native RAG on VM 400.
-Universal agent design rules established.
-Build order locked: Midas first.
-
-Decisions Made
-
-Da Vinci is an n8n workflow, not a separate LXC.
-All agents route through Gilgamesh bot.
-Staging file is rolling append — raw summaries preserved.
-Da Vinci Stage 2 (RAG) planned alongside Phase 7E.
-Nextcloud WebDAV username is admin throughout.
-Download link uses Nextcloud web UI URL, not raw WebDAV (Cloudflare Access blocks raw WebDAV).
-Scribe absorbed into Da Vinci. Oracle absorbs Zhuge Liang.
-Build order: Midas first, then MERLIN, Guardian, Mash, Nexus, Oracle.
-
-Errors & Resolutions
-
-Nextcloud 401: Username was muzakkir, should be admin.
-n8n HTTP Request JSON invalid: Moved Claude API call to Code node.
-Write AI-CONTEXT empty body: Use explicit node reference $('Extract Response').first().json.updatedDoc.
-Push to GitHub auth failed: Replaced HTTP Request node with Code node.
-Cloudflare Access blocks raw WebDAV download link: Use Nextcloud web UI URL instead.
-AI-CONTEXT.md overwritten by test run: Restored from local backup on Minimoon.
-
-### April 24, 2026
-
-Date: April 24, 2026
-Phase: 38 — Ollama + ROCm Local LLM (COMPLETE) / 39 — Open WebUI (COMPLETE) / 41 — Hybrid Routing (COMPLETE)
-
-Topics Discussed
-
-Deployed Ollama with ROCm GPU acceleration on RX 6700 XT (VM 400 ollama-gpu).
-Installed Ubuntu 22.04, ROCm 6.1.3 runtime, Ollama.
-Pulled qwen2.5:14b and llama3.2:latest, then upgraded to qwen3:14b.
-Deployed Open WebUI via Docker.
-Fixed Open WebUI JSON parse error (proxy_buffering off in NPM).
-Fixed SSH to VM 400 (muzakkir user, not root).
-Updated Open WebUI to latest version.
-Built Phase 41 hybrid routing in Telegram Agent workflow.
-
-Decisions Made
-
-VM 400 named ollama-gpu, static IP 192.168.30.221, VLAN 30. KVM VM with PCIe passthrough.
-GPU passthrough: 2d:00.0 (RX 6700 XT) + 2d:00.1 (audio).
-HSA_OVERRIDE_GFX_VERSION=10.3.0 set via systemd override for gfx1031.
-OLLAMA_HOST=0.0.0.0 set so Docker container can reach Ollama API.
-Open WebUI connects via Docker bridge 172.17.0.1:11434.
-Primary model: qwen3:14b (upgraded from qwen2.5:14b). Secondary: llama3.2:latest.
-Routing logic: complex keywords or over 50 words = Sonnet, otherwise Ollama, Haiku as fallback if Ollama down.
-Hybrid routing integrated into Telegram Agent — not a separate workflow.
-
-Errors & Resolutions
-
-ROCm full SDK ran out of disk space: Use minimal runtime; extend LVM.
-amdgpu still bound after blacklist: Added softdep amdgpu pre: vfio-pci.
-Ollama running 100% CPU not GPU: Added HSA_OVERRIDE_GFX_VERSION=10.3.0 and group membership.
-Open WebUI no models available: Set OLLAMA_HOST=0.0.0.0.
-SSH to VM 400 permission denied: VM uses muzakkir user not root.
-Open WebUI JSON parse error: proxy_buffering off needed in NPM advanced config for streaming.
-
 ---
 
-*Last updated: April 28, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: May 9, 2026 — Update this file at the end of each session before pushing to GitHub*
