@@ -1,209 +1,218 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** April 27, 2026
-> **Total Phases:** 70+ phases across 9 categories
-> **Status:** 25 completed, 3 in progress, 45+ planned
+> **Last Updated:** May 9, 2026  
+> **Total Phases:** 86 planned | 41 completed | 4 in progress | 41 future  
+> **Next Session Priority:** Phase 22.8C (Homepage Widgets)
 
 ---
 
 ## 📊 Phase Summary
 
-| Status        | Count | Description                               |
-|---------------|-------|-------------------------------------------|
-| ✅ Complete    | 25    | Infrastructure foundation & core services |
-| 🚧 In Progress | 3     | AI agents & automation expansion         |
-| 📋 Planned     | 45+   | Advanced features & platform completion  |
+| Category                              | Total | Complete | In Progress | Planned |
+|---------------------------------------|-------|----------|-------------|---------|
+| **Core Infrastructure & Security**     | 15    | 11       | 1           | 3       |
+| **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
+| **AI & Automation (Gilgamesh)**       | 19    | 11       | 2           | 6       |
+| **Personal & Knowledge Management**    | 12    | 6        | 1           | 5       |
+| **Monitoring & Observability**        | 8     | 6        | 0           | 2       |
+| **Infrastructure Cleanup**            | 6     | 2        | 0           | 4       |
+| **Career Development**                | 4     | 2        | 0           | 2       |
+| **Long Term Vision**                  | 7     | 0        | 0           | 7       |
+| **Hardware & Upgrades**               | 3     | 1        | 0           | 2       |
 
 ---
 
-## ✅ Completed Phases
+## ✅ Completed Phases (41)
 
-| Phase   | Title                                                            | Completed    |
-|---------|------------------------------------------------------------------|--------------|
-| 1       | Proxmox VE Installation                                          | Jan 2026     |
-| 2       | pfSense Firewall & VLAN Setup                                    | Jan 2026     |
-| 3       | Core Services (Pi-hole, NPM, Tailscale, DDNS)                    | Jan 2026     |
-| 4       | External Access & SSL                                            | Feb 2026     |
-| 5       | Monitoring Stack                                                 | Feb 2026     |
-| 6A-6D   | Gaming Platform (Pterodactyl, Terraria, Minecraft)               | Feb 2026     |
-| 6E      | Homepage Dashboard                                               | Mar 2026     |
-| 6F      | Infrastructure Audit, VLAN Migration & Firewall Hardening        | Mar 9, 2026  |
-| 7       | Nextcloud Deployment                                             | Mar 8, 2026  |
-| 7A      | Backup Strategy                                                  | Mar 13, 2026 |
-| 7B      | n8n Workflow Automation                                          | Apr 2, 2026  |
-| 7C      | Gilgamesh Telegram Bot + GitHub Integration                      | Apr 2, 2026  |
-| 7D      | Gilgamesh Enhancements (Memory, Routing, Web Search)             | Apr 6, 2026  |
-| 7D-Sec  | Cloudflare Access for n8n                                        | Apr 7, 2026  |
-| 7D-Menu | Gilgamesh Inline Keyboard Menu                                   | Apr 24, 2026 |
-| 9       | NAS Deployment (Kinmoon)                                         | Mar 3, 2026  |
-| 13      | HashiCorp Vault — Secrets Manager                                | Apr 18, 2026 |
-| 14      | Secrets Management & Integration                                 | Apr 24, 2026 |
-| 15      | Gilgamesh Additional Slash Commands                              | Apr 24, 2026 |
-| 16.1    | Documentation Pipeline — Update Workflow                         | Apr 19, 2026 |
-| 16.2    | Documentation Pipeline — Sync Docs Workflow                      | Apr 19, 2026 |
-| 16.3    | Da Vinci Documentation Pipeline                                  | Apr 25, 2026 |
-| 22      | Obsidian Knowledge Base                                          | Apr 24, 2026 |
-| 22.1    | Obsidian Vault Structure Expansion                               | Apr 27, 2026 |
-| 22.2    | Obsidian Daily Notes + Morning Briefing                         | Apr 27, 2026 |
-| 23      | Vaultwarden + Secrets Audit & Cleanup                            | Apr 18, 2026 |
-| 38      | Ollama + ROCm on Kuromoon RX 6700 XT                             | Apr 24, 2026 |
-| 39      | Open WebUI                                                       | Apr 24, 2026 |
-| 41      | Gilgamesh + Ollama Hybrid Routing                                | Apr 24, 2026 |
-| 58      | Windrose Server Deployment                                       | Apr 19, 2026 |
-| Midas   | Midas CFO Agent                                                  | Apr 27, 2026 |
-| MERLIN  | MERLIN Reminders Agent                                           | Apr 27, 2026 |
+### Core Infrastructure Foundation
+| Phase | Title                                         | Completed    | Dependencies |
+|-------|-----------------------------------------------|--------------|--------------|
+| 1     | Proxmox VE Installation                       | Jan 2026     | —            |
+| 2     | pfSense Firewall & VLAN Setup                 | Jan 2026     | Phase 1      |
+| 3     | Core Services (Pi-hole, NPM, Tailscale, DDNS) | Jan 2026     | Phase 2      |
+| 4     | External Access & SSL                         | Feb 2026     | Phase 3      |
+| 5     | Monitoring Stack                              | Feb 2026     | Phase 4      |
+| 6F    | Infrastructure Audit & Firewall Hardening    | Mar 9, 2026  | Phase 5      |
+| 7A    | Backup Strategy                               | Mar 13, 2026 | Phase 7      |
+| 9     | NAS Deployment (Kinmoon)                      | Mar 3, 2026  | —            |
+| 13    | HashiCorp Vault — Secrets Manager             | Apr 18, 2026 | Phase 5      |
+| 14    | Secrets Management & Integration              | Apr 24, 2026 | Phase 13     |
+| 23    | Vaultwarden + Secrets Audit & Cleanup         | Apr 18, 2026 | Phase 13     |
+
+### Gaming Platform
+| Phase | Title                                    | Completed   | Dependencies |
+|-------|------------------------------------------|-------------|--------------|
+| 6A-6D | Gaming Platform (Pterodactyl, Servers)  | Feb 2026    | Phase 5      |
+| 6E    | Homepage Dashboard                       | Mar 2026    | Phase 6D     |
+| 58    | Windrose Server Deployment               | Apr 19, 2026| Phase 6D     |
+
+### Storage & Applications  
+| Phase | Title                | Completed    | Dependencies |
+|-------|----------------------|--------------|--------------|
+| 7     | Nextcloud Deployment | Mar 8, 2026  | Phase 5      |
+
+### Automation & AI
+| Phase   | Title                                           | Completed    | Dependencies |
+|---------|-------------------------------------------------|--------------|--------------|
+| 7B      | n8n Workflow Automation                         | Apr 2, 2026  | Phase 7      |
+| 7C      | Gilgamesh Telegram Bot + GitHub Integration     | Apr 2, 2026  | Phase 7B     |
+| 7D      | Gilgamesh Enhancements (Memory, Routing, Search)| Apr 6, 2026  | Phase 7C     |
+| 7D-Sec  | Cloudflare Access for n8n                       | Apr 7, 2026  | Phase 7D     |
+| 7D-Menu | Gilgamesh Inline Keyboard Menu                  | Apr 24, 2026 | Phase 7D     |
+| 15      | Gilgamesh Additional Slash Commands             | Apr 24, 2026 | Phase 7D     |
+| 16.1    | Documentation Pipeline — Update Workflow        | Apr 19, 2026 | Phase 7C     |
+| 16.2    | Documentation Pipeline — Sync Docs Workflow     | Apr 19, 2026 | Phase 16.1   |
+| 16.3    | Da Vinci Documentation Pipeline                 | Apr 25, 2026 | Phase 16.2   |
+| 38      | Ollama + ROCm on Kuromoon RX 6700 XT            | Apr 24, 2026 | Phase 1      |
+| 39      | Open WebUI                                      | Apr 24, 2026 | Phase 38     |
+| 41      | Gilgamesh + Ollama Hybrid Routing               | Apr 24, 2026 | Phase 38     |
+| Midas   | Midas CFO Agent                                 | Apr 27, 2026 | Phase 7D     |
+| MERLIN  | MERLIN Reminders Agent                          | Apr 27, 2026 | Phase 7D     |
+
+### Knowledge Management
+| Phase | Title                                      | Completed    | Dependencies |
+|-------|--------------------------------------------|--------------|--------------|
+| 22    | Obsidian Knowledge Base                    | Apr 24, 2026 | Phase 7      |
+| 22.1  | Obsidian Vault Structure Expansion        | Apr 27, 2026 | Phase 22     |
+| 22.2  | Obsidian Daily Notes + Morning Briefing   | Apr 27, 2026 | Phase 22.1   |
+| 22.8A | Button Menu System + Community Nodes      | Apr 27, 2026 | Phase 7D-Menu|
+| 22.8B | Health Tracking (Food/BP/Medication Logging) | Apr 28, 2026 | Phase 22.8A |
 
 ---
 
-## 🚧 In Progress
+## ⚡ In Progress (4)
 
-| Phase | Title                                | Dependencies | Next Steps                                    |
-|-------|--------------------------------------|--------------|-----------------------------------------------|
-| 7E    | Extended Memory (20+ conversations) | Phase 41     | RAG integration with Da Vinci Stage 2        |
-| Da Vinci Stage 2 | RAG Retrieval System | Phase 22.1  | Qdrant + nomic-embed-text on VM 400          |
-| Guardian | Security Monitoring Agent         | MERLIN       | Next agent in build order after MERLIN       |
+| Phase | Title                           | Status                              | Dependencies | ETA     |
+|-------|---------------------------------|-------------------------------------|--------------|---------|
+| 22.8C | Homepage Widgets                | 🚧 Next session priority            | Phase 22.8B  | May     |
+| Hardware | 128GB DDR4 RAM Upgrade       | 📦 Ordered from Taobao              | —            | Jun     |
+| Guardian | Security Monitoring Agent     | 📋 Design phase after 22.8C         | Phase 22.8B  | May     |
+| Da Vinci | Stage 2 — RAG System         | 📋 After Guardian                    | Guardian     | Jun     |
 
 ---
 
-## 📋 Planned Phases
+## 📋 Planned Phases by Category
 
-### 🔮 Gilgamesh & Automation (Priority 1)
+### 🤖 Gilgamesh & Automation (Priority: High)
 
-| Phase | Title                                          | Dependencies     | Effort | Description                                         |
-|-------|------------------------------------------------|------------------|--------|-----------------------------------------------------|
-| 7F    | File Generation (code, configs, docs)         | Phase 7E         | 4h     | Gilgamesh creates and uploads files                |
-| 7G    | Vision API (image analysis)                    | Phase 7F         | 3h     | Screenshot analysis and diagram processing          |
-| 7H    | Document Upload (PDF/text processing)          | Phase 7G         | 4h     | File upload and content extraction                  |
-| 7I    | Quality Assurance (vs Claude Pro)             | Phase 7H         | 6h     | Output comparison and quality metrics               |
-| 7J    | Migration (full switch to Gilgamesh)          | Phase 7I         | 2h     | Complete transition from Claude Pro                 |
-| 24.1  | EMIYA Foundation (Proxmox API + approval)     | Guardian         | 4h     | Infrastructure automation with safety gates        |
-| 24.2  | EMIYA Alert Translation                        | Phase 24.1       | 3h     | Alertmanager to plain English                      |
-| 24.3  | EMIYA Container Updates                        | Phase 24.2       | 4h     | Docker + apt updates with approval                 |
-| 24.4  | EMIYA Proactive Monitoring                     | Phase 24.3       | 4h     | Anomaly detection and trend alerts                 |
-| 24.5  | EMIYA Security Management                      | Phase 24.4       | 4h     | Threat detection and firewall suggestions          |
-| 24.6  | EMIYA Performance Optimization                 | Phase 24.5       | 3h     | Resource reallocation recommendations              |
-| 24.7  | EMIYA Backup Verification                      | Phase 24.6       | 3h     | Backup integrity checks and failure alerts         |
-| 24.8  | EMIYA Change Management                        | Phase 24.7       | 3h     | Infrastructure change tracking and audit logs      |
-| 27    | n8n + Vault Integration                        | Phase 14         | 3h     | Direct secret retrieval in workflows               |
+| Phase | Title                                           | Dependencies      | Effort | Notes                                    |
+|-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
+| 7E    | Extended Memory (20+ message conversations)     | Da Vinci Stage 2  | 8h     | RAG-powered conversation continuity      |
+| 7F    | File Generation (code, configs, docs)           | Phase 7E          | 6h     | Artifact generation capabilities         |
+| 7G    | Vision API (image analysis)                     | Phase 7F          | 4h     | Llama 3.2 Vision 11B integration         |
+| 7H    | Document Upload (PDF/text processing)           | Phase 7G          | 6h     | Document analysis and Q&A                |
+| 7I    | Quality Assurance (compare with Claude Pro)     | Phase 7H          | 4h     | A/B testing and quality metrics          |
+| 7J    | Migration (full switch to Gilgamesh)            | Phase 7I          | 2h     | Replace Claude Pro subscription          |
 
-### 🎮 Gaming Platform Pipeline (Priority 2)
+### 🎮 Gaming Platform Pipeline (Priority: Medium)
 
-| Phase | Title                                | Dependencies | Effort | Description                                         |
-|-------|--------------------------------------|--------------|--------|-----------------------------------------------------|
-| 59    | Mash Discord Bot Foundation          | Guardian     | 4h     | Basic Discord bot with game server commands        |
-| 60    | Mash Player Management               | Phase 59     | 3h     | Join/leave announcements, player tracking          |
-| 61    | Mash Auto-Shutdown                   | Phase 60     | 2h     | Idle server detection and shutdown                 |
-| 62    | Mash Game Scheduling                 | Phase 61     | 3h     | Scheduled events and game night reminders          |
-| 63    | Mash Tournament System               | Phase 62     | 6h     | Automated tournament brackets and scheduling       |
-| 64    | Mash Advanced Features               | Phase 63     | 4h     | Game update notifications, server metrics          |
-| 65    | Gaming Analytics                     | Phase 64     | 3h     | Player statistics and game usage reports           |
-| 66    | Multi-Game Support                   | Phase 65     | 5h     | Support for additional game servers                |
+| Phase | Title                              | Dependencies | Effort | Notes                                    |
+|-------|------------------------------------|--------------|--------|------------------------------------------|
+| 59    | Mash Discord Bot Foundation        | Phase 58     | 6h     | Basic Discord integration and commands   |
+| 60    | Mash Game Server Control           | Phase 59     | 4h     | Start/stop server commands               |
+| 61    | Mash Player Notifications          | Phase 60     | 3h     | Join/leave announcements                 |
+| 62    | Mash Auto-shutdown                 | Phase 61     | 3h     | Idle server management                   |
+| 63    | Mash Game Night Scheduling         | Phase 62     | 4h     | Automated reminders and coordination     |
+| 64    | Mash Update Notifications          | Phase 63     | 2h     | Game version tracking and alerts         |
 
-### 📚 Personal & Knowledge Management (Priority 3)
+### 📊 Personal & Knowledge (Priority: Medium)
 
-| Phase  | Title                                | Dependencies | Effort | Description                                        |
-|--------|--------------------------------------|--------------|--------|----------------------------------------------------|
-| 22.3   | Obsidian Reminders Integration       | Phase 22.2   | 2h     | Task reminders via MERLIN                         |
-| 22.4   | Health Data Automation               | Phase 22.3   | 3h     | Blood pressure tracking, food logs                |
-| 22.5   | Finance Dashboard                    | Phase 22.4   | 4h     | Budget tracking with visual indicators             |
-| 22.6   | Smart Grocery Lists                  | Phase 22.5   | 3h     | Budget-aware shopping with price comparisons      |
-| 22.9   | Voice Notes + Photo Processing       | Phase 22.6   | 4h     | Voice-to-text and notebook photo OCR              |
-| 22.11  | Calendar Integration                 | Phase 22.9   | 3h     | Nextcloud CalDAV sync with reminders              |
-| 22.15  | Price Database Tracking              | Phase 22.11  | 4h     | Grocery price monitoring and comparison            |
-| 22.16  | Homepage Settings Tab                | Phase 22.15  | 3h     | Budget configuration UI                           |
+| Phase  | Title                           | Dependencies | Effort | Notes                                    |
+|--------|---------------------------------|--------------|--------|------------------------------------------|
+| 22.8D  | MERLIN Medication Checks        | Phase 22.8C  | 4h     | Daily medication reminders via buttons  |
+| 22.8E  | Life Ledger (Photo + Text)      | Phase 22.8D  | 8h     | Vision AI for expense tracking           |
+| 22.15  | Price Database Tracking         | Phase 22.8E  | 6h     | Grocery price comparison and budgeting   |
+| 22.16  | Homepage Settings Tab           | Phase 22.15  | 4h     | User-configurable budget percentages     |
+| 22.11  | Nextcloud Calendar Integration  | Phase 22.16  | 3h     | CalDAV sync with Obsidian tasks          |
 
-### 🛠️ Infrastructure Cleanup & Optimization (Priority 4)
+### 🔧 Infrastructure Cleanup (Priority: Low-Medium)
 
-| Phase | Title                              | Dependencies | Effort | Description                                          |
-|-------|------------------------------------|--------------|--------|------------------------------------------------------|
-| 8     | Storage Optimization               | Phase 7A     | 4h     | Resolve local-lvm thin pool overprovisioning       |
-| 10    | WiFi Access Point Deployment       | Phase 6F     | 3h     | TP-Link EAP610 setup and integration               |
-| 11    | Off-site Backup (Backblaze B2)     | Phase 7A     | 4h     | Cloud backup for critical data                     |
-| 12    | Network Cleanup                    | Phase 10     | 3h     | Remove legacy 192.168.1.0/24 network              |
-| 17    | Monthly Infrastructure Audit       | Phase 16.3   | 3h     | Automated monthly health reports                    |
-| 18    | Advanced Monitoring                | Phase 5      | 4h     | Custom dashboards, SLA monitoring                  |
-| 19    | Security Hardening Phase 2         | Phase 13     | 5h     | 2FA, additional access controls                    |
+| Phase | Title                                | Dependencies | Effort | Notes                                   |
+|-------|--------------------------------------|--------------|--------|-----------------------------------------|
+| 25    | WiFi Access Point Deployment         | Hardware     | 4h     | EAP610 configuration and VLAN setup    |
+| 26    | Legacy Network Cleanup               | Phase 25     | 3h     | Remove 192.168.1.0/24, switch IP update|
+| 28    | Storage Optimization                 | —            | 6h     | Move Nextcloud data, thin pool cleanup |
+| 29    | Performance Monitoring Expansion     | Phase 5      | 5h     | Advanced metrics and alerting rules    |
 
-### 🔧 Core Services Enhancement (Priority 5)
+### 🛡️ Core Services (Priority: Medium)
 
-| Phase | Title                              | Dependencies | Effort | Description                                          |
-|-------|------------------------------------|--------------|--------|------------------------------------------------------|
-| 20    | Nextcloud Performance Tuning       | Phase 7      | 3h     | Redis cache, database optimization                  |
-| 21    | Advanced Backup Testing            | Phase 7A     | 4h     | Automated restore verification                      |
-| 25    | DNS Infrastructure Upgrade         | Phase 3      | 3h     | Redundant DNS, advanced filtering                   |
-| 26    | Certificate Management             | Phase 4      | 3h     | Automated renewal, wildcard certificates            |
-| 28    | Container Registry                 | Phase 14     | 4h     | Private Docker registry for custom images          |
-| 29    | GitOps Implementation              | Phase 16.3   | 5h     | Infrastructure as code with Git workflows          |
+| Phase | Title                                | Dependencies | Effort | Notes                                   |
+|-------|--------------------------------------|--------------|--------|-----------------------------------------|
+| 27    | n8n + Vault Integration              | Phase 14     | 3h     | Direct secret fetching in workflows    |
+| 30    | Off-site Backup (Backblaze B2)       | Phase 7A     | 6h     | 3-2-1 backup strategy completion       |
 
-### 🤖 AI & Local LLM Enhancement (Priority 6)
+### 🤖 AI & Local LLM (Priority: High)
 
-| Phase | Title                              | Dependencies | Effort | Description                                          |
-|-------|------------------------------------|--------------|--------|------------------------------------------------------|
-| 40    | Ollama Model Management            | Phase 38     | 3h     | Automated model updates, version control            |
-| 42    | AI Model Benchmarking              | Phase 41     | 4h     | Performance comparison, quality metrics             |
-| 43    | Sherlock Holmes Web Scraper        | Phase 24.8   | 4h     | RSS feeds, Reddit, news site monitoring            |
-| 44    | Oracle Predictive Intelligence     | Sherlock     | 5h     | Internal + external trend analysis                  |
-| 45    | Nexus Cross-platform Integration   | Oracle       | 4h     | Agent coordination and workflow orchestration      |
-| 46    | Advanced AI Workflows              | Phase 45     | 6h     | Multi-step automation with AI decision making      |
+| Phase | Title                                | Dependencies | Effort | Notes                                   |
+|-------|--------------------------------------|--------------|--------|-----------------------------------------|
+| 42    | Llama 3.2 Vision Model Deployment   | Phase 38     | 2h     | Pull and configure vision model         |
+| 43    | Vision API Integration               | Phase 42     | 4h     | Connect vision to Gilgamesh workflows  |
 
-### 💼 Career Development (Priority 7)
+### 💼 Career Development (Priority: Medium)
 
-| Phase | Title                              | Dependencies | Effort | Description                                          |
-|-------|------------------------------------|--------------|--------|------------------------------------------------------|
-| 30    | Portfolio Website                  | Phase 28     | 6h     | Professional showcase of homelab projects          |
-| 31    | LinkedIn Integration               | Phase 30     | 3h     | Automated project updates and achievements          |
-| 32    | Certification Tracking             | Phase 22.5   | 2h     | Progress monitoring for cloud certifications       |
-| 33    | Resume Automation                  | Phase 32     | 3h     | Dynamic resume generation from project data        |
-| 34    | Interview Preparation              | Phase 33     | 4h     | Technical question database and practice system    |
+| Phase | Title                                | Dependencies | Effort | Notes                                   |
+|-------|--------------------------------------|--------------|--------|-----------------------------------------|
+| 35    | Infrastructure as Code (Terraform)   | Phase 29     | 12h    | Automate infrastructure deployment      |
+| 36    | CI/CD Pipeline                       | Phase 35     | 10h    | GitLab/GitHub Actions for homelab       |
 
-### 🔮 Long Term Vision (Priority 8)
+### 🔮 Long Term (Priority: Low)
 
-| Phase | Title                              | Dependencies | Effort | Description                                          |
-|-------|------------------------------------|--------------|--------|------------------------------------------------------|
-| 50    | Kubernetes Migration Planning       | Phase 29     | 8h     | Container orchestration strategy                    |
-| 51    | Multi-Node Expansion               | Phase 50     | 12h    | Cluster deployment and management                   |
-| 52    | Advanced Security Lab              | Phase 19     | 6h     | Malware analysis, threat hunting environment       |
-| 53    | IoT Integration                    | Phase 10     | 5h     | Home automation and sensor monitoring              |
-| 54    | Machine Learning Pipeline          | Phase 46     | 10h    | Data processing and model training infrastructure   |
-| 55    | Disaster Recovery Testing          | Phase 21     | 6h     | Full site failover and recovery procedures         |
+| Phase | Title                                | Dependencies | Effort | Notes                                   |
+|-------|--------------------------------------|--------------|--------|-----------------------------------------|
+| 45    | Kubernetes Cluster                   | Phase 36     | 20h    | K3s or full Kubernetes deployment      |
+| 46    | Service Mesh (Istio)                 | Phase 45     | 15h    | Advanced networking and security        |
+| 47    | GitOps (ArgoCD)                      | Phase 45     | 8h     | Automated application deployment        |
+| 48    | Multi-node Expansion                 | Phase 45     | 24h    | Scale beyond single Proxmox host       |
+| 49    | Edge Computing Integration           | Phase 48     | 16h    | Raspberry Pi cluster integration        |
+| 50    | Advanced AI Workloads                | Phase 43     | 20h    | Large model training and inference      |
+| 51    | Open Source Contributions            | Phase 46     | Ongoing| Give back to projects used              |
 
-### 🖥️ Hardware & Infrastructure (Priority 9)
+### 🔩 Hardware (Priority: Medium)
 
-| Phase | Title                              | Dependencies | Effort | Description                                          |
-|-------|------------------------------------|--------------|--------|------------------------------------------------------|
-| 67    | Hardware Refresh Planning          | Phase 8      | 4h     | Next generation server specifications               |
-| 68    | Power Management                   | Phase 67     | 3h     | UPS integration, power monitoring                  |
-| 69    | Environmental Monitoring           | Phase 68     | 3h     | Temperature, humidity, power consumption tracking   |
-| 70    | Legacy Hardware Repurpose          | Phase 69     | 4h     | P400S build integration or alternative use         |
+| Phase | Title                                | Dependencies | Effort | Notes                                   |
+|-------|--------------------------------------|--------------|--------|-----------------------------------------|
+| 52    | DOCP Memory Optimization             | RAM Upgrade  | 2h     | Tune 128GB kit for optimal performance |
+| 53    | Second Proxmox Node                  | Budget       | 16h    | High availability cluster setup         |
 
 ---
 
 ## 🎯 Recommended Next Session Order
 
-### Immediate Priority (Next 3 Sessions)
-1. **Guardian Agent** — Complete agent build order (after MERLIN)
-2. **Phase 7E** — Extended memory for Gilgamesh (20+ messages)
-3. **Phase 24.1** — EMIYA Foundation (infrastructure automation)
+### Phase 22.8C — Homepage Widgets (Next Session)
+**Effort:** 4 hours  
+**Goal:** Add health tracking and infrastructure widgets to Homepage dashboard  
+**Deliverables:** Health tab, infrastructure tab, webhook integration with n8n
 
-### Medium Priority (Sessions 4-8)
-4. **Phase 59** — Mash Discord Bot Foundation
-5. **Phase 22.3** — Obsidian Reminders Integration  
-6. **Phase 17** — Monthly Infrastructure Audit
-7. **Phase 7F** — File Generation capabilities
-8. **Phase 24.2** — EMIYA Alert Translation
+### Guardian Agent (Session After)
+**Effort:** 6-8 hours  
+**Goal:** Security monitoring and threat detection  
+**Deliverables:** Alert translation, threat detection, security reporting
 
-### Strategic Priority (Sessions 9-12)
-9. **Da Vinci Stage 2** — RAG retrieval system
-10. **Phase 11** — Off-site Backup (Backblaze B2)
-11. **Phase 7G** — Vision API integration
-12. **Phase 60** — Mash Player Management
+### Da Vinci Stage 2 — RAG System (Third Session)
+**Effort:** 8-10 hours  
+**Goal:** Knowledge retrieval across all agent conversations  
+**Deliverables:** Qdrant vector database, embedding pipeline, knowledge recall
 
-### Dependencies Overview
-- **Agent Build Order:** Midas ✅ → MERLIN ✅ → Guardian → Mash → Nexus → Oracle → EMIYA
-- **Gilgamesh Evolution:** Phases 7E → 7F → 7G → 7H → 7I → 7J (August 2026 target)
-- **Gaming Platform:** Phases 59 → 60 → 61 → 62 → 63 → 64 (tournament system)
-- **Infrastructure:** Guardian → Phase 24.1 → 24.2 → ... → 24.8 (EMIYA capabilities)
+### Phase 7E — Extended Memory (Fourth Session)
+**Effort:** 8 hours  
+**Goal:** 20+ message conversation continuity via RAG  
+**Deliverables:** Enhanced conversation memory, context preservation
 
 ---
 
-*Last updated: April 27, 2026*
+## 🔗 Phase Dependencies
+
+**Critical Path Analysis:**
+1. **Gilgamesh Enhancement Track:** 22.8C → Guardian → Da Vinci Stage 2 → 7E → 7F-7J
+2. **Gaming Platform Track:** Mash 59-64 (can run parallel to Gilgamesh)
+3. **Infrastructure Track:** 25-29 (low priority, independent)
+4. **Career Development Track:** 35-36 (depends on infrastructure completion)
+
+**Parallel Development Opportunities:**
+- Gaming platform phases can run alongside AI development
+- Infrastructure cleanup can happen during slower development periods
+- Hardware upgrades can be integrated into any session
+
+---
+
+*Last updated: May 9, 2026 — Next update after Phase 22.8C completion*
