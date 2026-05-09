@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** May 9, 2026
+> **Last Updated:** May 10, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. 14 LXC containers + 1 KVM VM running. Hardware upgraded with 128GB DDR4 ordered.
+**Current Status:** Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. 14 LXC containers + 1 KVM VM running. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208.
 
 ---
 
@@ -89,6 +89,11 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 - **Future Total:** 128GB DDR4 (32GB per DIMM slot on ASUS TUF B550M-E)
 - **Purpose:** VM/LXC density, large AI models, multiple workloads
 
+### Disk Health Monitoring
+
+- **sda (WD Purple 8TB):** Running at 60°C — high but functional
+- **sdb (Seagate 2TB):** 8 pending sectors detected — requires weekly monitoring
+
 ---
 
 ## 🌐 Network Architecture
@@ -132,7 +137,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | 205 | LXC  | monitoring-alertmanager | 192.168.30.205 | —                             | ✅         | ✅ Running |
 | 206 | LXC  | monitoring-uptime       | 192.168.30.206 | —                             | ✅         | ✅ Running |
 | 207 | LXC  | network-ddns            | 192.168.30.207 | —                             | ✅         | ✅ Running |
-| 208 | LXC  | dashboard-homepage      | 192.168.30.208 | home.najhin-gaming.com        | ✅         | ✅ Running |
+| 208 | LXC  | dashboard-pulse         | 192.168.30.208 | home.najhin-gaming.com        | ✅         | ✅ Running |
 | 211 | LXC  | automation-n8n          | 192.168.30.211 | n8n.najhin-gaming.com         | ✅         | ✅ Running |
 | 213 | LXC  | vault                   | 192.168.30.213 | vault.najhin-gaming.com       | ✅         | ✅ Running |
 | 214 | LXC  | password-vaultwarden    | 192.168.30.214 | passwords.najhin-gaming.com   | ✅         | ✅ Running |
@@ -142,6 +147,15 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
 
 **Total: 14 LXC containers + 1 KVM VM (VM 400 ollama-gpu), all on VLAN 30, all autostart enabled**
+
+### Pulse Dashboard (CT 208)
+
+- **Container:** rcourtman/pulse:latest on port 7655 (resized to 8GB storage)
+- **Purpose:** Proxmox-native monitoring dashboard replacing Homepage
+- **Features:** Real-time metrics, container status, zero configuration required
+- **Agents:** Installed on Kuromoon (Proxmox host) and CT 302 (Docker monitoring)
+- **Access:** home.najhin-gaming.com (Websockets Support enabled in NPM)
+- **Network:** pfSense rules added for CT 208 → Proxmox API (8006), Kuromoon → CT 208 (7655)
 
 ### Nextcloud Hub (CT 220)
 
@@ -650,14 +664,15 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Job              | Schedule | Storage                  | Containers                                  | Retention                    |
 |------------------|----------|--------------------------|---------------------------------------------|------------------------------|
-| Small Containers | 02:00    | kinmoon-nfs (NAS)        | 201, 202, 203, 204, 205, 206, 207, 214, 300 | 7 daily, 4 weekly, 2 monthly |
+| Small Containers | 02:00    | kinmoon-smb (NAS)        | 201, 202, 203, 204, 205, 206, 207, 214, 300 | 7 daily, 4 weekly, 2 monthly |
 | Large Containers | 02:30    | data-storage (Local HDD) | 220, 302                                    | 7 daily, 4 weekly, 2 monthly |
 
 ### Storage
 
 | Name         | Type       | Protocol | Capacity | Purpose                 |
 |--------------|------------|----------|----------|-------------------------|
-| kinmoon-nfs  | NAS RAID 1 | NFS      | 2.6 TB   | Small container backups |
+| kinmoon-smb  | NAS RAID 1 | SMB/CIFS | 2.6 TB   | Small container backups |
+| kinmoon-nfs  | NAS RAID 1 | NFS      | 2.6 TB   | Disk images only        |
 | data-storage | Local HDD  | Direct   | 7.2 TB   | Large container backups |
 | local-lvm    | Local NVMe | LVM-Thin | 137 GB   | Container root disks    |
 | vmpool-fast  | Local NVMe | ZFS      | 899 GB   | Fast container storage  |
@@ -667,8 +682,10 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 - **Model:** UGREEN DXP2800 (2-bay)
 - **RAID:** RAID 1 (mirrored drives for redundancy)
 - **Filesystem:** ext4
+- **SMB share:** proxmox-backups (username: Muzakkir)
 - **NFS export:** /volume1/proxmox-backups
 - **Status:** Normal (healthy, drives synced)
+- **Network:** 192.168.10.100 (changed from 192.168.10.15 after factory reset)
 
 ---
 
@@ -742,6 +759,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 58      | Windrose Server Deployment                                       | ✅ Complete | Apr 19, 2026 |
 | Midas   | Midas CFO Agent                                                  | ✅ Complete | Apr 27, 2026 |
 | MERLIN  | MERLIN Reminders Agent                                           | ✅ Complete | Apr 27, 2026 |
+| Pulse   | Pulse Dashboard Deployment                                       | ✅ Complete | May 10, 2026 |
 
 ---
 
@@ -782,6 +800,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Large file I/O errors on NAS | Hybrid approach — large containers to local storage   |
 | ZFS snapshot busy            | Kill stuck processes or reboot, then destroy snapshot |
 | Container locked (backup)    | `pct unlock <CTID>`                                   |
+| NFS cannot do LXC backups    | NFS + LXC UID namespace mapping incompatible — use SMB |
 
 ### n8n & Gilgamesh
 
@@ -801,6 +820,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | input.first()/input.last() unreliable | After Merge node, use direct node references like `$('Extract Response').first().json`                             |
 | Ollama tokens always 0                | Call Ollama node already maps prompt_eval_count → input_tokens — read data.input_tokens not data.prompt_eval_count |
 | Loki not being scraped                | Add scrape job to Prometheus config for CT 204                                                                     |
+| Pulse deployment needs websockets     | Enable Websockets Support in NPM for real-time dashboard updates                                                   |
+| Pulse agent tokens are one-time       | Generate new token per host — tokens cannot be reused                                                              |
 
 ### HashiCorp Vault (Phase 13)
 
@@ -863,6 +884,14 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Fetch Daily Note URL not resolving     | Must use {{ }} expression wrapper in WebDAV URL               |
 | JSON body invalid in health summary     | Switch to Using Fields Below mode in HTTP Request              |
 
+### Pulse Dashboard Deployment
+
+| Issue                              | Resolution                                                                   |
+|------------------------------------|------------------------------------------------------------------------------|
+| Pulse crash loop on CT 208         | No space left on device — resized container from 4GB to 8GB                  |
+| Pulse agent 401 on CT 302          | Token already consumed by Kuromoon — generated new token from Pulse UI       |
+| Pulse "Connection lost" through NPM | Websockets Support not enabled — toggled on in NPM proxy host                |
+
 ---
 
 ## ❓ Pending Tasks
@@ -875,7 +904,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
 | Activate MERLIN workflow (toggle on)                                                        | High     |
 | Monitor Windrose RAM usage — stop Docker container when not playing                         | High     |
-| Export homelab diagram from Claude Design (PNG for GitHub/LinkedIn)                         | High     |
 | Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
 
 ### Infrastructure
@@ -889,6 +917,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Phase 27 (Vault + n8n) enables n8n to fetch secrets directly                 | Medium   |
 | Install 128GB DDR4 RAM upgrade when Taobao delivery arrives                  | Medium   |
 | Clean up temp backups (saves 6.9GB local storage) - optional                 | Low      |
+| Add sdb monitoring to MERLIN daily checks                                    | Medium   |
+| Improve NAS airflow — sda at 60°C is near thermal limit for HDDs            | Medium   |
 
 ### Gilgamesh & Documentation
 
@@ -928,6 +958,63 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### May 10, 2026
+
+Date: May 10, 2026
+Phase: Pulse Dashboard Deployment + Backup Fix
+
+Topics Discussed
+- Researched homelab dashboard alternatives: Dashy, Homarr, Pulse, Homepage comparison
+- Deployed Pulse monitoring dashboard on CT 208, replacing Homepage
+- Fixed small container backups (kinmoon-smb created, NFS UID mapping issue resolved)
+- Discovered sdb (Seagate 2TB) has 8 pending sectors and sda (WD Purple 8TB) running at 60°C
+- Explained *arr media ecosystem (Sonarr, Radarr, Prowlarr, Jellyfin) — informational only, no deployment planned
+- Kinmoon NAS IP changed to 192.168.10.100, username is Muzakkir (not admin)
+
+Decisions Made
+- Pulse chosen over Dashy/Homarr/custom dashboard — best Proxmox-native monitoring with zero config
+- Homepage container removed from CT 208, Pulse runs on port 7655
+- kinmoon-smb (SMB/CIFS) created for backups — NFS cannot handle LXC UID namespace mapping for backups
+- kinmoon-nfs kept for disk images only, Backup content type removed
+- Small container backup job (02:00) switched from kinmoon-nfs to kinmoon-smb
+- Pulse Telegram alerts skipped — existing Alertmanager + MERLIN already covers alerting
+- sdb monitoring: manual weekly smartctl check for now, add to MERLIN in future session
+- *arr ecosystem not planned for deployment
+
+Changes to AI-CONTEXT.md
+- Hardware Inventory: Kinmoon NAS IP updated from 192.168.10.15 to 192.168.10.100
+- Infrastructure Inventory: CT 208 now runs Pulse (rcourtman/pulse:latest) on port 7655, Homepage removed
+- CT 208 storage: resized from 4GB to 8GB
+- Backup Strategy: Small containers storage changed from kinmoon-nfs to kinmoon-smb (SMB/CIFS protocol)
+- Storage section: Add kinmoon-smb (SMB/CIFS, 192.168.10.100, share: proxmox-backups, content: backup)
+- Storage section: kinmoon-nfs content is disk images only (not backups)
+- NAS credentials: username is Muzakkir (not admin)
+- Pulse agent installed on Kuromoon (Proxmox host) and CT 302 (gaming-wings-1 Docker monitoring)
+- pfSense rules added: CT 208 → Proxmox API (8006), Kuromoon → CT 208 (7655)
+- NPM: home.najhin-gaming.com proxied to CT 208:7655 with Websockets Support enabled
+- Disk health: sda (WD Purple 8TB) 60°C — high but functional; sdb (Seagate 2TB) 8 pending sectors — monitor weekly
+- Pending Tasks: Add "Add sdb monitoring to MERLIN daily checks". Add "Fix NAS SMB password in Vault kv/nas if exists"
+- n8n workflows count remains 12 (no new workflows added)
+- Key Lessons: Add "Pulse deployment requires websocket support in NPM for real-time updates". Add "NFS cannot do LXC backups due to UID namespace mapping — use SMB". Add "Pulse agent tokens are one-time — generate new token per host"
+- Small container backups were missing May 5-9 due to NAS reset — now restored
+
+Errors & Resolutions
+- Pulse crash loop on CT 208: No space left on device — resized CT 208 from 4GB to 8GB
+- Pulse agent 401 on CT 302: Token already consumed by Kuromoon — generated new token from Pulse UI
+- vzdump to kinmoon-nfs permission denied: NFS + LXC UID namespace mapping incompatible — created kinmoon-smb (SMB/CIFS) storage instead
+- smbclient login failure with admin user: NAS username is Muzakkir not admin, password needed command-line format (user%password) to work
+- Pulse "Connection lost" through NPM: Websockets Support not enabled — toggled on in NPM proxy host
+- kinmoon-nfs backup content type error: Backup content type was missing — added then removed again since NFS can't do LXC backups
+
+Action Items
+- [ ] Add sdb SMART monitoring to MERLIN daily checks (Current_Pending_Sector threshold)
+- [ ] Improve NAS airflow — sda at 60°C is near thermal limit for HDDs
+- [ ] Add Pulse credentials to Vaultwarden
+- [ ] Add management URLs for remaining containers in Pulse (CT 204 Loki if needed)
+- [ ] Remove Backup content type from kinmoon-nfs if not already done
+- [ ] Consider replacing sdb (Seagate 2TB, 5.7 years, 8 pending sectors) in future hardware planning
+- [ ] Update Cloudflare Access if needed for home.najhin-gaming.com (Pulse vs Homepage)
 
 ### May 9, 2026
 
@@ -1254,4 +1341,4 @@ Action Items
 
 ---
 
-*Last updated: May 9, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: May 10, 2026 — Update this file at the end of each session before pushing to GitHub*
