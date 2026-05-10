@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** May 10, 2026
+> **Last Updated:** May 11, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -974,6 +974,31 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📝 Session Log (Recent)
 
+### May 11, 2026
+
+Date: May 11, 2026
+Phase: Architecture Redesign Planning (Pre-Phase 24.x)
+
+Topics Discussed
+- Complete architecture redesign: 7-layer model (Input → Brain → App → Knowledge → Memory → Observability → Notification)
+- App selection: Firefly III, Health Connect webhook bridge, ntfy, Langfuse. Skipped Vikunja and Open Wearables.
+- Knowledge ingestion pipeline: URLs → Firecrawl → Ollama → triple-write with proactive recall + source + media
+- Agent spawning (Level 3 templates) merged into EMIYA
+- Three essential capabilities: goal tracking (→24.6), proactive nudges (→24.5), weekly review (→24.6)
+- Future phases: 25.1 Voice, 25.2 Email, 25.3 Self-Evolving Skills, 25.4 Content Creation
+- /update redesign: replace command with inline button flow using gilgamesh_session_state pattern
+- Lepulse scale syncs via Fitdays → Samsung Health → Health Connect
+
+Decisions Made
+- Deploy Firefly III (CT 221), ntfy (CT 222), Langfuse (CT 223)
+- Health data: dual-write (Data Tables + Obsidian)
+- Merge 3 morning messages → one daily digest at 7am
+- 5 phases retired, 8 new core + 4 future phases added
+- /update becomes inline button flow: Main Menu → Update Docs → [target] → send text/file
+
+Next Session
+- Phase 24.1 (Firefly III) + 24.7 (ntfy) deployment
+
 ### May 10, 2026
 
 Date: May 10, 2026
@@ -1392,4 +1417,4 @@ Action Items
 
 ---
 
-*Last updated: May 10, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: May 11, 2026 — Update this file at the end of each session before pushing to GitHub*
