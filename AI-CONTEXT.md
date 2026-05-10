@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. 14 LXC containers + 1 KVM VM running. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. 17 LXC containers + 1 KVM VM planned. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208.
 
 ---
 
@@ -62,6 +62,55 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 
 ---
 
+## 🏗️ 7-Layer Architecture (v2.0)
+
+### Layer 1: Input (Data Collection)
+- **Telegram** → Gilgamesh (primary interface)
+- **Health sensors** → Samsung Health/Lepulse scale → Health Connect bridge
+- **Voice memos** → Claude API transcription
+- **Photos** → Llama 3.2 Vision analysis
+- **Web content** → Firecrawl scraping
+
+### Layer 2: Brain (Intelligence)
+- **Primary:** Ollama qwen3:14b (local, RX 6700 XT)
+- **Fallback:** Claude Haiku (API)
+- **Complex:** Claude Sonnet (API)
+- **Vision:** Llama 3.2 Vision 11B (VM 400)
+- **Routing:** Smart complexity detection
+
+### Layer 3: App (Services)
+- **Firefly III** → Personal finance tracking (CT 221)
+- **ntfy** → Universal notification hub (CT 222)
+- **Langfuse** → LLM observability (CT 223)
+- **Nextcloud** → File sync + WebDAV
+- **Vault** → Secrets management
+
+### Layer 4: Knowledge (Storage + Recall)
+- **Obsidian** → Human-readable notes
+- **Qdrant** → Vector search (RAG)
+- **n8n Data Tables** → Fast agent queries
+- **Proactive recall** → Context-aware knowledge injection
+
+### Layer 5: Memory (Agent State)
+- **Conversation history** → 20 messages (gilgamesh_memory)
+- **Session modes** → health_logging, etc.
+- **Goal tracking** → progress + blockers
+- **Agent coordination** → shared state
+
+### Layer 6: Observability (Monitoring)
+- **Langfuse** → LLM performance tracking
+- **Midas** → Cost analysis + optimization
+- **Grafana** → Infrastructure metrics
+- **Da Vinci** → Agent behavior logs
+
+### Layer 7: Notification (Output)
+- **ntfy** → Universal push notifications
+- **Telegram** → Interactive responses
+- **Obsidian writes** → Structured logging
+- **Discord** → Gaming server management
+
+---
+
 ## 🖥️ Hardware Inventory
 
 | Device           | Hostname | Specs                                    | IP Address     | Role                              |
@@ -88,6 +137,12 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 - **Ordered:** 4x32GB Corsair Vengeance LPX DDR4-3200 from Taobao
 - **Future Total:** 128GB DDR4 (32GB per DIMM slot on ASUS TUF B550M-E)
 - **Purpose:** VM/LXC density, large AI models, multiple workloads
+
+### Health Sensors
+
+- **Lepulse scale** → Fitdays app → Samsung Health → Health Connect bridge
+- **Samsung Watch** → Samsung Health → Health Connect bridge
+- **Data flow:** Sensors → Samsung Health → Health Connect webhook bridge → n8n → Obsidian + Data Tables
 
 ### Disk Health Monitoring
 
@@ -142,11 +197,15 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | 213 | LXC  | vault                   | 192.168.30.213 | vault.najhin-gaming.com       | ✅         | ✅ Running |
 | 214 | LXC  | password-vaultwarden    | 192.168.30.214 | passwords.najhin-gaming.com   | ✅         | ✅ Running |
 | 220 | LXC  | nextcloud-hub           | 192.168.30.220 | cloud.najhin-gaming.com       | ✅         | ✅ Running |
+| 221 | LXC  | finance-firefly         | 192.168.30.221 | finance.najhin-gaming.com     | 📋        | 📋 Planned |
+| 222 | LXC  | notification-ntfy       | 192.168.30.222 | ntfy.najhin-gaming.com        | 📋        | 📋 Planned |
+| 223 | LXC  | observability-langfuse  | 192.168.30.223 | langfuse.najhin-gaming.com    | 📋        | 📋 Planned |
 | 300 | LXC  | gaming-panel            | 192.168.30.210 | —                             | ✅         | ✅ Running |
 | 302 | LXC  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅         | ✅ Running |
-| 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
+| 400 | VM   | ollama-gpu              | 192.168.30.224 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
 
-**Total: 14 LXC containers + 1 KVM VM (VM 400 ollama-gpu), all on VLAN 30, all autostart enabled**
+**Current Total: 14 LXC containers + 1 KVM VM**
+**Planned Total: 17 LXC containers + 1 KVM VM (all on VLAN 30, all autostart enabled)**
 
 ### Pulse Dashboard (CT 208)
 
@@ -171,7 +230,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **GPU:** RX 6700 XT 12GB (0d:00.0) + audio (0d:00.1) passed through
 - **PCIe config:** hostpci0=0000:0d:00.0,pcie=1,rombar=0 hostpci1=0000:0d:00.1,pcie=1
 - **OS:** Ubuntu 22.04
-- **SSH:** `ssh muzakkir@192.168.30.221` — use `muzakkir` user, not root
+- **SSH:** `ssh muzakkir@192.168.30.224` — use `muzakkir` user, not root
 - **Ollama models:** qwen3:14b (primary, 9.3GB), llama3.2:latest (secondary, 3B)
 - **Open WebUI:** Docker container, connects via 172.17.0.1:11434
 
@@ -229,24 +288,6 @@ second-brain/
 - **Morning briefing:** 7am Telegram summary via MERLIN
 - **Health tracking:** Food log, BP log, medication log via Gilgamesh buttons (Phase 22.8B)
 - **/daily command:** Gilgamesh creates immediate daily notes
-
-### Homepage Dashboard Design (Planned — Phases 22.15/22.16)
-
-4 separate tabs:
-
-- **Homelab tab** — container status, metrics, alerts
-- **Health tab** — BP tracking, food log, exercise
-- **Finance tab** — budget overview, subscription costs, weekly spending
-- **Settings tab** — user-adjustable budget percentages
-
-### Budget Configuration (Planned)
-
-- Monthly budget tracked as percentage of income
-- Default allocation: 15% groceries (~RM 450/month, ~RM 112.50/week)
-- All percentages user-adjustable in Settings tab
-- Grocery lists are budget-aware: tight month triggers pasar mode with cheaper alternatives and price comparisons (pasar vs supermarket)
-- Shopping checklist is Telegram-only — not on the homepage dashboard
-- Phases 22.15 (Price Database) and 22.16 (Homepage Settings Tab) cover implementation
 
 ---
 
@@ -310,51 +351,37 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 
 | Servant      | Class  | Role                                                                          | Platform                      | Status                     |
 |--------------|--------|-------------------------------------------------------------------------------|-------------------------------|----------------------------|
-| Gilgamesh 👑 | Archer | Personal AI Assistant                                                         | Telegram (@JhinGilgamesh_bot) | ✅ Active                   |
-| Da Vinci 🎨  | Caster | Chief Intelligence Officer (Stage 1 doc pipeline active; Stage 2 RAG planned) | n8n/Nextcloud                 | ⚡ Partial — Stage 1 active |
+| Gilgamesh 👑 | Archer | Life Interface & Personal AI Assistant                                        | Telegram (@JhinGilgamesh_bot) | ✅ Active                   |
+| Da Vinci 🎨  | Caster | Sync + Goals + Review (Stage 1 doc pipeline active; Stage 2 RAG planned)     | n8n/Nextcloud                 | ⚡ Partial — Stage 1 active |
 | Midas 💰     | Caster | CFO — Cost Tracking & Optimization                                            | n8n                           | ✅ Active                   |
-| MERLIN 🔮    | Caster | Reminders & Scheduler                                                         | n8n                           | ✅ Active                   |
+| MERLIN 🔮    | Caster | Proactive Nudges & Scheduler                                                  | n8n                           | ✅ Active                   |
 
-### Final 9-Agent Roster (Locked April 25, 2026)
+### Final 6-Agent Roster (Redesigned)
 
 | Servant             | Class    | Role                                          | Platform      | Build Order | Status     |
 |---------------------|----------|-----------------------------------------------|---------------|-------------|------------|
-| Gilgamesh 👑        | Archer   | Personal AI Assistant                         | Telegram      | —           | ✅ Active   |
-| Da Vinci 🎨         | Caster   | Chief Intelligence Officer                    | n8n/Nextcloud | —           | ⚡ Partial  |
+| Gilgamesh 👑        | Archer   | Life Interface & Personal AI Assistant        | Telegram      | —           | ✅ Active   |
+| Da Vinci 🎨         | Caster   | Sync + Goals + Weekly Review                  | n8n/Nextcloud | —           | ⚡ Partial  |
 | Midas 💰            | Caster   | CFO — Cost Tracking & Optimization            | n8n           | 1st         | ✅ Active   |
-| MERLIN 🔮           | Caster   | Reminders & Scheduler                         | n8n           | 2nd         | ✅ Active   |
-| Guardian 🛡         | —        | Security Monitoring                           | n8n           | 3rd         | 📋 Planned |
-| Mash Kyrielight 🛡️ | Shielder | Gaming Server Manager + Wellbeing             | Discord       | 4th         | 📋 Planned |
-| Nexus 🔗            | —        | Cross-platform Automation                     | n8n           | 5th         | 📋 Planned |
-| Oracle 🔮           | —        | Predictive Intelligence (internal + external) | n8n           | 6th         | 📋 Planned |
-| EMIYA 🏹            | Archer   | CTO — Infrastructure Engineer                 | n8n           | TBD         | 📋 Planned |
-| Sherlock Holmes 🔍  | Ruler    | Web Scraper & Research Agent                  | n8n           | TBD         | 📋 Planned |
+| MERLIN 🔮           | Caster   | Proactive Nudges & Health Scheduler           | n8n           | 2nd         | ✅ Active   |
+| EMIYA 🏹            | Archer   | CTO — Infrastructure + Agent Spawning         | n8n           | 3rd         | 📋 Planned |
+| Guardian 🛡         | —        | Security Monitoring & Threat Detection        | n8n           | 4th         | 📋 Planned |
 
 **Notes:**
 
-- Scribe absorbed into Da Vinci (documentation is Da Vinci's domain)
-- Oracle absorbs Zhuge Liang
-- Sherlock Holmes added April 26 as dedicated web scraper — web scraping removed from EMIYA scope
-- **Build order is firm: Midas complete, MERLIN complete, then Guardian, Mash, Nexus, Oracle**
+- Roster reduced from 9 to 6 agents for focused deployment
+- Build order is firm: Midas complete, MERLIN complete, then EMIYA (24.1-24.8), Guardian
 
-### Tier 2 Agents (Planned — Build After Core Roster)
-
-| Servant | Role            | Notes                            |
-|---------|-----------------|----------------------------------|
-| Chiron  | Career Coach    | Career transition support        |
-| Medea   | QA Engineer     | Quality assurance for all agents |
-| Waver   | Project Manager | Sprint planning, task tracking   |
-
-### Da Vinci — Chief Intelligence Officer
+### Da Vinci — Sync + Goals + Weekly Review
 
 **Role scope:**
 
 - Documentation: maintains AI-CONTEXT.md, changelog.md, troubleshoot.md via /update and /sync-docs
 - Obsidian writes: session summaries written to vault via Nextcloud WebDAV
+- Goal tracking: monitors progress, identifies blockers, suggests next steps
+- Weekly review: Sunday analysis of week's progress, agent performance, system health
 - RAG retrieval (Stage 2): queries Qdrant vector database for knowledge recall across all agents
 - Observability logs: all agents log activity to Da Vinci
-- Security intelligence (Stage 3, planned): threat feed monitoring
-- Tech news morning brief (Stage 3, planned): homelab-relevant AI and infrastructure news
 
 **Stage 2 stack:** Qdrant + nomic-embed-text + n8n native RAG nodes on VM 400. Folder `04-personal/` excluded from RAG indexing.
 
@@ -386,7 +413,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Midas touch turns everything to gold → cost optimization
 - King of wealth → perfect CFO role
 
-### MERLIN — Reminders & Scheduler
+### MERLIN — Proactive Nudges & Health Scheduler
 
 **Why Merlin:**
 
@@ -401,57 +428,43 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Loki/Prometheus memory limit warnings (OOM in X days)
 - Scheduled maintenance windows
 - Proactive infrastructure health checks
+- Health nudges: medication reminders, BP readings, exercise prompts
 
 **Current Implementation:**
 
 - Daily 8am checks: SSL expiry (hardcoded July 14, 2026), Backup restore test (baseline 2026-01-01), Prometheus memory usage, Vault seal status
 - Cloudflare API integration pending (token truncated issue in Vault kv/cloudflare)
 
-### EMIYA — CTO / Infrastructure Engineer
+### EMIYA — CTO + Infrastructure + Agent Spawning
 
-**10 core features:**
+**8 core features (Phases 24.1-24.8):**
 
- 1. Proxmox VM and LXC lifecycle management (create, start, stop, delete — approval-gated)
- 2. Alert translation (Alertmanager alerts converted to plain English via Telegram)
- 3. Container updates (Docker image updates, apt upgrades — approval-gated)
- 4. Proactive monitoring (anomaly detection, trend alerts before things break)
- 5. Security management (threat detection, firewall rule suggestions)
- 6. Performance optimization (identify bottlenecks, suggest resource reallocation)
- 7. Backup verification (confirm backup integrity, alert on failures)
- 8. Change management (track all infrastructure changes, generate audit log)
- 9. Service health reporting (daily infrastructure summary to Telegram)
-10. Pre-flight checks via Da Vinci before executing any changes
+1. **App Management** — Firefly III, ntfy, Langfuse lifecycle (24.1)
+2. **Alert Translation** — Alertmanager alerts → plain English via ntfy (24.2)
+3. **Container Updates** — Docker image updates, apt upgrades (approval-gated) (24.3)
+4. **Knowledge Ingestion** — URLs → Firecrawl → triple-write pipeline (24.4)
+5. **Proactive Monitoring** — anomaly detection, trend alerts before things break (24.5)
+6. **Performance + Goal Optimization** — resource reallocation, goal tracking (24.6)
+7. **Universal Notifications** — ntfy hub for all agent communications (24.7)
+8. **Agent Spawning** — Level 3 templates, contextual agent creation (24.8)
 
 **Design rule:** EMIYA proposes → Muzakkir approves → EMIYA executes. No autonomous destructive actions.
 
-**Deployment:** 8 sub-phases (24.1–24.8), estimated 24–32 hours total. Phases 24.1–24.5 are critical path.
+**Deployment:** 8 sub-phases (24.1–24.8), estimated 24–32 hours total. All phases are critical path.
 
-### Sherlock Holmes — Web Scraper & Research Agent
+### Guardian — Security Monitoring & Threat Detection
 
-**Role:** Dedicated web scraper replacing web scraping from EMIYA scope.
-**Sources:** RSS feeds, Reddit, news sites, homelab tool trackers.
-**Output:** Telegram alerts for relevant findings, Obsidian storage for research notes.
-
-### Mash — Gaming Discord Bot
-
-**What Mash Does:**
-
-- Discord bot commands: !start, !stop, !status
-- Announces player joins/leaves
-- Scheduled game night reminders
-- Auto-shutdown idle servers
-- Game update notifications
-- Personality: "Senpai, PlayerX just joined Windrose!"
-
-**Implementation:** Phases 59-64 (Gaming Platform Pipeline)
+**Role:** Dedicated security monitoring replacing basic alert forwarding.
+**Sources:** Alertmanager, log analysis, threat feeds, anomaly detection.
+**Output:** ntfy alerts for threats, Obsidian storage for security logs.
 
 ### Design Principles
 
-- Gilgamesh = Telegram-only (homelab admin)
-- Mash = Discord-only (gaming with friends)
+- Gilgamesh = Telegram-only (life interface)
+- All agents communicate via ntfy (universal notification hub)
 - All agents log activity to Da Vinci
 - All agents use Fate/GO servant theming for consistency
-- Build Midas first — no agent should spend tokens without cost visibility
+- Universal data flow: Input → processing → triple-write (Data Tables + Obsidian + Qdrant)
 
 ---
 
@@ -577,7 +590,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 ### SSH & API Access
 
 - **SSH to Kuromoon:** CT 211 → 192.168.10.5:22 (pfSense rule added)
-- **SSH to VM 400:** `ssh muzakkir@192.168.30.221` — use muzakkir user, not root
+- **SSH to VM 400:** `ssh muzakkir@192.168.30.224` — use muzakkir user, not root
 - **SSH to CT 302:** Password auth enabled (PermitRootLogin yes)
 - **Proxmox API:** root@pam!gilgamesh token
 - **Storage IDs:** kinmoon-nfs (not kinmoon-smb in Proxmox)
@@ -742,17 +755,19 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 22.2    | Obsidian Daily Notes + Morning Briefing                          | ✅ Complete | Apr 27, 2026 |
 | 22.8A   | Button Menu System + Community Nodes                             | ✅ Complete | Apr 27, 2026 |
 | 22.8B   | Health Tracking (Food/BP/Medication Logging)                     | ✅ Complete | Apr 28, 2026 |
-| 22.15   | Price Database Tracking                                          | 📋 Planned | —            |
-| 22.16   | Homepage Settings Tab                                            | 📋 Planned | —            |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                            | ✅ Complete | Apr 18, 2026 |
-| 24.1    | EMIYA Foundation (Proxmox API + SSH + approval gate)             | 📋 Planned | —            |
-| 24.2    | EMIYA Alert Translation (Alertmanager to plain English)          | 📋 Planned | —            |
-| 24.3    | EMIYA Container Updates (Docker + apt + Proxmox, approval-gated) | 📋 Planned | —            |
-| 24.4    | EMIYA Proactive Monitoring (anomaly detection)                   | 📋 Planned | —            |
-| 24.5    | EMIYA Security Management (threat detection)                     | 📋 Planned | —            |
-| 24.6    | EMIYA Performance Optimization                                   | 📋 Planned | —            |
-| 24.7    | EMIYA Backup Verification                                        | 📋 Planned | —            |
-| 24.8    | EMIYA Change Management                                          | 📋 Planned | —            |
+| 24.1    | App Management — Firefly III, ntfy, Langfuse deployment          | 📋 Planned | —            |
+| 24.2    | Alert Translation — Alertmanager → ntfy plain English            | 📋 Planned | —            |
+| 24.3    | Container Updates — Docker + apt updates (approval-gated)        | 📋 Planned | —            |
+| 24.4    | Knowledge Ingestion — URLs → Firecrawl → triple-write pipeline   | 📋 Planned | —            |
+| 24.5    | Proactive Monitoring — anomaly detection + proactive nudges      | 📋 Planned | —            |
+| 24.6    | Performance + Goal Optimization — resource + goal tracking       | 📋 Planned | —            |
+| 24.7    | Universal Notifications — ntfy hub for all agents               | 📋 Planned | —            |
+| 24.8    | Agent Spawning — Level 3 templates, contextual creation         | 📋 Planned | —            |
+| 25.1    | Voice Interface — Claude API transcription + voice responses     | 📋 Planned | —            |
+| 25.2    | Email Integration — IMAP monitoring + smart filtering            | 📋 Planned | —            |
+| 25.3    | Self-Evolving Skills — agent capability learning                | 📋 Planned | —            |
+| 25.4    | Content Creation — automated reports, social posts              | 📋 Planned | —            |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT                             | ✅ Complete | Apr 24, 2026 |
 | 39      | Open WebUI                                                       | ✅ Complete | Apr 24, 2026 |
 | 41      | Gilgamesh + Ollama Hybrid Routing                                | ✅ Complete | Apr 24, 2026 |
@@ -911,7 +926,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Task                                                                         | Priority |
 |------------------------------------------------------------------------------|----------|
 | Address local-lvm thin pool overprovisioning (during infrastructure cleanup) | Medium   |
-| Plan Phase 24.1 (EMIYA Foundation) in dedicated session                      | Medium   |
+| Begin Phase 24.1 (Firefly III) + 24.7 (ntfy) next session                   | High     |
 | Create muzakkir97/homelab-private repo                                       | Medium   |
 | Set up Backblaze B2 account                                                  | Medium   |
 | Phase 27 (Vault + n8n) enables n8n to fetch secrets directly                 | Medium   |
@@ -925,9 +940,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Task                                                                                            | Priority |
 |-------------------------------------------------------------------------------------------------|----------|
 | Build Monthly Infrastructure Audit cron workflow (assign new phase number — NOT 16.3)           | High     |
-| Build Guardian security monitoring agent (next after health tracking)                           | High     |
-| Build Mash Discord bot (Phases 59-64)                                                           | High     |
-| Document Sherlock Holmes agent design (sources, scraping targets, output, Obsidian integration) | Medium   |
+| Build Guardian security monitoring agent (after Phase 24.8)                                     | High     |
+| Review and finalize ROADMAP-v2-draft.md                                                        | High     |
+| Confirm Lepulse → Fitdays → Samsung Health sync works on phone                                  | Medium   |
 | /update redesign — file attachment via Telegram, push to GitHub + Nextcloud                     | Medium   |
 | Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram)                 | Medium   |
 | Integrate Vault secrets into n8n Gilgamesh workflow (Phase 27)                                  | Medium   |
@@ -958,6 +973,42 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### May 10, 2026
+
+Date: May 10, 2026
+Phase: Architecture Redesign Planning (Pre-Phase 24.x)
+
+Topics Discussed
+- Complete architecture redesign: 7-layer model (Input → Brain → App → Knowledge → Memory → Observability → Notification)
+- App selection: Firefly III, Health Connect webhook bridge, ntfy, Langfuse. Skipped Vikunja and Open Wearables.
+- Knowledge ingestion pipeline: URLs → Firecrawl → Ollama → triple-write (Obsidian + Data Table + Qdrant) with proactive recall + source citation + media
+- Agent spawning (Level 3 templates) merged into EMIYA scope
+- Three essential capabilities added: goal tracking (→ 24.6), proactive nudges (→ 24.5), weekly review (→ 24.6)
+- Future phases added: 25.1 Voice, 25.2 Email, 25.3 Self-Evolving Skills, 25.4 Content Creation
+
+Decisions Made
+- Deploy Firefly III (CT 221), ntfy (CT 222), Langfuse (CT 223)
+- Health data: dual-write (Data Tables for agents + Obsidian for human)
+- Merge 3 morning messages into one Gilgamesh daily digest at 7am
+- Knowledge recall: proactive with source link + media
+- Lepulse scale syncs via Fitdays → Samsung Health → Health Connect → same bridge as watch
+- 5 phases retired: 22.8C, 22.8D, 22.8E, 22.15, 22.16
+- New phases: 24.1–24.8 (core) + 25.1–25.4 (future)
+
+Changes to AI-CONTEXT.md
+- Replace architecture with 7-layer model
+- Add CT 221/222/223 to container inventory (total: 17 LXC + 1 VM)
+- Update all 6 agent roles (Gil=life interface, Da Vinci=sync+goals+review, MERLIN=nudges, EMIYA=infra+spawning)
+- Replace roadmap with v2 build order: 24.1-24.8 → 7E → EMIYA → 25.1-25.4
+- Add Lepulse scale to hardware notes
+- Document universal data flow pattern
+
+Action Items
+- [ ] Review and finalize ROADMAP-v2-draft.md
+- [ ] Update AI-CONTEXT.md + ROADMAP.md + push to GitHub
+- [ ] Begin Phase 24.1 (Firefly III) + 24.7 (ntfy) next session
+- [ ] Confirm Lepulse → Fitdays → Samsung Health sync works on phone
 
 ### May 10, 2026
 
