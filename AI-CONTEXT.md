@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** May 13, 2026
+> **Last Updated:** May 14, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy) and 24.1 (Firefly III) complete. 17 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Nextcloud Deck integration designed for Da Vinci project management.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy) and 24.1 (Firefly III) complete. 17 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Nextcloud Deck integration complete with Da Vinci project management.
 
 ---
 
@@ -399,6 +399,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Weekly review: Sunday analysis of week's progress, agent performance, system health
 - RAG retrieval (Stage 2): queries Qdrant vector database for knowledge recall across all agents
 - Observability logs: all agents log activity to Da Vinci
+- Kanban management: Nextcloud Deck card creation and status updates
 
 **Stage 2 stack:** Qdrant + nomic-embed-text + n8n native RAG nodes on VM 400. Folder `04-personal/` excluded from RAG indexing.
 
@@ -414,11 +415,12 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 
 Da Vinci integrates with Nextcloud Deck for kanban project management:
 
-**Boards:** 3 boards (Homelab blue, Career green, Personal orange)
+**Boards:** 3 boards (Homelab ID: 4, Career ID: 5, Personal ID: 6)
 **Stacks:** Backlog → Up Next → Blocked → In Progress → Done
-**Tags:** 4 dimensions (category, priority, agent, effort)
+**Labels:** 22 on Homelab (category, priority, agent, effort), 9 on Career/Personal
 **Behavior:** Auto-create/complete cards, advisory comments for movement
-**API:** https://cloud.najhin-gaming.com/index.php/apps/deck/api/v1.0
+**API:** http://192.168.30.220/index.php/apps/deck/api/v1.0
+**Auth:** Basic auth with app password (credential: NextCloud-Deck)
 
 ### Midas — CFO (Cost Tracking & Optimization)
 
@@ -575,7 +577,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Telegram Agent                     | Main bot, menu, commands, hybrid routing | 15+   | Telegram |
 | Documentation Pipeline — Update    | Session summary → 3 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
-| Da Vinci Documentation Pipeline    | Raw staging summaries → formatted docs   | 11    | Webhook  |
+| Da Vinci Documentation Pipeline    | Raw staging summaries → formatted docs + Deck | 11+ | Webhook |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
 | Midas — Daily Brief                | 9am scheduled cost summary               | 4     | Schedule |
 | MERLIN — Reminders                 | 8am daily infrastructure checks          | 8     | Schedule |
@@ -636,7 +638,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 ```
 Session Summary → /update → Da Vinci workflow → Claude API → AI-CONTEXT.md + changelog.md + troubleshoot.md
                                                                      ↓
-                                                              Nextcloud + GitHub
+                                                              Nextcloud + GitHub + Deck
 ```
 
 #### Da Vinci Documentation Pipeline (Phase 16.3)
@@ -646,7 +648,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
                          ↓
                Da Vinci n8n workflow → Claude API (max_tokens: 32000)
                          ↓
-               Formatted AI-CONTEXT.md → Nextcloud + GitHub
+               Formatted AI-CONTEXT.md → Nextcloud + GitHub + Deck kanban
 ```
 
 ### Commands
@@ -667,6 +669,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | GitHub       | Version control via API push                        |
 | Da Vinci     | Async processing (she/her pronouns)                 |
 | Staging file | AI-CONTEXT-staging.md in Nextcloud (rolling append) |
+| Deck         | Kanban cards created from action items              |
 
 ### File Coverage (sync-docs)
 
@@ -678,6 +681,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 - **Direct node references:** Use `$('Extract Response').first().json.updatedDoc` — do NOT rely on `$json` after Merge node
 - **max_tokens:** 32000 (prevents AI-CONTEXT.md being replaced with hallucinated content)
 - **Grounding fix pending:** Add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
+- **Deck integration:** Extended workflow with 6 additional nodes for Deck kanban management
 
 ---
 
@@ -694,8 +698,20 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Homelab Alerts     | Telegram         | Alertmanager CT 205 | ✅ Active | Critical alerts (host down, high CPU/memory/disk)              |
 | Homelab Alerts     | Discord webhook  | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel                        |
 | Homelab-Ntfy       | ntfy CT 222      | Uptime Kuma CT 206  | ✅ Active | Service down alerts via ntfy                                   |
+| Nextcloud Deck     | Deck CT 220      | n8n CT 211          | ✅ Active | Kanban project management via Da Vinci                         |
 
 **Planned:** Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n.
+
+### Nextcloud Deck Integration
+
+| Component | Details |
+|-----------|---------|
+| **App** | Deck on CT 220 (cloud.najhin-gaming.com) |
+| **Boards** | 3 boards: Homelab (ID: 4), Career (ID: 5), Personal (ID: 6) |
+| **Stacks** | 5 stacks per board: Backlog, Up Next, Blocked, In Progress, Done |
+| **Labels** | 22 labels on Homelab (category, priority, agent, effort), 9 on Career/Personal |
+| **API Base** | http://192.168.30.220/index.php/apps/deck/api/v1.0 |
+| **Auth** | Basic auth with app password (credential: NextCloud-Deck) |
 
 ---
 
@@ -803,6 +819,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Midas   | Midas CFO Agent                                                  | ✅ Complete | Apr 27, 2026 |
 | MERLIN  | MERLIN Reminders Agent                                           | ✅ Complete | Apr 27, 2026 |
 | Pulse   | Pulse Dashboard Deployment                                       | ✅ Complete | May 10, 2026 |
+| Deck    | Nextcloud Deck + Da Vinci Integration                            | ✅ Complete | May 14, 2026 |
 
 ---
 
@@ -866,6 +883,11 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Pulse deployment needs websockets     | Enable Websockets Support in NPM for real-time dashboard updates                                                   |
 | Pulse agent tokens are one-time       | Generate new token per host — tokens cannot be reused                                                              |
 | Cloudflare Access blocks apps         | Apps needing persistent connections (ntfy, websockets) should use native auth not Cloudflare Access                |
+| Deck API assignLabel                  | PUT /assignLabel (no label ID in URL), body {"labelId": X}                                                         |
+| Deck API card update                  | requires owner field or returns 400; omitting description wipes it                                                |
+| Deck API headers                      | OCS-APIRequest and Accept headers required on all calls                                                            |
+| Nextcloud API auth                    | app password required, regular password returns "not logged in"                                                    |
+| Internal URL bypasses Cloudflare     | http://192.168.30.220 (port 80 only, no SSL)                                                                      |
 
 ### HashiCorp Vault (Phase 13)
 
@@ -944,6 +966,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                                        | Priority |
 |---------------------------------------------------------------------------------------------|----------|
+| Test full /update pipeline end-to-end with this session summary                             | High     |
+| Verify Da Vinci creates Deck card from action items in this summary                         | High     |
+| Connect Loop done output and If false output to Notify Complete Telegram node               | High     |
 | Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
 | Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
 | Activate MERLIN workflow (toggle on)                                                        | High     |
@@ -970,6 +995,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                                            | Priority |
 |-------------------------------------------------------------------------------------------------|----------|
+| Update deck-davinci-n8n-guide.md with correct API endpoints discovered during debugging         | High     |
 | Build Monthly Infrastructure Audit cron workflow (assign new phase number — NOT 16.3)           | High     |
 | Build Guardian security monitoring agent (after Phase 24.8)                                     | High     |
 | Review and finalize ROADMAP-v2-draft.md                                                        | High     |
@@ -1006,6 +1032,63 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### May 14, 2026
+
+Date: May 14, 2026
+Phase: Nextcloud Deck + Da Vinci Integration
+
+Topics Discussed
+- Nextcloud Deck one-time setup: 3 boards (Homelab, Career, Personal), 5 stacks each, 40 labels, 74 phase cards
+- Deck API authentication: regular password rejected, app password required for API access
+- Deck API endpoint debugging: assignLabel route is PUT /assignLabel with {"labelId": X} in body (no ID in URL)
+- Card update API requires owner field in body or returns 400
+- Internal URL http://192.168.30.220 required (Cloudflare blocks Basic Auth on external URL)
+- Label assignment and emoji prefix script for visual card differentiation
+- Da Vinci workflow extended with 6 new nodes for Deck kanban management
+- First successful card creation via n8n Deck integration
+
+Decisions Made
+- Nextcloud Deck app password created for API access (credential name: NextCloud-Deck in n8n)
+- Homelab board ID: 4, Career board ID: 5, Personal board ID: 6
+- Stack IDs fetched dynamically via GET /boards/4/stacks
+- Labels assigned via PUT /boards/{id}/stacks/{sid}/cards/{cid}/assignLabel with body {"labelId": X}
+- Card updates require title, type, owner, and description fields to avoid field wiping
+- Status emojis on card titles: ✅ Done, 🔧 In Progress, 📋 Backlog, 🚫 Blocked
+- Da Vinci Deck nodes appended after Push to GitHub in existing workflow
+- AI-CONTEXT-staging.md cleared to prevent 53 stale action items from creating duplicate cards
+
+Changes to AI-CONTEXT.md
+- Add Nextcloud Deck section under Bots & Integrations:
+  - Deck app on CT 220 (cloud.najhin-gaming.com)
+  - 3 boards: Homelab (ID 4), Career (ID 5), Personal (ID 6)
+  - 5 stacks per board: Backlog, Up Next, Blocked, In Progress, Done
+  - 22 labels on Homelab (category, priority, agent, effort), 9 on Career, 9 on Personal
+  - API base: http://192.168.30.220/index.php/apps/deck/api/v1.0
+  - Auth: Basic auth with app password (credential: NextCloud-Deck)
+- Add to Key Lessons / n8n & Gilgamesh:
+  - Deck API assignLabel: PUT /assignLabel (no label ID in URL), body {"labelId": X}
+  - Deck API card update: requires owner field or returns 400; omitting description wipes it
+  - Deck API: OCS-APIRequest and Accept headers required on all calls
+  - Nextcloud API auth: app password required, regular password returns "not logged in"
+  - Internal URL http://192.168.30.220 bypasses Cloudflare (port 80 only, no SSL)
+- Update n8n Workflows table: Da Vinci workflow now includes Deck management nodes (Parse Deck Actions, If, Fetch Homelab Stacks, Build Deck Requests, Loop Deck Actions, Execute Deck Action)
+- Update Da Vinci Documentation Pipeline section: add Deck as third output target alongside Obsidian and GitHub
+
+Errors & Resolutions
+- Nextcloud API "Current user is not logged in": use app password instead of regular password
+- Deck API 405 on assignLabel: route is /assignLabel without /{labelId} suffix; labelId goes in request body only
+- Deck API 400 on card update: must include owner field in PUT body
+- Card description wiped on update: must include current description in PUT body
+- n8n Code node "Referenced node doesn't exist": webhook node named "Da Vinci Webhook" not "Webhook"
+- n8n Code node "summaryText.split is not a function": webhook body is trigger-only; session text is in Read Staging File node
+- n8n HTTP Request "Invalid URL =http://": URL field was in Fixed mode with = prefix; switch to Expression mode
+
+Action Items
+- [ ] Test full /update pipeline end-to-end with this session summary
+- [ ] Verify Da Vinci creates Deck card from action items in this summary
+- [ ] Connect Loop done output and If false output to Notify Complete Telegram node
+- [ ] Update deck-davinci-n8n-guide.md with correct API endpoints discovered during debugging
 
 ### May 13, 2026
 
@@ -1312,4 +1395,4 @@ Action Items
 
 ---
 
-*Last updated: May 13, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: May 14, 2026 — Update this file at the end of each session before pushing to GitHub*
