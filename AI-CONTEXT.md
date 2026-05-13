@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy) and 24.1 (Firefly III) complete. 17 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy) and 24.1 (Firefly III) complete. 17 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Nextcloud Deck integration designed for Da Vinci project management.
 
 ---
 
@@ -204,8 +204,8 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | 302 | LXC  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅         | ✅ Running |
 | 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
 
-**Current Total: 16 LXC containers + 1 KVM VM**
-**Planned Total: 17 LXC containers + 1 KVM VM (all on VLAN 30, all autostart enabled)**
+**Current Total: 17 LXC containers + 1 KVM VM**
+**Planned Total: 18 LXC containers + 1 KVM VM (all on VLAN 30, all autostart enabled)**
 
 ### Pulse Dashboard (CT 208)
 
@@ -223,6 +223,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Data location:** Currently on /var/lib/nextcloud (root disk)
 - **Planned migration:** Move data directory to /mnt/data-storage (7.3TB HDD) during future phase
 - **WebDAV base URL:** https://cloud.najhin-gaming.com/remote.php/dav/files/admin/
+- **Enabled apps:** Deck (project management), Tasks, Calendar
 
 ### Firefly III (CT 221)
 
@@ -482,6 +483,16 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - All agents use Fate/GO servant theming for consistency
 - Universal data flow: Input → processing → triple-write (Data Tables + Obsidian + Qdrant)
 
+### Nextcloud Deck Integration
+
+Da Vinci integrates with Nextcloud Deck for kanban project management:
+
+**Boards:** 3 boards (Homelab blue, Career green, Personal orange)
+**Stacks:** Backlog → Up Next → Blocked → In Progress → Done
+**Tags:** 4 dimensions (category, priority, agent, effort)
+**Behavior:** Auto-create/complete cards, advisory comments for movement
+**API:** https://cloud.najhin-gaming.com/index.php/apps/deck/api/v1.0
+
 ---
 
 ## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15/41)
@@ -727,7 +738,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Segmentation    | 5 VLANs with enforced firewall rules                                                                                                                                                               |
 | DNS             | Pi-hole ad/tracker blocking (~489K domains)                                                                                                                                                        |
 | VPN             | Tailscale (subnet router on pfSense, primary access)                                                                                                                                               |
-| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Homepage, Nextcloud, Firefly III (8 apps total)                                                   |
+| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Nextcloud, Firefly III (7 apps total)                                                   |
 | External Access | Cloudflare Tunnel for all external services                                                                                                                                                        |
 | Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                                                                                                                                      |
 | Backup          | Automated daily backups with 7/4/2 retention                                                                                                                                                       |
@@ -995,6 +1006,52 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### May 13, 2026
+
+Date: May 13, 2026
+Phase: Nextcloud Deck — Da Vinci Integration (Design)
+
+Topics Discussed
+- Nextcloud Deck integration with Da Vinci for kanban project management
+- Board structure: 3 boards (Homelab, Career, Personal)
+- Column structure: Backlog → Up Next → Blocked → In Progress → Done
+- Tag structure: 4 dimensions (category, priority, agent, effort)
+- Da Vinci behavior model: auto-create, auto-complete, advisory comments
+- User interaction model: Gilgamesh for /update, manual card movement on Nextcloud Deck UI
+- Initial population strategy: script all 86 phases from ROADMAP.md
+- Brainstorming skill auto-trigger preference saved to memory
+
+Decisions Made
+- Platform: Nextcloud Deck (not Obsidian Kanban plugin) — proper REST API for programmatic management
+- 3 boards: Homelab (blue), Career (green), Personal (orange)
+- 5 stacks per board: Backlog, Up Next, Blocked, In Progress, Done
+- 9 category tags: infrastructure, security, AI/automation, gaming, monitoring, storage, knowledge, career, hardware
+- 3 priority tags: high (red), medium (orange), low (grey)
+- 7 agent tags: gilgamesh, da-vinci, midas, merlin, guardian, emiya, mash
+- 3 effort tags: quick (1-2h), medium-effort (3-5h), large (6h+)
+- Da Vinci hybrid management: auto-create/complete cards, advisory comments for movement (never moves to Up Next/In Progress)
+- All interaction through Gilgamesh — Da Vinci is backend only
+- User manually moves cards in Nextcloud Deck UI based on Da Vinci's advisory comments
+- Initial setup fully scripted (boards, stacks, tags, 86 phase cards)
+- User will clear existing manually-entered cards before script runs
+- Career and Personal boards start empty, grow organically from sessions
+
+Changes to AI-CONTEXT.md
+- Add new section: Nextcloud Deck Integration under Da Vinci
+- Deck API base URL: https://cloud.najhin-gaming.com/index.php/apps/deck/api/v1.0
+- Auth: Basic auth with admin user, OCS-APIRequest: true header required
+- 3 boards, 5 stacks each, 4 tag dimensions documented
+- Da Vinci behavior modes: auto-create, auto-complete, advisory comments
+- Design spec saved: 2026-05-13-nextcloud-deck-davinci-design.md
+
+Action Items
+- [ ] Clear existing manually-entered cards from Homelab board
+- [ ] Implement initial setup script (create boards, stacks, tags)
+- [ ] Populate Homelab board with all 86 phases from ROADMAP.md
+- [ ] Extend Da Vinci workflow with Deck API nodes (Steps 1-5)
+- [ ] Test end-to-end: /update → Da Vinci → Deck card creation
+- [ ] Test advisory comments on dependency unblock
 
 ### May 13, 2026
 
