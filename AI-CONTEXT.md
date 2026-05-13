@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** May 11, 2026
+> **Last Updated:** May 13, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. 17 LXC containers + 1 KVM VM planned. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy) and 24.1 (Firefly III) complete. 17 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208.
 
 ---
 
@@ -197,14 +197,14 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | 213 | LXC  | vault                   | 192.168.30.213 | vault.najhin-gaming.com       | ✅         | ✅ Running |
 | 214 | LXC  | password-vaultwarden    | 192.168.30.214 | passwords.najhin-gaming.com   | ✅         | ✅ Running |
 | 220 | LXC  | nextcloud-hub           | 192.168.30.220 | cloud.najhin-gaming.com       | ✅         | ✅ Running |
-| 221 | LXC  | finance-firefly         | 192.168.30.221 | finance.najhin-gaming.com     | 📋        | 📋 Planned |
-| 222 | LXC  | notification-ntfy       | 192.168.30.222 | ntfy.najhin-gaming.com        | 📋        | 📋 Planned |
+| 221 | LXC  | finance-firefly         | 192.168.30.224 | finance.najhin-gaming.com     | ✅         | ✅ Running |
+| 222 | LXC  | notification-ntfy       | 192.168.30.222 | ntfy.najhin-gaming.com        | ✅         | ✅ Running |
 | 223 | LXC  | observability-langfuse  | 192.168.30.223 | langfuse.najhin-gaming.com    | 📋        | 📋 Planned |
 | 300 | LXC  | gaming-panel            | 192.168.30.210 | —                             | ✅         | ✅ Running |
 | 302 | LXC  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅         | ✅ Running |
-| 400 | VM   | ollama-gpu              | 192.168.30.224 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
+| 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
 
-**Current Total: 14 LXC containers + 1 KVM VM**
+**Current Total: 16 LXC containers + 1 KVM VM**
 **Planned Total: 17 LXC containers + 1 KVM VM (all on VLAN 30, all autostart enabled)**
 
 ### Pulse Dashboard (CT 208)
@@ -224,13 +224,29 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Planned migration:** Move data directory to /mnt/data-storage (7.3TB HDD) during future phase
 - **WebDAV base URL:** https://cloud.najhin-gaming.com/remote.php/dav/files/admin/
 
+### Firefly III (CT 221)
+
+- **Container:** fireflyiii/core:latest + MariaDB backend
+- **IP:** 192.168.30.224 (NOTE: not .221, which is VM 400)
+- **Purpose:** Personal finance tracking (MYR currency)
+- **Access:** finance.najhin-gaming.com (Cloudflare Access + Email OTP)
+- **API:** Token stored in Vaultwarden (name: gilgamesh)
+
+### ntfy (CT 222)
+
+- **Container:** binwiederhier/ntfy:latest on port 2586
+- **Purpose:** Universal notification hub for all agents
+- **Auth:** Built-in username/password (not Cloudflare Access for phone app compatibility)
+- **Access:** ntfy.najhin-gaming.com (Cloudflare Tunnel without Access)
+- **Integration:** Uptime Kuma → ntfy alerts configured
+
 ### ollama-gpu (VM 400)
 
 - **Type:** KVM VM with PCIe passthrough — NOT an LXC
 - **GPU:** RX 6700 XT 12GB (0d:00.0) + audio (0d:00.1) passed through
 - **PCIe config:** hostpci0=0000:0d:00.0,pcie=1,rombar=0 hostpci1=0000:0d:00.1,pcie=1
 - **OS:** Ubuntu 22.04
-- **SSH:** `ssh muzakkir@192.168.30.224` — use `muzakkir` user, not root
+- **SSH:** `ssh muzakkir@192.168.30.221` — use `muzakkir` user, not root
 - **Ollama models:** qwen3:14b (primary, 9.3GB), llama3.2:latest (secondary, 3B)
 - **Open WebUI:** Docker container, connects via 172.17.0.1:11434
 
@@ -590,7 +606,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 ### SSH & API Access
 
 - **SSH to Kuromoon:** CT 211 → 192.168.10.5:22 (pfSense rule added)
-- **SSH to VM 400:** `ssh muzakkir@192.168.30.224` — use muzakkir user, not root
+- **SSH to VM 400:** `ssh muzakkir@192.168.30.221` — use muzakkir user, not root
 - **SSH to CT 302:** Password auth enabled (PermitRootLogin yes)
 - **Proxmox API:** root@pam!gilgamesh token
 - **Storage IDs:** kinmoon-nfs (not kinmoon-smb in Proxmox)
@@ -666,6 +682,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Health Tracking    | Obsidian WebDAV  | n8n CT 211          | ✅ Active | Food/BP/medication logging via Gilgamesh buttons               |
 | Homelab Alerts     | Telegram         | Alertmanager CT 205 | ✅ Active | Critical alerts (host down, high CPU/memory/disk)              |
 | Homelab Alerts     | Discord webhook  | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel                        |
+| Homelab-Ntfy       | ntfy CT 222      | Uptime Kuma CT 206  | ✅ Active | Service down alerts via ntfy                                   |
 
 **Planned:** Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n.
 
@@ -710,7 +727,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Segmentation    | 5 VLANs with enforced firewall rules                                                                                                                                                               |
 | DNS             | Pi-hole ad/tracker blocking (~489K domains)                                                                                                                                                        |
 | VPN             | Tailscale (subnet router on pfSense, primary access)                                                                                                                                               |
-| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Homepage, Nextcloud (7 apps total)                                                   |
+| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Homepage, Nextcloud, Firefly III (8 apps total)                                                   |
 | External Access | Cloudflare Tunnel for all external services                                                                                                                                                        |
 | Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                                                                                                                                      |
 | Backup          | Automated daily backups with 7/4/2 retention                                                                                                                                                       |
@@ -756,13 +773,13 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 22.8A   | Button Menu System + Community Nodes                             | ✅ Complete | Apr 27, 2026 |
 | 22.8B   | Health Tracking (Food/BP/Medication Logging)                     | ✅ Complete | Apr 28, 2026 |
 | 23      | Vaultwarden + Secrets Audit & Cleanup                            | ✅ Complete | Apr 18, 2026 |
-| 24.1    | App Management — Firefly III, ntfy, Langfuse deployment          | 📋 Planned | —            |
+| 24.1    | App Management — Firefly III deployment                          | ✅ Complete | May 13, 2026 |
 | 24.2    | Alert Translation — Alertmanager → ntfy plain English            | 📋 Planned | —            |
 | 24.3    | Container Updates — Docker + apt updates (approval-gated)        | 📋 Planned | —            |
 | 24.4    | Knowledge Ingestion — URLs → Firecrawl → triple-write pipeline   | 📋 Planned | —            |
 | 24.5    | Proactive Monitoring — anomaly detection + proactive nudges      | 📋 Planned | —            |
 | 24.6    | Performance + Goal Optimization — resource + goal tracking       | 📋 Planned | —            |
-| 24.7    | Universal Notifications — ntfy hub for all agents               | 📋 Planned | —            |
+| 24.7    | Universal Notifications — ntfy hub deployment                    | ✅ Complete | May 13, 2026 |
 | 24.8    | Agent Spawning — Level 3 templates, contextual creation         | 📋 Planned | —            |
 | 25.1    | Voice Interface — Claude API transcription + voice responses     | 📋 Planned | —            |
 | 25.2    | Email Integration — IMAP monitoring + smart filtering            | 📋 Planned | —            |
@@ -837,6 +854,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Loki not being scraped                | Add scrape job to Prometheus config for CT 204                                                                     |
 | Pulse deployment needs websockets     | Enable Websockets Support in NPM for real-time dashboard updates                                                   |
 | Pulse agent tokens are one-time       | Generate new token per host — tokens cannot be reused                                                              |
+| Cloudflare Access blocks apps         | Apps needing persistent connections (ntfy, websockets) should use native auth not Cloudflare Access                |
 
 ### HashiCorp Vault (Phase 13)
 
@@ -920,13 +938,15 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Activate MERLIN workflow (toggle on)                                                        | High     |
 | Monitor Windrose RAM usage — stop Docker container when not playing                         | High     |
 | Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
+| Add Uptime Kuma monitors for Firefly III and ntfy                                           | Medium   |
+| Fix morning briefing container count (15 → 17)                                              | Medium   |
 
 ### Infrastructure
 
 | Task                                                                         | Priority |
 |------------------------------------------------------------------------------|----------|
 | Address local-lvm thin pool overprovisioning (during infrastructure cleanup) | Medium   |
-| Begin Phase 24.1 (Firefly III) + 24.7 (ntfy) next session                   | High     |
+| Begin Phase 24.8 (Langfuse) next session                                    | High     |
 | Create muzakkir97/homelab-private repo                                       | Medium   |
 | Set up Backblaze B2 account                                                  | Medium   |
 | Phase 27 (Vault + n8n) enables n8n to fetch secrets directly                 | Medium   |
@@ -947,6 +967,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram)                 | Medium   |
 | Integrate Vault secrets into n8n Gilgamesh workflow (Phase 27)                                  | Medium   |
 | Build Da Vinci Stage 2 (RAG) alongside Phase 7E                                                 | Medium   |
+| Create Anthropic Admin API key for Midas cost tracking (future session)                         | Medium   |
+| Wire Midas → Firefly III API (Phase 24.2, future session)                                       | Medium   |
 
 ### Infrastructure (Network & Services)
 
@@ -974,6 +996,55 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📝 Session Log (Recent)
 
+### May 13, 2026
+
+Date: 2026-05-13
+Phase: 24.7 (ntfy) + 24.1 (Firefly III)
+
+Topics Discussed
+- Deployed Phase 24.7 (ntfy) — CT 222, 192.168.30.222, port 2586
+- Deployed Phase 24.1 (Firefly III) — CT 221, 192.168.30.224, port 8080
+- Configured ntfy built-in auth (deny-all default, admin user: muzakkir) instead of Cloudflare Access (phone app can't do email OTP)
+- Cloudflare Tunnel routes added for ntfy.najhin-gaming.com and finance.najhin-gaming.com
+- Cloudflare Access added for finance.najhin-gaming.com only (browser-only access, OTP works fine)
+- Wired Uptime Kuma → ntfy (Homelab-Ntfy Alerts) with username/password auth
+- Added n8n monitor to Uptime Kuma (was missing entirely)
+- Identified storage alert: Proxmox boot drive at 82% — data-storage and local share same 66.4GB disk, but /var/lib/vz/dump/ was nearly empty (not backup issue)
+- Identified Midas $0 cost bug fix: Anthropic Admin API /v1/organizations/cost_report endpoint gives real spend data
+- Compiled full issues/gaps list from all past sessions (10 items)
+- Enabled Nextcloud Deck for kanban project tracking
+- Enabled Nextcloud Tasks and Calendar for future agent integration (CalDAV)
+- Created Homelab Deck board with Backlog, Next Up, In Progress, Done columns and all known bugs/features as cards
+
+Decisions Made
+- ntfy uses built-in auth (not Cloudflare Access) so phone app + Uptime Kuma can connect
+- Firefly III uses Cloudflare Access (browser-only, OTP fine)
+- CT 221 (Firefly III) uses IP 192.168.30.224 (not .221, which is VM 400 ollama-gpu)
+- Firefly III default currency: MYR (Malaysian Ringgit, symbol RM)
+- Firefly III API token created (name: gilgamesh), stored in Vaultwarden
+- Midas cost tracking will switch from self-recorded tokens to Anthropic Admin API in future session
+- Nextcloud Deck chosen for kanban (no new container, already in Nextcloud)
+- No other Nextcloud apps needed — Deck, Tasks, Calendar are sufficient
+
+Changes to AI-CONTEXT.md
+Container Inventory: Add CT 221 (firefly, 192.168.30.224, Firefly III + MariaDB Docker, 2 cores, 1GB RAM, 8GB disk, Phase 24.1) — NOTE: IP is .224 not .221. Add CT 222 (ntfy, 192.168.30.222, ntfy Docker, 1 core, 512MB RAM, 4GB disk, Phase 24.7). Total: 17 LXC + 1 VM.
+Phase Status: Phase 24.7 (ntfy) COMPLETED 2026-05-13, Phase 24.1 (Firefly III) COMPLETED 2026-05-13.
+Services/URLs: ntfy: ntfy.najhin-gaming.com (Cloudflare Tunnel, no Access — uses built-in auth), Firefly III: finance.najhin-gaming.com (Cloudflare Tunnel + Access email OTP), Nextcloud Deck: enabled on CT 220 for project tracking.
+Monitoring: Uptime Kuma added n8n monitor (http://192.168.30.211:5678), Uptime Kuma Homelab-Ntfy Alerts notification channel configured (username/password auth, internal http://192.168.30.222:2586), ntfy Android app subscribed to kuromoon-alerts topic.
+Key Lessons: Cloudflare Access blocks apps that need persistent connections (ntfy phone app, websockets) — use app-native auth instead. ntfy internal requests (Uptime Kuma) use http://192.168.30.222:2586 (bypasses tunnel). Anthropic Admin API (/v1/organizations/cost_report) provides actual spend data — requires sk-ant-admin key from console.anthropic.com.
+
+Errors & Resolutions
+- Uptime Kuma → ntfy 403 Forbidden: caused by auth-default-access: deny-all. Fix: set Authentication Method to Username/Password in Uptime Kuma notification config
+- VM 400 IP conflict: VM 400 (ollama-gpu) already uses 192.168.30.221, so CT 221 (Firefly III) assigned 192.168.30.224 instead
+
+Action Items
+- Add Uptime Kuma monitors for Firefly III and ntfy
+- Create Anthropic Admin API key for Midas cost tracking (future session)
+- Wire Midas → Firefly III API (Phase 24.2, future session)
+- Fix morning briefing container count (15 → 17)
+- Export Claude chats to Obsidian via claude.ai data export
+- Begin Phase 24.8 (Langfuse) in next implementation session
+
 ### May 11, 2026
 
 Date: May 11, 2026
@@ -998,42 +1069,6 @@ Decisions Made
 
 Next Session
 - Phase 24.1 (Firefly III) + 24.7 (ntfy) deployment
-
-### May 10, 2026
-
-Date: May 10, 2026
-Phase: Architecture Redesign Planning (Pre-Phase 24.x)
-
-Topics Discussed
-- Complete architecture redesign: 7-layer model (Input → Brain → App → Knowledge → Memory → Observability → Notification)
-- App selection: Firefly III, Health Connect webhook bridge, ntfy, Langfuse. Skipped Vikunja and Open Wearables.
-- Knowledge ingestion pipeline: URLs → Firecrawl → Ollama → triple-write (Obsidian + Data Table + Qdrant) with proactive recall + source citation + media
-- Agent spawning (Level 3 templates) merged into EMIYA scope
-- Three essential capabilities added: goal tracking (→ 24.6), proactive nudges (→ 24.5), weekly review (→ 24.6)
-- Future phases added: 25.1 Voice, 25.2 Email, 25.3 Self-Evolving Skills, 25.4 Content Creation
-
-Decisions Made
-- Deploy Firefly III (CT 221), ntfy (CT 222), Langfuse (CT 223)
-- Health data: dual-write (Data Tables for agents + Obsidian for human)
-- Merge 3 morning messages into one Gilgamesh daily digest at 7am
-- Knowledge recall: proactive with source link + media
-- Lepulse scale syncs via Fitdays → Samsung Health → Health Connect → same bridge as watch
-- 5 phases retired: 22.8C, 22.8D, 22.8E, 22.15, 22.16
-- New phases: 24.1–24.8 (core) + 25.1–25.4 (future)
-
-Changes to AI-CONTEXT.md
-- Replace architecture with 7-layer model
-- Add CT 221/222/223 to container inventory (total: 17 LXC + 1 VM)
-- Update all 6 agent roles (Gil=life interface, Da Vinci=sync+goals+review, MERLIN=nudges, EMIYA=infra+spawning)
-- Replace roadmap with v2 build order: 24.1-24.8 → 7E → EMIYA → 25.1-25.4
-- Add Lepulse scale to hardware notes
-- Document universal data flow pattern
-
-Action Items
-- [ ] Review and finalize ROADMAP-v2-draft.md
-- [ ] Update AI-CONTEXT.md + ROADMAP.md + push to GitHub
-- [ ] Begin Phase 24.1 (Firefly III) + 24.7 (ntfy) next session
-- [ ] Confirm Lepulse → Fitdays → Samsung Health sync works on phone
 
 ### May 10, 2026
 
@@ -1218,203 +1253,6 @@ Action Items
 - [ ] Consider DOCP optimization after RAM upgrade
 - [ ] Clean up temp backups when storage space needed
 
-### April 28, 2026 (Post-deployment Review)
-
-Date: April 28, 2026
-Phase: 22.8B complete + Post-deployment review
-
-Topics Discussed
-- Phase 22.8B full health tracking deployed and tested
-- Post-deployment review established as standard practice
-- Medication flow redesigned: MERLIN owns daily logging, Health menu owns management
-- health_med_list Data Table design confirmed (medication + active)
-- Karpathy concepts mapped to homelab
-- Vision API options researched — Llama 3.2 Vision 11B confirmed free, local, runs on RX 6700 XT via Ollama
-- Broader life ledger concept designed replacing narrow food log
-- Multi-agent communication design flagged for dedicated session
-
-Decisions Made
-- Medication daily logging moves to MERLIN (8am dynamic buttons)
-- Health menu Medication button = management only (add/remove/view)
-- health_med_list table: medication + active columns, managed via Gilgamesh not n8n UI
-- Vision model: Llama 3.2 Vision 11B via Ollama on VM 400 (free, local, no API cost)
-- Qwen2.5-VL-7B as alternative vision model option
-- Replace health_food_log with broader life_log table (single table for all personal logging)
-- life_log columns: log_date, category, item, amount_myr, notes, photo_path, logged_at
-- Phase 22.8E = Life Ledger (replaces narrow food expense design)
-- Midas expanded scope: personal spending by category + API costs
-- Da Vinci writes structured life_log entries to Obsidian daily note
-- Post-deployment review session is now standard after each phase
-
-Changes to AI-CONTEXT.md
-- Phase 22.8B marked complete April 28, 2026
-- Phase 22.8C: homepage health + homelab widgets (next)
-- Phase 22.8D: MERLIN medication check + Medication management menu
-- Phase 22.8E: Life Ledger (photo + text logging, life_log table, Llama 3.2 Vision, multi-agent routing)
-- New planned table: health_med_list (medication, active)
-- New planned table: life_log (replaces health_food_log for expenses)
-- Vision model planned: Llama 3.2 Vision 11B on VM 400 via Ollama
-- Midas Phase 2: personal spending reports by category
-- MERLIN expanded: daily medication check with dynamic inline buttons
-- New session topic queued: Multi-Agent communication design
-
-Action Items
-- [ ] Update ROADMAP.md: 22.8B complete, add 22.8C/D/E, fix Da Vinci Stage 2 placement
-- [ ] Clean up 2026-04-28.md in Nextcloud (remove UTC test entries)
-- [ ] Create health_med_list Data Table when ready to add meds
-- [ ] Pull Llama 3.2 Vision on VM 400: ollama pull llama3.2-vision
-- [ ] New session: Multi-Agent communication design
-- [ ] Next deployment session: Phase 22.8C homepage widgets
-
-### April 28, 2026
-
-Date: April 28, 2026
-Phase: 22.8B — Health Tracking Build (COMPLETE)
-
-Topics Discussed
-- Karpathy's LLM Wiki, Agentic Engineering, Dobby concept, Context Rot, System Prompt Learning applied to homelab
-- Da Vinci as Obsidian librarian/gatekeeper — confirmed architecture
-- Phase priority reorganisation — Da Vinci Stage 2 before 7E and EMIYA
-- Phase 22.8B: full health tracking system built and tested
-
-Decisions Made
-- Health data writes to both n8n Data Tables (fast queries) and Obsidian daily notes (long-term)
-- Da Vinci Stage 2 must be built before more agents write to Obsidian
-- Mode switching via gilgamesh_session_state Data Table
-- Cancel button on all health prompts via health_cancel callback
-- MYT time via UTC+8 offset in Code nodes
-- WebDAV GET then PUT pattern for Obsidian append
-- Fetch Daily Note Response Format set to Text, body concatenated via .data field
-- Format Today Summary uses plain text (no emojis) to avoid JSON issues
-
-Changes to AI-CONTEXT.md
-- Add 4 new Data Tables: gilgamesh_session_state, health_food_log, health_bp_log, health_med_log
-- n8n workflows count: add health tracking nodes to Telegram Agent workflow (not a separate workflow)
-- Phase 22.8B marked complete April 28, 2026
-- Pending: Phase 22.8C (homepage widgets), Guardian agent, Da Vinci Stage 2
-- Add Karpathy concepts to project context: LLM Wiki (Da Vinci Stage 2), Agentic Engineering (EMIYA design), Dobby (future home automation phase), Context Rot (justifies Da Vinci Stage 2 before 7E), System Prompt Learning (/update pipeline)
-- Phase priority order updated: 22.8C → Guardian → Da Vinci Stage 2 → 7E → EMIYA 24.1
-
-Errors & Resolutions
-- [object Object] in Obsidian: Fetch Daily Note Response Format must be Text, use .data field in PUT body
-- appendText duplicate declaration: replaced entire code block with clean version
-- UTC time in Obsidian: add 8 * 60 * 60 * 1000ms offset to loggedAt
-- Clear Mode type error: wrap chatId with Number() for numeric column filter
-- Fetch Daily Note URL not resolving: must use {{ }} expression wrapper
-- Format Today Summary illegal return: code was truncated, replaced with complete version
-- JSON body invalid in Send Today Summary: switch to Using Fields Below mode
-
-Action Items
-- [ ] Update ROADMAP.md: add 22.8B (complete), 22.8C, fix Da Vinci Stage 2 placement
-- [ ] Clean up 2026-04-28.md in Nextcloud (remove old UTC test entries)
-- [ ] Begin Phase 22.8C (homepage health + homelab widgets) next session
-- [ ] Guardian agent after 22.8C
-
-### April 27, 2026
-
-Date: April 27, 2026
-Phase: 22.8A — Complete Button Menu + Community Nodes Install
-
-Topics Discussed
-- Community nodes research and installation
-- n8n node audit (built-in vs community)
-- Workflow canvas clutter discussion and refactor plan
-- Phase 22.8A: converted all slash commands to buttons
-- Mode switching system design for food/BP logging
-- Phase 22.8B, 22.8C design planning
-
-Decisions Made
-- Ollama and Qdrant are built-in to n8n — no community nodes needed
-- Community nodes install method: Settings → Community Nodes UI only. Dockerfile npm install breaks due to n8n pnpm catalog internals
-- 3 community nodes installed: @mendable/n8n-nodes-firecrawl v2.1.1, n8n-nodes-puppeteer v1.5.0, n8n-nodes-tesseractjs v1.5.1
-- Mode switching system: food_logging mode and bp_logging mode via gilgamesh_session_state Data Table
-- /update command mode deferred — will implement later
-- All parameterless slash commands converted to inline keyboard buttons
-- Health submenu added to main menu with 4 placeholder buttons
-- Homelab submenu: Alerts and Backup buttons added
-- Gilgamesh submenu: Memory, Cost, Sync Docs, Clear buttons added
-- chat_id bug fixed across Format Memory, Format Cost, Format Alerts, Format Backup, Get Chat ID, Trigger Sync Docs — all now handle both message and callback_query contexts using: $('Telegram Trigger').first().json.callback_query?.message?.chat?.id || $('Telegram Trigger').first().json.message?.chat?.id
-- Temps button broken — pre-existing SSH bug, deferred
-- Send Health node pattern: must use HTTP Request node (same as Send Gilgamesh) not Telegram node, because inline keyboard requires JSON.stringify reply_markup via direct Telegram API call
-
-Changes to AI-CONTEXT.md
-- n8n community nodes section: update installed nodes to include @mendable/n8n-nodes-firecrawl v2.1.1, n8n-nodes-puppeteer v1.5.0, n8n-nodes-tesseractjs v1.5.1. Install method: UI only.
-- Inline Keyboard Menu Status: all submenus now fully working including Health (placeholder), Gilgamesh (Memory, Cost, Sync Docs, Clear), Homelab (Alerts, Backup added)
-- Known bug: Homelab → Temps SSH command returns no output — deferred
-- n8n built-in nodes note: Ollama Chat Model, Ollama Embeddings, Qdrant Vector Store are all built-in — no community node needed
-- Phase 22.8A marked complete April 27, 2026
-- Pending: Phase 22.8B (health tracking build), Phase 22.8C (homepage widgets)
-- Add Deferred task: Fix Homelab → Temps SSH bug
-
-Errors & Resolutions
-- Dockerfile npm install -g: EUNSUPPORTEDPROTOCOL — n8n uses pnpm catalog internally. Fix: use UI installer instead
-- npm install into /usr/local/lib/node_modules/n8n: same error. Fix: UI only
-- Send Health node showing no keyboard: used Telegram node instead of HTTP Request. Fix: duplicate Send Gilgamesh (HTTP Request pattern) instead
-- chat_id undefined on button callbacks: all Format/handler nodes used $json.message.chat.id which fails for callback_query. Fix: use callback_query?.message?.chat?.id || message?.chat?.id pattern
-
-Action Items
-- [ ] Fix Homelab → Temps SSH bug (deferred, separate session)
-- [ ] Begin Phase 22.8B: health tracking (food log, BP, medication, daily summary)
-- [ ] Create gilgamesh_session_state Data Table for mode switching
-- [ ] Create health Data Tables: health_food_log, health_bp_log, health_medication_log
-- [ ] Phase 22.8C: homepage health + homelab widgets via n8n webhooks (after 22.8B)
-
-### April 27, 2026
-
-Date: April 27, 2026
-Phase: Midas CFO Agent, MERLIN Reminders, and Obsidian Daily Creator active. 14 LXC containers + 1 KVM VM running.
-
-Topics Discussed
-- 80% RAM alert — Windrose 8.9GB + VM 400 7.9GB — normal baseline, raised Prometheus threshold 80% to 85%
-- Fixed Ollama token capture (read data.input_tokens not prompt_eval_count)
-- Added command_type column to gilgamesh_costs
-- Built Midas CFO Report workflow (/midas, webhook midas-report, 6 nodes)
-- Built Midas Daily Brief (9am scheduled, 4 nodes)
-- Fixed Loki not scraped by Prometheus — added scrape job to prometheus.yml
-- Built MERLIN Reminders (8am daily: SSL Jul 14 2026, Proxmox memory 85%, Vault seal, backup restore test)
-- Completed Obsidian 22.1: 10 folders, HOME note, \_index files, subfolders finance/grocery/health/subscriptions
-- Completed Obsidian 22.2: Daily Note Creator midnight, Morning Briefing 7am, /daily command
-- Planned Phase 22.9: reminders + voice notes Claude API + notebook photo vision
-- Planned Phase 22.11: Nextcloud Calendar CalDAV integration
-
-Decisions Made
-- Memory alert threshold: 80% → 85%
-- Ollama tokens: read data.input_tokens / data.output_tokens (already mapped by Call Ollama)
-- command_type: derived from Telegram message text directly
-- Midas webhook: midas-report, USD to MYR: 4.7, spend limit: $10
-- SSL check: hardcoded July 14 2026 expiry — revisit in MERLIN v2
-- Backup restore test baseline: 2026-01-01 (never tested)
-- MERLIN reads nodes directly by name ($('Check Prometheus Memory')) not merged items
-- Midas v2: revisit in future session for missing design discussion
-- Obsidian vault: 10 folders + HOME master index + 7 \_index files
-- Daily notes: midnight creation via n8n, 7am morning briefing, /daily command
-- Phase 22.9 and 22.11 planned for future expansion
-
-Changes to AI-CONTEXT.md
-- n8n workflows: add Midas CFO Report (webhook midas-report), Midas Daily Brief (9am), MERLIN Reminders (8am), Daily Note Creator (midnight), Morning Briefing (7am) — total now 12 workflows
-- gilgamesh_costs schema: command_type column added (Text)
-- Prometheus: HighMemoryUsage threshold now 85%
-- Key Lessons: add Loki scrape job fix, Ollama token field names fix
-- Windrose: ~9GB RAM baseline — stop container when not playing
-- Agent roster: Midas ✅ Active, MERLIN ✅ Active
-- Obsidian vault structure updated — 10 folders, HOME note, \_index files
-- Phases 22.1 and 22.2 marked complete April 27 2026
-- Daily Note Creator and Morning Briefing active
-- Pending: Schedule backup restore test CT 207, fix Cloudflare Vault token
-
-Errors & Resolutions
-- Ollama tokens always 0: read data.input_tokens/output_tokens not prompt_eval_count/eval_count
-- Aggregate Alerts Prometheus not found: use $('Check Prometheus Memory').first().json directly
-- SSL checker API returns empty: use hardcoded expiry date instead
-- Cloudflare Vault token truncated: stored as 7 chars only — needs full token re-stored
-- MERLIN Aggregate Alerts error.includes not a function: error field is object not string
-
-Action Items
-- Schedule backup restore test on CT 207, update lastTestDate in MERLIN
-- Fix Cloudflare API token in Vault (get full token from dashboard, re-store)
-- Activate MERLIN workflow (toggle on in n8n)
-- Next session: Phase 22.3 or Guardian agent
-
 ---
 
-*Last updated: May 11, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: May 13, 2026 — Update this file at the end of each session before pushing to GitHub*
