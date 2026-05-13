@@ -410,6 +410,16 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - max_tokens set to 32000 to prevent AI-CONTEXT.md being replaced with hallucinated content
 - Grounding fix pending: add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
 
+### Nextcloud Deck Integration
+
+Da Vinci integrates with Nextcloud Deck for kanban project management:
+
+**Boards:** 3 boards (Homelab blue, Career green, Personal orange)
+**Stacks:** Backlog → Up Next → Blocked → In Progress → Done
+**Tags:** 4 dimensions (category, priority, agent, effort)
+**Behavior:** Auto-create/complete cards, advisory comments for movement
+**API:** https://cloud.najhin-gaming.com/index.php/apps/deck/api/v1.0
+
 ### Midas — CFO (Cost Tracking & Optimization)
 
 **Two workflows:**
@@ -482,16 +492,6 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - All agents log activity to Da Vinci
 - All agents use Fate/GO servant theming for consistency
 - Universal data flow: Input → processing → triple-write (Data Tables + Obsidian + Qdrant)
-
-### Nextcloud Deck Integration
-
-Da Vinci integrates with Nextcloud Deck for kanban project management:
-
-**Boards:** 3 boards (Homelab blue, Career green, Personal orange)
-**Stacks:** Backlog → Up Next → Blocked → In Progress → Done
-**Tags:** 4 dimensions (category, priority, agent, effort)
-**Behavior:** Auto-create/complete cards, advisory comments for movement
-**API:** https://cloud.najhin-gaming.com/index.php/apps/deck/api/v1.0
 
 ---
 
