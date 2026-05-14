@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. 18 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Nextcloud Deck integration complete with Da Vinci project management.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. 18 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Da Vinci notification bug fixed.
 
 ---
 
@@ -420,6 +420,8 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Direct node references required: use `$('Extract Response').first().json.updatedDoc` instead of `$json` after Merge node
 - max_tokens set to 32000 to prevent AI-CONTEXT.md being replaced with hallucinated content
 - Grounding fix pending: add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
+- Deck integration complete with 6 additional nodes for kanban management
+- Da Vinci workflow includes Limit node before Notify Complete to prevent notification spam
 
 ### Nextcloud Deck Integration
 
@@ -691,7 +693,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 - **Direct node references:** Use `$('Extract Response').first().json.updatedDoc` — do NOT rely on `$json` after Merge node
 - **max_tokens:** 32000 (prevents AI-CONTEXT.md being replaced with hallucinated content)
 - **Grounding fix pending:** Add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
-- **Deck integration:** Extended workflow with 6 additional nodes for Deck kanban management
+- **Deck integration:** Extended workflow with 6 additional nodes for Deck kanban management (Parse Deck Actions, If, Fetch Homelab Stacks, Build Deck Requests, Loop Deck Actions, Execute Deck Action)
+- **Notification fix:** Limit node (max 1) added before Notify Complete to prevent notification spam
 
 ---
 
@@ -1345,132 +1348,6 @@ Action Items
 - [ ] Remove Backup content type from kinmoon-nfs if not already done
 - [ ] Consider replacing sdb (Seagate 2TB, 5.7 years, 8 pending sectors) in future hardware planning
 - [ ] Update Cloudflare Access if needed for home.najhin-gaming.com (Pulse vs Homepage)
-
-### May 9, 2026
-
-Date: May 9, 2026
-Session Type: Hardware Recovery + Infrastructure Upgrade
-
-Topics Covered
-- Kuromoon hardware recovery after shop cleaning (thermal paste residue removal)
-- VM 400 GPU passthrough fix (PCIe address update after motherboard change)
-- BIOS virtualization configuration (AMD-V/SVM enable)
-- Boot timeout fix (systemd-networkd-wait-online.service)
-- RAID 1 setup on Kinmoon NAS (UGREEN DXP2800)
-- NFS share configuration and Proxmox mount
-- Backup restoration (May 4 backups to new RAID array)
-- RAM upgrade purchase (4x32GB Corsair Vengeance DDR4 from Taobao)
-
-Decisions Made
-- Keep existing backup retention policy: 7 daily, 4 weekly, 2 monthly (not simplified to 7-day only)
-- Purchased 4x32GB Corsair Vengeance DDR4 from Taobao → total 128GB when installed (massive upgrade from current 32GB)
-- DOCP RAM optimization deferred to future session
-- Temp backups cleanup optional (saves 6.9GB local storage)
-
-Hardware Changes
-Kuromoon (Proxmox):
-- Motherboard: ASUS TUF B550M-E (mATX, 4 DIMM slots, confirmed operational)
-- GPU PCIe address changed: 2d:00.0 → 0d:00.0 (RX 6700 XT)
-- BIOS settings updated: AMD-V enabled, IOMMU enabled
-- Boot services: Disabled systemd-networkd-wait-online.service
-- VM 400 hostpci configuration updated to new PCIe addresses
-
-Kinmoon NAS (UGREEN DXP2800):
-- RAID configuration: RAID 1 (2-drive mirror)
-- Storage Pool 1: 2.7TB total, 2.6TB usable
-- Volume 1: ext4 filesystem
-- NFS share: /volume1/proxmox-backups
-- NAS IP: 192.168.10.100 (changed from 192.168.10.15 after factory reset)
-- Status: Normal (healthy, sync complete)
-
-Configuration Changes
-VM 400 GPU Passthrough:
-```
-qm set 400 --delete hostpci0
-qm set 400 --delete hostpci1
-qm set 400 --hostpci0 0000:0d:00.0,pcie=1,rombar=0
-qm set 400 --hostpci1 0000:0d:00.1,pcie=1
-```
-
-Boot Timeout Fix:
-```
-systemctl disable systemd-networkd-wait-online.service
-```
-
-NFS Mount (Proxmox):
-- Storage ID: kinmoon-nfs
-- Server: 192.168.10.100
-- Export: /volume1/proxmox-backups
-- Content: VZDump backup file
-- Mount point: /mnt/pve/kinmoon-nfs
-
-Backup Strategy:
-- Schedule: Daily at 02:00
-- Retention: 7 daily, 4 weekly, 2 monthly
-- Storage: kinmoon-nfs (RAID 1 mirrored)
-- Containers: 201,202,203,204,205,206,207,214,300
-- Backup size: 6.9GB (May 4 backups restored)
-
-Verification Results
-✅ All 14 LXC containers running
-✅ VM 400 running with GPU passthrough (RX 6700 XT recognized by ROCm)
-✅ Ollama models intact (qwen3:14b, llama3.2)
-✅ Gilgamesh Telegram bot responding
-✅ ZFS pool vmpool healthy (no errors)
-✅ RAID 1 status: Normal (2 drives mirrored)
-✅ NFS mount operational (write test successful)
-✅ May 4 backups (6.9GB) restored to NAS
-
-Errors & Resolutions
-Issue 1: VM 400 failed to start after motherboard change
-- Error: GPU passthrough using old PCIe address (2d:00.0)
-- Resolution: Updated hostpci0/1 to new addresses (0d:00.0, 0d:00.1)
-
-Issue 2: "KVM virtualisation configured, but not available"
-- Cause: New ASUS TUF B550M-E motherboard had virtualization disabled
-- Resolution: Enabled AMD-V (SVM Mode) and IOMMU in UEFI settings
-
-Issue 3: System hung at boot after BIOS changes
-- Symptom: "clean, recovering journal" screen, 90-120 second wait
-- Cause: systemd-networkd-wait-online.service waiting for network
-- Resolution: Disabled the service, boot time optimized
-
-Issue 4: NFS volume locked during RAID conversion
-- Cause: Proxmox had NFS mounted while trying to delete volume
-- Resolution: umount /mnt/pve/kinmoon-nfs before NAS factory reset
-
-Changes to AI-CONTEXT.md
-Update Hardware fleet section:
-- Kuromoon: 32GB → 128GB DDR4 (4x32GB Corsair Vengeance ordered from Taobao)
-- Kuromoon motherboard: ASUS TUF B550M-E (mATX, 4 DIMM slots)
-- GPU PCIe addresses updated: 0d:00.0 (GPU), 0d:00.1 (audio)
-- Kinmoon: IP address changed 192.168.10.15 → 192.168.10.100
-- Kinmoon: 3.6TB WD Purple → 5.4TB RAID 1 configuration
-- Kinmoon: Updated purpose "Backups (RAID 1, ext4)"
-
-Update Infrastructure section:
-- VM 400 PCIe config updated to new addresses
-- ollama-gpu SSH note unchanged (muzakkir user)
-
-Update Backup Strategy:
-- kinmoon-nfs Storage: "NAS RAID 1" type, "NFS" protocol, "2.6 TB" capacity
-- NAS Configuration subsection added with RAID 1 details
-
-Update Key Lessons Learned:
-- Add Hardware & Recovery section with 4 new entries
-- GPU PCIe address fix, virtualization enable, boot timeout, RAID mount
-
-Update Pending Tasks:
-- Add "Install 128GB DDR4 RAM upgrade when Taobao delivery arrives" (Medium priority)
-- Add "Clean up temp backups (saves 6.9GB local storage) - optional" (Low priority)
-- Add "DOCP RAM optimization for 128GB kit" to Deferred section
-
-Action Items
-- [ ] Install RAM upgrade when delivery arrives from Taobao
-- [ ] Monitor system stability with new motherboard
-- [ ] Test backup restore from RAID 1 NFS share
-- [ ] Consider DOCP optimization after RAM upgrade
-- [ ] Clean up temp backups when storage space needed
 
 ---
 
