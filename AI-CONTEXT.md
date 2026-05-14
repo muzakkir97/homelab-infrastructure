@@ -1056,6 +1056,65 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ### May 14, 2026
 
 Date: May 14, 2026
+Phase: Planning — Phase 25.3 Enhancement
+
+Topics Discussed
+- Compared Gilgamesh architecture against RAG → Agentic RAG → Multi-Agent Graph RAG evolution diagram
+- Assessed current system position: functionally at Agentic RAG level (multi-tool routing, specialized agents) but missing vector search backbone
+- Compared Gilgamesh against OpenClaw and Hermes self-hosted AI agents
+- Identified three gaps: persistent RAG memory (biggest), self-improving skills, multi-platform reach
+- Identified Gilgamesh advantages: multi-agent architecture (6 servants vs single-agent), proper app integration (Firefly III, Langfuse, Nextcloud)
+- Decided to flesh out Phase 25.3 with Hermes-inspired self-evolving skills learning loop
+
+Decisions Made
+- Phase 25.3 description updated from "agent capability learning" to "Hermes-style learning loop (knowledge docs + RAG recall)"
+- Phase 25.3 concept defined: detect → extract → store → recall → refine loop
+- Skills stored as knowledge documents in Obsidian (03-knowledge/skills/) + Qdrant embeddings, NOT executable code
+- Da Vinci remains sole writer — skills go through Da Vinci like everything else
+- Executable skill creation deferred to future EMIYA extension
+- Dependencies confirmed: Da Vinci Stage 2 → Phase 7E → Phase 24.4 → Phase 25.3
+- Effort estimate: 10-12h
+- Graph RAG (Neo4j) assessed as unnecessary for current scale — flat vector search covers 90% of recall needs
+
+Changes to AI-CONTEXT.md
+Phase History table:
+- Line for Phase 25.3: change description from "Self-Evolving Skills — agent capability learning" to "Self-Evolving Skills — Hermes-style learning loop (knowledge docs + RAG recall)"
+
+Add new subsection under Gilgamesh Evolution Roadmap or after Fate Agent Ecosystem:
+
+### Phase 25.3 — Self-Evolving Skills Learning Loop
+
+Inspiration: OpenClaw skills system + Hermes Agent closed learning loop
+Concept: Agents that get smarter the longer they run by capturing solutions as reusable knowledge
+
+Loop: detect → extract → store → recall → refine
+1. Detection — After multi-step resolution or user correction, agent flags "this was hard/new"
+2. Skill extraction — Agent generates structured procedure doc (problem, context, solution steps, gotchas)
+3. Storage — Da Vinci writes to Obsidian (03-knowledge/skills/) and embeds in Qdrant
+4. Recall — On similar future queries, RAG retrieves skill doc and injects into agent context
+5. Refinement — If skill gets corrected or improved, updated version overwrites original
+
+Dependencies: Da Vinci Stage 2 (Qdrant) → Phase 7E (extended memory) → Phase 24.4 (knowledge ingestion)
+Effort: 10-12h
+Architecture: Knowledge documents via RAG, not executable code. Fits Da Vinci-as-sole-writer. Executable skills = future EMIYA extension.
+
+Examples of auto-generated skills:
+- n8n Data Table Upsert always inserting → Conditions section gotcha
+- WebDAV append pattern → GET-then-PUT code template
+- Mixed RAM validation → memtest86+ procedure
+- New LXC SSH access → pfSense rule template
+
+Note: Key Lessons section in AI-CONTEXT.md is the manual version of this — Phase 25.3 automates that capture.
+
+Errors & Resolutions
+- None
+
+Action Items
+- [ ] No immediate action — Phase 25.3 is future (depends on Da Vinci Stage 2, 7E, 24.4)
+
+### May 14, 2026
+
+Date: May 14, 2026
 Phase: Langfuse Deployment + Deck Reorganization
 
 Topics Discussed
@@ -1204,52 +1263,6 @@ Action Items
 - [ ] Verify Da Vinci creates Deck card from action items in this summary
 - [ ] Connect Loop done output and If false output to Notify Complete Telegram node
 - [ ] Update deck-davinci-n8n-guide.md with correct API endpoints discovered during debugging
-
-### May 13, 2026
-
-Date: May 13, 2026
-Phase: Nextcloud Deck — Da Vinci Integration (Design)
-
-Topics Discussed
-- Nextcloud Deck integration with Da Vinci for kanban project management
-- Board structure: 3 boards (Homelab, Career, Personal)
-- Column structure: Backlog → Up Next → Blocked → In Progress → Done
-- Tag structure: 4 dimensions (category, priority, agent, effort)
-- Da Vinci behavior model: auto-create, auto-complete, advisory comments
-- User interaction model: Gilgamesh for /update, manual card movement on Nextcloud Deck UI
-- Initial population strategy: script all 86 phases from ROADMAP.md
-- Brainstorming skill auto-trigger preference saved to memory
-
-Decisions Made
-- Platform: Nextcloud Deck (not Obsidian Kanban plugin) — proper REST API for programmatic management
-- 3 boards: Homelab (blue), Career (green), Personal (orange)
-- 5 stacks per board: Backlog, Up Next, Blocked, In Progress, Done
-- 9 category tags: infrastructure, security, AI/automation, gaming, monitoring, storage, knowledge, career, hardware
-- 3 priority tags: high (red), medium (orange), low (grey)
-- 7 agent tags: gilgamesh, da-vinci, midas, merlin, guardian, emiya, mash
-- 3 effort tags: quick (1-2h), medium-effort (3-5h), large (6h+)
-- Da Vinci hybrid management: auto-create/complete cards, advisory comments for movement (never moves to Up Next/In Progress)
-- All interaction through Gilgamesh — Da Vinci is backend only
-- User manually moves cards in Nextcloud Deck UI based on Da Vinci's advisory comments
-- Initial setup fully scripted (boards, stacks, tags, 86 phase cards)
-- User will clear existing manually-entered cards before script runs
-- Career and Personal boards start empty, grow organically from sessions
-
-Changes to AI-CONTEXT.md
-- Add new section: Nextcloud Deck Integration under Da Vinci
-- Deck API base URL: https://cloud.najhin-gaming.com/index.php/apps/deck/api/v1.0
-- Auth: Basic auth with admin user, OCS-APIRequest: true header required
-- 3 boards, 5 stacks each, 4 tag dimensions documented
-- Da Vinci behavior modes: auto-create, auto-complete, advisory comments
-- Design spec saved: 2026-05-13-nextcloud-deck-davinci-design.md
-
-Action Items
-- [ ] Clear existing manually-entered cards from Homelab board
-- [ ] Implement initial setup script (create boards, stacks, tags)
-- [ ] Populate Homelab board with all 86 phases from ROADMAP.md
-- [ ] Extend Da Vinci workflow with Deck API nodes (Steps 1-5)
-- [ ] Test end-to-end: /update → Da Vinci → Deck card creation
-- [ ] Test advisory comments on dependency unblock
 
 ---
 
