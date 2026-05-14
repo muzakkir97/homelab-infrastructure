@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy) and 24.1 (Firefly III) complete. 17 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Nextcloud Deck integration complete with Da Vinci project management.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. 18 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Nextcloud Deck integration complete with Da Vinci project management.
 
 ---
 
@@ -199,12 +199,12 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | 220 | LXC  | nextcloud-hub           | 192.168.30.220 | cloud.najhin-gaming.com       | ✅         | ✅ Running |
 | 221 | LXC  | finance-firefly         | 192.168.30.224 | finance.najhin-gaming.com     | ✅         | ✅ Running |
 | 222 | LXC  | notification-ntfy       | 192.168.30.222 | ntfy.najhin-gaming.com        | ✅         | ✅ Running |
-| 223 | LXC  | observability-langfuse  | 192.168.30.223 | langfuse.najhin-gaming.com    | 📋        | 📋 Planned |
+| 223 | LXC  | observability-langfuse  | 192.168.30.223 | langfuse.najhin-gaming.com    | ✅         | ✅ Running |
 | 300 | LXC  | gaming-panel            | 192.168.30.210 | —                             | ✅         | ✅ Running |
 | 302 | LXC  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅         | ✅ Running |
 | 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
 
-**Current Total: 17 LXC containers + 1 KVM VM**
+**Current Total: 18 LXC containers + 1 KVM VM**
 **Planned Total: 18 LXC containers + 1 KVM VM (all on VLAN 30, all autostart enabled)**
 
 ### Pulse Dashboard (CT 208)
@@ -240,6 +240,16 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Auth:** Built-in username/password (not Cloudflare Access for phone app compatibility)
 - **Access:** ntfy.najhin-gaming.com (Cloudflare Tunnel without Access)
 - **Integration:** Uptime Kuma → ntfy alerts configured
+
+### Langfuse (CT 223)
+
+- **Stack:** Langfuse v3.174.1 (6-container stack: web, worker, ClickHouse, PostgreSQL, Redis, MinIO)
+- **Container specs:** 2 cores, 4GB RAM, 16GB disk
+- **Purpose:** LLM observability and performance tracking
+- **Access:** langfuse.najhin-gaming.com (Cloudflare Access + Email OTP)
+- **Organization:** Kuromoon, Project: Gilgamesh Agents
+- **Internal URL:** http://192.168.30.223:3000
+- **Health endpoint:** /api/public/health
 
 ### ollama-gpu (VM 400)
 
@@ -577,7 +587,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Telegram Agent                     | Main bot, menu, commands, hybrid routing | 15+   | Telegram |
 | Documentation Pipeline — Update    | Session summary → 3 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
-| Da Vinci Documentation Pipeline    | Raw staging summaries → formatted docs + Deck | 11+ | Webhook |
+| Da Vinci Documentation Pipeline    | Raw staging summaries → formatted docs + Deck | 17+ | Webhook |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
 | Midas — Daily Brief                | 9am scheduled cost summary               | 4     | Schedule |
 | MERLIN — Reminders                 | 8am daily infrastructure checks          | 8     | Schedule |
@@ -754,7 +764,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Segmentation    | 5 VLANs with enforced firewall rules                                                                                                                                                               |
 | DNS             | Pi-hole ad/tracker blocking (~489K domains)                                                                                                                                                        |
 | VPN             | Tailscale (subnet router on pfSense, primary access)                                                                                                                                               |
-| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Nextcloud, Firefly III (7 apps total)                                                   |
+| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Nextcloud, Firefly III, Langfuse (8 apps total)                                           |
 | External Access | Cloudflare Tunnel for all external services                                                                                                                                                        |
 | Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                                                                                                                                      |
 | Backup          | Automated daily backups with 7/4/2 retention                                                                                                                                                       |
@@ -807,7 +817,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 24.5    | Proactive Monitoring — anomaly detection + proactive nudges      | 📋 Planned | —            |
 | 24.6    | Performance + Goal Optimization — resource + goal tracking       | 📋 Planned | —            |
 | 24.7    | Universal Notifications — ntfy hub deployment                    | ✅ Complete | May 13, 2026 |
-| 24.8    | Agent Spawning — Level 3 templates, contextual creation         | 📋 Planned | —            |
+| 24.8    | Agent Spawning — Level 3 templates, contextual creation         | ✅ Complete | May 14, 2026 |
 | 25.1    | Voice Interface — Claude API transcription + voice responses     | 📋 Planned | —            |
 | 25.2    | Email Integration — IMAP monitoring + smart filtering            | 📋 Planned | —            |
 | 25.3    | Self-Evolving Skills — agent capability learning                | 📋 Planned | —            |
@@ -958,6 +968,12 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Pulse agent 401 on CT 302          | Token already consumed by Kuromoon — generated new token from Pulse UI       |
 | Pulse "Connection lost" through NPM | Websockets Support not enabled — toggled on in NPM proxy host                |
 
+### Langfuse Deployment
+
+| Issue                               | Resolution                                                                   |
+|-------------------------------------|------------------------------------------------------------------------------|
+| Langfuse auth redirect to localhost:3000 after signup | NEXTAUTH_URL was set to http://localhost:3000. Fix: change to https://langfuse.najhin-gaming.com in docker-compose.yml, docker compose down && up -d. |
+
 ---
 
 ## ❓ Pending Tasks
@@ -974,15 +990,18 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Activate MERLIN workflow (toggle on)                                                        | High     |
 | Monitor Windrose RAM usage — stop Docker container when not playing                         | High     |
 | Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
-| Add Uptime Kuma monitors for Firefly III and ntfy                                           | Medium   |
-| Fix morning briefing container count (15 → 17)                                              | Medium   |
+| Store Langfuse API keys (public + secret) in Vaultwarden                                    | High     |
+| Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)         | High     |
+| Wire Langfuse into n8n Gilgamesh workflow using built-in Langfuse node                      | High     |
+| Wire Langfuse into Da Vinci, Midas, MERLIN workflows                                        | High     |
+| Update morning briefing container count (17 → 18)                                           | Medium   |
 
 ### Infrastructure
 
 | Task                                                                         | Priority |
 |------------------------------------------------------------------------------|----------|
 | Address local-lvm thin pool overprovisioning (during infrastructure cleanup) | Medium   |
-| Begin Phase 24.8 (Langfuse) next session                                    | High     |
+| Begin Phase 24.2 (Alert Translation) next session                           | High     |
 | Create muzakkir97/homelab-private repo                                       | Medium   |
 | Set up Backblaze B2 account                                                  | Medium   |
 | Phase 27 (Vault + n8n) enables n8n to fetch secrets directly                 | Medium   |
@@ -1032,6 +1051,48 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### May 14, 2026
+
+Date: May 14, 2026
+Phase: Phase 24.8 — Langfuse (AI Observability)
+
+Topics Discussed
+- Reviewed roadmap and AI-CONTEXT.md pending tasks to determine next phase
+- Resolved roadmap vs AI-CONTEXT conflict: AI-CONTEXT is source of truth, Phase 24.8 (Langfuse) is next
+- Langfuse v3 architecture: 6 Docker containers (langfuse-web, langfuse-worker, ClickHouse, PostgreSQL, Redis, MinIO)
+- Full deployment of Langfuse on CT 223 (observability-langfuse, 192.168.30.223)
+- Cloudflare Tunnel + Access setup for langfuse.najhin-gaming.com
+- NEXTAUTH_URL fix: localhost:3000 → https://langfuse.najhin-gaming.com (required for auth redirect)
+- n8n → Langfuse connectivity verified
+
+Decisions Made
+- CT 223 specs: 2 cores, 4096MB RAM, 512MB swap, 16GB disk (heavier than ntfy/Firefly III due to 6-container stack)
+- Telemetry disabled (TELEMETRY_ENABLED: false) for data sovereignty
+- Cloudflare Access with Email OTP enabled for langfuse.najhin-gaming.com
+- Organization name: Kuromoon, Project name: Gilgamesh Agents
+- Langfuse v3.174.1 deployed (latest stable)
+- Batch export disabled (LANGFUSE_S3_BATCH_EXPORT_ENABLED: false) — not needed for homelab scale
+
+Changes to AI-CONTEXT.md
+- Infrastructure Inventory: CT 223 (observability-langfuse, 192.168.30.223, Langfuse v3 Docker stack, 2 cores, 4GB RAM, 16GB disk, Phase 24.8) status changed from 📋 Planned to ✅ Running. Total: 18 LXC + 1 VM.
+- Phase Status: Phase 24.8 (Langfuse) COMPLETED 2026-05-14
+- Services/URLs: Langfuse: langfuse.najhin-gaming.com (Cloudflare Tunnel + Access email OTP)
+- Langfuse internal URL: http://192.168.30.223:3000 (for n8n and other agents)
+- Langfuse health endpoint: /api/public/health
+- Langfuse Docker stack: langfuse-web (port 3000), langfuse-worker (port 3030), ClickHouse (8123/9000), MinIO (9090), Redis (6379), PostgreSQL (5432) — all except web and minio bound to localhost
+- Key Lessons: Langfuse v3 NEXTAUTH_URL must match external URL or auth redirects break to localhost. Langfuse v3 requires 6 containers (web, worker, ClickHouse, PostgreSQL, Redis, MinIO) — significantly heavier than v2.
+- Pending Tasks: Add "Wire Langfuse to n8n agent workflows (Gilgamesh, Da Vinci, Midas, MERLIN)" as High priority. Add "Add Uptime Kuma monitor for Langfuse" as High priority. Add "Store Langfuse API keys in Vaultwarden" as High priority.
+
+Errors & Resolutions
+- Langfuse auth redirect to localhost:3000 after signup: NEXTAUTH_URL was set to http://localhost:3000. Fix: change to https://langfuse.najhin-gaming.com in docker-compose.yml, docker compose down && up -d.
+
+Action Items
+- [ ] Store Langfuse API keys (public + secret) in Vaultwarden
+- [ ] Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)
+- [ ] Wire Langfuse into n8n Gilgamesh workflow using built-in Langfuse node
+- [ ] Wire Langfuse into Da Vinci, Midas, MERLIN workflows
+- [ ] Update morning briefing container count (17 → 18)
 
 ### May 14, 2026
 
