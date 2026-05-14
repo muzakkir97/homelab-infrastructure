@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. 18 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Da Vinci notification bug fixed.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. 18 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Da Vinci notification bug fixed. Langfuse AI observability deployed.
 
 ---
 
@@ -820,7 +820,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 24.5    | Proactive Monitoring — anomaly detection + proactive nudges      | 📋 Planned | —            |
 | 24.6    | Performance + Goal Optimization — resource + goal tracking       | 📋 Planned | —            |
 | 24.7    | Universal Notifications — ntfy hub deployment                    | ✅ Complete | May 13, 2026 |
-| 24.8    | Agent Spawning — Level 3 templates, contextual creation         | ✅ Complete | May 14, 2026 |
+| 24.8    | Langfuse AI Observability                                        | ✅ Complete | May 14, 2026 |
 | 25.1    | Voice Interface — Claude API transcription + voice responses     | 📋 Planned | —            |
 | 25.2    | Email Integration — IMAP monitoring + smart filtering            | 📋 Planned | —            |
 | 25.3    | Self-Evolving Skills — agent capability learning                | 📋 Planned | —            |
@@ -986,14 +986,15 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                                        | Priority |
 |---------------------------------------------------------------------------------------------|----------|
-| Store Langfuse API keys (public + secret) in Vaultwarden                                   | High     |
-| Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)        | High     |
 | Wire Langfuse into n8n Gilgamesh workflow using built-in Langfuse node                     | High     |
 | Wire Langfuse into Da Vinci, Midas, MERLIN workflows                                       | High     |
+| Store Langfuse API keys (public + secret) in Vaultwarden                                   | High     |
+| Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)        | High     |
 | Update morning briefing container count (17 → 18)                                          | High     |
 | Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
 | Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
 | Activate MERLIN workflow (toggle on)                                                        | High     |
+| Replace Kinmoon NAS drive (~RM 400-500)                                                     | High     |
 | Monitor Windrose RAM usage — stop Docker container when not playing                         | High     |
 | Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
 
@@ -1051,6 +1052,38 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### May 14, 2026
+
+Date: May 14, 2026
+Phase: Langfuse Deployment + Deck Reorganization
+
+Topics Discussed
+- Deployed Langfuse v3.174.1 on CT 223 (192.168.30.223, 2 cores, 4GB RAM, 16GB disk)
+- Fixed Da Vinci notification spam: added Limit node before Notify Complete
+- Archived 6 dead phases (22.8C, 22.8D, 22.8E, 22.15, 22.16, 22.11) — Homepage replaced by Pulse
+- Deleted 30+ duplicate Deck cards from Da Vinci spam bug
+- Reordered Deck Backlog by new priority: RAG → Memory → Guardian → Capabilities → Infra → Gaming → Career
+
+Decisions Made
+- Langfuse org: Kuromoon, project: Gilgamesh Agents, telemetry disabled
+- New phase priority: Da Vinci Stage 2 (RAG) and Guardian moved to Up Next
+- Langfuse is standalone phase (not EMIYA's 24.8 Agent Spawning)
+- Morning briefing: single orchestrator workflow, no EMIYA dependency needed yet
+
+Changes to AI-CONTEXT.md
+- CT 223: 📋 Planned → ✅ Running. Total: 18 LXC + 1 VM
+- Add phase: "Langfuse AI Observability | ✅ Complete | May 14, 2026"
+- Services: langfuse.najhin-gaming.com (Cloudflare Tunnel + Access email OTP)
+- Da Vinci workflow: Limit node (max 1) added before Notify Complete
+- Key Lessons: NEXTAUTH_URL must match external URL. Loop done output emits ALL items. Deck API owner field needs uid string extraction.
+
+Action Items
+- [ ] Store Langfuse API keys in Vaultwarden
+- [ ] Add Uptime Kuma monitor for Langfuse
+- [ ] Wire Langfuse into Gilgamesh, Da Vinci, Midas, MERLIN workflows
+- [ ] Update morning briefing container count (17 → 18)
+- [ ] Replace Kinmoon NAS drive (~RM 400-500)
 
 ### May 14, 2026
 
@@ -1217,137 +1250,6 @@ Action Items
 - [ ] Extend Da Vinci workflow with Deck API nodes (Steps 1-5)
 - [ ] Test end-to-end: /update → Da Vinci → Deck card creation
 - [ ] Test advisory comments on dependency unblock
-
-### May 13, 2026
-
-Date: 2026-05-13
-Phase: 24.7 (ntfy) + 24.1 (Firefly III)
-
-Topics Discussed
-- Deployed Phase 24.7 (ntfy) — CT 222, 192.168.30.222, port 2586
-- Deployed Phase 24.1 (Firefly III) — CT 221, 192.168.30.224, port 8080
-- Configured ntfy built-in auth (deny-all default, admin user: muzakkir) instead of Cloudflare Access (phone app can't do email OTP)
-- Cloudflare Tunnel routes added for ntfy.najhin-gaming.com and finance.najhin-gaming.com
-- Cloudflare Access added for finance.najhin-gaming.com only (browser-only access, OTP works fine)
-- Wired Uptime Kuma → ntfy (Homelab-Ntfy Alerts) with username/password auth
-- Added n8n monitor to Uptime Kuma (was missing entirely)
-- Identified storage alert: Proxmox boot drive at 82% — data-storage and local share same 66.4GB disk, but /var/lib/vz/dump/ was nearly empty (not backup issue)
-- Identified Midas $0 cost bug fix: Anthropic Admin API /v1/organizations/cost_report endpoint gives real spend data
-- Compiled full issues/gaps list from all past sessions (10 items)
-- Enabled Nextcloud Deck for kanban project tracking
-- Enabled Nextcloud Tasks and Calendar for future agent integration (CalDAV)
-- Created Homelab Deck board with Backlog, Next Up, In Progress, Done columns and all known bugs/features as cards
-
-Decisions Made
-- ntfy uses built-in auth (not Cloudflare Access) so phone app + Uptime Kuma can connect
-- Firefly III uses Cloudflare Access (browser-only, OTP fine)
-- CT 221 (Firefly III) uses IP 192.168.30.224 (not .221, which is VM 400 ollama-gpu)
-- Firefly III default currency: MYR (Malaysian Ringgit, symbol RM)
-- Firefly III API token created (name: gilgamesh), stored in Vaultwarden
-- Midas cost tracking will switch from self-recorded tokens to Anthropic Admin API in future session
-- Nextcloud Deck chosen for kanban (no new container, already in Nextcloud)
-- No other Nextcloud apps needed — Deck, Tasks, Calendar are sufficient
-
-Changes to AI-CONTEXT.md
-Container Inventory: Add CT 221 (firefly, 192.168.30.224, Firefly III + MariaDB Docker, 2 cores, 1GB RAM, 8GB disk, Phase 24.1) — NOTE: IP is .224 not .221. Add CT 222 (ntfy, 192.168.30.222, ntfy Docker, 1 core, 512MB RAM, 4GB disk, Phase 24.7). Total: 17 LXC + 1 VM.
-Phase Status: Phase 24.7 (ntfy) COMPLETED 2026-05-13, Phase 24.1 (Firefly III) COMPLETED 2026-05-13.
-Services/URLs: ntfy: ntfy.najhin-gaming.com (Cloudflare Tunnel, no Access — uses built-in auth), Firefly III: finance.najhin-gaming.com (Cloudflare Tunnel + Access email OTP), Nextcloud Deck: enabled on CT 220 for project tracking.
-Monitoring: Uptime Kuma added n8n monitor (http://192.168.30.211:5678), Uptime Kuma Homelab-Ntfy Alerts notification channel configured (username/password auth, internal http://192.168.30.222:2586), ntfy Android app subscribed to kuromoon-alerts topic.
-Key Lessons: Cloudflare Access blocks apps that need persistent connections (ntfy phone app, websockets) — use app-native auth instead. ntfy internal requests (Uptime Kuma) use http://192.168.30.222:2586 (bypasses tunnel). Anthropic Admin API (/v1/organizations/cost_report) provides actual spend data — requires sk-ant-admin key from console.anthropic.com.
-
-Errors & Resolutions
-- Uptime Kuma → ntfy 403 Forbidden: caused by auth-default-access: deny-all. Fix: set Authentication Method to Username/Password in Uptime Kuma notification config
-- VM 400 IP conflict: VM 400 (ollama-gpu) already uses 192.168.30.221, so CT 221 (Firefly III) assigned 192.168.30.224 instead
-
-Action Items
-- Add Uptime Kuma monitors for Firefly III and ntfy
-- Create Anthropic Admin API key for Midas cost tracking (future session)
-- Wire Midas → Firefly III API (Phase 24.2, future session)
-- Fix morning briefing container count (15 → 17)
-- Export Claude chats to Obsidian via claude.ai data export
-- Begin Phase 24.8 (Langfuse) in next implementation session
-
-### May 11, 2026
-
-Date: May 11, 2026
-Phase: Architecture Redesign Planning (Pre-Phase 24.x)
-
-Topics Discussed
-- Complete architecture redesign: 7-layer model (Input → Brain → App → Knowledge → Memory → Observability → Notification)
-- App selection: Firefly III, Health Connect webhook bridge, ntfy, Langfuse. Skipped Vikunja and Open Wearables.
-- Knowledge ingestion pipeline: URLs → Firecrawl → Ollama → triple-write with proactive recall + source + media
-- Agent spawning (Level 3 templates) merged into EMIYA
-- Three essential capabilities: goal tracking (→24.6), proactive nudges (→24.5), weekly review (→24.6)
-- Future phases: 25.1 Voice, 25.2 Email, 25.3 Self-Evolving Skills, 25.4 Content Creation
-- /update redesign: replace command with inline button flow using gilgamesh_session_state pattern
-- Lepulse scale syncs via Fitdays → Samsung Health → Health Connect
-
-Decisions Made
-- Deploy Firefly III (CT 221), ntfy (CT 222), Langfuse (CT 223)
-- Health data: dual-write (Data Tables + Obsidian)
-- Merge 3 morning messages → one daily digest at 7am
-- 5 phases retired, 8 new core + 4 future phases added
-- /update becomes inline button flow: Main Menu → Update Docs → [target] → send text/file
-
-Next Session
-- Phase 24.1 (Firefly III) + 24.7 (ntfy) deployment
-
-### May 10, 2026
-
-Date: May 10, 2026
-Phase: Pulse Dashboard Deployment + Backup Fix
-
-Topics Discussed
-- Researched homelab dashboard alternatives: Dashy, Homarr, Pulse, Homepage comparison
-- Deployed Pulse monitoring dashboard on CT 208, replacing Homepage
-- Fixed small container backups (kinmoon-smb created, NFS UID mapping issue resolved)
-- Discovered sdb (Seagate 2TB) has 8 pending sectors and sda (WD Purple 8TB) running at 60°C
-- Explained *arr media ecosystem (Sonarr, Radarr, Prowlarr, Jellyfin) — informational only, no deployment planned
-- Kinmoon NAS IP changed to 192.168.10.100, username is Muzakkir (not admin)
-
-Decisions Made
-- Pulse chosen over Dashy/Homarr/custom dashboard — best Proxmox-native monitoring with zero config
-- Homepage container removed from CT 208, Pulse runs on port 7655
-- kinmoon-smb (SMB/CIFS) created for backups — NFS cannot handle LXC UID namespace mapping for backups
-- kinmoon-nfs kept for disk images only, Backup content type removed
-- Small container backup job (02:00) switched from kinmoon-nfs to kinmoon-smb
-- Pulse Telegram alerts skipped — existing Alertmanager + MERLIN already covers alerting
-- sdb monitoring: manual weekly smartctl check for now, add to MERLIN in future session
-- *arr ecosystem not planned for deployment
-
-Changes to AI-CONTEXT.md
-- Hardware Inventory: Kinmoon NAS IP updated from 192.168.10.15 to 192.168.10.100
-- Infrastructure Inventory: CT 208 now runs Pulse (rcourtman/pulse:latest) on port 7655, Homepage removed
-- CT 208 storage: resized from 4GB to 8GB
-- Backup Strategy: Small containers storage changed from kinmoon-nfs to kinmoon-smb (SMB/CIFS protocol)
-- Storage section: Add kinmoon-smb (SMB/CIFS, 192.168.10.100, share: proxmox-backups, content: backup)
-- Storage section: kinmoon-nfs content is disk images only (not backups)
-- NAS credentials: username is Muzakkir (not admin)
-- Pulse agent installed on Kuromoon (Proxmox host) and CT 302 (gaming-wings-1 Docker monitoring)
-- pfSense rules added: CT 208 → Proxmox API (8006), Kuromoon → CT 208 (7655)
-- NPM: home.najhin-gaming.com proxied to CT 208:7655 with Websockets Support enabled
-- Disk health: sda (WD Purple 8TB) 60°C — high but functional; sdb (Seagate 2TB) 8 pending sectors — monitor weekly
-- Pending Tasks: Add "Add sdb monitoring to MERLIN daily checks". Add "Fix NAS SMB password in Vault kv/nas if exists"
-- n8n workflows count remains 12 (no new workflows added)
-- Key Lessons: Add "Pulse deployment requires websocket support in NPM for real-time updates". Add "NFS cannot do LXC backups due to UID namespace mapping — use SMB". Add "Pulse agent tokens are one-time — generate new token per host"
-- Small container backups were missing May 5-9 due to NAS reset — now restored
-
-Errors & Resolutions
-- Pulse crash loop on CT 208: No space left on device — resized CT 208 from 4GB to 8GB
-- Pulse agent 401 on CT 302: Token already consumed by Kuromoon — generated new token from Pulse UI
-- vzdump to kinmoon-nfs permission denied: NFS + LXC UID namespace mapping incompatible — created kinmoon-smb (SMB/CIFS) storage instead
-- smbclient login failure with admin user: NAS username is Muzakkir not admin, password needed command-line format (user%password) to work
-- Pulse "Connection lost" through NPM: Websockets Support not enabled — toggled on in NPM proxy host
-- kinmoon-nfs backup content type error: Backup content type was missing — added then removed again since NFS can't do LXC backups
-
-Action Items
-- [ ] Add sdb SMART monitoring to MERLIN daily checks (Current_Pending_Sector threshold)
-- [ ] Improve NAS airflow — sda at 60°C is near thermal limit for HDDs
-- [ ] Add Pulse credentials to Vaultwarden
-- [ ] Add management URLs for remaining containers in Pulse (CT 204 Loki if needed)
-- [ ] Remove Backup content type from kinmoon-nfs if not already done
-- [ ] Consider replacing sdb (Seagate 2TB, 5.7 years, 8 pending sectors) in future hardware planning
-- [ ] Update Cloudflare Access if needed for home.najhin-gaming.com (Pulse vs Homepage)
 
 ---
 
