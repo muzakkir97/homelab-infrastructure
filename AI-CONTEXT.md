@@ -898,6 +898,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Deck API headers                      | OCS-APIRequest and Accept headers required on all calls                                                            |
 | Nextcloud API auth                    | app password required, regular password returns "not logged in"                                                    |
 | Internal URL bypasses Cloudflare     | http://192.168.30.220 (port 80 only, no SSL)                                                                      |
+| Loop Over Items done output spam      | "done" output emits ALL processed items, not summary — add Limit node before notifications                        |
 
 ### HashiCorp Vault (Phase 13)
 
@@ -982,19 +983,16 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                                        | Priority |
 |---------------------------------------------------------------------------------------------|----------|
-| Test full /update pipeline end-to-end with this session summary                             | High     |
-| Verify Da Vinci creates Deck card from action items in this summary                         | High     |
-| Connect Loop done output and If false output to Notify Complete Telegram node               | High     |
+| Store Langfuse API keys (public + secret) in Vaultwarden                                   | High     |
+| Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)        | High     |
+| Wire Langfuse into n8n Gilgamesh workflow using built-in Langfuse node                     | High     |
+| Wire Langfuse into Da Vinci, Midas, MERLIN workflows                                       | High     |
+| Update morning briefing container count (17 → 18)                                          | High     |
 | Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
 | Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
 | Activate MERLIN workflow (toggle on)                                                        | High     |
 | Monitor Windrose RAM usage — stop Docker container when not playing                         | High     |
 | Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
-| Store Langfuse API keys (public + secret) in Vaultwarden                                    | High     |
-| Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)         | High     |
-| Wire Langfuse into n8n Gilgamesh workflow using built-in Langfuse node                      | High     |
-| Wire Langfuse into Da Vinci, Midas, MERLIN workflows                                        | High     |
-| Update morning briefing container count (17 → 18)                                           | Medium   |
 
 ### Infrastructure
 
@@ -1014,7 +1012,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                                            | Priority |
 |-------------------------------------------------------------------------------------------------|----------|
-| Update deck-davinci-n8n-guide.md with correct API endpoints discovered during debugging         | High     |
 | Build Monthly Infrastructure Audit cron workflow (assign new phase number — NOT 16.3)           | High     |
 | Build Guardian security monitoring agent (after Phase 24.8)                                     | High     |
 | Review and finalize ROADMAP-v2-draft.md                                                        | High     |
@@ -1051,6 +1048,27 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### May 14, 2026
+
+Date: May 14, 2026
+Phase: Da Vinci Notification Bug Fix
+
+Topics Discussed
+- Fixed Da Vinci notification spam (10+ messages per /update)
+
+Decisions Made
+- Added Limit node (max 1 item) between Loop Deck Actions done output and Notify Complete Telegram node
+
+Changes to AI-CONTEXT.md
+- Da Vinci workflow: added Limit node before Notify Complete to prevent per-item Telegram spam
+- Key Lessons: n8n Loop Over Items "done" output emits ALL processed items, not one summary — add Limit node before any single-fire notification
+
+Errors & Resolutions
+- Da Vinci sends 10+ "AI-CONTEXT.md has been updated" messages: Loop done output passes all items to Telegram node. Fix: Limit node (max 1) between Loop and Notify Complete.
+
+Action Items
+- [ ] Verify next /update sends exactly 1 notification
 
 ### May 14, 2026
 
