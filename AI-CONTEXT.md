@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** May 14, 2026
+> **Last Updated:** May 15, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. 18 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Da Vinci notification bug fixed. Langfuse AI observability deployed.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. 18 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Da Vinci notification bug fixed. Langfuse AI observability deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings.
 
 ---
 
@@ -92,7 +92,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 - **Proactive recall** → Context-aware knowledge injection
 
 ### Layer 5: Memory (Agent State)
-- **Conversation history** → 20 messages (gilgamesh_memory)
+- **Conversation history** → 15 messages (gilgamesh_memory)
 - **Session modes** → health_logging, etc.
 - **Goal tracking** → progress + blockers
 - **Agent coordination** → shared state
@@ -258,8 +258,9 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **PCIe config:** hostpci0=0000:0d:00.0,pcie=1,rombar=0 hostpci1=0000:0d:00.1,pcie=1
 - **OS:** Ubuntu 22.04
 - **SSH:** `ssh muzakkir@192.168.30.221` — use `muzakkir` user, not root
-- **Ollama models:** qwen3:14b (primary, 9.3GB), llama3.2:latest (secondary, 3B)
+- **Ollama models:** qwen3:14b (primary, 9.3GB), llama3.2:latest (secondary, 3B), nomic-embed-text (768 dims)
 - **Open WebUI:** Docker container, connects via 172.17.0.1:11434
+- **Qdrant:** Port 6333 (REST), 6334 (gRPC), storage at /opt/qdrant/storage
 
 ### Gaming Servers (Docker on CT 302)
 
@@ -368,6 +369,30 @@ second-brain/
 
 Keep Claude Pro if quality insufficient, still save $10-15/month with hybrid approach.
 
+### Phase 25.3 — Self-Evolving Skills Learning Loop
+
+Inspiration: OpenClaw skills system + Hermes Agent closed learning loop
+Concept: Agents that get smarter the longer they run by capturing solutions as reusable knowledge
+
+Loop: detect → extract → store → recall → refine
+1. Detection — After multi-step resolution or user correction, agent flags "this was hard/new"
+2. Skill extraction — Agent generates structured procedure doc (problem, context, solution steps, gotchas)
+3. Storage — Da Vinci writes to Obsidian (03-knowledge/skills/) and embeds in Qdrant
+4. Recall — On similar future queries, RAG retrieves skill doc and injects into agent context
+5. Refinement — If skill gets corrected or improved, updated version overwrites original
+
+Dependencies: Da Vinci Stage 2 (Qdrant) → Phase 7E (extended memory) → Phase 24.4 (knowledge ingestion)
+Effort: 10-12h
+Architecture: Knowledge documents via RAG, not executable code. Fits Da Vinci-as-sole-writer. Executable skills = future EMIYA extension.
+
+Examples of auto-generated skills:
+- n8n Data Table Upsert always inserting → Conditions section gotcha
+- WebDAV append pattern → GET-then-PUT code template
+- Mixed RAM validation → memtest86+ procedure
+- New LXC SSH access → pfSense rule template
+
+Note: Key Lessons section in AI-CONTEXT.md is the manual version of this — Phase 25.3 automates that capture.
+
 ---
 
 ## 🎴 Fate Grand Order Agent Ecosystem
@@ -379,7 +404,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 | Servant      | Class  | Role                                                                          | Platform                      | Status                     |
 |--------------|--------|-------------------------------------------------------------------------------|-------------------------------|----------------------------|
 | Gilgamesh 👑 | Archer | Life Interface & Personal AI Assistant                                        | Telegram (@JhinGilgamesh_bot) | ✅ Active                   |
-| Da Vinci 🎨  | Caster | Sync + Goals + Review (Stage 1 doc pipeline active; Stage 2 RAG planned)     | n8n/Nextcloud                 | ⚡ Partial — Stage 1 active |
+| Da Vinci 🎨  | Caster | Sync + Goals + Review (Stage 2 RAG active; Stage 1 doc pipeline active)     | n8n/Nextcloud                 | ⚡ Partial — Stage 2 active |
 | Midas 💰     | Caster | CFO — Cost Tracking & Optimization                                            | n8n                           | ✅ Active                   |
 | MERLIN 🔮    | Caster | Proactive Nudges & Scheduler                                                  | n8n                           | ✅ Active                   |
 
@@ -388,7 +413,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 | Servant             | Class    | Role                                          | Platform      | Build Order | Status     |
 |---------------------|----------|-----------------------------------------------|---------------|-------------|------------|
 | Gilgamesh 👑        | Archer   | Life Interface & Personal AI Assistant        | Telegram      | —           | ✅ Active   |
-| Da Vinci 🎨         | Caster   | Sync + Goals + Weekly Review                  | n8n/Nextcloud | —           | ⚡ Partial  |
+| Da Vinci 🎨         | Caster   | Sync + Goals + Weekly Review + RAG           | n8n/Nextcloud | —           | ⚡ Partial  |
 | Midas 💰            | Caster   | CFO — Cost Tracking & Optimization            | n8n           | 1st         | ✅ Active   |
 | MERLIN 🔮           | Caster   | Proactive Nudges & Health Scheduler           | n8n           | 2nd         | ✅ Active   |
 | EMIYA 🏹            | Archer   | CTO — Infrastructure + Agent Spawning         | n8n           | 3rd         | 📋 Planned |
@@ -399,7 +424,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Roster reduced from 9 to 6 agents for focused deployment
 - Build order is firm: Midas complete, MERLIN complete, then EMIYA (24.1-24.8), Guardian
 
-### Da Vinci — Sync + Goals + Weekly Review
+### Da Vinci — Sync + Goals + Weekly Review + RAG
 
 **Role scope:**
 
@@ -407,11 +432,15 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Obsidian writes: session summaries written to vault via Nextcloud WebDAV
 - Goal tracking: monitors progress, identifies blockers, suggests next steps
 - Weekly review: Sunday analysis of week's progress, agent performance, system health
-- RAG retrieval (Stage 2): queries Qdrant vector database for knowledge recall across all agents
+- RAG retrieval (Stage 2): Qdrant + nomic-embed-text for knowledge recall across all agents
 - Observability logs: all agents log activity to Da Vinci
 - Kanban management: Nextcloud Deck card creation and status updates
 
-**Stage 2 stack:** Qdrant + nomic-embed-text + n8n native RAG nodes on VM 400. Folder `04-personal/` excluded from RAG indexing.
+**Stage 2 stack:** Qdrant (VM 400, port 6333/6334) + nomic-embed-text + n8n Knowledge Indexer workflow
+
+**Collections:**
+- obsidian_knowledge: 1538 points (7 indexed folders)
+- gilgamesh_conversations: 0 points (future Phase 7E)
 
 **Pronouns:** she/her
 
@@ -422,6 +451,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Grounding fix pending: add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
 - Deck integration complete with 6 additional nodes for kanban management
 - Da Vinci workflow includes Limit node before Notify Complete to prevent notification spam
+- Knowledge Indexer runs at 3am daily (full re-index v1)
 
 ### Nextcloud Deck Integration
 
@@ -509,7 +539,7 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 
 ---
 
-## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15/41)
+## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15/41/Da Vinci Stage 2)
 
 ### Architecture
 
@@ -524,21 +554,26 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
                                                     ▼
                                           Memory (n8n Data Tables)
                                                     ↓
+                                          RAG Retrieval (Qdrant → nomic-embed-text)
+                                                    ↓
                                           /update → Da Vinci → Nextcloud → GitHub
                                           /sync-docs → Full Doc Pipeline
 ```
 
-### Smart Routing (Phase 41 — COMPLETE)
+### Smart Routing + RAG (Phase 41 + Da Vinci Stage 2 — COMPLETE)
 
 - **Ollama qwen3:14b** — Primary route for simple queries (local, free, fast)
 - **Haiku 4.5** — Fallback if Ollama is down or unavailable
 - **Sonnet 4** — Complex queries: triggered by complexity keywords or messages over 50 words
+- **RAG Retrieval** — Qdrant vector search with nomic-embed-text embeddings (768 dims)
 - Routing logic runs in a Route Check If node before calling any model
+- RAG skipped for greetings (<10 chars or regex match)
 
 ### Features
 
-- **Conversation memory:** Last 20 messages stored in n8n Data Tables
+- **Conversation memory:** Last 15 messages stored in n8n Data Tables (reduced from 20 for RAG integration)
 - **Smart routing:** Ollama (local, primary) → Haiku (fallback) → Sonnet (complex)
+- **RAG knowledge recall:** Queries Qdrant for relevant Obsidian content + conversations
 - **Web search:** Real-time information via Claude's web_search tool
 - **Cost tracking:** Token usage logged to gilgamesh_costs table with command_type; cost_usd calculated from token rates
 - **Inline keyboard menu:** Full menu system with all submenus working
@@ -552,7 +587,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Command    | Purpose           | Description                                   |
 |------------|-------------------|-----------------------------------------------|
 | /help      | Quick reference   | Shows all available commands and menu options |
-| /clear     | Memory reset      | Clears conversation memory (last 20 messages) |
+| /clear     | Memory reset      | Clears conversation memory (last 15 messages) |
 | /memory    | View history      | Shows recent conversation messages            |
 | /cost      | Usage tracking    | Displays token usage and estimated costs      |
 | /alerts    | System status     | Shows active Alertmanager alerts              |
@@ -569,9 +604,11 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Telegram Bot  | @JhinGilgamesh_bot                                        |
 | Chat ID       | 518832696                                                 |
 | Ollama Model  | qwen3:14b (primary local model, 9.3GB, 12GB VRAM, VM 400) |
+| Embedding Model | nomic-embed-text (768 dims, VM 400)                    |
 | Haiku Model   | claude-haiku-4-5-20251001 (Ollama fallback)               |
 | Sonnet Model  | claude-sonnet-4-20250514 (complex queries)                |
 | n8n Container | CT 211, 192.168.30.211                                    |
+| Qdrant        | VM 400, ports 6333 (REST) + 6334 (gRPC)                  |
 | Proxmox API   | root@pam!gilgamesh token                                  |
 | Proxmox node  | muzakkir (not kuromoon)                                   |
 
@@ -582,14 +619,15 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - Ollama queries cost $0 (local inference)
 - command_type derived from Telegram message text directly
 
-### n8n Workflows (Count: 12)
+### n8n Workflows (Count: 13)
 
 | Workflow                           | Purpose                                  | Nodes | Trigger  |
 |------------------------------------|------------------------------------------|-------|----------|
-| Telegram Agent                     | Main bot, menu, commands, hybrid routing | 15+   | Telegram |
+| Telegram Agent                     | Main bot, menu, commands, hybrid routing, RAG | 15+ | Telegram |
 | Documentation Pipeline — Update    | Session summary → 3 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
 | Da Vinci Documentation Pipeline    | Raw staging summaries → formatted docs + Deck | 17+ | Webhook |
+| Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily)   | 8     | Schedule |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
 | Midas — Daily Brief                | 9am scheduled cost summary               | 4     | Schedule |
 | MERLIN — Reminders                 | 8am daily infrastructure checks          | 8     | Schedule |
@@ -598,7 +636,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Update Nextcloud File              | Legacy (unpublished)                     | 5     | Webhook  |
 | Push to GitHub                     | Legacy (unpublished)                     | 4     | Webhook  |
 
-> Note: Hybrid routing (Phase 41) is integrated into the Telegram Agent workflow — it is not a separate workflow. Health tracking (Phase 22.8B) is also integrated into the Telegram Agent workflow.
+> Note: Hybrid routing (Phase 41) and RAG retrieval (Da Vinci Stage 2) are integrated into the Telegram Agent workflow. Health tracking (Phase 22.8B) is also integrated into the Telegram Agent workflow.
 
 ### Inline Keyboard Menu Status
 
@@ -621,12 +659,24 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 | Table Name               | Purpose                                          | Key Columns                          |
 |--------------------------|--------------------------------------------------|--------------------------------------|
-| gilgamesh_memory         | Conversation history (last 20 messages)         | id, timestamp, user, message, response |
+| gilgamesh_memory         | Conversation history (last 15 messages)         | id, timestamp, user, message, response |
 | gilgamesh_costs          | Token usage and cost tracking                   | id, timestamp, model, tokens, cost_usd, command_type |
 | gilgamesh_session_state  | Mode switching for health tracking              | chat_id, mode, updated_at            |
 | health_food_log          | Food logging entries                            | id, logged_at, food_item, notes, chat_id |
 | health_bp_log            | Blood pressure readings                         | id, logged_at, systolic, diastolic, notes, chat_id |
 | health_med_log           | Medication tracking                             | id, logged_at, medication, dosage, notes, chat_id |
+
+### RAG System (Da Vinci Stage 2)
+
+| Component | Details |
+|-----------|---------|
+| **Vector DB** | Qdrant on VM 400 (http://192.168.30.221:6333) |
+| **Embeddings** | nomic-embed-text (768 dimensions) |
+| **Collections** | obsidian_knowledge (1538 points), gilgamesh_conversations (0 points) |
+| **Indexed Folders** | 00-inbox, 01-homelab, 02-career, 03-knowledge, 07-daily, 08-projects, 09-meetings, 10-reference, AI-Stuff/Homelab/homelab-infrastructure |
+| **Excluded** | 04-personal/ (privacy), 05-templates/, 06-archive/ |
+| **Indexing** | Daily 3am via "Da Vinci — Knowledge Indexer" workflow (full re-index v1) |
+| **Retrieval** | Top 5 results, similarity threshold 0.7, injected into system prompt |
 
 ### SSH & API Access
 
@@ -640,6 +690,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 - Telegram messages must be **plain text only** — code blocks, backticks, and complex formatting break JSON parsing in the Claude API request body
 - Progress bars use ASCII (= and -) — Unicode block chars don't render on Telegram mobile
+- RAG payload field is "content" (not "text" or "pageContent")
 
 ---
 
@@ -823,7 +874,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 24.8    | Langfuse AI Observability                                        | ✅ Complete | May 14, 2026 |
 | 25.1    | Voice Interface — Claude API transcription + voice responses     | 📋 Planned | —            |
 | 25.2    | Email Integration — IMAP monitoring + smart filtering            | 📋 Planned | —            |
-| 25.3    | Self-Evolving Skills — agent capability learning                | 📋 Planned | —            |
+| 25.3    | Self-Evolving Skills — Hermes-style learning loop (knowledge docs + RAG recall) | 📋 Planned | —            |
 | 25.4    | Content Creation — automated reports, social posts              | 📋 Planned | —            |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT                             | ✅ Complete | Apr 24, 2026 |
 | 39      | Open WebUI                                                       | ✅ Complete | Apr 24, 2026 |
@@ -833,6 +884,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | MERLIN  | MERLIN Reminders Agent                                           | ✅ Complete | Apr 27, 2026 |
 | Pulse   | Pulse Dashboard Deployment                                       | ✅ Complete | May 10, 2026 |
 | Deck    | Nextcloud Deck + Da Vinci Integration                            | ✅ Complete | May 14, 2026 |
+| DV-S2   | Da Vinci Stage 2 (RAG System)                                   | ✅ Complete | May 15, 2026 |
 
 ---
 
@@ -902,6 +954,10 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Nextcloud API auth                    | app password required, regular password returns "not logged in"                                                    |
 | Internal URL bypasses Cloudflare     | http://192.168.30.220 (port 80 only, no SSL)                                                                      |
 | Loop Over Items done output spam      | "done" output emits ALL processed items, not summary — add Limit node before notifications                        |
+| PROPFIND not in n8n HTTP Request     | Use Code node with this.helpers.httpRequest() instead                                                              |
+| Information Extractor JSON parsing    | Graceful error handling with Continue on Error, null checks in Add Timestamps                                      |
+| RAG empty results                     | Payload field is "content" not "text/pageContent" — check Qdrant schema                                            |
+| search_document/query prefixes        | Remove prefixes — incompatible with chunked content retrieval                                                      |
 
 ### HashiCorp Vault (Phase 13)
 
@@ -978,6 +1034,16 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 |-------------------------------------|------------------------------------------------------------------------------|
 | Langfuse auth redirect to localhost:3000 after signup | NEXTAUTH_URL was set to http://localhost:3000. Fix: change to https://langfuse.najhin-gaming.com in docker-compose.yml, docker compose down && up -d. |
 
+### Qdrant & RAG
+
+| Issue                               | Resolution                                                                   |
+|-------------------------------------|------------------------------------------------------------------------------|
+| PROPFIND not available in n8n HTTP Request | Use Code node with this.helpers.httpRequest() for WebDAV operations |
+| 401 on Nextcloud WebDAV            | Create Nextcloud app password, store in Vaultwarden                         |
+| Information Extractor JSON parsing failure | Set On Error to Continue, handle null gracefully in Add Timestamps |
+| RAG returning empty results         | Payload field was "content" not "text/pageContent" — check Qdrant collection schema |
+| search_document/query prefixes      | Removed both — incompatible with chunked content retrieval                  |
+
 ---
 
 ## ❓ Pending Tasks
@@ -990,6 +1056,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Wire Langfuse into Da Vinci, Midas, MERLIN workflows                                       | High     |
 | Store Langfuse API keys (public + secret) in Vaultwarden                                   | High     |
 | Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)        | High     |
+| Add Uptime Kuma monitor for Qdrant (port 6333)                                             | High     |
 | Update morning briefing container count (17 → 18)                                          | High     |
 | Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
 | Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
@@ -1003,6 +1070,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Task                                                                         | Priority |
 |------------------------------------------------------------------------------|----------|
 | Address local-lvm thin pool overprovisioning (during infrastructure cleanup) | Medium   |
+| Begin Phase 7E (Extended Memory) — conversation archival to gilgamesh_conversations collection | High     |
+| Fix container-Inventory.md 404 (delete and re-upload with lowercase name)    | Medium   |
+| Fix Information Extractor backtick JSON parsing properly                     | Medium   |
 | Begin Phase 24.2 (Alert Translation) next session                           | High     |
 | Create muzakkir97/homelab-private repo                                       | Medium   |
 | Set up Backblaze B2 account                                                  | Medium   |
@@ -1052,6 +1122,59 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### May 15, 2026
+
+Date: May 15, 2026
+Phase: Da Vinci Stage 2 (RAG System)
+
+Topics Discussed
+- Qdrant deployment on VM 400
+- nomic-embed-text embeddings (768 dims)
+- Knowledge Indexer workflow (Da Vinci)
+- Gilgamesh RAG integration via Format Messages
+- Container inventory note for Obsidian
+
+Decisions Made
+- Qdrant runs on VM 400 alongside Ollama (not separate LXC)
+- Two collections: obsidian_knowledge, gilgamesh_conversations
+- Scheduled batch indexing at 3am (full re-index v1)
+- RAG retrieval via direct HTTP calls in Format Messages Code node (not AI Agent tools)
+- search_document/search_query prefixes removed (incompatible with chunking)
+- History reduced from 20 to 15 messages
+- RAG skipped for greetings (<10 chars or regex match)
+
+Changes to AI-CONTEXT.md
+- Qdrant deployed on VM 400, port 6333 (REST), 6334 (gRPC), storage at /opt/qdrant/storage
+- nomic-embed-text pulled into Ollama on VM 400
+- Collections: obsidian_knowledge (1538 points), gilgamesh_conversations (0 points)
+- New workflow: "Da Vinci — Knowledge Indexer" (Schedule 3am, full re-index)
+- New n8n credential: QdrantApi account (http://192.168.30.221:6333, no API key)
+- New n8n credential: n8n-rag-indexer (Nextcloud app password for PROPFIND)
+- Indexed folders: 00-inbox, 01-homelab, 02-career, 03-knowledge, 07-daily, 08-projects, 09-meetings, 10-reference, AI-Stuff/Homelab/homelab-infrastructure
+- Format Messages modified: RAG retrieval added (embed via Ollama → search Qdrant → inject into system prompt)
+- Add Timestamps modified: graceful handling when Information Extractor fails
+- Payload field is "content" (not "text" or "pageContent")
+- Firefly III confirmed as CT 221 (not CT 224); NPM proxy destination is 192.168.30.224:8080
+- Vaultwarden is CT 214 (192.168.30.214), not CT 209
+- HashiCorp Vault is CT 213 (192.168.30.213:8200)
+- Pterodactyl Panel is CT 300, Wings is CT 302
+- Pi-hole runs on Raspberry Pi 4 (192.168.30.10), NOT a Proxmox container
+- container-Inventory.md created in Obsidian 01-homelab but has 404 download issue (case sensitivity)
+
+Errors & Resolutions
+- PROPFIND not available in n8n HTTP Request node: used Code node with this.helpers.httpRequest() instead
+- 401 on Nextcloud WebDAV: created Nextcloud app password, saved in Vaultwarden
+- Information Extractor JSON parsing failure (backticks): set On Error to Continue, fixed Add Timestamps to handle null gracefully
+- RAG returning empty results: payload field was "content" not "text/pageContent" — fixed extraction
+- search_document/search_query prefixes caused retrieval mismatch: removed both
+
+Action Items
+- [ ] Fix container-Inventory.md 404 (delete and re-upload with lowercase name)
+- [ ] Fix Information Extractor backtick JSON parsing properly
+- [ ] Phase 7E: Conversation archival (embed old messages to gilgamesh_conversations collection)
+- [ ] Add Uptime Kuma monitor for Qdrant (port 6333)
+- [ ] Add Langfuse tracing to RAG queries (optional)
 
 ### May 14, 2026
 
@@ -1266,4 +1389,4 @@ Action Items
 
 ---
 
-*Last updated: May 14, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: May 15, 2026 — Update this file at the end of each session before pushing to GitHub*
