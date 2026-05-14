@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. 18 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Da Vinci notification bug fixed. Langfuse AI observability deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. 18 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Da Vinci notification bug fixed. Langfuse AI observability deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival.
 
 ---
 
@@ -336,7 +336,7 @@ second-brain/
 #### Phase 2: Intelligence (Weeks 5-8)
 
 - **Phase 41** — Hybrid Routing (Ollama + Haiku + Sonnet) ✅ COMPLETE
-- **Phase 7E** — Extended Memory (20+ message conversations via RAG)
+- **Phase 7E** — Extended Memory (20+ message conversations via RAG) ✅ COMPLETE
 
 #### Phase 3: Capabilities (Weeks 9-12)
 
@@ -439,8 +439,8 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 **Stage 2 stack:** Qdrant (VM 400, port 6333/6334) + nomic-embed-text + n8n Knowledge Indexer workflow
 
 **Collections:**
-- obsidian_knowledge: 1538 points (7 indexed folders)
-- gilgamesh_conversations: 0 points (future Phase 7E)
+- obsidian_knowledge: 1567 points (9 indexed folders)
+- gilgamesh_conversations: 1 point (conversation archival)
 
 **Pronouns:** she/her
 
@@ -539,7 +539,7 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 
 ---
 
-## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15/41/Da Vinci Stage 2)
+## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15/41/Da Vinci Stage 2/Phase 7E)
 
 ### Architecture
 
@@ -556,22 +556,27 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
                                                     ↓
                                           RAG Retrieval (Qdrant → nomic-embed-text)
                                                     ↓
+                                          Conversation Archival (30+ rows → Qdrant)
+                                                    ↓
                                           /update → Da Vinci → Nextcloud → GitHub
                                           /sync-docs → Full Doc Pipeline
 ```
 
-### Smart Routing + RAG (Phase 41 + Da Vinci Stage 2 — COMPLETE)
+### Smart Routing + RAG + Extended Memory (Phase 41 + Da Vinci Stage 2 + Phase 7E — COMPLETE)
 
 - **Ollama qwen3:14b** — Primary route for simple queries (local, free, fast)
 - **Haiku 4.5** — Fallback if Ollama is down or unavailable
 - **Sonnet 4** — Complex queries: triggered by complexity keywords or messages over 50 words
 - **RAG Retrieval** — Qdrant vector search with nomic-embed-text embeddings (768 dims)
+- **Extended Memory** — Conversation archival when history exceeds 30 rows
 - Routing logic runs in a Route Check If node before calling any model
 - RAG skipped for greetings (<10 chars or regex match)
+- /update messages filtered from conversation history
 
 ### Features
 
 - **Conversation memory:** Last 15 messages stored in n8n Data Tables (reduced from 20 for RAG integration)
+- **Extended memory:** Conversations archived to Qdrant at 30+ rows
 - **Smart routing:** Ollama (local, primary) → Haiku (fallback) → Sonnet (complex)
 - **RAG knowledge recall:** Queries Qdrant for relevant Obsidian content + conversations
 - **Web search:** Real-time information via Claude's web_search tool
@@ -619,11 +624,11 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - Ollama queries cost $0 (local inference)
 - command_type derived from Telegram message text directly
 
-### n8n Workflows (Count: 13)
+### n8n Workflows (Count: 14)
 
 | Workflow                           | Purpose                                  | Nodes | Trigger  |
 |------------------------------------|------------------------------------------|-------|----------|
-| Telegram Agent                     | Main bot, menu, commands, hybrid routing, RAG | 15+ | Telegram |
+| Telegram Agent                     | Main bot, menu, commands, hybrid routing, RAG, extended memory | 18+ | Telegram |
 | Documentation Pipeline — Update    | Session summary → 3 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
 | Da Vinci Documentation Pipeline    | Raw staging summaries → formatted docs + Deck | 17+ | Webhook |
@@ -636,7 +641,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Update Nextcloud File              | Legacy (unpublished)                     | 5     | Webhook  |
 | Push to GitHub                     | Legacy (unpublished)                     | 4     | Webhook  |
 
-> Note: Hybrid routing (Phase 41) and RAG retrieval (Da Vinci Stage 2) are integrated into the Telegram Agent workflow. Health tracking (Phase 22.8B) is also integrated into the Telegram Agent workflow.
+> Note: Hybrid routing (Phase 41), RAG retrieval (Da Vinci Stage 2), and Extended Memory (Phase 7E) are all integrated into the Telegram Agent workflow. Health tracking (Phase 22.8B) is also integrated.
 
 ### Inline Keyboard Menu Status
 
@@ -672,7 +677,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 |-----------|---------|
 | **Vector DB** | Qdrant on VM 400 (http://192.168.30.221:6333) |
 | **Embeddings** | nomic-embed-text (768 dimensions) |
-| **Collections** | obsidian_knowledge (1538 points), gilgamesh_conversations (0 points) |
+| **Collections** | obsidian_knowledge (1567 points), gilgamesh_conversations (1 point) |
 | **Indexed Folders** | 00-inbox, 01-homelab, 02-career, 03-knowledge, 07-daily, 08-projects, 09-meetings, 10-reference, AI-Stuff/Homelab/homelab-infrastructure |
 | **Excluded** | 04-personal/ (privacy), 05-templates/, 06-archive/ |
 | **Indexing** | Daily 3am via "Da Vinci — Knowledge Indexer" workflow (full re-index v1) |
@@ -851,6 +856,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 7D      | Gilgamesh Enhancements (Memory, Routing, Web Search)             | ✅ Complete | Apr 6, 2026  |
 | 7D-Sec  | Cloudflare Access for n8n                                        | ✅ Complete | Apr 7, 2026  |
 | 7D-Menu | Gilgamesh Inline Keyboard Menu                                   | ✅ Complete | Apr 24, 2026 |
+| 7E      | Extended Memory (Conversation Archival)                          | ✅ Complete | May 15, 2026 |
 | 9       | NAS Deployment (Kinmoon)                                         | ✅ Complete | Mar 3, 2026  |
 | 13      | HashiCorp Vault — Secrets Manager                                | ✅ Complete | Apr 18, 2026 |
 | 14      | Secrets Management & Integration                                 | ✅ Complete | Apr 24, 2026 |
@@ -1043,6 +1049,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Information Extractor JSON parsing failure | Set On Error to Continue, handle null gracefully in Add Timestamps |
 | RAG returning empty results         | Payload field was "content" not "text/pageContent" — check Qdrant collection schema |
 | search_document/query prefixes      | Removed both — incompatible with chunked content retrieval                  |
+| crypto.randomUUID() unavailable     | Used Date.now() * 100 + i for Qdrant point IDs                             |
+| Qdrant 400 on insert               | Point IDs must be UUID or unsigned integer                                  |
+| /update messages in history         | Filter with !startsWith('/update') to prevent command pollution             |
 
 ---
 
@@ -1070,7 +1079,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Task                                                                         | Priority |
 |------------------------------------------------------------------------------|----------|
 | Address local-lvm thin pool overprovisioning (during infrastructure cleanup) | Medium   |
-| Begin Phase 7E (Extended Memory) — conversation archival to gilgamesh_conversations collection | High     |
 | Fix container-Inventory.md 404 (delete and re-upload with lowercase name)    | Medium   |
 | Fix Information Extractor backtick JSON parsing properly                     | Medium   |
 | Begin Phase 24.2 (Alert Translation) next session                           | High     |
@@ -1093,9 +1101,11 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | /update redesign — file attachment via Telegram, push to GitHub + Nextcloud                     | Medium   |
 | Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram)                 | Medium   |
 | Integrate Vault secrets into n8n Gilgamesh workflow (Phase 27)                                  | Medium   |
-| Build Da Vinci Stage 2 (RAG) alongside Phase 7E                                                 | Medium   |
 | Create Anthropic Admin API key for Midas cost tracking (future session)                         | Medium   |
 | Wire Midas → Firefly III API (Phase 24.2, future session)                                       | Medium   |
+| Add Qdrant conversation search to Format Messages (for "what did we discuss?" queries)          | Medium   |
+| Investigate assistant messages saving as Null in gilgamesh_conversations                        | Medium   |
+| Increase Top K or tune RAG for broad queries                                                    | Medium   |
 
 ### Infrastructure (Network & Services)
 
@@ -1126,266 +1136,63 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ### May 15, 2026
 
 Date: May 15, 2026
-Phase: Da Vinci Stage 2 (RAG System)
+Phase: Da Vinci Stage 2 + Phase 7E
 
 Topics Discussed
-- Qdrant deployment on VM 400
-- nomic-embed-text embeddings (768 dims)
-- Knowledge Indexer workflow (Da Vinci)
-- Gilgamesh RAG integration via Format Messages
+- Qdrant deployment on VM 400 (Docker)
+- nomic-embed-text embeddings (768 dimensions, local, zero cost)
+- Da Vinci Knowledge Indexer workflow (scheduled 3am)
+- Gilgamesh RAG integration via Format Messages Code node
 - Container inventory note for Obsidian
+- Conversation archival to Qdrant
+- RAG skip logic for greetings
+- /update history pollution fix
 
 Decisions Made
 - Qdrant runs on VM 400 alongside Ollama (not separate LXC)
-- Two collections: obsidian_knowledge, gilgamesh_conversations
-- Scheduled batch indexing at 3am (full re-index v1)
-- RAG retrieval via direct HTTP calls in Format Messages Code node (not AI Agent tools)
+- Two collections: obsidian_knowledge (1567 points), gilgamesh_conversations
+- Scheduled batch indexing at 3am (full re-index v1, no incremental yet)
+- RAG retrieval via direct HTTP calls in Format Messages Code node
 - search_document/search_query prefixes removed (incompatible with chunking)
 - History reduced from 20 to 15 messages
 - RAG skipped for greetings (<10 chars or regex match)
+- /update messages filtered from conversation history
+- Conversation archival threshold: 30 rows
 
 Changes to AI-CONTEXT.md
-- Qdrant deployed on VM 400, port 6333 (REST), 6334 (gRPC), storage at /opt/qdrant/storage
+- Qdrant deployed on VM 400: port 6333 (REST), 6334 (gRPC), storage at /opt/qdrant/storage
 - nomic-embed-text pulled into Ollama on VM 400
-- Collections: obsidian_knowledge (1538 points), gilgamesh_conversations (0 points)
-- New workflow: "Da Vinci — Knowledge Indexer" (Schedule 3am, full re-index)
+- Collections: obsidian_knowledge (1567 points), gilgamesh_conversations (1 point)
+- New workflow: "Da Vinci — Knowledge Indexer" — Schedule 3am, full re-index
 - New n8n credential: QdrantApi account (http://192.168.30.221:6333, no API key)
-- New n8n credential: n8n-rag-indexer (Nextcloud app password for PROPFIND)
+- New n8n credential: n8n-rag-indexer (Nextcloud app password for WebDAV PROPFIND)
 - Indexed folders: 00-inbox, 01-homelab, 02-career, 03-knowledge, 07-daily, 08-projects, 09-meetings, 10-reference, AI-Stuff/Homelab/homelab-infrastructure
-- Format Messages modified: RAG retrieval added (embed via Ollama → search Qdrant → inject into system prompt)
-- Add Timestamps modified: graceful handling when Information Extractor fails
-- Payload field is "content" (not "text" or "pageContent")
-- Firefly III confirmed as CT 221 (not CT 224); NPM proxy destination is 192.168.30.224:8080
-- Vaultwarden is CT 214 (192.168.30.214), not CT 209
-- HashiCorp Vault is CT 213 (192.168.30.213:8200)
-- Pterodactyl Panel is CT 300, Wings is CT 302
-- Pi-hole runs on Raspberry Pi 4 (192.168.30.10), NOT a Proxmox container
-- container-Inventory.md created in Obsidian 01-homelab but has 404 download issue (case sensitivity)
+- Telegram Agent modified: Format Messages now includes RAG retrieval (embed via Ollama → search Qdrant → inject into system prompt)
+- Telegram Agent modified: Add Timestamps handles null gracefully when Information Extractor fails
+- Telegram Agent modified: /update messages excluded from conversation history
+- Telegram Agent modified: conversation archival nodes added (Count → Archive → Delete)
+- Qdrant payload field is "content" (not "text" or "pageContent")
+- Container inventory corrections: Firefly III = CT 221 (NPM proxy at 192.168.30.224:8080), Vaultwarden = CT 214 (192.168.30.214:8080), HashiCorp Vault = CT 213 (192.168.30.213:8200), Pterodactyl Panel = CT 300, Wings = CT 302, Pi-hole on Raspberry Pi 4 (192.168.30.10, not Proxmox)
+- container-inventory.md created in Obsidian 01-homelab
 
 Errors & Resolutions
-- PROPFIND not available in n8n HTTP Request node: used Code node with this.helpers.httpRequest() instead
-- 401 on Nextcloud WebDAV: created Nextcloud app password, saved in Vaultwarden
-- Information Extractor JSON parsing failure (backticks): set On Error to Continue, fixed Add Timestamps to handle null gracefully
-- RAG returning empty results: payload field was "content" not "text/pageContent" — fixed extraction
-- search_document/search_query prefixes caused retrieval mismatch: removed both
+- PROPFIND not in n8n HTTP Request: used Code node with this.helpers.httpRequest()
+- 401 on Nextcloud WebDAV: created Nextcloud app password (n8n-rag-indexer)
+- Information Extractor JSON backticks: set On Error to Continue, Add Timestamps handles null
+- RAG returning empty: payload field was "content" not "text/pageContent"
+- search_document/search_query prefixes caused mismatch: removed both
+- crypto.randomUUID() unavailable in n8n Code: used Date.now() * 100 + i
+- Qdrant 400 on insert: point IDs must be UUID or unsigned integer
+- "hi" triggering container responses: /update messages in history, filtered with !startsWith('/update')
 
 Action Items
-- [ ] Fix container-Inventory.md 404 (delete and re-upload with lowercase name)
-- [ ] Fix Information Extractor backtick JSON parsing properly
-- [ ] Phase 7E: Conversation archival (embed old messages to gilgamesh_conversations collection)
+- [ ] Fix container-Inventory.md download 404 (verify after next 3am indexer run)
+- [ ] Fix Information Extractor JSON backtick parsing properly
+- [ ] Add Qdrant conversation search to Format Messages (for "what did we discuss?" queries)
+- [ ] Investigate assistant messages saving as Null in gilgamesh_conversations
 - [ ] Add Uptime Kuma monitor for Qdrant (port 6333)
+- [ ] Increase Top K or tune RAG for broad queries
 - [ ] Add Langfuse tracing to RAG queries (optional)
-
-### May 14, 2026
-
-Date: May 14, 2026
-Phase: Planning — Phase 25.3 Enhancement
-
-Topics Discussed
-- Compared Gilgamesh architecture against RAG → Agentic RAG → Multi-Agent Graph RAG evolution diagram
-- Assessed current system position: functionally at Agentic RAG level (multi-tool routing, specialized agents) but missing vector search backbone
-- Compared Gilgamesh against OpenClaw and Hermes self-hosted AI agents
-- Identified three gaps: persistent RAG memory (biggest), self-improving skills, multi-platform reach
-- Identified Gilgamesh advantages: multi-agent architecture (6 servants vs single-agent), proper app integration (Firefly III, Langfuse, Nextcloud)
-- Decided to flesh out Phase 25.3 with Hermes-inspired self-evolving skills learning loop
-
-Decisions Made
-- Phase 25.3 description updated from "agent capability learning" to "Hermes-style learning loop (knowledge docs + RAG recall)"
-- Phase 25.3 concept defined: detect → extract → store → recall → refine loop
-- Skills stored as knowledge documents in Obsidian (03-knowledge/skills/) + Qdrant embeddings, NOT executable code
-- Da Vinci remains sole writer — skills go through Da Vinci like everything else
-- Executable skill creation deferred to future EMIYA extension
-- Dependencies confirmed: Da Vinci Stage 2 → Phase 7E → Phase 24.4 → Phase 25.3
-- Effort estimate: 10-12h
-- Graph RAG (Neo4j) assessed as unnecessary for current scale — flat vector search covers 90% of recall needs
-
-Changes to AI-CONTEXT.md
-Phase History table:
-- Line for Phase 25.3: change description from "Self-Evolving Skills — agent capability learning" to "Self-Evolving Skills — Hermes-style learning loop (knowledge docs + RAG recall)"
-
-Add new subsection under Gilgamesh Evolution Roadmap or after Fate Agent Ecosystem:
-
-### Phase 25.3 — Self-Evolving Skills Learning Loop
-
-Inspiration: OpenClaw skills system + Hermes Agent closed learning loop
-Concept: Agents that get smarter the longer they run by capturing solutions as reusable knowledge
-
-Loop: detect → extract → store → recall → refine
-1. Detection — After multi-step resolution or user correction, agent flags "this was hard/new"
-2. Skill extraction — Agent generates structured procedure doc (problem, context, solution steps, gotchas)
-3. Storage — Da Vinci writes to Obsidian (03-knowledge/skills/) and embeds in Qdrant
-4. Recall — On similar future queries, RAG retrieves skill doc and injects into agent context
-5. Refinement — If skill gets corrected or improved, updated version overwrites original
-
-Dependencies: Da Vinci Stage 2 (Qdrant) → Phase 7E (extended memory) → Phase 24.4 (knowledge ingestion)
-Effort: 10-12h
-Architecture: Knowledge documents via RAG, not executable code. Fits Da Vinci-as-sole-writer. Executable skills = future EMIYA extension.
-
-Examples of auto-generated skills:
-- n8n Data Table Upsert always inserting → Conditions section gotcha
-- WebDAV append pattern → GET-then-PUT code template
-- Mixed RAM validation → memtest86+ procedure
-- New LXC SSH access → pfSense rule template
-
-Note: Key Lessons section in AI-CONTEXT.md is the manual version of this — Phase 25.3 automates that capture.
-
-Errors & Resolutions
-- None
-
-Action Items
-- [ ] No immediate action — Phase 25.3 is future (depends on Da Vinci Stage 2, 7E, 24.4)
-
-### May 14, 2026
-
-Date: May 14, 2026
-Phase: Langfuse Deployment + Deck Reorganization
-
-Topics Discussed
-- Deployed Langfuse v3.174.1 on CT 223 (192.168.30.223, 2 cores, 4GB RAM, 16GB disk)
-- Fixed Da Vinci notification spam: added Limit node before Notify Complete
-- Archived 6 dead phases (22.8C, 22.8D, 22.8E, 22.15, 22.16, 22.11) — Homepage replaced by Pulse
-- Deleted 30+ duplicate Deck cards from Da Vinci spam bug
-- Reordered Deck Backlog by new priority: RAG → Memory → Guardian → Capabilities → Infra → Gaming → Career
-
-Decisions Made
-- Langfuse org: Kuromoon, project: Gilgamesh Agents, telemetry disabled
-- New phase priority: Da Vinci Stage 2 (RAG) and Guardian moved to Up Next
-- Langfuse is standalone phase (not EMIYA's 24.8 Agent Spawning)
-- Morning briefing: single orchestrator workflow, no EMIYA dependency needed yet
-
-Changes to AI-CONTEXT.md
-- CT 223: 📋 Planned → ✅ Running. Total: 18 LXC + 1 VM
-- Add phase: "Langfuse AI Observability | ✅ Complete | May 14, 2026"
-- Services: langfuse.najhin-gaming.com (Cloudflare Tunnel + Access email OTP)
-- Da Vinci workflow: Limit node (max 1) added before Notify Complete
-- Key Lessons: NEXTAUTH_URL must match external URL. Loop done output emits ALL items. Deck API owner field needs uid string extraction.
-
-Action Items
-- [ ] Store Langfuse API keys in Vaultwarden
-- [ ] Add Uptime Kuma monitor for Langfuse
-- [ ] Wire Langfuse into Gilgamesh, Da Vinci, Midas, MERLIN workflows
-- [ ] Update morning briefing container count (17 → 18)
-- [ ] Replace Kinmoon NAS drive (~RM 400-500)
-
-### May 14, 2026
-
-Date: May 14, 2026
-Phase: Da Vinci Notification Bug Fix
-
-Topics Discussed
-- Fixed Da Vinci notification spam (10+ messages per /update)
-
-Decisions Made
-- Added Limit node (max 1 item) between Loop Deck Actions done output and Notify Complete Telegram node
-
-Changes to AI-CONTEXT.md
-- Da Vinci workflow: added Limit node before Notify Complete to prevent per-item Telegram spam
-- Key Lessons: n8n Loop Over Items "done" output emits ALL processed items, not one summary — add Limit node before any single-fire notification
-
-Errors & Resolutions
-- Da Vinci sends 10+ "AI-CONTEXT.md has been updated" messages: Loop done output passes all items to Telegram node. Fix: Limit node (max 1) between Loop and Notify Complete.
-
-Action Items
-- [ ] Verify next /update sends exactly 1 notification
-
-### May 14, 2026
-
-Date: May 14, 2026
-Phase: Phase 24.8 — Langfuse (AI Observability)
-
-Topics Discussed
-- Reviewed roadmap and AI-CONTEXT.md pending tasks to determine next phase
-- Resolved roadmap vs AI-CONTEXT conflict: AI-CONTEXT is source of truth, Phase 24.8 (Langfuse) is next
-- Langfuse v3 architecture: 6 Docker containers (langfuse-web, langfuse-worker, ClickHouse, PostgreSQL, Redis, MinIO)
-- Full deployment of Langfuse on CT 223 (observability-langfuse, 192.168.30.223)
-- Cloudflare Tunnel + Access setup for langfuse.najhin-gaming.com
-- NEXTAUTH_URL fix: localhost:3000 → https://langfuse.najhin-gaming.com (required for auth redirect)
-- n8n → Langfuse connectivity verified
-
-Decisions Made
-- CT 223 specs: 2 cores, 4096MB RAM, 512MB swap, 16GB disk (heavier than ntfy/Firefly III due to 6-container stack)
-- Telemetry disabled (TELEMETRY_ENABLED: false) for data sovereignty
-- Cloudflare Access with Email OTP enabled for langfuse.najhin-gaming.com
-- Organization name: Kuromoon, Project name: Gilgamesh Agents
-- Langfuse v3.174.1 deployed (latest stable)
-- Batch export disabled (LANGFUSE_S3_BATCH_EXPORT_ENABLED: false) — not needed for homelab scale
-
-Changes to AI-CONTEXT.md
-- Infrastructure Inventory: CT 223 (observability-langfuse, 192.168.30.223, Langfuse v3 Docker stack, 2 cores, 4GB RAM, 16GB disk, Phase 24.8) status changed from 📋 Planned to ✅ Running. Total: 18 LXC + 1 VM.
-- Phase Status: Phase 24.8 (Langfuse) COMPLETED 2026-05-14
-- Services/URLs: Langfuse: langfuse.najhin-gaming.com (Cloudflare Tunnel + Access email OTP)
-- Langfuse internal URL: http://192.168.30.223:3000 (for n8n and other agents)
-- Langfuse health endpoint: /api/public/health
-- Langfuse Docker stack: langfuse-web (port 3000), langfuse-worker (port 3030), ClickHouse (8123/9000), MinIO (9090), Redis (6379), PostgreSQL (5432) — all except web and minio bound to localhost
-- Key Lessons: Langfuse v3 NEXTAUTH_URL must match external URL or auth redirects break to localhost. Langfuse v3 requires 6 containers (web, worker, ClickHouse, PostgreSQL, Redis, MinIO) — significantly heavier than v2.
-- Pending Tasks: Add "Wire Langfuse to n8n agent workflows (Gilgamesh, Da Vinci, Midas, MERLIN)" as High priority. Add "Add Uptime Kuma monitor for Langfuse" as High priority. Add "Store Langfuse API keys in Vaultwarden" as High priority.
-
-Errors & Resolutions
-- Langfuse auth redirect to localhost:3000 after signup: NEXTAUTH_URL was set to http://localhost:3000. Fix: change to https://langfuse.najhin-gaming.com in docker-compose.yml, docker compose down && up -d.
-
-Action Items
-- [ ] Store Langfuse API keys (public + secret) in Vaultwarden
-- [ ] Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)
-- [ ] Wire Langfuse into n8n Gilgamesh workflow using built-in Langfuse node
-- [ ] Wire Langfuse into Da Vinci, Midas, MERLIN workflows
-- [ ] Update morning briefing container count (17 → 18)
-
-### May 14, 2026
-
-Date: May 14, 2026
-Phase: Nextcloud Deck + Da Vinci Integration
-
-Topics Discussed
-- Nextcloud Deck one-time setup: 3 boards (Homelab, Career, Personal), 5 stacks each, 40 labels, 74 phase cards
-- Deck API authentication: regular password rejected, app password required for API access
-- Deck API endpoint debugging: assignLabel route is PUT /assignLabel with {"labelId": X} in body (no ID in URL)
-- Card update API requires owner field in body or returns 400
-- Internal URL http://192.168.30.220 required (Cloudflare blocks Basic Auth on external URL)
-- Label assignment and emoji prefix script for visual card differentiation
-- Da Vinci workflow extended with 6 new nodes for Deck kanban management
-- First successful card creation via n8n Deck integration
-
-Decisions Made
-- Nextcloud Deck app password created for API access (credential name: NextCloud-Deck in n8n)
-- Homelab board ID: 4, Career board ID: 5, Personal board ID: 6
-- Stack IDs fetched dynamically via GET /boards/4/stacks
-- Labels assigned via PUT /boards/{id}/stacks/{sid}/cards/{cid}/assignLabel with body {"labelId": X}
-- Card updates require title, type, owner, and description fields to avoid field wiping
-- Status emojis on card titles: ✅ Done, 🔧 In Progress, 📋 Backlog, 🚫 Blocked
-- Da Vinci Deck nodes appended after Push to GitHub in existing workflow
-- AI-CONTEXT-staging.md cleared to prevent 53 stale action items from creating duplicate cards
-
-Changes to AI-CONTEXT.md
-- Add Nextcloud Deck section under Bots & Integrations:
-  - Deck app on CT 220 (cloud.najhin-gaming.com)
-  - 3 boards: Homelab (ID 4), Career (ID 5), Personal (ID 6)
-  - 5 stacks per board: Backlog, Up Next, Blocked, In Progress, Done
-  - 22 labels on Homelab (category, priority, agent, effort), 9 on Career, 9 on Personal
-  - API base: http://192.168.30.220/index.php/apps/deck/api/v1.0
-  - Auth: Basic auth with app password (credential: NextCloud-Deck)
-- Add to Key Lessons / n8n & Gilgamesh:
-  - Deck API assignLabel: PUT /assignLabel (no label ID in URL), body {"labelId": X}
-  - Deck API card update: requires owner field or returns 400; omitting description wipes it
-  - Deck API: OCS-APIRequest and Accept headers required on all calls
-  - Nextcloud API auth: app password required, regular password returns "not logged in"
-  - Internal URL http://192.168.30.220 bypasses Cloudflare (port 80 only, no SSL)
-- Update n8n Workflows table: Da Vinci workflow now includes Deck management nodes (Parse Deck Actions, If, Fetch Homelab Stacks, Build Deck Requests, Loop Deck Actions, Execute Deck Action)
-- Update Da Vinci Documentation Pipeline section: add Deck as third output target alongside Obsidian and GitHub
-
-Errors & Resolutions
-- Nextcloud API "Current user is not logged in": use app password instead of regular password
-- Deck API 405 on assignLabel: route is /assignLabel without /{labelId} suffix; labelId goes in request body only
-- Deck API 400 on card update: must include owner field in PUT body
-- Card description wiped on update: must include current description in PUT body
-- n8n Code node "Referenced node doesn't exist": webhook node named "Da Vinci Webhook" not "Webhook"
-- n8n Code node "summaryText.split is not a function": webhook body is trigger-only; session text is in Read Staging File node
-- n8n HTTP Request "Invalid URL =http://": URL field was in Fixed mode with = prefix; switch to Expression mode
-
-Action Items
-- [ ] Test full /update pipeline end-to-end with this session summary
-- [ ] Verify Da Vinci creates Deck card from action items in this summary
-- [ ] Connect Loop done output and If false output to Notify Complete Telegram node
-- [ ] Update deck-davinci-n8n-guide.md with correct API endpoints discovered during debugging
 
 ---
 
