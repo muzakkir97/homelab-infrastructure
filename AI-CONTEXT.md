@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** May 15, 2026
+> **Last Updated:** May 16, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. 18 LXC containers + 1 KVM VM deployed. Hardware upgraded with 128GB DDR4 ordered. Pulse monitoring dashboard deployed on CT 208. Da Vinci notification bug fixed. Langfuse AI observability deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 18 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival.
 
 ---
 
@@ -115,7 +115,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 
 | Device           | Hostname | Specs                                    | IP Address     | Role                              |
 |------------------|----------|------------------------------------------|----------------|-----------------------------------|
-| Proxmox Server   | Kuromoon | Ryzen 5 5600X, 128GB DDR4, RX 6700 XT 12GB | 192.168.10.5   | Hypervisor                        |
+| Proxmox Server   | Kuromoon | Ryzen 5 5600X, 128GB DDR4-3200, RX 6700 XT 12GB | 192.168.10.5   | Hypervisor                        |
 | pfSense Firewall | —        | AC8F Mini PC, Intel N100                 | 192.168.10.1   | Router, Firewall                  |
 | Managed Switch   | —        | TP-Link TL-SG108E                        | 192.168.1.20   | Layer 2, VLANs                    |
 | NAS              | Kinmoon  | UGREEN DXP2800, 5.4TB RAID 1            | 192.168.10.100 | Backups (RAID 1, ext4)           |
@@ -131,23 +131,25 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 - Idle baseline: CPU 48.5°C, GPU edge 46°C, GPU 5W with zero-RPM fan
 - HSA_OVERRIDE_GFX_VERSION=10.3.0 set via systemd override for gfx1031 compatibility
 
-### RAM Upgrade (Ordered May 9, 2026)
+### RAM Upgrade (Complete - May 16, 2026)
 
-- **Current:** 32GB DDR4 (2x16GB)
-- **Ordered:** 4x32GB Corsair Vengeance LPX DDR4-3200 from Taobao
-- **Future Total:** 128GB DDR4 (32GB per DIMM slot on ASUS TUF B550M-E)
+- **Installed:** 4x32GB Corsair Vengeance LPX DDR4-3200 (128GB total)
+- **Speed:** DDR4-3200 MT/s confirmed (manual BIOS tuning from 2666 to rated speed)
 - **Purpose:** VM/LXC density, large AI models, multiple workloads
+
+### Storage Architecture (3-Tier, Complete - May 16, 2026)
+
+| Tier | Storage    | Device              | Capacity | Mount Point       | Purpose                          |
+|------|------------|---------------------|----------|-------------------|----------------------------------|
+| 1    | local-zfs  | NVMe ZFS RAID1      | 770GB    | /                | OS, VM disks, fast containers     |
+| 2    | ssd-storage| WD Green 1TB SATA   | 927GB    | /dev/sdd         | Rootdir/images, medium workloads  |
+| 3    | hdd-backup | 2x8TB SATA HDD      | 14.6TB   | /mnt/hdd-backup-* | Backups, Nextcloud data          |
 
 ### Health Sensors
 
 - **Lepulse scale** → Fitdays app → Samsung Health → Health Connect bridge
 - **Samsung Watch** → Samsung Health → Health Connect bridge
 - **Data flow:** Sensors → Samsung Health → Health Connect webhook bridge → n8n → Obsidian + Data Tables
-
-### Disk Health Monitoring
-
-- **sda (WD Purple 8TB):** Running at 60°C — high but functional
-- **sdb (Seagate 2TB):** 8 pending sectors detected — requires weekly monitoring
 
 ---
 
@@ -219,11 +221,12 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 ### Nextcloud Hub (CT 220)
 
 - **Root disk:** 100GB (resized from 20GB to resolve quota issues)
+- **Data directory:** /mnt/ncdata (bind mount from /mnt/hdd-backup-1/nextcloud-data)
 - **Version:** 33.0.2
-- **Data location:** Currently on /var/lib/nextcloud (root disk)
-- **Planned migration:** Move data directory to /mnt/data-storage (7.3TB HDD) during future phase
+- **Storage:** Data on Tier 3 HDD, app on NVMe (1.3GB after migration)
 - **WebDAV base URL:** https://cloud.najhin-gaming.com/remote.php/dav/files/admin/
 - **Enabled apps:** Deck (project management), Tasks, Calendar
+- **Backup:** rsync to Kinmoon NAS nightly at 03:00
 
 ### Firefly III (CT 221)
 
@@ -784,34 +787,40 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ---
 
-## 💾 Backup Strategy (Phase 7A)
+## 💾 Backup Strategy (Phase 7A + Hardware Upgrade)
 
 ### Backup Jobs
 
 | Job              | Schedule | Storage                  | Containers                                  | Retention                    |
 |------------------|----------|--------------------------|---------------------------------------------|------------------------------|
-| Small Containers | 02:00    | kinmoon-smb (NAS)        | 201, 202, 203, 204, 205, 206, 207, 214, 300 | 7 daily, 4 weekly, 2 monthly |
-| Large Containers | 02:30    | data-storage (Local HDD) | 220, 302                                    | 7 daily, 4 weekly, 2 monthly |
+| Nightly Backup   | 02:00    | hdd-backup-1 (Local HDD) | All 18 LXC containers + VM 400            | 7 daily, 4 weekly           |
+| Nextcloud Data   | 03:00    | Kinmoon NAS (rsync)      | /mnt/hdd-backup-1/nextcloud-data           | Mirror sync                  |
 
 ### Storage
 
 | Name         | Type       | Protocol | Capacity | Purpose                 |
 |--------------|------------|----------|----------|-------------------------|
-| kinmoon-smb  | NAS RAID 1 | SMB/CIFS | 2.6 TB   | Small container backups |
-| kinmoon-nfs  | NAS RAID 1 | NFS      | 2.6 TB   | Disk images only        |
-| data-storage | Local HDD  | Direct   | 7.2 TB   | Large container backups |
-| local-lvm    | Local NVMe | LVM-Thin | 137 GB   | Container root disks    |
-| vmpool-fast  | Local NVMe | ZFS      | 899 GB   | Fast container storage  |
+| hdd-backup-1 | Local HDD  | Direct   | 7.3 TB   | Proxmox backups + Nextcloud data |
+| hdd-backup-2 | Local HDD  | Direct   | 7.3 TB   | Future backup expansion |
+| kinmoon-smb  | NAS RAID 1 | SMB/CIFS | 2.6 TB   | Off-site Nextcloud data |
+| kinmoon-nfs  | NAS RAID 1 | NFS      | 2.6 TB   | Legacy storage         |
+| local-zfs    | NVMe RAID1 | ZFS      | 770 GB   | OS, VM disks, fast containers |
+| ssd-storage  | SATA SSD   | LVM-Thin | 927 GB   | Medium workload storage |
+
+### Backup Scripts
+
+- **Proxmox vzdump:** Built-in backup job to /mnt/hdd-backup-1
+- **Nextcloud rsync:** /usr/local/bin/backup-nextcloud.sh, logs to /var/log/nextcloud-backup.log
 
 ### NAS Configuration
 
 - **Model:** UGREEN DXP2800 (2-bay)
 - **RAID:** RAID 1 (mirrored drives for redundancy)
 - **Filesystem:** ext4
-- **SMB share:** proxmox-backups (username: Muzakkir)
+- **SMB share:** proxmox-backups (username: Muzakkir, password rotated May 16)
 - **NFS export:** /volume1/proxmox-backups
 - **Status:** Normal (healthy, drives synced)
-- **Network:** 192.168.10.100 (changed from 192.168.10.15 after factory reset)
+- **Network:** 192.168.10.100
 
 ---
 
@@ -826,7 +835,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Nextcloud, Firefly III, Langfuse (8 apps total)                                           |
 | External Access | Cloudflare Tunnel for all external services                                                                                                                                                        |
 | Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                                                                                                                                      |
-| Backup          | Automated daily backups with 7/4/2 retention                                                                                                                                                       |
+| Backup          | Automated daily backups with 7/4 retention                                                                                                                                                         |
 | Secrets         | HashiCorp Vault (CT 213, vault.najhin-gaming.com). KV engine at kv/. Secrets: kv/gilgamesh, kv/cloudflare, kv/proxmox, kv/alertmanager, kv/github, kv/nextcloud, kv/n8n, kv/pihole (8 paths total) |
 | Passwords       | Vaultwarden (CT 214, passwords.najhin-gaming.com). Personal password manager with Bitwarden clients. API bypassed in Cloudflare Access (/api/, /identity/ paths).                                  |
 
@@ -891,6 +900,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Pulse   | Pulse Dashboard Deployment                                       | ✅ Complete | May 10, 2026 |
 | Deck    | Nextcloud Deck + Da Vinci Integration                            | ✅ Complete | May 14, 2026 |
 | DV-S2   | Da Vinci Stage 2 (RAG System)                                   | ✅ Complete | May 15, 2026 |
+| HW-128  | Hardware Upgrade (128GB RAM + 3-Tier Storage)                    | ✅ Complete | May 16, 2026 |
 
 ---
 
@@ -904,6 +914,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | KVM virtualization not available       | Enable AMD-V (SVM Mode) and IOMMU in UEFI settings         |
 | Boot timeout after BIOS changes        | Disable systemd-networkd-wait-online.service               |
 | RAID conversion with active mount       | Unmount NFS share before NAS factory reset                 |
+| DOCP 3600 failed POST                  | Manual DDR4-2666 setting negotiated to rated DDR4-3200     |
+| Enterprise repo 401 errors             | Disable pve-enterprise.list/sources — add pve-no-subscription.list |
 
 ### Network & VLANs
 
@@ -932,6 +944,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | ZFS snapshot busy            | Kill stuck processes or reboot, then destroy snapshot |
 | Container locked (backup)    | `pct unlock <CTID>`                                   |
 | NFS cannot do LXC backups    | NFS + LXC UID namespace mapping incompatible — use SMB |
+| CT 220 startup failed after mp0 | Mount directory didn't exist — fixed with mkdir -p  |
+| rsync Permission denied      | LXC UID mapping — www-data (UID 33) maps to UID 100033 |
 
 ### n8n & Gilgamesh
 
@@ -1007,6 +1021,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 |----------------------------|--------------------------------------------------------|
 | High memory alerts at 80%  | Raise threshold to 85% (Windrose baseline ~9GB RAM)    |
 | Prometheus HighMemoryUsage | Updated rule from 80% to 85% in alerting configuration |
+| Proxmox unreachable alerts | node exporter missing after reinstall — installed prometheus-node-exporter |
 
 ### n8n Community Nodes
 
@@ -1070,6 +1085,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
 | Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
 | Activate MERLIN workflow (toggle on)                                                        | High     |
+| Monitor vzdump backup run tonight at 02:00 — verify in Proxmox backup log                   | High     |
+| Monitor nextcloud rsync run tonight at 03:00 — check /var/log/nextcloud-backup.log          | High     |
 | Replace Kinmoon NAS drive (~RM 400-500)                                                     | High     |
 | Monitor Windrose RAM usage — stop Docker container when not playing                         | High     |
 | Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
@@ -1078,14 +1095,15 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                         | Priority |
 |------------------------------------------------------------------------------|----------|
-| Address local-lvm thin pool overprovisioning (during infrastructure cleanup) | Medium   |
+| Remove Samsung 750 EVO after 1 week of stability (around May 22)             | Medium   |
+| Address local-zfs thin pool overprovisioning (during infrastructure cleanup) | Medium   |
 | Fix container-Inventory.md 404 (delete and re-upload with lowercase name)    | Medium   |
 | Fix Information Extractor backtick JSON parsing properly                     | Medium   |
 | Begin Phase 24.2 (Alert Translation) next session                           | High     |
 | Create muzakkir97/homelab-private repo                                       | Medium   |
 | Set up Backblaze B2 account                                                  | Medium   |
 | Phase 27 (Vault + n8n) enables n8n to fetch secrets directly                 | Medium   |
-| Install 128GB DDR4 RAM upgrade when Taobao delivery arrives                  | Medium   |
+| Consider moving VM 400 boot disk to ssd-storage                             | Medium   |
 | Clean up temp backups (saves 6.9GB local storage) - optional                 | Low      |
 | Add sdb monitoring to MERLIN daily checks                                    | Medium   |
 | Improve NAS airflow — sda at 60°C is near thermal limit for HDDs            | Medium   |
@@ -1106,6 +1124,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Add Qdrant conversation search to Format Messages (for "what did we discuss?" queries)          | Medium   |
 | Investigate assistant messages saving as Null in gilgamesh_conversations                        | Medium   |
 | Increase Top K or tune RAG for broad queries                                                    | Medium   |
+| Update AI-CONTEXT.md, current-state.md, service-catalog.md                                      | Medium   |
 
 ### Infrastructure (Network & Services)
 
@@ -1132,6 +1151,58 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### May 16, 2026
+
+Date: May 16, 2026
+Phase: Hardware Upgrade — Post-Migration Cleanup + Nextcloud Storage Migration
+
+Topics Discussed
+- SATA SSD (WD Green 1TB) installation as Tier 2 storage (ssd-storage)
+- Two 8TB HDD configuration as local backup storage (hdd-backup-1, hdd-backup-2)
+- Nightly backup job covering all 17 LXC + VM 400
+- RAM speed confirmed DDR4-3200 MT/s after manual BIOS tuning
+- Prometheus node exporter installation on Proxmox host
+- NAS password rotation
+- Nextcloud data directory migrated from NVMe to HDD
+- Nextcloud data backup to Kinmoon via nightly rsync
+
+Decisions Made
+- ssd-storage: LVM-Thin on WD Green 1TB SATA SSD (sdd), 927GB, content: rootdir,images
+- hdd-backup-1: ext4 on WD Purple 8TB (sdb), mounted at /mnt/hdd-backup-1, content: backup
+- hdd-backup-2: ext4 on Seagate 8TB (sdc), mounted at /mnt/hdd-backup-2, content: backup
+- Nightly vzdump backup at 02:00 to hdd-backup-1, retention: keep-daily=7, keep-weekly=4
+- RAM confirmed DDR4-3200 MT/s (manual 2666 BIOS setting negotiated to rated speed)
+- Proxmox enterprise repos disabled, pve-no-subscription repo added
+- Nextcloud datadirectory moved from /var/www/nextcloud/data to /mnt/ncdata (HDD bind mount)
+- Nextcloud data backed up to Kinmoon NAS via rsync, nightly at 03:00
+- hdd-backup-1 used for both vzdump backups AND Nextcloud data — two separate directories
+
+Changes to AI-CONTEXT.md
+- Hardware → Storage: ssd-storage LVM-Thin active on /dev/sdd (WD Green 2.5" 1TB SATA)
+- Hardware → Storage: hdd-backup-1 at /mnt/hdd-backup-1 (WD Purple 8TB, sdb, ext4)
+- Hardware → Storage: hdd-backup-2 at /mnt/hdd-backup-2 (Seagate 8TB, sdc, ext4)
+- Hardware → RAM: Confirmed DDR4-3200 MT/s on all 4x32GB sticks
+- Proxmox → Repos: Enterprise repos disabled, pve-no-subscription repo active
+- Proxmox → Monitoring: prometheus-node-exporter installed on host, port 9100
+- Backup → Schedule: vzdump job backup-daily, 02:00, hdd-backup-1, all containers + VM 400
+- Backup → Nextcloud: rsync /mnt/hdd-backup-1/nextcloud-data → Kinmoon NAS nightly at 03:00
+- Backup → Script: /usr/local/bin/backup-nextcloud.sh, log: /var/log/nextcloud-backup.log
+- Nextcloud → datadirectory: /mnt/ncdata (bind mount from /mnt/hdd-backup-1/nextcloud-data)
+- Nextcloud → NVMe usage: 1.3GB (down from 32GB after data migration)
+- Kinmoon → Password: Rotated, kinmoon-smb reconnected with new credentials
+
+Errors & Resolutions
+- Enterprise repo 401: Disabled pve-enterprise.list/sources, ceph.list/sources — added pve-no-subscription.list
+- CT 220 startup failed after mp0 added: Mount directory didn't exist — fixed with mkdir -p /mnt/hdd-backup-1/nextcloud-data
+- rsync Permission denied: LXC UID mapping — www-data (UID 33) maps to UID 100033 on host — fixed with chown -R 100033:100033
+
+Action Items
+- [ ] Remove Samsung 750 EVO after 1 week of stability (around May 22)
+- [ ] Monitor vzdump backup run tonight at 02:00 — verify in Proxmox backup log
+- [ ] Monitor nextcloud rsync run tonight at 03:00 — check /var/log/nextcloud-backup.log
+- [ ] Consider moving VM 400 boot disk to ssd-storage
+- [ ] Update AI-CONTEXT.md, current-state.md, service-catalog.md
 
 ### May 15, 2026
 
@@ -1196,4 +1267,4 @@ Action Items
 
 ---
 
-*Last updated: May 15, 2026 — Update this file at the end of each session before pushing to GitHub*
+*Last updated: May 16, 2026 — Update this file at the end of each session before pushing to GitHub*
