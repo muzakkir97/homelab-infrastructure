@@ -1176,67 +1176,67 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📝 Session Log (Recent)
 
-### May 16, 2026 — Game Server Split — Pelican Panel Migration (Complete)
+### May 16, 2026 — LLM Routing + Workflow Cleanup + Brainstorming Sessions
 
 Date: May 16, 2026
-Phase: Game Server Split — Pelican Panel Migration (Complete)
+Phase: Multiple (LLM Routing + Workflow Cleanup + Brainstorming Sessions)
 
 Topics Discussed
-- Game server audit on CT 302: Wings managing Minecraft + Terraria, Windrose standalone
-- Migration from Pterodactyl to Pelican game server panel
-- CT 303 (Minecraft), CT 304 (Terraria), CT 305 (Pelican panel) created
-- Pelican Wings deployed on CT 303 and CT 304
-- Minecraft 1.21.4 Paper world migrated from CT 302 to CT 303
-- Terraria tModLoader + Calamity mods + world migrated from CT 302 to CT 304
-- CT 302 cleaned up — Wings removed, only Windrose remains
-- CT 300 (Pterodactyl) decommissioned
+- Game server audit and migration from Pterodactyl to Pelican panel
+- Creation of CT 303 (Minecraft), CT 304 (Terraria), CT 305 (Pelican panel)
+- Pelican Wings deployment on CT 303 and CT 304
+- Minecraft 1.21.4 Paper and Terraria tModLoader migration
+- pfSense NAT rules updated for new container IPs
+- NPM proxy + Cloudflare Access for panel.najhin-gaming.com
+- Gilgamesh routing simplified to Ollama primary, Haiku fallback
+- Claude API reserved for Da Vinci documentation pipeline
+- Workflow renaming completed
+- Phase 7E redesigned with hybrid semantic + episodic memory system
+- Agent roster updates: Guardian → Cu Chulainn, Scathach added
+- agents.md created and deployed
 
 Decisions Made
-- Storage name: local-lvm → local-zfs after hardware migration
 - Pelican replaces Pterodactyl as game server panel
-- CT 302: Windrose only, downsized to 10GB RAM / 2 cores
-- CT 303: Minecraft server, 6GB RAM / 2 cores / 192.168.30.215:25570
-- CT 304: Terraria server, 12GB RAM / 2 cores / 192.168.30.216:7777
-- CT 305: Pelican panel, 2GB RAM / 2 cores / 192.168.30.217
-- Pelican uses SQLite (default), QUEUE_CONNECTION=database
-- Queue worker must listen on default queue (not high,standard,low)
-- Pelican Wings binary from pelican-dev/wings (not pterodactyl/wings)
-- Wings config path: /etc/pelican/config.yml
+- CT 302 downsized to Windrose only (10GB RAM / 2 cores)
+- CT 303: Minecraft server (6GB RAM / 2 cores / 192.168.30.215:25570)
+- CT 304: Terraria server (12GB RAM / 2 cores / 192.168.30.216:7777)
+- CT 305: Pelican panel (2GB RAM / 2 cores / 192.168.30.217)
+- Gilgamesh routing: Ollama primary, Haiku fallback (Sonnet removed)
+- Da Vinci: Keep Claude Sonnet for documentation merging
+- Phase 7E redesign: user_profile Data Table (semantic) + gilgamesh_conversations Qdrant (episodic)
+- Scathach ⚔️: Career Growth agent, build order 1st
+- Cu Chulainn ⚡: Security monitoring, build order 2nd (replaces Guardian)
+- agents.md created at docs/agents.md
 
 Changes to AI-CONTEXT.md
+- Infrastructure: Remove CT 300, add CT 303, CT 304, CT 305
 - Storage: local-lvm → local-zfs (ZFS pool, NVMe)
-- Remove CT 300 (gaming-panel, Pterodactyl) — decommissioned
-- Add CT 303: minecraft-server, 192.168.30.215, Pelican Wings, 2c/6GB/30GB
-- Add CT 304: terraria-server, 192.168.30.216, Pelican Wings, 2c/12GB/30GB
-- Add CT 305: gaming-panel-pelican, 192.168.30.217, Pelican v1, 2c/2GB/30GB
-- Update CT 302: Windrose only, 10GB RAM / 2 cores
+- Total containers: 20 LXC + 1 VM
 - Gaming servers: Minecraft at .215:25570, Terraria at .216:7777, Windrose at .212:15777
-- Total containers: 20 LXC + 1 VM (added 3, removed 1)
-- Pelican panel: http://192.168.30.217, SQLite, queue=database
-- Key Lessons: Pelican queue uses 'default' not 'high,standard,low'; Wings binary is pelican-dev/wings not pterodactyl/wings; config path is /etc/pelican/ not /etc/pterodactyl/; APP_INSTALLED must be true in .env; Auto Deploy Command more reliable than manual config
+- Services: panel.najhin-gaming.com (Cloudflare Access + Email OTP)
+- Gilgamesh routing: Ollama primary, Haiku fallback only
+- Da Vinci: Claude Sonnet for documentation only
+- Workflow names updated in n8n Workflows table
+- Agent roster: Guardian → Cu Chulainn ⚡, Scathach ⚔️ added
+- Proxmox API token: root@pam!gilgamesh (recreated May 16, 2026)
+- Phase 7E description updated to hybrid memory system
+- Key Lessons: Pelican queue uses 'default' not 'high,standard,low'; Wings binary is pelican-dev/wings; Auto Deploy Command more reliable than manual config
 
 Errors & Resolutions
 - local-lvm not found: use local-zfs after hardware migration
-- Template not found: run pveam download local first
-- PHP repo 418: add sury repo manually via gpg key
-- Pelican Wings config not found: pelican-dev/wings uses /etc/pelican/ not /etc/pterodactyl/
-- Wings token typo from screenshot: use Auto Deploy Command instead of manual copy
-- APP_INSTALLED=false blocking API 404: append APP_INSTALLED=true to .env
-- Egg import 500: chown -R www-data on storage directory
-- Queue worker not processing: jobs on 'default' queue, add to worker command
-- Double .env entries: use grep -v + rebuild file
-- Wings restarting removed containers: stop Wings service first before removing containers
+- Pelican Wings config: pelican-dev/wings uses /etc/pelican/ not /etc/pterodactyl/
+- Wings token typo: use Auto Deploy Command instead of manual copy
+- Queue worker not processing: jobs on 'default' queue
+- Morning briefing 0/0: Proxmox API token was deleted — recreated
 
 Action Items
-- [ ] Add NPM proxy host for Pelican panel (gaming.najhin-gaming.com or panel.najhin-gaming.com)
-- [ ] Add Uptime Kuma monitors for CT 303, CT 304, CT 305
-- [ ] Update vzdump backup jobs to include CT 303, CT 304, CT 305
-- [ ] Fix morning briefing 0/0 container count
-- [ ] Fix /update Telegram message too long
-- [ ] Migrate mc.najhin-gaming.com DNS/port forward from old CT 302 IP to CT 303 IP
-- [ ] Migrate terraria.najhin-gaming.com DNS/port forward to CT 304 IP
-- [ ] Install Calamity mods on CT 304 (currently fresh tModLoader)
-- [ ] Update AI-CONTEXT.md via /update
+- [ ] Store new root@pam!gilgamesh token in Vaultwarden
+- [ ] Build Phase 7E Memory System (Memory Processor workflow + user_profile Data Table)
+- [ ] Create personal-context.md, upload to all Claude projects
+- [ ] Design Scathach phase (separate session)
+- [ ] Update ROADMAP.md + AI-CONTEXT.md (Phase 7E, Scathach, Cu Chulainn)
+- [ ] Push agents.md to GitHub (sanitized)
+- [ ] Begin Phase 24.2 (Alert Translation) next session
 
 ---
 
