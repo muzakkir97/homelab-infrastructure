@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 18 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration in progress.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split.
 
 ---
 
@@ -183,7 +183,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 ## 📦 Infrastructure Inventory (Proxmox)
 
-> **Note:** CTID 201–302 are LXC containers. VMID 400 is a KVM virtual machine with PCIe GPU passthrough — it is NOT an LXC container.
+> **Note:** CTID 201–305 are LXC containers. VMID 400 is a KVM virtual machine with PCIe GPU passthrough — it is NOT an LXC container.
 
 | ID  | Type | Name                    | IP             | Subdomain                     | Autostart | Status    |
 |-----|------|-------------------------|----------------|-------------------------------|-----------|-----------|
@@ -202,14 +202,14 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | 221 | LXC  | finance-firefly         | 192.168.30.224 | finance.najhin-gaming.com     | ✅         | ✅ Running |
 | 222 | LXC  | notification-ntfy       | 192.168.30.222 | ntfy.najhin-gaming.com        | ✅         | ✅ Running |
 | 223 | LXC  | observability-langfuse  | 192.168.30.223 | langfuse.najhin-gaming.com    | ✅         | ✅ Running |
-| 300 | LXC  | gaming-panel            | 192.168.30.210 | —                             | ✅         | ✅ Running |
-| 302 | LXC  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅         | ✅ Running |
+| 302 | LXC  | gaming-wings-1          | 192.168.30.212 | —                             | ✅         | ✅ Running |
 | 303 | LXC  | minecraft-server        | 192.168.30.215 | —                             | ✅         | ✅ Running |
+| 304 | LXC  | terraria-server         | 192.168.30.216 | —                             | ✅         | ✅ Running |
 | 305 | LXC  | gaming-panel-pelican    | 192.168.30.217 | —                             | ✅         | ✅ Running |
 | 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
 
-**Current Total: 18 LXC containers + 1 KVM VM**
-**Planned Total: 18 LXC containers + 1 KVM VM (all on VLAN 30, all autostart enabled)**
+**Current Total: 20 LXC containers + 1 KVM VM**
+**Planned Total: 20 LXC containers + 1 KVM VM (all on VLAN 30, all autostart enabled)**
 
 ### Pulse Dashboard (CT 208)
 
@@ -271,8 +271,8 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 - **Pelican Panel (CT 305):** Next-gen game server panel (192.168.30.217), SQLite + Redis + PHP 8.3
 - **Minecraft Server (CT 303):** Paper 1.21.4 on port 25570 (192.168.30.215), Pelican Wings
-- **Terraria Server (CT 302):** terraria.najhin-gaming.com (legacy Wings)
-- **Windrose (CT 302):** Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE, **consumes ~9GB RAM when running**
+- **Terraria Server (CT 304):** tModLoader on port 7777 (192.168.30.216), Pelican Wings
+- **Windrose (CT 302):** Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE
 
 ---
 
@@ -796,7 +796,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Job              | Schedule | Storage                  | Containers                                  | Retention                    |
 |------------------|----------|--------------------------|---------------------------------------------|------------------------------|
-| Nightly Backup   | 02:00    | hdd-backup-1 (Local HDD) | All 18 LXC containers + VM 400            | 7 daily, 4 weekly           |
+| Nightly Backup   | 02:00    | hdd-backup-1 (Local HDD) | All 20 LXC containers + VM 400            | 7 daily, 4 weekly           |
 | Nextcloud Data   | 03:00    | Kinmoon NAS (rsync)      | /mnt/hdd-backup-1/nextcloud-data           | Mirror sync                  |
 
 ### Storage
@@ -904,7 +904,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Deck    | Nextcloud Deck + Da Vinci Integration                            | ✅ Complete | May 14, 2026 |
 | DV-S2   | Da Vinci Stage 2 (RAG System)                                   | ✅ Complete | May 15, 2026 |
 | HW-128  | Hardware Upgrade (128GB RAM + 3-Tier Storage)                    | ✅ Complete | May 16, 2026 |
-| Pelican | Pelican Panel Migration                                          | ⚡ Partial | May 16, 2026 |
+| Pelican | Pelican Panel Migration                                          | ✅ Complete | May 16, 2026 |
 
 ---
 
@@ -1097,11 +1097,10 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Store Langfuse API keys (public + secret) in Vaultwarden                                   | High     |
 | Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)        | High     |
 | Add Uptime Kuma monitor for Qdrant (port 6333)                                             | High     |
-| Update morning briefing container count (17 → 18)                                          | High     |
-| Wait for Minecraft install to complete, verify server starts                                | High     |
-| Migrate Minecraft world data from CT 302 to CT 303                                         | High     |
-| Create CT 304 (terraria-server, 12GB/2c/30GB, 192.168.30.216)                             | High     |
-| Set up Terraria Wings node + tshock egg on CT 304                                          | High     |
+| Update morning briefing container count (18 → 20)                                          | High     |
+| Add NPM proxy host for Pelican panel (gaming.najhin-gaming.com or panel.najhin-gaming.com) | High     |
+| Add Uptime Kuma monitors for CT 303, CT 304, CT 305                                         | High     |
+| Update vzdump backup jobs to include CT 303, CT 304, CT 305                                 | High     |
 | Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
 | Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
 | Activate MERLIN workflow (toggle on)                                                        | High     |
@@ -1116,10 +1115,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                         | Priority |
 |------------------------------------------------------------------------------|----------|
-| Clean up CT 302 (remove Minecraft + Terraria, keep Windrose only)           | Medium   |
-| Decommission CT 300 (Pterodactyl) after CT 304 complete                     | Medium   |
-| Add NPM proxy host for Pelican panel                                         | Medium   |
-| Update AI-CONTEXT.md with local-zfs storage name fix                         | Medium   |
+| Migrate mc.najhin-gaming.com DNS/port forward from old CT 302 IP to CT 303 IP | High   |
+| Migrate terraria.najhin-gaming.com DNS/port forward to CT 304 IP             | High     |
+| Install Calamity mods on CT 304 (currently fresh tModLoader)                 | Medium   |
 | Fix morning briefing 0/0 container count (wrong node name in Proxmox API call) | Medium |
 | Remove Samsung 750 EVO after 1 week of stability (around May 22)             | Medium   |
 | Address local-zfs thin pool overprovisioning (during infrastructure cleanup) | Medium   |
@@ -1178,64 +1176,69 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📝 Session Log (Recent)
 
-### May 16, 2026 — Game Server Split — Pelican Panel Migration
+### May 16, 2026 — Game Server Split — Pelican Panel Migration (Complete)
 
 Date: May 16, 2026
-Phase: Game Server Split — Pelican Panel Migration
+Phase: Game Server Split — Pelican Panel Migration (Complete)
 
 Topics Discussed
-- Game server audit: CT 302 runs Wings daemon (Minecraft + Terraria) + standalone Windrose
-- Decision to migrate from Pterodactyl to Pelican panel  
-- Game server panel category explained (game server panel)
-- CT 303 created for Minecraft (2 cores, 6GB RAM, 30GB, 192.168.30.215)
-- CT 305 created for Pelican panel (2 cores, 2GB RAM, 30GB, 192.168.30.217)
-- Pelican panel fully deployed with nginx + php8.3-fpm + SQLite + Redis
-- Pelican Wings deployed on CT 303 (pelican-dev/wings, not pterodactyl/wings)
-- 54 Minecraft eggs imported via GitHub import UI
-- Minecraft 1.21.4 Paper server created on CT 303
+- Game server audit on CT 302: Wings managing Minecraft + Terraria, Windrose standalone
+- Migration from Pterodactyl to Pelican game server panel
+- CT 303 (Minecraft), CT 304 (Terraria), CT 305 (Pelican panel) created
+- Pelican Wings deployed on CT 303 and CT 304
+- Minecraft 1.21.4 Paper world migrated from CT 302 to CT 303
+- Terraria tModLoader + Calamity mods + world migrated from CT 302 to CT 304
+- CT 302 cleaned up — Wings removed, only Windrose remains
+- CT 300 (Pterodactyl) decommissioned
 
 Decisions Made
-- local-lvm renamed to local-zfs after hardware migration (AI-CONTEXT stale)
-- Pelican over Pterodactyl: actively maintained, better UI, same eggs
-- CT 305 (Pelican panel) replaces CT 300 (Pterodactyl) — CT 300 kept until migration complete
-- SQLite as database for Pelican (default, sufficient for homelab)
-- Queue connection: database (not sync) — added QUEUE_CONNECTION=database to .env
-- Queue worker must use --queue=default (Pelican uses 'default' not 'high,standard,low')
-- Wings config path: /etc/pelican/config.yml (not /etc/pterodactyl/)
-- Wings binary: github.com/pelican-dev/wings (not pterodactyl/wings)
+- Storage name: local-lvm → local-zfs after hardware migration
+- Pelican replaces Pterodactyl as game server panel
+- CT 302: Windrose only, downsized to 10GB RAM / 2 cores
+- CT 303: Minecraft server, 6GB RAM / 2 cores / 192.168.30.215:25570
+- CT 304: Terraria server, 12GB RAM / 2 cores / 192.168.30.216:7777
+- CT 305: Pelican panel, 2GB RAM / 2 cores / 192.168.30.217
+- Pelican uses SQLite (default), QUEUE_CONNECTION=database
+- Queue worker must listen on default queue (not high,standard,low)
+- Pelican Wings binary from pelican-dev/wings (not pterodactyl/wings)
+- Wings config path: /etc/pelican/config.yml
 
 Changes to AI-CONTEXT.md
-- Storage: local-lvm → local-zfs (ZFS pool, NVMe, ~899GB)
-- Infrastructure: CT 303 (minecraft-server, 192.168.30.215, Pelican Wings, 2c/6GB/30GB)
-- Infrastructure: CT 305 (gaming-panel-pelican, 192.168.30.217, Pelican v1, 2c/2GB/30GB) 
-- Gaming: Minecraft server created on CT 303, Paper 1.21.4, port 25570
-- Pelican panel: http://192.168.30.217, SQLite DB, queue=database
-- Pending: CT 304 (Terraria), CT 300 decommission, CT 302 cleanup
+- Storage: local-lvm → local-zfs (ZFS pool, NVMe)
+- Remove CT 300 (gaming-panel, Pterodactyl) — decommissioned
+- Add CT 303: minecraft-server, 192.168.30.215, Pelican Wings, 2c/6GB/30GB
+- Add CT 304: terraria-server, 192.168.30.216, Pelican Wings, 2c/12GB/30GB
+- Add CT 305: gaming-panel-pelican, 192.168.30.217, Pelican v1, 2c/2GB/30GB
+- Update CT 302: Windrose only, 10GB RAM / 2 cores
+- Gaming servers: Minecraft at .215:25570, Terraria at .216:7777, Windrose at .212:15777
+- Total containers: 20 LXC + 1 VM (added 3, removed 1)
+- Pelican panel: http://192.168.30.217, SQLite, queue=database
+- Key Lessons: Pelican queue uses 'default' not 'high,standard,low'; Wings binary is pelican-dev/wings not pterodactyl/wings; config path is /etc/pelican/ not /etc/pterodactyl/; APP_INSTALLED must be true in .env; Auto Deploy Command more reliable than manual config
 
 Errors & Resolutions
-- CT create failed: local-lvm does not exist → use local-zfs
-- Template not found: pveam download local debian-12-standard_12.12-1_amd64.tar.zst
-- PHP repo 418 error: add sury repo manually via apt.gpg key
-- Wings binary wrong: pelican/wings looks for /etc/pelican/ not /etc/pterodactyl/
-- Wings token typo from screenshot: 01 vs 0l, mw vs NW — use Auto Deploy Command instead
-- APP_INSTALLED=false blocking API routes → append APP_INSTALLED=true to .env
-- Egg import 500 error: permission denied on storage/framework/cache → chown -R www-data
-- Queue worker not processing: jobs on 'default' queue, worker configured for 'high,standard,low'
-- Double APP_INSTALLED in .env: use grep -v + rebuild instead of appending
+- local-lvm not found: use local-zfs after hardware migration
+- Template not found: run pveam download local first
+- PHP repo 418: add sury repo manually via gpg key
+- Pelican Wings config not found: pelican-dev/wings uses /etc/pelican/ not /etc/pterodactyl/
+- Wings token typo from screenshot: use Auto Deploy Command instead of manual copy
+- APP_INSTALLED=false blocking API 404: append APP_INSTALLED=true to .env
+- Egg import 500: chown -R www-data on storage directory
+- Queue worker not processing: jobs on 'default' queue, add to worker command
+- Double .env entries: use grep -v + rebuild file
+- Wings restarting removed containers: stop Wings service first before removing containers
 
 Action Items
-- [ ] Wait for Minecraft install to complete, verify server starts
-- [ ] Migrate Minecraft world data from CT 302 to CT 303
-- [ ] Create CT 304 (terraria-server, 12GB/2c/30GB, 192.168.30.216)
-- [ ] Set up Terraria Wings node + tshock egg on CT 304
-- [ ] Clean up CT 302 (remove Minecraft + Terraria, keep Windrose only)
-- [ ] Decommission CT 300 (Pterodactyl) after CT 304 complete
-- [ ] Add NPM proxy host for Pelican panel
-- [ ] Update AI-CONTEXT.md with local-zfs storage name fix
-- [ ] Fix morning briefing 0/0 container count (wrong node name in Proxmox API call)
-- [ ] Fix /update Telegram message too long (shorten Da Vinci notification)
+- [ ] Add NPM proxy host for Pelican panel (gaming.najhin-gaming.com or panel.najhin-gaming.com)
+- [ ] Add Uptime Kuma monitors for CT 303, CT 304, CT 305
+- [ ] Update vzdump backup jobs to include CT 303, CT 304, CT 305
+- [ ] Fix morning briefing 0/0 container count
+- [ ] Fix /update Telegram message too long
+- [ ] Migrate mc.najhin-gaming.com DNS/port forward from old CT 302 IP to CT 303 IP
+- [ ] Migrate terraria.najhin-gaming.com DNS/port forward to CT 304 IP
+- [ ] Install Calamity mods on CT 304 (currently fresh tModLoader)
+- [ ] Update AI-CONTEXT.md via /update
 
-### May 16, 2026
+### May 16, 2026 — Hardware Upgrade — Post-Migration Cleanup + Nextcloud Storage Migration
 
 Date: May 16, 2026
 Phase: Hardware Upgrade — Post-Migration Cleanup + Nextcloud Storage Migration
@@ -1287,7 +1290,7 @@ Action Items
 - [ ] Consider moving VM 400 boot disk to ssd-storage
 - [ ] Update AI-CONTEXT.md, current-state.md, service-catalog.md
 
-### May 15, 2026
+### May 15, 2026 — Da Vinci Stage 2 + Phase 7E
 
 Date: May 15, 2026
 Phase: Da Vinci Stage 2 + Phase 7E
@@ -1347,6 +1350,105 @@ Action Items
 - [ ] Add Uptime Kuma monitor for Qdrant (port 6333)
 - [ ] Increase Top K or tune RAG for broad queries
 - [ ] Add Langfuse tracing to RAG queries (optional)
+
+### May 14, 2026 — Phase 24.8 — Langfuse (AI Observability)
+
+Date: May 14, 2026
+Phase: Phase 24.8 — Langfuse (AI Observability)
+
+Topics Discussed
+- Reviewed roadmap and AI-CONTEXT.md pending tasks to determine next phase
+- Resolved roadmap vs AI-CONTEXT conflict: AI-CONTEXT is source of truth, Phase 24.8 (Langfuse) is next
+- Langfuse v3 architecture: 6 Docker containers (langfuse-web, langfuse-worker, ClickHouse, PostgreSQL, Redis, MinIO)
+- Full deployment of Langfuse on CT 223 (observability-langfuse, 192.168.30.223)
+- Cloudflare Tunnel + Access setup for langfuse.najhin-gaming.com
+- NEXTAUTH_URL fix: localhost:3000 → https://langfuse.najhin-gaming.com (required for auth redirect)
+- n8n → Langfuse connectivity verified
+
+Decisions Made
+- CT 223 specs: 2 cores, 4096MB RAM, 512MB swap, 16GB disk (heavier than ntfy/Firefly III due to 6-container stack)
+- Telemetry disabled (TELEMETRY_ENABLED: false) for data sovereignty
+- Cloudflare Access with Email OTP enabled for langfuse.najhin-gaming.com
+- Organization name: Kuromoon, Project name: Gilgamesh Agents
+- Langfuse v3.174.1 deployed (latest stable)
+- Batch export disabled (LANGFUSE_S3_BATCH_EXPORT_ENABLED: false) — not needed for homelab scale
+
+Changes to AI-CONTEXT.md
+- Infrastructure Inventory: CT 223 (observability-langfuse, 192.168.30.223, Langfuse v3 Docker stack, 2 cores, 4GB RAM, 16GB disk, Phase 24.8) status changed from 📋 Planned to ✅ Running. Total: 18 LXC + 1 VM.
+- Phase Status: Phase 24.8 (Langfuse) COMPLETED 2026-05-14
+- Services/URLs: Langfuse: langfuse.najhin-gaming.com (Cloudflare Tunnel + Access email OTP)
+- Langfuse internal URL: http://192.168.30.223:3000 (for n8n and other agents)
+- Langfuse health endpoint: /api/public/health
+- Langfuse Docker stack: langfuse-web (port 3000), langfuse-worker (port 3030), ClickHouse (8123/9000), MinIO (9090), Redis (6379), PostgreSQL (5432) — all except web and minio bound to localhost
+- Key Lessons: Langfuse v3 NEXTAUTH_URL must match external URL or auth redirects break to localhost. Langfuse v3 requires 6 containers (web, worker, ClickHouse, PostgreSQL, Redis, MinIO) — significantly heavier than v2.
+- Pending Tasks: Add "Wire Langfuse to n8n agent workflows (Gilgamesh, Da Vinci, Midas, MERLIN)" as High priority. Add "Add Uptime Kuma monitor for Langfuse" as High priority. Add "Store Langfuse API keys in Vaultwarden" as High priority.
+
+Errors & Resolutions
+- Langfuse auth redirect to localhost:3000 after signup: NEXTAUTH_URL was set to http://localhost:3000. Fix: change to https://langfuse.najhin-gaming.com in docker-compose.yml, docker compose down && up -d.
+
+Action Items
+- [ ] Store Langfuse API keys (public + secret) in Vaultwarden
+- [ ] Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)
+- [ ] Wire Langfuse into n8n Gilgamesh workflow using built-in Langfuse node
+- [ ] Wire Langfuse into Da Vinci, Midas, MERLIN workflows
+- [ ] Update morning briefing container count (17 → 18)
+
+### May 13, 2026 — Nextcloud Deck + Da Vinci Integration
+
+Date: May 14, 2026
+Phase: Nextcloud Deck + Da Vinci Integration
+
+Topics Discussed
+- Nextcloud Deck one-time setup: 3 boards (Homelab, Career, Personal), 5 stacks each, 40 labels, 74 phase cards
+- Deck API authentication: regular password rejected, app password required for API access
+- Deck API endpoint debugging: assignLabel route is PUT /assignLabel with {"labelId": X} in body (no ID in URL)
+- Card update API requires owner field in body or returns 400
+- Internal URL http://192.168.30.220 required (Cloudflare blocks Basic Auth on external URL)
+- Label assignment and emoji prefix script for visual card differentiation
+- Da Vinci workflow extended with 6 new nodes for Deck kanban management
+- First successful card creation via n8n Deck integration
+
+Decisions Made
+- Nextcloud Deck app password created for API access (credential name: NextCloud-Deck in n8n)
+- Homelab board ID: 4, Career board ID: 5, Personal board ID: 6
+- Stack IDs fetched dynamically via GET /boards/4/stacks
+- Labels assigned via PUT /boards/{id}/stacks/{sid}/cards/{cid}/assignLabel with body {"labelId": X}
+- Card updates require title, type, owner, and description fields to avoid field wiping
+- Status emojis on card titles: ✅ Done, 🔧 In Progress, 📋 Backlog, 🚫 Blocked
+- Da Vinci Deck nodes appended after Push to GitHub in existing workflow
+- AI-CONTEXT-staging.md cleared to prevent 53 stale action items from creating duplicate cards
+
+Changes to AI-CONTEXT.md
+- Add Nextcloud Deck section under Bots & Integrations:
+  - Deck app on CT 220 (cloud.najhin-gaming.com)
+  - 3 boards: Homelab (ID 4), Career (ID 5), Personal (ID 6)
+  - 5 stacks per board: Backlog, Up Next, Blocked, In Progress, Done
+  - 22 labels on Homelab (category, priority, agent, effort), 9 on Career, 9 on Personal
+  - API base: http://192.168.30.220/index.php/apps/deck/api/v1.0
+  - Auth: Basic auth with app password (credential: NextCloud-Deck)
+- Add to Key Lessons / n8n & Gilgamesh:
+  - Deck API assignLabel: PUT /assignLabel (no label ID in URL), body {"labelId": X}
+  - Deck API card update: requires owner field or returns 400; omitting description wipes it
+  - Deck API: OCS-APIRequest and Accept headers required on all calls
+  - Nextcloud API auth: app password required, regular password returns "not logged in"
+  - Internal URL http://192.168.30.220 bypasses Cloudflare (port 80 only, no SSL)
+- Update n8n Workflows table: Da Vinci workflow now includes Deck management nodes (Parse Deck Actions, If, Fetch Homelab Stacks, Build Deck Requests, Loop Deck Actions, Execute Deck Action)
+- Update Da Vinci Documentation Pipeline section: add Deck as third output target alongside Obsidian and GitHub
+
+Errors & Resolutions
+- Nextcloud API "Current user is not logged in": use app password instead of regular password
+- Deck API 405 on assignLabel: route is /assignLabel without /{labelId} suffix; labelId goes in request body only
+- Deck API 400 on card update: must include owner field in PUT body
+- Card description wiped on update: must include current description in PUT body
+- n8n Code node "Referenced node doesn't exist": webhook node named "Da Vinci Webhook" not "Webhook"
+- n8n Code node "summaryText.split is not a function": webhook body is trigger-only; session text is in Read Staging File node
+- n8n HTTP Request "Invalid URL =http://": URL field was in Fixed mode with = prefix; switch to Expression mode
+
+Action Items
+- [ ] Test full /update pipeline end-to-end with this session summary
+- [ ] Verify Da Vinci creates Deck card from action items in this summary
+- [ ] Connect Loop done output and If false output to Notify Complete Telegram node
+- [ ] Update deck-davinci-n8n-guide.md with correct API endpoints discovered during debugging
 
 ---
 
