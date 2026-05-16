@@ -269,7 +269,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 
 ### Gaming Servers
 
-- **Pelican Panel (CT 305):** Next-gen game server panel (192.168.30.217), SQLite + Redis + PHP 8.3
+- **Pelican Panel (CT 305):** Next-gen game server panel (192.168.30.217), SQLite + Redis + PHP 8.3, access: panel.najhin-gaming.com
 - **Minecraft Server (CT 303):** Paper 1.21.4 on port 25570 (192.168.30.215), Pelican Wings
 - **Terraria Server (CT 304):** tModLoader on port 7777 (192.168.30.216), Pelican Wings
 - **Windrose (CT 302):** Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE
@@ -634,20 +634,20 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 | Workflow                           | Purpose                                  | Nodes | Trigger  |
 |------------------------------------|------------------------------------------|-------|----------|
-| Telegram Agent                     | Main bot, menu, commands, hybrid routing, RAG, extended memory | 18+ | Telegram |
+| Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory | 18+ | Telegram |
 | Documentation Pipeline — Update    | Session summary → 3 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
-| Da Vinci Documentation Pipeline    | Raw staging summaries → formatted docs + Deck | 17+ | Webhook |
+| Da Vinci — Documentation Pipeline  | Raw staging summaries → formatted docs + Deck | 17+ | Webhook |
 | Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily)   | 8     | Schedule |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
 | Midas — Daily Brief                | 9am scheduled cost summary               | 4     | Schedule |
 | MERLIN — Reminders                 | 8am daily infrastructure checks          | 8     | Schedule |
-| Daily Note Creator                 | Midnight Obsidian daily notes            | 4     | Schedule |
-| Morning Briefing                   | 7am daily summary to Telegram            | 5     | Schedule |
+| Gilgamesh — Daily Note Creator     | Midnight Obsidian daily notes            | 4     | Schedule |
+| Gilgamesh — Morning Briefing       | 7am daily summary to Telegram            | 5     | Schedule |
 | Update Nextcloud File              | Legacy (unpublished)                     | 5     | Webhook  |
 | Push to GitHub                     | Legacy (unpublished)                     | 4     | Webhook  |
 
-> Note: Hybrid routing (Phase 41), RAG retrieval (Da Vinci Stage 2), and Extended Memory (Phase 7E) are all integrated into the Telegram Agent workflow. Health tracking (Phase 22.8B) is also integrated.
+> Note: Hybrid routing (Phase 41), RAG retrieval (Da Vinci Stage 2), and Extended Memory (Phase 7E) are all integrated into the Gilgamesh — Life Interface workflow. Health tracking (Phase 22.8B) is also integrated.
 
 ### Inline Keyboard Menu Status
 
@@ -694,7 +694,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - **SSH to Kuromoon:** CT 211 → 192.168.10.5:22 (pfSense rule added)
 - **SSH to VM 400:** `ssh muzakkir@192.168.30.221` — use muzakkir user, not root
 - **SSH to CT 302:** Password auth enabled (PermitRootLogin yes)
-- **Proxmox API:** root@pam!gilgamesh token
+- **Proxmox API:** root@pam!gilgamesh token (recreated May 16, 2026)
 - **Storage IDs:** kinmoon-nfs (not kinmoon-smb in Proxmox)
 
 ### Known Constraints
@@ -835,7 +835,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Segmentation    | 5 VLANs with enforced firewall rules                                                                                                                                                               |
 | DNS             | Pi-hole ad/tracker blocking (~489K domains)                                                                                                                                                        |
 | VPN             | Tailscale (subnet router on pfSense, primary access)                                                                                                                                               |
-| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Nextcloud, Firefly III, Langfuse (8 apps total)                                           |
+| External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Nextcloud, Firefly III, Langfuse, Pelican Panel (9 apps total)                 |
 | External Access | Cloudflare Tunnel for all external services                                                                                                                                                        |
 | Admin Access    | Tailscale only (VLAN 20 blocked from VLAN 10)                                                                                                                                                      |
 | Backup          | Automated daily backups with 7/4 retention                                                                                                                                                         |
@@ -1098,7 +1098,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)        | High     |
 | Add Uptime Kuma monitor for Qdrant (port 6333)                                             | High     |
 | Update morning briefing container count (18 → 20)                                          | High     |
-| Store new root@pam!gilgamesh token in Vaultwarden                                          | High     |
+| Add NPM proxy host for Pelican panel (gaming.najhin-gaming.com or panel.najhin-gaming.com) | High     |
+| Add Uptime Kuma monitors for CT 303, CT 304, CT 305                                         | High     |
+| Update vzdump backup jobs to include CT 303, CT 304, CT 305                                 | High     |
 | Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
 | Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
 | Activate MERLIN workflow (toggle on)                                                        | High     |
@@ -1113,7 +1115,10 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                         | Priority |
 |------------------------------------------------------------------------------|----------|
+| Migrate mc.najhin-gaming.com DNS/port forward from old CT 302 IP to CT 303 IP | High   |
+| Migrate terraria.najhin-gaming.com DNS/port forward to CT 304 IP             | High     |
 | Install Calamity mods on CT 304 (currently fresh tModLoader)                 | Medium   |
+| Fix morning briefing 0/0 container count (wrong node name in Proxmox API call) | Medium |
 | Remove Samsung 750 EVO after 1 week of stability (around May 22)             | Medium   |
 | Address local-zfs thin pool overprovisioning (during infrastructure cleanup) | Medium   |
 | Fix container-Inventory.md 404 (delete and re-upload with lowercase name)    | Medium   |
@@ -1171,44 +1176,66 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📝 Session Log (Recent)
 
-### May 16, 2026 — Game Server Split — Action Items Cleanup
+### May 16, 2026 — Game Server Split — Pelican Panel Migration (Complete)
 
 Date: May 16, 2026
-Phase: Game Server Split — Action Items Cleanup
+Phase: Game Server Split — Pelican Panel Migration (Complete)
 
 Topics Discussed
-- pfSense NAT rules updated for new container IPs
-- NPM proxy + Cloudflare Access for panel.najhin-gaming.com
-- Uptime Kuma monitors for CT 303, CT 304, CT 305
-- Backup job updated to include CT 303, CT 304, CT 305, remove CT 300
-- Prometheus gaming-panel scrape job removed (CT 300 gone)
-- Morning briefing 0/0 fixed — Proxmox API token was deleted
-- Calamity mods confirmed loading on CT 304
+- Game server audit on CT 302: Wings managing Minecraft + Terraria, Windrose standalone
+- Migration from Pterodactyl to Pelican game server panel
+- CT 303 (Minecraft), CT 304 (Terraria), CT 305 (Pelican panel) created
+- Pelican Wings deployed on CT 303 and CT 304
+- Minecraft 1.21.4 Paper world migrated from CT 302 to CT 303
+- Terraria tModLoader + Calamity mods + world migrated from CT 302 to CT 304
+- CT 302 cleaned up — Wings removed, only Windrose remains
+- CT 300 (Pterodactyl) decommissioned
 
 Decisions Made
-- New Proxmox API token: root@pam!gilgamesh (recreated)
-- panel.najhin-gaming.com — Cloudflare proxied + Access email OTP
-- mc DNS stays DNS-only (game clients can't go through Cloudflare proxy)
-- terraria DNS stays DNS-only (same reason)
-- Backup vmid list: 201-208,211,213,214,220-223,302-305,400
+- Storage name: local-lvm → local-zfs after hardware migration
+- Pelican replaces Pterodactyl as game server panel
+- CT 302: Windrose only, downsized to 10GB RAM / 2 cores
+- CT 303: Minecraft server, 6GB RAM / 2 cores / 192.168.30.215:25570
+- CT 304: Terraria server, 12GB RAM / 2 cores / 192.168.30.216:7777
+- CT 305: Pelican panel, 2GB RAM / 2 cores / 192.168.30.217
+- Pelican uses SQLite (default), QUEUE_CONNECTION=database
+- Queue worker must listen on default queue (not high,standard,low)
+- Pelican Wings binary from pelican-dev/wings (not pterodactyl/wings)
+- Wings config path: /etc/pelican/config.yml
 
 Changes to AI-CONTEXT.md
-- Proxmox API token: root@pam!gilgamesh (recreated May 16, 2026)
-- Services: panel.najhin-gaming.com (CT 305, Cloudflare Access + Email OTP)
-- pfSense NAT: Minecraft → 192.168.30.215:25570, Terraria → 192.168.30.216:7777
-- Backup job vmid: add 303, 304, 305; remove 300
-- Prometheus: gaming-panel scrape job removed
-- Morning briefing: fixed — was 401 due to deleted API token
-- Uptime Kuma: added Pelican Panel, Minecraft Wings, Terraria Wings monitors
+- Storage: local-lvm → local-zfs (ZFS pool, NVMe)
+- Remove CT 300 (gaming-panel, Pterodactyl) — decommissioned
+- Add CT 303: minecraft-server, 192.168.30.215, Pelican Wings, 2c/6GB/30GB
+- Add CT 304: terraria-server, 192.168.30.216, Pelican Wings, 2c/12GB/30GB
+- Add CT 305: gaming-panel-pelican, 192.168.30.217, Pelican v1, 2c/2GB/30GB
+- Update CT 302: Windrose only, 10GB RAM / 2 cores
+- Gaming servers: Minecraft at .215:25570, Terraria at .216:7777, Windrose at .212:15777
+- Total containers: 20 LXC + 1 VM (added 3, removed 1)
+- Pelican panel: http://192.168.30.217, SQLite, queue=database
+- Key Lessons: Pelican queue uses 'default' not 'high,standard,low'; Wings binary is pelican-dev/wings not pterodactyl/wings; config path is /etc/pelican/ not /etc/pterodactyl/; APP_INSTALLED must be true in .env; Auto Deploy Command more reliable than manual config
 
 Errors & Resolutions
-- Morning briefing 0/0: root@pam!gilgamesh token was deleted — recreated via pveum
-- Discord CRITICAL alerts: Prometheus still scraping CT 300 (deleted) — removed job from prometheus.yml
-- Backup job update: pvesh set path wrong — edit /etc/pve/jobs.cfg directly with sed
+- local-lvm not found: use local-zfs after hardware migration
+- Template not found: run pveam download local first
+- PHP repo 418: add sury repo manually via gpg key
+- Pelican Wings config not found: pelican-dev/wings uses /etc/pelican/ not /etc/pterodactyl/
+- Wings token typo from screenshot: use Auto Deploy Command instead of manual copy
+- APP_INSTALLED=false blocking API 404: append APP_INSTALLED=true to .env
+- Egg import 500: chown -R www-data on storage directory
+- Queue worker not processing: jobs on 'default' queue, add to worker command
+- Double .env entries: use grep -v + rebuild file
+- Wings restarting removed containers: stop Wings service first before removing containers
 
 Action Items
-- [ ] Store new root@pam!gilgamesh token in Vaultwarden
-- [ ] Fix /update Telegram message too long (next session)
+- [ ] Add NPM proxy host for Pelican panel (gaming.najhin-gaming.com or panel.najhin-gaming.com)
+- [ ] Add Uptime Kuma monitors for CT 303, CT 304, CT 305
+- [ ] Update vzdump backup jobs to include CT 303, CT 304, CT 305
+- [ ] Fix morning briefing 0/0 container count
+- [ ] Fix /update Telegram message too long
+- [ ] Migrate mc.najhin-gaming.com DNS/port forward from old CT 302 IP to CT 303 IP
+- [ ] Migrate terraria.najhin-gaming.com DNS/port forward to CT 304 IP
+- [ ] Install Calamity mods on CT 304 (currently fresh tModLoader)
 - [ ] Update AI-CONTEXT.md via /update
 
 ---
