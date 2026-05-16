@@ -205,7 +205,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | 302 | LXC  | gaming-wings-1          | 192.168.30.212 | —                             | ✅         | ✅ Running |
 | 303 | LXC  | minecraft-server        | 192.168.30.215 | —                             | ✅         | ✅ Running |
 | 304 | LXC  | terraria-server         | 192.168.30.216 | —                             | ✅         | ✅ Running |
-| 305 | LXC  | gaming-panel-pelican    | 192.168.30.217 | —                             | ✅         | ✅ Running |
+| 305 | LXC  | gaming-panel-pelican    | 192.168.30.217 | panel.najhin-gaming.com       | ✅         | ✅ Running |
 | 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
 
 **Current Total: 20 LXC containers + 1 KVM VM**
@@ -1098,9 +1098,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)        | High     |
 | Add Uptime Kuma monitor for Qdrant (port 6333)                                             | High     |
 | Update morning briefing container count (18 → 20)                                          | High     |
-| Add NPM proxy host for Pelican panel (gaming.najhin-gaming.com or panel.najhin-gaming.com) | High     |
-| Add Uptime Kuma monitors for CT 303, CT 304, CT 305                                         | High     |
-| Update vzdump backup jobs to include CT 303, CT 304, CT 305                                 | High     |
+| Store new root@pam!gilgamesh token in Vaultwarden                                          | High     |
 | Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
 | Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
 | Activate MERLIN workflow (toggle on)                                                        | High     |
@@ -1115,10 +1113,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                         | Priority |
 |------------------------------------------------------------------------------|----------|
-| Migrate mc.najhin-gaming.com DNS/port forward from old CT 302 IP to CT 303 IP | High   |
-| Migrate terraria.najhin-gaming.com DNS/port forward to CT 304 IP             | High     |
 | Install Calamity mods on CT 304 (currently fresh tModLoader)                 | Medium   |
-| Fix morning briefing 0/0 container count (wrong node name in Proxmox API call) | Medium |
 | Remove Samsung 750 EVO after 1 week of stability (around May 22)             | Medium   |
 | Address local-zfs thin pool overprovisioning (during infrastructure cleanup) | Medium   |
 | Fix container-Inventory.md 404 (delete and re-upload with lowercase name)    | Medium   |
@@ -1176,279 +1171,45 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📝 Session Log (Recent)
 
-### May 16, 2026 — Game Server Split — Pelican Panel Migration (Complete)
+### May 16, 2026 — Game Server Split — Action Items Cleanup
 
 Date: May 16, 2026
-Phase: Game Server Split — Pelican Panel Migration (Complete)
+Phase: Game Server Split — Action Items Cleanup
 
 Topics Discussed
-- Game server audit on CT 302: Wings managing Minecraft + Terraria, Windrose standalone
-- Migration from Pterodactyl to Pelican game server panel
-- CT 303 (Minecraft), CT 304 (Terraria), CT 305 (Pelican panel) created
-- Pelican Wings deployed on CT 303 and CT 304
-- Minecraft 1.21.4 Paper world migrated from CT 302 to CT 303
-- Terraria tModLoader + Calamity mods + world migrated from CT 302 to CT 304
-- CT 302 cleaned up — Wings removed, only Windrose remains
-- CT 300 (Pterodactyl) decommissioned
+- pfSense NAT rules updated for new container IPs
+- NPM proxy + Cloudflare Access for panel.najhin-gaming.com
+- Uptime Kuma monitors for CT 303, CT 304, CT 305
+- Backup job updated to include CT 303, CT 304, CT 305, remove CT 300
+- Prometheus gaming-panel scrape job removed (CT 300 gone)
+- Morning briefing 0/0 fixed — Proxmox API token was deleted
+- Calamity mods confirmed loading on CT 304
 
 Decisions Made
-- Storage name: local-lvm → local-zfs after hardware migration
-- Pelican replaces Pterodactyl as game server panel
-- CT 302: Windrose only, downsized to 10GB RAM / 2 cores
-- CT 303: Minecraft server, 6GB RAM / 2 cores / 192.168.30.215:25570
-- CT 304: Terraria server, 12GB RAM / 2 cores / 192.168.30.216:7777
-- CT 305: Pelican panel, 2GB RAM / 2 cores / 192.168.30.217
-- Pelican uses SQLite (default), QUEUE_CONNECTION=database
-- Queue worker must listen on default queue (not high,standard,low)
-- Pelican Wings binary from pelican-dev/wings (not pterodactyl/wings)
-- Wings config path: /etc/pelican/config.yml
+- New Proxmox API token: root@pam!gilgamesh (recreated)
+- panel.najhin-gaming.com — Cloudflare proxied + Access email OTP
+- mc DNS stays DNS-only (game clients can't go through Cloudflare proxy)
+- terraria DNS stays DNS-only (same reason)
+- Backup vmid list: 201-208,211,213,214,220-223,302-305,400
 
 Changes to AI-CONTEXT.md
-- Storage: local-lvm → local-zfs (ZFS pool, NVMe)
-- Remove CT 300 (gaming-panel, Pterodactyl) — decommissioned
-- Add CT 303: minecraft-server, 192.168.30.215, Pelican Wings, 2c/6GB/30GB
-- Add CT 304: terraria-server, 192.168.30.216, Pelican Wings, 2c/12GB/30GB
-- Add CT 305: gaming-panel-pelican, 192.168.30.217, Pelican v1, 2c/2GB/30GB
-- Update CT 302: Windrose only, 10GB RAM / 2 cores
-- Gaming servers: Minecraft at .215:25570, Terraria at .216:7777, Windrose at .212:15777
-- Total containers: 20 LXC + 1 VM (added 3, removed 1)
-- Pelican panel: http://192.168.30.217, SQLite, queue=database
-- Key Lessons: Pelican queue uses 'default' not 'high,standard,low'; Wings binary is pelican-dev/wings not pterodactyl/wings; config path is /etc/pelican/ not /etc/pterodactyl/; APP_INSTALLED must be true in .env; Auto Deploy Command more reliable than manual config
+- Proxmox API token: root@pam!gilgamesh (recreated May 16, 2026)
+- Services: panel.najhin-gaming.com (CT 305, Cloudflare Access + Email OTP)
+- pfSense NAT: Minecraft → 192.168.30.215:25570, Terraria → 192.168.30.216:7777
+- Backup job vmid: add 303, 304, 305; remove 300
+- Prometheus: gaming-panel scrape job removed
+- Morning briefing: fixed — was 401 due to deleted API token
+- Uptime Kuma: added Pelican Panel, Minecraft Wings, Terraria Wings monitors
 
 Errors & Resolutions
-- local-lvm not found: use local-zfs after hardware migration
-- Template not found: run pveam download local first
-- PHP repo 418: add sury repo manually via gpg key
-- Pelican Wings config not found: pelican-dev/wings uses /etc/pelican/ not /etc/pterodactyl/
-- Wings token typo from screenshot: use Auto Deploy Command instead of manual copy
-- APP_INSTALLED=false blocking API 404: append APP_INSTALLED=true to .env
-- Egg import 500: chown -R www-data on storage directory
-- Queue worker not processing: jobs on 'default' queue, add to worker command
-- Double .env entries: use grep -v + rebuild file
-- Wings restarting removed containers: stop Wings service first before removing containers
+- Morning briefing 0/0: root@pam!gilgamesh token was deleted — recreated via pveum
+- Discord CRITICAL alerts: Prometheus still scraping CT 300 (deleted) — removed job from prometheus.yml
+- Backup job update: pvesh set path wrong — edit /etc/pve/jobs.cfg directly with sed
 
 Action Items
-- [ ] Add NPM proxy host for Pelican panel (gaming.najhin-gaming.com or panel.najhin-gaming.com)
-- [ ] Add Uptime Kuma monitors for CT 303, CT 304, CT 305
-- [ ] Update vzdump backup jobs to include CT 303, CT 304, CT 305
-- [ ] Fix morning briefing 0/0 container count
-- [ ] Fix /update Telegram message too long
-- [ ] Migrate mc.najhin-gaming.com DNS/port forward from old CT 302 IP to CT 303 IP
-- [ ] Migrate terraria.najhin-gaming.com DNS/port forward to CT 304 IP
-- [ ] Install Calamity mods on CT 304 (currently fresh tModLoader)
+- [ ] Store new root@pam!gilgamesh token in Vaultwarden
+- [ ] Fix /update Telegram message too long (next session)
 - [ ] Update AI-CONTEXT.md via /update
-
-### May 16, 2026 — Hardware Upgrade — Post-Migration Cleanup + Nextcloud Storage Migration
-
-Date: May 16, 2026
-Phase: Hardware Upgrade — Post-Migration Cleanup + Nextcloud Storage Migration
-
-Topics Discussed
-- SATA SSD (WD Green 1TB) installation as Tier 2 storage (ssd-storage)
-- Two 8TB HDD configuration as local backup storage (hdd-backup-1, hdd-backup-2)
-- Nightly backup job covering all 17 LXC + VM 400
-- RAM speed confirmed DDR4-3200 MT/s after manual BIOS tuning
-- Prometheus node exporter installation on Proxmox host
-- NAS password rotation
-- Nextcloud data directory migrated from NVMe to HDD
-- Nextcloud data backup to Kinmoon via nightly rsync
-
-Decisions Made
-- ssd-storage: LVM-Thin on WD Green 1TB SATA SSD (sdd), 927GB, content: rootdir,images
-- hdd-backup-1: ext4 on WD Purple 8TB (sdb), mounted at /mnt/hdd-backup-1, content: backup
-- hdd-backup-2: ext4 on Seagate 8TB (sdc), mounted at /mnt/hdd-backup-2, content: backup
-- Nightly vzdump backup at 02:00 to hdd-backup-1, retention: keep-daily=7, keep-weekly=4
-- RAM confirmed DDR4-3200 MT/s (manual 2666 BIOS setting negotiated to rated speed)
-- Proxmox enterprise repos disabled, pve-no-subscription repo added
-- Nextcloud datadirectory moved from /var/www/nextcloud/data to /mnt/ncdata (HDD bind mount)
-- Nextcloud data backed up to Kinmoon NAS via rsync, nightly at 03:00
-- hdd-backup-1 used for both vzdump backups AND Nextcloud data — two separate directories
-
-Changes to AI-CONTEXT.md
-- Hardware → Storage: ssd-storage LVM-Thin active on /dev/sdd (WD Green 2.5" 1TB SATA)
-- Hardware → Storage: hdd-backup-1 at /mnt/hdd-backup-1 (WD Purple 8TB, sdb, ext4)
-- Hardware → Storage: hdd-backup-2 at /mnt/hdd-backup-2 (Seagate 8TB, sdc, ext4)
-- Hardware → RAM: Confirmed DDR4-3200 MT/s on all 4x32GB sticks
-- Proxmox → Repos: Enterprise repos disabled, pve-no-subscription repo active
-- Proxmox → Monitoring: prometheus-node-exporter installed on host, port 9100
-- Backup → Schedule: vzdump job backup-daily, 02:00, hdd-backup-1, all containers + VM 400
-- Backup → Nextcloud: rsync /mnt/hdd-backup-1/nextcloud-data → Kinmoon NAS nightly at 03:00
-- Backup → Script: /usr/local/bin/backup-nextcloud.sh, log: /var/log/nextcloud-backup.log
-- Nextcloud → datadirectory: /mnt/ncdata (bind mount from /mnt/hdd-backup-1/nextcloud-data)
-- Nextcloud → NVMe usage: 1.3GB (down from 32GB after data migration)
-- Kinmoon → Password: Rotated, kinmoon-smb reconnected with new credentials
-
-Errors & Resolutions
-- Enterprise repo 401: Disabled pve-enterprise.list/sources, ceph.list/sources — added pve-no-subscription.list
-- CT 220 startup failed after mp0 added: Mount directory didn't exist — fixed with mkdir -p /mnt/hdd-backup-1/nextcloud-data
-- rsync Permission denied: LXC UID mapping — www-data (UID 33) maps to UID 100033 on host — fixed with chown -R 100033:100033
-
-Action Items
-- [ ] Remove Samsung 750 EVO after 1 week of stability (around May 22)
-- [ ] Monitor vzdump backup run tonight at 02:00 — verify in Proxmox backup log
-- [ ] Monitor nextcloud rsync run tonight at 03:00 — check /var/log/nextcloud-backup.log
-- [ ] Consider moving VM 400 boot disk to ssd-storage
-- [ ] Update AI-CONTEXT.md, current-state.md, service-catalog.md
-
-### May 15, 2026 — Da Vinci Stage 2 + Phase 7E
-
-Date: May 15, 2026
-Phase: Da Vinci Stage 2 + Phase 7E
-
-Topics Discussed
-- Qdrant deployment on VM 400 (Docker)
-- nomic-embed-text embeddings (768 dimensions, local, zero cost)
-- Da Vinci Knowledge Indexer workflow (scheduled 3am)
-- Gilgamesh RAG integration via Format Messages Code node
-- Container inventory note for Obsidian
-- Conversation archival to Qdrant
-- RAG skip logic for greetings
-- /update history pollution fix
-
-Decisions Made
-- Qdrant runs on VM 400 alongside Ollama (not separate LXC)
-- Two collections: obsidian_knowledge (1567 points), gilgamesh_conversations
-- Scheduled batch indexing at 3am (full re-index v1, no incremental yet)
-- RAG retrieval via direct HTTP calls in Format Messages Code node
-- search_document/search_query prefixes removed (incompatible with chunking)
-- History reduced from 20 to 15 messages
-- RAG skipped for greetings (<10 chars or regex match)
-- /update messages filtered from conversation history
-- Conversation archival threshold: 30 rows
-
-Changes to AI-CONTEXT.md
-- Qdrant deployed on VM 400: port 6333 (REST), 6334 (gRPC), storage at /opt/qdrant/storage
-- nomic-embed-text pulled into Ollama on VM 400
-- Collections: obsidian_knowledge (1567 points), gilgamesh_conversations (1 point)
-- New workflow: "Da Vinci — Knowledge Indexer" — Schedule 3am, full re-index
-- New n8n credential: QdrantApi account (http://192.168.30.221:6333, no API key)
-- New n8n credential: n8n-rag-indexer (Nextcloud app password for WebDAV PROPFIND)
-- Indexed folders: 00-inbox, 01-homelab, 02-career, 03-knowledge, 07-daily, 08-projects, 09-meetings, 10-reference, AI-Stuff/Homelab/homelab-infrastructure
-- Telegram Agent modified: Format Messages now includes RAG retrieval (embed via Ollama → search Qdrant → inject into system prompt)
-- Telegram Agent modified: Add Timestamps handles null gracefully when Information Extractor fails
-- Telegram Agent modified: /update messages excluded from conversation history
-- Telegram Agent modified: conversation archival nodes added (Count → Archive → Delete)
-- Qdrant payload field is "content" (not "text" or "pageContent")
-- Container inventory corrections: Firefly III = CT 221 (NPM proxy at 192.168.30.224:8080), Vaultwarden = CT 214 (192.168.30.214:8080), HashiCorp Vault = CT 213 (192.168.30.213:8200), Pterodactyl Panel = CT 300, Wings = CT 302, Pi-hole on Raspberry Pi 4 (192.168.30.10, not Proxmox)
-- container-inventory.md created in Obsidian 01-homelab
-
-Errors & Resolutions
-- PROPFIND not in n8n HTTP Request: used Code node with this.helpers.httpRequest()
-- 401 on Nextcloud WebDAV: created Nextcloud app password (n8n-rag-indexer)
-- Information Extractor JSON backticks: set On Error to Continue, Add Timestamps handles null
-- RAG returning empty: payload field was "content" not "text/pageContent"
-- search_document/search_query prefixes caused mismatch: removed both
-- crypto.randomUUID() unavailable in n8n Code: used Date.now() * 100 + i
-- Qdrant 400 on insert: point IDs must be UUID or unsigned integer
-- "hi" triggering container responses: /update messages in history, filtered with !startsWith('/update')
-
-Action Items
-- [ ] Fix container-Inventory.md download 404 (verify after next 3am indexer run)
-- [ ] Fix Information Extractor JSON backtick parsing properly
-- [ ] Add Qdrant conversation search to Format Messages (for "what did we discuss?" queries)
-- [ ] Investigate assistant messages saving as Null in gilgamesh_conversations
-- [ ] Add Uptime Kuma monitor for Qdrant (port 6333)
-- [ ] Increase Top K or tune RAG for broad queries
-- [ ] Add Langfuse tracing to RAG queries (optional)
-
-### May 14, 2026 — Phase 24.8 — Langfuse (AI Observability)
-
-Date: May 14, 2026
-Phase: Phase 24.8 — Langfuse (AI Observability)
-
-Topics Discussed
-- Reviewed roadmap and AI-CONTEXT.md pending tasks to determine next phase
-- Resolved roadmap vs AI-CONTEXT conflict: AI-CONTEXT is source of truth, Phase 24.8 (Langfuse) is next
-- Langfuse v3 architecture: 6 Docker containers (langfuse-web, langfuse-worker, ClickHouse, PostgreSQL, Redis, MinIO)
-- Full deployment of Langfuse on CT 223 (observability-langfuse, 192.168.30.223)
-- Cloudflare Tunnel + Access setup for langfuse.najhin-gaming.com
-- NEXTAUTH_URL fix: localhost:3000 → https://langfuse.najhin-gaming.com (required for auth redirect)
-- n8n → Langfuse connectivity verified
-
-Decisions Made
-- CT 223 specs: 2 cores, 4096MB RAM, 512MB swap, 16GB disk (heavier than ntfy/Firefly III due to 6-container stack)
-- Telemetry disabled (TELEMETRY_ENABLED: false) for data sovereignty
-- Cloudflare Access with Email OTP enabled for langfuse.najhin-gaming.com
-- Organization name: Kuromoon, Project name: Gilgamesh Agents
-- Langfuse v3.174.1 deployed (latest stable)
-- Batch export disabled (LANGFUSE_S3_BATCH_EXPORT_ENABLED: false) — not needed for homelab scale
-
-Changes to AI-CONTEXT.md
-- Infrastructure Inventory: CT 223 (observability-langfuse, 192.168.30.223, Langfuse v3 Docker stack, 2 cores, 4GB RAM, 16GB disk, Phase 24.8) status changed from 📋 Planned to ✅ Running. Total: 18 LXC + 1 VM.
-- Phase Status: Phase 24.8 (Langfuse) COMPLETED 2026-05-14
-- Services/URLs: Langfuse: langfuse.najhin-gaming.com (Cloudflare Tunnel + Access email OTP)
-- Langfuse internal URL: http://192.168.30.223:3000 (for n8n and other agents)
-- Langfuse health endpoint: /api/public/health
-- Langfuse Docker stack: langfuse-web (port 3000), langfuse-worker (port 3030), ClickHouse (8123/9000), MinIO (9090), Redis (6379), PostgreSQL (5432) — all except web and minio bound to localhost
-- Key Lessons: Langfuse v3 NEXTAUTH_URL must match external URL or auth redirects break to localhost. Langfuse v3 requires 6 containers (web, worker, ClickHouse, PostgreSQL, Redis, MinIO) — significantly heavier than v2.
-- Pending Tasks: Add "Wire Langfuse to n8n agent workflows (Gilgamesh, Da Vinci, Midas, MERLIN)" as High priority. Add "Add Uptime Kuma monitor for Langfuse" as High priority. Add "Store Langfuse API keys in Vaultwarden" as High priority.
-
-Errors & Resolutions
-- Langfuse auth redirect to localhost:3000 after signup: NEXTAUTH_URL was set to http://localhost:3000. Fix: change to https://langfuse.najhin-gaming.com in docker-compose.yml, docker compose down && up -d.
-
-Action Items
-- [ ] Store Langfuse API keys (public + secret) in Vaultwarden
-- [ ] Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)
-- [ ] Wire Langfuse into n8n Gilgamesh workflow using built-in Langfuse node
-- [ ] Wire Langfuse into Da Vinci, Midas, MERLIN workflows
-- [ ] Update morning briefing container count (17 → 18)
-
-### May 13, 2026 — Nextcloud Deck + Da Vinci Integration
-
-Date: May 14, 2026
-Phase: Nextcloud Deck + Da Vinci Integration
-
-Topics Discussed
-- Nextcloud Deck one-time setup: 3 boards (Homelab, Career, Personal), 5 stacks each, 40 labels, 74 phase cards
-- Deck API authentication: regular password rejected, app password required for API access
-- Deck API endpoint debugging: assignLabel route is PUT /assignLabel with {"labelId": X} in body (no ID in URL)
-- Card update API requires owner field in body or returns 400
-- Internal URL http://192.168.30.220 required (Cloudflare blocks Basic Auth on external URL)
-- Label assignment and emoji prefix script for visual card differentiation
-- Da Vinci workflow extended with 6 new nodes for Deck kanban management
-- First successful card creation via n8n Deck integration
-
-Decisions Made
-- Nextcloud Deck app password created for API access (credential name: NextCloud-Deck in n8n)
-- Homelab board ID: 4, Career board ID: 5, Personal board ID: 6
-- Stack IDs fetched dynamically via GET /boards/4/stacks
-- Labels assigned via PUT /boards/{id}/stacks/{sid}/cards/{cid}/assignLabel with body {"labelId": X}
-- Card updates require title, type, owner, and description fields to avoid field wiping
-- Status emojis on card titles: ✅ Done, 🔧 In Progress, 📋 Backlog, 🚫 Blocked
-- Da Vinci Deck nodes appended after Push to GitHub in existing workflow
-- AI-CONTEXT-staging.md cleared to prevent 53 stale action items from creating duplicate cards
-
-Changes to AI-CONTEXT.md
-- Add Nextcloud Deck section under Bots & Integrations:
-  - Deck app on CT 220 (cloud.najhin-gaming.com)
-  - 3 boards: Homelab (ID 4), Career (ID 5), Personal (ID 6)
-  - 5 stacks per board: Backlog, Up Next, Blocked, In Progress, Done
-  - 22 labels on Homelab (category, priority, agent, effort), 9 on Career, 9 on Personal
-  - API base: http://192.168.30.220/index.php/apps/deck/api/v1.0
-  - Auth: Basic auth with app password (credential: NextCloud-Deck)
-- Add to Key Lessons / n8n & Gilgamesh:
-  - Deck API assignLabel: PUT /assignLabel (no label ID in URL), body {"labelId": X}
-  - Deck API card update: requires owner field or returns 400; omitting description wipes it
-  - Deck API: OCS-APIRequest and Accept headers required on all calls
-  - Nextcloud API auth: app password required, regular password returns "not logged in"
-  - Internal URL http://192.168.30.220 bypasses Cloudflare (port 80 only, no SSL)
-- Update n8n Workflows table: Da Vinci workflow now includes Deck management nodes (Parse Deck Actions, If, Fetch Homelab Stacks, Build Deck Requests, Loop Deck Actions, Execute Deck Action)
-- Update Da Vinci Documentation Pipeline section: add Deck as third output target alongside Obsidian and GitHub
-
-Errors & Resolutions
-- Nextcloud API "Current user is not logged in": use app password instead of regular password
-- Deck API 405 on assignLabel: route is /assignLabel without /{labelId} suffix; labelId goes in request body only
-- Deck API 400 on card update: must include owner field in PUT body
-- Card description wiped on update: must include current description in PUT body
-- n8n Code node "Referenced node doesn't exist": webhook node named "Da Vinci Webhook" not "Webhook"
-- n8n Code node "summaryText.split is not a function": webhook body is trigger-only; session text is in Read Staging File node
-- n8n HTTP Request "Invalid URL =http://": URL field was in Fixed mode with = prefix; switch to Expression mode
-
-Action Items
-- [ ] Test full /update pipeline end-to-end with this session summary
-- [ ] Verify Da Vinci creates Deck card from action items in this summary
-- [ ] Connect Loop done output and If false output to Notify Complete Telegram node
-- [ ] Update deck-davinci-n8n-guide.md with correct API endpoints discovered during debugging
 
 ---
 
