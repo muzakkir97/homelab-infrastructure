@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 18 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 18 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration in progress.
 
 ---
 
@@ -204,6 +204,8 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | 223 | LXC  | observability-langfuse  | 192.168.30.223 | langfuse.najhin-gaming.com    | ✅         | ✅ Running |
 | 300 | LXC  | gaming-panel            | 192.168.30.210 | —                             | ✅         | ✅ Running |
 | 302 | LXC  | gaming-wings-1          | 192.168.30.212 | terraria/mc.najhin-gaming.com | ✅         | ✅ Running |
+| 303 | LXC  | minecraft-server        | 192.168.30.215 | —                             | ✅         | ✅ Running |
+| 305 | LXC  | gaming-panel-pelican    | 192.168.30.217 | —                             | ✅         | ✅ Running |
 | 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
 
 **Current Total: 18 LXC containers + 1 KVM VM**
@@ -265,11 +267,12 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Open WebUI:** Docker container, connects via 172.17.0.1:11434
 - **Qdrant:** Port 6333 (REST), 6334 (gRPC), storage at /opt/qdrant/storage
 
-### Gaming Servers (Docker on CT 302)
+### Gaming Servers
 
-- **Terraria** — terraria.najhin-gaming.com
-- **Minecraft** — mc.najhin-gaming.com
-- **Windrose** — Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE, **consumes ~9GB RAM when running**
+- **Pelican Panel (CT 305):** Next-gen game server panel (192.168.30.217), SQLite + Redis + PHP 8.3
+- **Minecraft Server (CT 303):** Paper 1.21.4 on port 25570 (192.168.30.215), Pelican Wings
+- **Terraria Server (CT 302):** terraria.najhin-gaming.com (legacy Wings)
+- **Windrose (CT 302):** Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE, **consumes ~9GB RAM when running**
 
 ---
 
@@ -901,6 +904,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Deck    | Nextcloud Deck + Da Vinci Integration                            | ✅ Complete | May 14, 2026 |
 | DV-S2   | Da Vinci Stage 2 (RAG System)                                   | ✅ Complete | May 15, 2026 |
 | HW-128  | Hardware Upgrade (128GB RAM + 3-Tier Storage)                    | ✅ Complete | May 16, 2026 |
+| Pelican | Pelican Panel Migration                                          | ⚡ Partial | May 16, 2026 |
 
 ---
 
@@ -1068,6 +1072,18 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Qdrant 400 on insert               | Point IDs must be UUID or unsigned integer                                  |
 | /update messages in history         | Filter with !startsWith('/update') to prevent command pollution             |
 
+### Pelican Panel Migration
+
+| Issue                               | Resolution                                                                   |
+|-------------------------------------|------------------------------------------------------------------------------|
+| CT create with local-lvm failed     | Use local-zfs storage instead (updated after hardware migration)            |
+| Sury PHP repo 418 error             | Add sury repo manually via apt.gpg key                                      |
+| Wings binary wrong architecture     | Use pelican-dev/wings, not pterodactyl/wings — different config paths       |
+| Wings token typo from screenshot    | Use Auto Deploy Command instead of manual token entry                       |
+| Egg import 500 error                | chown -R www-data on storage/framework/cache for write permissions          |
+| Queue worker not processing jobs    | Pelican uses 'default' queue, not 'high,standard,low'                       |
+| Double APP_INSTALLED in .env        | Use grep -v to remove duplicates before appending                           |
+
 ---
 
 ## ❓ Pending Tasks
@@ -1082,6 +1098,10 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)        | High     |
 | Add Uptime Kuma monitor for Qdrant (port 6333)                                             | High     |
 | Update morning briefing container count (17 → 18)                                          | High     |
+| Wait for Minecraft install to complete, verify server starts                                | High     |
+| Migrate Minecraft world data from CT 302 to CT 303                                         | High     |
+| Create CT 304 (terraria-server, 12GB/2c/30GB, 192.168.30.216)                             | High     |
+| Set up Terraria Wings node + tshock egg on CT 304                                          | High     |
 | Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
 | Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
 | Activate MERLIN workflow (toggle on)                                                        | High     |
@@ -1090,11 +1110,17 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Replace Kinmoon NAS drive (~RM 400-500)                                                     | High     |
 | Monitor Windrose RAM usage — stop Docker container when not playing                         | High     |
 | Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
+| Fix /update Telegram message too long (shorten Da Vinci notification)                       | Medium   |
 
 ### Infrastructure
 
 | Task                                                                         | Priority |
 |------------------------------------------------------------------------------|----------|
+| Clean up CT 302 (remove Minecraft + Terraria, keep Windrose only)           | Medium   |
+| Decommission CT 300 (Pterodactyl) after CT 304 complete                     | Medium   |
+| Add NPM proxy host for Pelican panel                                         | Medium   |
+| Update AI-CONTEXT.md with local-zfs storage name fix                         | Medium   |
+| Fix morning briefing 0/0 container count (wrong node name in Proxmox API call) | Medium |
 | Remove Samsung 750 EVO after 1 week of stability (around May 22)             | Medium   |
 | Address local-zfs thin pool overprovisioning (during infrastructure cleanup) | Medium   |
 | Fix container-Inventory.md 404 (delete and re-upload with lowercase name)    | Medium   |
@@ -1151,6 +1177,63 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### May 16, 2026 — Game Server Split — Pelican Panel Migration
+
+Date: May 16, 2026
+Phase: Game Server Split — Pelican Panel Migration
+
+Topics Discussed
+- Game server audit: CT 302 runs Wings daemon (Minecraft + Terraria) + standalone Windrose
+- Decision to migrate from Pterodactyl to Pelican panel  
+- Game server panel category explained (game server panel)
+- CT 303 created for Minecraft (2 cores, 6GB RAM, 30GB, 192.168.30.215)
+- CT 305 created for Pelican panel (2 cores, 2GB RAM, 30GB, 192.168.30.217)
+- Pelican panel fully deployed with nginx + php8.3-fpm + SQLite + Redis
+- Pelican Wings deployed on CT 303 (pelican-dev/wings, not pterodactyl/wings)
+- 54 Minecraft eggs imported via GitHub import UI
+- Minecraft 1.21.4 Paper server created on CT 303
+
+Decisions Made
+- local-lvm renamed to local-zfs after hardware migration (AI-CONTEXT stale)
+- Pelican over Pterodactyl: actively maintained, better UI, same eggs
+- CT 305 (Pelican panel) replaces CT 300 (Pterodactyl) — CT 300 kept until migration complete
+- SQLite as database for Pelican (default, sufficient for homelab)
+- Queue connection: database (not sync) — added QUEUE_CONNECTION=database to .env
+- Queue worker must use --queue=default (Pelican uses 'default' not 'high,standard,low')
+- Wings config path: /etc/pelican/config.yml (not /etc/pterodactyl/)
+- Wings binary: github.com/pelican-dev/wings (not pterodactyl/wings)
+
+Changes to AI-CONTEXT.md
+- Storage: local-lvm → local-zfs (ZFS pool, NVMe, ~899GB)
+- Infrastructure: CT 303 (minecraft-server, 192.168.30.215, Pelican Wings, 2c/6GB/30GB)
+- Infrastructure: CT 305 (gaming-panel-pelican, 192.168.30.217, Pelican v1, 2c/2GB/30GB) 
+- Gaming: Minecraft server created on CT 303, Paper 1.21.4, port 25570
+- Pelican panel: http://192.168.30.217, SQLite DB, queue=database
+- Pending: CT 304 (Terraria), CT 300 decommission, CT 302 cleanup
+
+Errors & Resolutions
+- CT create failed: local-lvm does not exist → use local-zfs
+- Template not found: pveam download local debian-12-standard_12.12-1_amd64.tar.zst
+- PHP repo 418 error: add sury repo manually via apt.gpg key
+- Wings binary wrong: pelican/wings looks for /etc/pelican/ not /etc/pterodactyl/
+- Wings token typo from screenshot: 01 vs 0l, mw vs NW — use Auto Deploy Command instead
+- APP_INSTALLED=false blocking API routes → append APP_INSTALLED=true to .env
+- Egg import 500 error: permission denied on storage/framework/cache → chown -R www-data
+- Queue worker not processing: jobs on 'default' queue, worker configured for 'high,standard,low'
+- Double APP_INSTALLED in .env: use grep -v + rebuild instead of appending
+
+Action Items
+- [ ] Wait for Minecraft install to complete, verify server starts
+- [ ] Migrate Minecraft world data from CT 302 to CT 303
+- [ ] Create CT 304 (terraria-server, 12GB/2c/30GB, 192.168.30.216)
+- [ ] Set up Terraria Wings node + tshock egg on CT 304
+- [ ] Clean up CT 302 (remove Minecraft + Terraria, keep Windrose only)
+- [ ] Decommission CT 300 (Pterodactyl) after CT 304 complete
+- [ ] Add NPM proxy host for Pelican panel
+- [ ] Update AI-CONTEXT.md with local-zfs storage name fix
+- [ ] Fix morning briefing 0/0 container count (wrong node name in Proxmox API call)
+- [ ] Fix /update Telegram message too long (shorten Da Vinci notification)
 
 ### May 16, 2026
 
