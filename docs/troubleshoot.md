@@ -236,14 +236,4 @@ if (!Array.isArray(alerts) || alerts.length === 0) {
 **Root Cause:** Code node contained JavaScript syntax that n8n couldn't parse - specifically using toLocaleString() method and emoji characters in template literals were causing parsing issues.
 
 **Resolution:** Simplified JavaScript code in Format Cost node:
-- Removed toLocaleString() formatting method
-- Removed emoji characters from string templates  
-- Used basic string concatenation instead of complex formatting
-
-**Verification:** /cost command now displays token counts and estimated costs without syntax errors.
-
-**Lesson:** Keep n8n Code node JavaScript simple - avoid advanced formatting methods and special characters that may not be supported in the execution environment.
-
----
-
-## 2026
+- Removed to
