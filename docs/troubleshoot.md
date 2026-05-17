@@ -225,15 +225,4 @@ if (!Array.isArray(alerts) || alerts.length === 0) {
 // Process alerts array...
 ```
 
-**Lesson:** Always validate data types before using array/object methods in n8n Code nodes. External APIs can return varying data structures based on state.
-
----
-
-## 2026-04-24 — n8n Format Cost Node JavaScript Syntax Error
-
-**Symptoms:** Format Cost Code node failing with SyntaxError when processing token usage data for cost calculation display.
-
-**Root Cause:** Code node contained JavaScript syntax that n8n couldn't parse - specifically using toLocaleString() method and emoji characters in template literals were causing parsing issues.
-
-**Resolution:** Simplified JavaScript code in Format Cost node:
-- Removed to
+**Lesson:** Always validate data types before using array/object methods in n8n Code nodes. External APIs can return varying
