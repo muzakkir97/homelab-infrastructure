@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** December 19, 2024
+> **Last Updated:** May 18, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Update Pipeline cost optimization complete with Haiku switch.
 
 ---
 
@@ -74,7 +74,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 ### Layer 2: Brain (Intelligence)
 - **Primary:** Ollama qwen3:14b (local, RX 6700 XT)
 - **Fallback:** Claude Haiku (API)
-- **Complex:** Claude Sonnet (API)
+- **Complex:** Claude Haiku (API for Da Vinci only)
 - **Vision:** Llama 3.2 Vision 11B (VM 400)
 - **Routing:** Smart complexity detection
 
@@ -98,7 +98,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 - **Agent coordination** → shared state
 
 ### Layer 6: Observability (Monitoring)
-- **Langfuse** → LLM performance tracking
+- **Langfuse** → LLM performance tracking (pending integration)
 - **Midas** → Cost analysis + optimization
 - **Grafana** → Infrastructure metrics
 - **Da Vinci** → Agent behavior logs
@@ -255,6 +255,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Organization:** Kuromoon, Project: Gilgamesh Agents
 - **Internal URL:** http://192.168.30.223:3000
 - **Health endpoint:** /api/public/health
+- **Status:** Deployed but not yet wired to agents — zero traces currently
 
 ### ollama-gpu (VM 400)
 
@@ -554,8 +555,8 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
                                                     ↓
                                ┌────────────────────┼──────────────────┐
                                ▼                    ▼                  ▼
-                         Ollama qwen3:14b      Haiku 4.5           Sonnet 4
-                         (simple, local)    (Ollama fallback)    (complex queries)
+                         Ollama qwen3:14b      Haiku 4.5           Haiku 4.5
+                         (simple, local)    (Ollama fallback)    (Da Vinci only)
                                └────────────────────┼──────────────────┘
                                                     ▼
                                           Memory (n8n Data Tables)
@@ -571,8 +572,8 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 ### Smart Routing + RAG + Extended Memory (Phase 41 + Da Vinci Stage 2 + Phase 7E — COMPLETE)
 
 - **Ollama qwen3:14b** — Primary route for simple queries (local, free, fast)
-- **Haiku 4.5** — Fallback if Ollama is down or unavailable
-- **Sonnet 4** — Complex queries: triggered by complexity keywords or messages over 50 words
+- **Haiku 4.5** — Fallback if Ollama is down or unavailable (Gilgamesh + Da Vinci both use Haiku)
+- **Da Vinci Update Pipeline** — Claude Haiku for documentation merging (switched from Sonnet for cost optimization)
 - **RAG Retrieval** — Qdrant vector search with nomic-embed-text embeddings (768 dims)
 - **Extended Memory** — Conversation archival when history exceeds 30 rows
 - Routing logic runs in a Route Check If node before calling any model
@@ -583,7 +584,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 - **Conversation memory:** Last 15 messages stored in n8n Data Tables (reduced from 20 for RAG integration)
 - **Extended memory:** Conversations archived to Qdrant at 30+ rows
-- **Smart routing:** Ollama (local, primary) → Haiku (fallback) → Sonnet (complex)
+- **Smart routing:** Ollama (local, primary) → Haiku (fallback)
 - **RAG knowledge recall:** Queries Qdrant for relevant Obsidian content + conversations
 - **Web search:** Real-time information via Claude's web_search tool
 - **Cost tracking:** Token usage logged to gilgamesh_costs table with command_type; cost_usd calculated from token rates
@@ -616,8 +617,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Chat ID       | 518832696                                                 |
 | Ollama Model  | qwen3:14b (primary local model, 9.3GB, 12GB VRAM, VM 400) |
 | Embedding Model | nomic-embed-text (768 dims, VM 400)                    |
-| Haiku Model   | claude-haiku-4-5-20251001 (Ollama fallback)               |
-| Sonnet Model  | claude-sonnet-4-20250514 (complex queries)                |
+| Haiku Model   | claude-haiku-4-5-20251001 (Ollama fallback + Da Vinci)   |
 | n8n Container | CT 211, 192.168.30.211                                    |
 | Qdrant        | VM 400, ports 6333 (REST) + 6334 (gRPC)                  |
 | Proxmox API   | root@pam!gilgamesh token                                  |
@@ -625,19 +625,20 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 ### Cost Tracking Note
 
-- cost_usd calculated from token rates: Sonnet $3/$15 per 1M input/output tokens, Haiku $0.80/$1 per 1M tokens
+- cost_usd calculated from token rates: Haiku $0.25/1M input, $1.25/1M output
 - Ollama tokens captured: data.input_tokens + data.output_tokens from Call Ollama node response
 - Ollama queries cost $0 (local inference)
 - command_type derived from Telegram message text directly
 
-### n8n Workflows (Count: 14)
+### n8n Workflows (Count: 16)
 
 | Workflow                           | Purpose                                  | Nodes | Trigger  |
 |------------------------------------|------------------------------------------|-------|----------|
 | Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory | 18+ | Telegram |
 | Documentation Pipeline — Update    | Session summary → 3 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
-| Da Vinci — Documentation Pipeline  | Raw staging summaries → formatted docs + Deck | 17+ | Webhook |
+| Da Vinci — Update Pipeline         | GitHub fetch → Haiku merge → GitHub push + Nextcloud | 12+ | Execute Workflow |
+| Da Vinci — Inbox Watcher           | Staging inbox → calls Update Pipeline    | 6     | Schedule |
 | Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily)   | 8     | Schedule |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
 | Midas — Daily Brief                | 9am scheduled cost summary               | 4     | Schedule |
@@ -646,6 +647,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Gilgamesh — Morning Briefing       | 7am daily summary to Telegram            | 5     | Schedule |
 | Update Nextcloud File              | Legacy (unpublished)                     | 5     | Webhook  |
 | Push to GitHub                     | Legacy (unpublished)                     | 4     | Webhook  |
+| Da Vinci — Documentation Pipeline  | INACTIVE (deactivated 2026-05-18, orphaned) | 17+ | Webhook |
 
 > Note: Hybrid routing (Phase 41), RAG retrieval (Da Vinci Stage 2), and Extended Memory (Phase 7E) are all integrated into the Gilgamesh — Life Interface workflow. Health tracking (Phase 22.8B) is also integrated.
 
@@ -710,19 +712,21 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 ### Architecture
 
 ```
-Session Summary → /update → Da Vinci workflow → Claude API → AI-CONTEXT.md + changelog.md + troubleshoot.md
-                                                                     ↓
-                                                              Nextcloud + GitHub + Deck
+Session Summary → /update → Da Vinci Inbox Watcher → Da Vinci Update Pipeline → Claude Haiku → AI-CONTEXT.md + changelog.md + troubleshoot.md
+                                                                                       ↓
+                                                                            Nextcloud + GitHub + Deck
 ```
 
-#### Da Vinci Documentation Pipeline (Phase 16.3)
+#### Da Vinci Documentation Pipeline (Phase 16.3 + Cost Optimization)
 
 ```
 Raw summaries → AI-CONTEXT-staging.md (rolling append)
                          ↓
-               Da Vinci n8n workflow → Claude API (max_tokens: 32000)
+        Da Vinci Inbox Watcher (every 5 min) → Execute Workflow trigger
                          ↓
-               Formatted AI-CONTEXT.md → Nextcloud + GitHub + Deck kanban
+        Da Vinci Update Pipeline → GitHub fetch → Haiku API (max_tokens: 32000)
+                         ↓
+        Formatted AI-CONTEXT.md → Nextcloud + GitHub + cost logging
 ```
 
 ### Commands
@@ -738,7 +742,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 |--------------|-----------------------------------------------------|
 | Webhooks     | doc-update, doc-sync, da-vinci                      |
 | Telegram     | Routes /update and /sync-docs                       |
-| Claude API   | Documentation merging intelligence                  |
+| Claude API   | Haiku for documentation merging (cost optimized)   |
 | Nextcloud    | File storage via admin user                         |
 | GitHub       | Version control via API push                        |
 | Da Vinci     | Async processing (she/her pronouns)                 |
@@ -753,10 +757,20 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ### Da Vinci Technical Notes
 
 - **Direct node references:** Use `$('Extract Response').first().json.updatedDoc` — do NOT rely on `$json` after Merge node
-- **max_tokens:** 32000 (prevents AI-CONTEXT.md being replaced with hallucinated content)
+- **max_tokens:** 32000 (prevents AI-CONTEXT.md being replaced with hallucinated content; 16000 caused truncation)
+- **Claude API model:** claude-haiku-4-5-20251001 (switched from claude-sonnet-4-20250514 for cost optimization)
+- **Cost logging:** Log Cost node reads input_tokens and output_tokens from Claude API Merge response.usage, inserts to gilgamesh_costs with Haiku pricing ($0.25/1M input, $1.25/1M output)
+- **Property fix:** sessionSummary property name fixed in Claude API Merge node (was reading fileContent)
+- **Staging inbox:** AI-Stuff/Homelab/staging-inbox/ on Nextcloud. Processed files archived to AI-Stuff/Homelab/staging-archive/YYYY-MM/
 - **Grounding fix pending:** Add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
 - **Deck integration:** Extended workflow with 6 additional nodes for Deck kanban management (Parse Deck Actions, If, Fetch Homelab Stacks, Build Deck Requests, Loop Deck Actions, Execute Deck Action)
 - **Notification fix:** Limit node (max 1) added before Notify Complete to prevent notification spam
+
+### Da Vinci Pipeline Architecture
+
+- **Da Vinci — Inbox Watcher:** Schedule trigger (every 5 min), PROPFIND staging-inbox, calls Da Vinci — Update Pipeline via Execute Workflow, archives processed files to staging-archive/YYYY-MM/
+- **Da Vinci — Update Pipeline:** Execute Workflow trigger, fetches 3 files from GitHub, Claude Haiku merge, pushes to GitHub + Nextcloud, cost logging
+- **Da Vinci — Documentation Pipeline:** INACTIVE (deactivated 2026-05-18, orphaned — superseded by Update Pipeline + Inbox Watcher)
 
 ---
 
@@ -982,6 +996,10 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Information Extractor JSON parsing    | Graceful error handling with Continue on Error, null checks in Add Timestamps                                      |
 | RAG empty results                     | Payload field is "content" not "text/pageContent" — check Qdrant schema                                            |
 | search_document/query prefixes        | Remove prefixes — incompatible with chunked content retrieval                                                      |
+| Da Vinci pipeline call chain         | Inbox Watcher → Execute Workflow → Update Pipeline. Documentation Pipeline is orphaned. Always trace trigger → execution chain before debugging node code. |
+| Da Vinci Update Pipeline sessionSummary bug | Claude API Merge was reading $input.first().json.fileContent but Fetch GitHub Files outputs sessionSummary. Property name must match exactly. |
+| Da Vinci max_tokens                   | 32000 required for three complete document outputs. 16000 causes truncation — Haiku hits limit before completing all three sections. |
+| Cost tracking for Update Pipeline    | pass response.usage?.input_tokens and response.usage?.output_tokens through Claude API Merge return statement. Log Cost node references $('Claude API Merge').first().json.input_tokens and output_tokens. |
 
 ### HashiCorp Vault (Phase 13)
 
@@ -1092,10 +1110,10 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Task                                                                                        | Priority |
 |---------------------------------------------------------------------------------------------|----------|
-| Wire Langfuse into n8n Gilgamesh workflow using built-in Langfuse node                     | High     |
-| Wire Langfuse into Da Vinci, Midas, MERLIN workflows                                       | High     |
+| Wire Langfuse into Gilgamesh, Da Vinci, Midas, MERLIN workflows                            | High     |
 | Store Langfuse API keys (public + secret) in Vaultwarden                                   | High     |
 | Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)        | High     |
+| Monitor API credit burn rate over next few days to confirm under $10/month target          | High     |
 | Add Uptime Kuma monitor for Qdrant (port 6333)                                             | High     |
 | Update morning briefing container count (18 → 20)                                          | High     |
 | Add NPM proxy host for Pelican panel (gaming.najhin-gaming.com or panel.najhin-gaming.com) | High     |
@@ -1175,6 +1193,52 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Recent)
+
+### May 18, 2026 — Cost Investigation & Da Vinci Pipeline Fix
+
+Date: May 18, 2026
+Phase: Cost Investigation & Da Vinci Pipeline Fix
+
+Topics Discussed
+- Reviewed Reddit threads: AI-generated PR reviews and AI agent stacks in 2026
+- Career anxiety discussion — feeling of not understanding what's been built
+- Claude API credit burn rate diagnosed ($5.53 in ~1 day on $6 topup)
+- Langfuse showing zero traces — confirmed not yet wired to any agents
+- gilgamesh_costs Data Table diagnosis — Da Vinci rows showing 0 tokens and 0 cost
+- Discovered two separate Da Vinci workflows: Documentation Pipeline (orphaned) and Update Pipeline (active)
+- Inbox Watcher workflow confirmed to exist and be active (runs every 5 minutes via Schedule Trigger)
+- Da Vinci — Update Pipeline had zero cost logging — identified as primary credit burn culprit
+- Switched Da Vinci — Update Pipeline from claude-sonnet-4-20250514 to claude-haiku-4-5-20251001
+- Added cost logging (Log Cost + Insert row nodes) to Da Vinci — Update Pipeline
+- Fixed sessionSummary property name bug in Claude API Merge node
+- Da Vinci — Documentation Pipeline confirmed orphaned — deactivated
+- End-to-end pipeline test passed: Telegram notification received, GitHub updated, gilgamesh_costs row 128 created
+
+Decisions Made
+- Da Vinci — Update Pipeline: switched to claude-haiku-4-5-20251001 (from claude-sonnet-4-20250514)
+- Da Vinci — Update Pipeline: max_tokens set to 32000 (16000 caused truncation)
+- Da Vinci — Update Pipeline: cost logging added — Log Cost node + Insert row to gilgamesh_costs after Send Confirmation
+- Da Vinci — Documentation Pipeline: deactivated (orphaned, superseded by Update Pipeline + Inbox Watcher)
+- Gilgamesh main chat: no changes needed — already on Ollama/Haiku, no Sonnet usage
+- Langfuse wiring deferred — tackle in a separate session when credits are stable
+
+Changes to AI-CONTEXT.md
+- n8n Workflows: Da Vinci — Documentation Pipeline marked as INACTIVE
+- n8n Workflows: Da Vinci — Inbox Watcher and Update Pipeline details added
+- Da Vinci Technical Notes: Cost optimization and bug fixes documented
+- Gilgamesh routing confirmed: Ollama primary, Haiku fallback only
+- Key Lessons: Added Da Vinci pipeline debugging lessons
+- Pending Tasks: Marked Da Vinci cost tracking tasks complete
+
+Errors & Resolutions
+- Da Vinci cost always 0: Two-layer root cause fixed
+- sessionSummary property bug: Claude API Merge property name corrected
+- Da Vinci output truncation: max_tokens reverted to 32000
+
+Action Items
+- Wire Langfuse into Gilgamesh, Da Vinci, Midas, MERLIN workflows
+- Monitor API credit burn rate over next few days
+- Store Langfuse API keys in Vaultwarden
 
 ### December 19, 2024 — Documentation Pipeline Test
 
@@ -1264,6 +1328,4 @@ Action Items
 
 ---
 
-*Last updated: December 19, 2024 — Update this file at the end of each session before pushing to GitHub*
-(complete updated file)
--
+*Last updated: May 18, 2026 — Update this file at the end of each session before pushing to GitHub*
