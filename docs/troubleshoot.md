@@ -1,3 +1,4 @@
-(complete updated file or unchanged if no new errors)
+[complete updated file]
+```
 
-Please share the session summary and I'll proceed with the merge.
+Please paste the actual content of each file and I'll proceed with the merge.
