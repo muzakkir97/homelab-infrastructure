@@ -4,6 +4,33 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [May 18, 2026] - Da Vinci Cost Optimization & Pipeline Fix
+
+#### Fixed
+- **Da Vinci cost tracking** — Identified two-layer issue: Documentation Pipeline dropping usage data and Update Pipeline having no cost logging
+- **Massive credit burn** — Traced $5.53/day usage to Da Vinci Update Pipeline running Sonnet on every session summary
+- **sessionSummary property bug** — Claude API Merge was reading fileContent instead of sessionSummary from Fetch GitHub Files
+
+#### Changed
+- **Da Vinci Update Pipeline** — Switched from claude-sonnet-4-20250514 to claude-haiku-4-5-20251001 for 10x cost reduction
+- **Cost logging** — Added Log Cost and Insert row nodes to Da Vinci Update Pipeline after Send Confirmation
+- **max_tokens setting** — Confirmed 32000 required for three complete document outputs (16000 caused truncation)
+
+#### Removed
+- **Da Vinci Documentation Pipeline** — Deactivated orphaned workflow superseded by Update Pipeline + Inbox Watcher
+
+#### Technical
+- **Pipeline architecture clarified** — Inbox Watcher (5-min schedule) → Execute Workflow → Update Pipeline → Haiku API
+- **Cost optimization achieved** — Expected reduction from ~$5.53/day to ~$0.55/day with Haiku switch
+- **Property name fix** — Claude API Merge now reads $input.first().json.sessionSummary correctly
+- **End-to-end test passed** — Session summary → GitHub update → cost logging working
+
+#### Planning
+- **Langfuse integration deferred** — Wait for cost stabilization before wiring into workflows
+- **API credit monitoring** — Track burn rate over next few days to confirm under $10/month target
+
+---
+
 ### [December 19, 2024] - Documentation Pipeline Test
 
 #### Technical
@@ -668,5 +695,3 @@ All notable changes to the homelab infrastructure project.
 - **Security** — Security-related changes
 - **Technical** — Technical details and specifications
 - **Lessons Learned** — Knowledge gained from troubleshooting
-(complete updated file with new entry)
--
