@@ -4,6 +4,36 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [May 18, 2026] - qwen3.5 Test + Concurrency Fix
+
+#### Added
+- **qwen3.5:latest model** — Selected as primary model for Da Vinci documentation pipeline (6.6GB, 256K context, local inference)
+- **Concurrency lock** — Check Running node queries n8n API before List Inbox node to prevent duplicate executions
+- **Schedule adjustment** — Inbox Watcher changed from every 1 minute to every 15 minutes
+
+#### Technical
+- **Workflow order:** Schedule Trigger → Check Running → If → List Inbox → rest of pipeline
+- **Concurrency check:** GET /api/v1/executions?status=running&workflowId={id} with X-N8N-API-KEY header
+- **qwen3.5 configuration:** num_ctx 65536, temperature 0.3, local via Ollama at http://192.168.30.221:11434/api/chat
+- **Cost logging:** qwen3.5 cost_usd always 0 (local inference), model logged as qwen3.5:latest
+
+#### Fixed
+- **Da Vinci concurrent executions** — Three Update Pipeline instances ran simultaneously because qwen3.5 local inference exceeded 1-minute watcher interval. File not yet archived when next watcher fired, triggering duplicate runs
+- **Duplicate processing** — Resolved by increasing schedule interval + adding concurrency lock node
+
+#### Verification
+- End-to-end test passed with qwen3.5:latest
+- GitHub document updates validated
+- Cost tracking confirmed (local inference = $0)
+
+#### Action Items
+- [ ] Validate test file processed correctly by qwen3.5 — check GitHub for proper document updates
+- [ ] If qwen3.5 output quality confirmed — update Gilgamesh routing from qwen3:14b to qwen3.5:latest
+- [ ] Add validation guard to Parse Response node (reject placeholder outputs before GitHub push)
+- [ ] Wire Langfuse into all agent workflows
+
+---
+
 ### [May 18, 2026] - Da Vinci Cost Optimization & Pipeline Fix
 
 #### Fixed
