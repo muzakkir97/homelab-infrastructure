@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Update Pipeline cost optimization complete with Haiku switch.
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Update Pipeline cost optimization complete with Haiku switch. **Da Vinci pipeline now uses qwen3.5:latest for local inference with concurrency protection.**
 
 ---
 
@@ -172,7 +172,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 ### VLAN Design (OPERATIONAL)
 
 | VLAN ID | Name            | Subnet          | Gateway      | Purpose                                |
-|---------|-----------------|-----------------|--------------|----------------------------------------|
+|---------|-----            |-----------------|--------------|----------------------------------------|
 | 10      | VLAN10_MGMT     | 192.168.10.0/24 | 192.168.10.1 | Infrastructure (Proxmox, pfSense, NAS) |
 | 20      | VLAN20_MAIN     | 192.168.20.0/24 | 192.168.20.1 | Client devices                         |
 | 30      | VLAN30_SERVICES | 192.168.30.0/24 | 192.168.30.1 | All service containers + Pi-hole       |
@@ -367,7 +367,7 @@ second-brain/
 ### Cost Projection Table
 
 | Component  | Current          | Target          | Savings           |
-|------------|------------------|-----------------|-------------------|
+|------------|------            |------           |------         ----|
 | Claude Pro | $20/month        | $0/month        | $240/year         |
 | API Usage  | $10-20/month     | $5-10/month     | $60-120/year      |
 | **Total**  | **$30-40/month** | **$5-10/month** | **$300-360/year** |
@@ -423,8 +423,8 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 | Da Vinci 🎨         | Caster   | Sync + Goals + Weekly Review + RAG           | n8n/Nextcloud | —           | ⚡ Partial  |
 | Midas 💰            | Caster   | CFO — Cost Tracking & Optimization            | n8n           | 1st         | ✅ Active   |
 | MERLIN 🔮           | Caster   | Proactive Nudges & Health Scheduler           | n8n           | 2nd         | ✅ Active   |
-| EMIYA 🏹            | Archer   | CTO — Infrastructure + Agent Spawning         | n8n           | 3rd         | 📋 Planned |
-| Guardian 🛡         | —        | Security Monitoring & Threat Detection        | n8n           | 4th         | 📋 Planned |
+| EMIYA 🏹            | Archer   | CTO — Infrastructure + Agent Spawning         | n8n           | 3rd         | 📋 Planned  |
+| Guardian 🛡         | —        | Security Monitoring & Threat Detection        | n8n           | 4th         | 📋 Planned  |
 
 **Notes:**
 
@@ -459,6 +459,9 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Deck integration complete with 6 additional nodes for kanban management
 - Da Vinci workflow includes Limit node before Notify Complete to prevent notification spam
 - Knowledge Indexer runs at 3am daily (full re-index v1)
+- **Concurrency lock:** Check Running node queries n8n API before proceeding
+- **Schedule:** Inbox Watcher runs every 15 minutes (was 1 minute)
+- **Model:** qwen3.5:latest (local, 256K context, 65536 num_ctx, temperature 0.3)
 
 ### Nextcloud Deck Integration
 
@@ -573,7 +576,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 - **Ollama qwen3:14b** — Primary route for simple queries (local, free, fast)
 - **Haiku 4.5** — Fallback if Ollama is down or unavailable (Gilgamesh + Da Vinci both use Haiku)
-- **Da Vinci Update Pipeline** — Claude Haiku for documentation merging (switched from Sonnet for cost optimization)
+- **Da Vinci Update Pipeline** — qwen3.5:latest for documentation merging (local, free)
 - **RAG Retrieval** — Qdrant vector search with nomic-embed-text embeddings (768 dims)
 - **Extended Memory** — Conversation archival when history exceeds 30 rows
 - Routing logic runs in a Route Check If node before calling any model
@@ -629,6 +632,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - Ollama tokens captured: data.input_tokens + data.output_tokens from Call Ollama node response
 - Ollama queries cost $0 (local inference)
 - command_type derived from Telegram message text directly
+- **Da Vinci:** qwen3.5:latest (local, $0 cost), cost_usd always 0
 
 ### n8n Workflows (Count: 16)
 
@@ -637,7 +641,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory | 18+ | Telegram |
 | Documentation Pipeline — Update    | Session summary → 3 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
-| Da Vinci — Update Pipeline         | GitHub fetch → Haiku merge → GitHub push + Nextcloud | 12+ | Execute Workflow |
+| Da Vinci — Update Pipeline         | GitHub fetch → qwen3.5 merge → GitHub push + Nextcloud | 12+ | Execute Workflow |
 | Da Vinci — Inbox Watcher           | Staging inbox → calls Update Pipeline    | 6     | Schedule |
 | Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily)   | 8     | Schedule |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
@@ -722,9 +726,9 @@ Session Summary → /update → Da Vinci Inbox Watcher → Da Vinci Update Pipel
 ```
 Raw summaries → AI-CONTEXT-staging.md (rolling append)
                          ↓
-        Da Vinci Inbox Watcher (every 5 min) → Execute Workflow trigger
+        Da Vinci Inbox Watcher (every 15 minutes) → Execute Workflow trigger
                          ↓
-        Da Vinci Update Pipeline → GitHub fetch → Haiku API (max_tokens: 32000)
+        Da Vinci Update Pipeline → qwen3.5:latest API (local, 256K context)
                          ↓
         Formatted AI-CONTEXT.md → Nextcloud + GitHub + cost logging
 ```
@@ -742,12 +746,12 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 |--------------|-----------------------------------------------------|
 | Webhooks     | doc-update, doc-sync, da-vinci                      |
 | Telegram     | Routes /update and /sync-docs                       |
-| Claude API   | Haiku for documentation merging (cost optimized)   |
+| qwen3.5 API  | Local inference for documentation merging (free)   |
 | Nextcloud    | File storage via admin user                         |
 | GitHub       | Version control via API push                        |
 | Da Vinci     | Async processing (she/her pronouns)                 |
 | Staging file | AI-CONTEXT-staging.md in Nextcloud (rolling append) |
-| Deck         | Kanban cards created from action items              |
+| Deck         | Kanban cards created from action actions              |
 
 ### File Coverage (sync-docs)
 
@@ -758,18 +762,20 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 - **Direct node references:** Use `$('Extract Response').first().json.updatedDoc` — do NOT rely on `$json` after Merge node
 - **max_tokens:** 32000 (prevents AI-CONTEXT.md being replaced with hallucinated content; 16000 caused truncation)
-- **Claude API model:** claude-haiku-4-5-20251001 (switched from claude-sonnet-4-20250514 for cost optimization)
-- **Cost logging:** Log Cost node reads input_tokens and output_tokens from Claude API Merge response.usage, inserts to gilgamesh_costs with Haiku pricing ($0.25/1M input, $1.25/1M output)
-- **Property fix:** sessionSummary property name fixed in Claude API Merge node (was reading fileContent)
+- **qwen3.5 model:** claude-haiku-4-5-20251001 switched to qwen3.5:latest (local, 256K context)
+- **Cost logging:** Log Cost node reads input_tokens and output_tokens from qwen3.5 response (always $0 for local)
+- **Property fix:** sessionSummary property name fixed in qwen3.5 Merge node (was reading fileContent)
 - **Staging inbox:** AI-Stuff/Homelab/staging-inbox/ on Nextcloud. Processed files archived to AI-Stuff/Homelab/staging-archive/YYYY-MM/
-- **Grounding fix pending:** Add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
+- **Grounding fix pending:** Add step to fetch current AI-CONTEXT.md from Nextcloud before qwen3.5 API call
 - **Deck integration:** Extended workflow with 6 additional nodes for Deck kanban management (Parse Deck Actions, If, Fetch Homelab Stacks, Build Deck Requests, Loop Deck Actions, Execute Deck Action)
 - **Notification fix:** Limit node (max 1) added before Notify Complete to prevent notification spam
+- **Concurrency lock:** Check Running node queries n8n API before List Inbox node
+- **Schedule:** Inbox Watcher runs every 15 minutes (was 1 minute)
 
 ### Da Vinci Pipeline Architecture
 
-- **Da Vinci — Inbox Watcher:** Schedule trigger (every 5 min), PROPFIND staging-inbox, calls Da Vinci — Update Pipeline via Execute Workflow, archives processed files to staging-archive/YYYY-MM/
-- **Da Vinci — Update Pipeline:** Execute Workflow trigger, fetches 3 files from GitHub, Claude Haiku merge, pushes to GitHub + Nextcloud, cost logging
+- **Da Vinci — Inbox Watcher:** Schedule trigger (every 15 minutes), PROPFIND staging-inbox, calls Da Vinci — Update Pipeline via Execute Workflow, archives processed files to staging-archive/YYYY-MM/
+- **Da Vinci — Update Pipeline:** Execute Workflow trigger, fetches 3 files from GitHub, qwen3.5:latest merge, pushes to GitHub + Nextcloud, cost logging
 - **Da Vinci — Documentation Pipeline:** INACTIVE (deactivated 2026-05-18, orphaned — superseded by Update Pipeline + Inbox Watcher)
 
 ---
@@ -931,7 +937,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | GPU PCIe address change after motherboard | Update VM config: qm set 400 --hostpci0 0000:0d:00.0,pcie=1 |
 | KVM virtualization not available       | Enable AMD-V (SVM Mode) and IOMMU in UEFI settings         |
 | Boot timeout after BIOS changes        | Disable systemd-networkd-wait-online.service               |
-| RAID conversion with active mount       | Unmount NFS share before NAS factory reset                 |
+| RAID conversion with active mount      | Unmount NFS share before NAS factory reset                 |
 | DOCP 3600 failed POST                  | Manual DDR4-2666 setting negotiated to rated DDR4-3200     |
 | Enterprise repo 401 errors             | Disable pve-enterprise.list/sources — add pve-no-subscription.list |
 
@@ -997,9 +1003,11 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | RAG empty results                     | Payload field is "content" not "text/pageContent" — check Qdrant schema                                            |
 | search_document/query prefixes        | Remove prefixes — incompatible with chunked content retrieval                                                      |
 | Da Vinci pipeline call chain         | Inbox Watcher → Execute Workflow → Update Pipeline. Documentation Pipeline is orphaned. Always trace trigger → execution chain before debugging node code. |
-| Da Vinci Update Pipeline sessionSummary bug | Claude API Merge was reading $input.first().json.fileContent but Fetch GitHub Files outputs sessionSummary. Property name must match exactly. |
-| Da Vinci max_tokens                   | 32000 required for three complete document outputs. 16000 causes truncation — Haiku hits limit before completing all three sections. |
-| Cost tracking for Update Pipeline    | pass response.usage?.input_tokens and response.usage?.output_tokens through Claude API Merge return statement. Log Cost node references $('Claude API Merge').first().json.input_tokens and output_tokens. |
+| Da Vinci Update Pipeline sessionSummary bug | qwen3.5 Merge was reading $input.first().json.fileContent but Fetch GitHub Files outputs sessionSummary. Property name must match exactly. |
+| Da Vinci max_tokens                   | 32000 required for three complete document outputs. 16000 causes truncation — qwen3.5 hits limit before completing all three sections. |
+| Cost tracking for Update Pipeline    | pass response.usage?.input_tokens and response.usage?.output_tokens through qwen3.5 Merge return statement. Log Cost node references $('qwen3.5 Merge').first().json.input_tokens and output_tokens. |
+| Da Vinci Inbox Watcher concurrency issue | If local LLM takes longer than watcher interval, multiple pipeline instances fire on same file. Fix: increase schedule interval to 15 minutes + add API-based concurrency lock before List Inbox node. |
+| n8n concurrency check                 | GET /api/v1/executions?status=running&workflowId={id} with X-N8N-API-KEY header. Returns running executions — if count > 0, skip current cycle. |
 
 ### HashiCorp Vault (Phase 13)
 
@@ -1194,51 +1202,42 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📝 Session Log (Recent)
 
-### May 18, 2026 — Cost Investigation & Da Vinci Pipeline Fix
+### May 18, 2026 — qwen3.5 Test + Concurrency Fix
 
 Date: May 18, 2026
-Phase: Cost Investigation & Da Vinci Pipeline Fix
+Phase: qwen3.5 Test + Concurrency Fix
 
 Topics Discussed
-- Reviewed Reddit threads: AI-generated PR reviews and AI agent stacks in 2026
-- Career anxiety discussion — feeling of not understanding what's been built
-- Claude API credit burn rate diagnosed ($5.53 in ~1 day on $6 topup)
-- Langfuse showing zero traces — confirmed not yet wired to any agents
-- gilgamesh_costs Data Table diagnosis — Da Vinci rows showing 0 tokens and 0 cost
-- Discovered two separate Da Vinci workflows: Documentation Pipeline (orphaned) and Update Pipeline (active)
-- Inbox Watcher workflow confirmed to exist and be active (runs every 5 minutes via Schedule Trigger)
-- Da Vinci — Update Pipeline had zero cost logging — identified as primary credit burn culprit
-- Switched Da Vinci — Update Pipeline from claude-sonnet-4-20250514 to claude-haiku-4-5-20251001
-- Added cost logging (Log Cost + Insert row nodes) to Da Vinci — Update Pipeline
-- Fixed sessionSummary property name bug in Claude API Merge node
-- Da Vinci — Documentation Pipeline confirmed orphaned — deactivated
-- End-to-end pipeline test passed: Telegram notification received, GitHub updated, gilgamesh_costs row 128 created
+- Tested qwen3.5:latest (6.6GB, 256K context) for Da Vinci documentation pipeline
+- Identified concurrent execution issue — inbox watcher firing every 5 minutes while qwen3.5 takes longer
+- Three concurrent Update Pipeline executions detected, all stopped manually
+- Implemented two concurrency fixes
 
 Decisions Made
-- Da Vinci — Update Pipeline: switched to claude-haiku-4-5-20251001 (from claude-sonnet-4-20250514)
-- Da Vinci — Update Pipeline: max_tokens set to 32000 (16000 caused truncation)
-- Da Vinci — Update Pipeline: cost logging added — Log Cost node + Insert row to gilgamesh_costs after Send Confirmation
-- Da Vinci — Documentation Pipeline: deactivated (orphaned, superseded by Update Pipeline + Inbox Watcher)
-- Gilgamesh main chat: no changes needed — already on Ollama/Haiku, no Sonnet usage
-- Langfuse wiring deferred — tackle in a separate session when credits are stable
+- Da Vinci — Inbox Watcher schedule changed from every 1 minute to every 15 minutes
+- Concurrency lock added — Check Running node queries n8n API before proceeding
+- If Update Pipeline already running, inbox watcher skips that cycle via If node
+- qwen3.5:latest selected as primary model for Da Vinci pipeline (free, local, 256K context)
+- Workflow order: Schedule Trigger → Check Running → If → List Inbox → rest of pipeline
 
 Changes to AI-CONTEXT.md
-- n8n Workflows: Da Vinci — Documentation Pipeline marked as INACTIVE
-- n8n Workflows: Da Vinci — Inbox Watcher and Update Pipeline details added
-- Da Vinci Technical Notes: Cost optimization and bug fixes documented
-- Gilgamesh routing confirmed: Ollama primary, Haiku fallback only
-- Key Lessons: Added Da Vinci pipeline debugging lessons
-- Pending Tasks: Marked Da Vinci cost tracking tasks complete
+- Da Vinci Technical Notes: Inbox Watcher now runs every 15 minutes (was every 1 minute)
+- Da Vinci Technical Notes: Concurrency lock added — Check Running node checks n8n API for active Update Pipeline executions before proceeding
+- Da Vinci Technical Notes: Claude API Merge node switched to qwen3.5:latest via Ollama (http://192.168.30.221:11434/api/chat), num_ctx 65536, temperature 0.3
+- Da Vinci Technical Notes: Cost logging updated — qwen3.5 cost_usd always 0 (local inference), model logged as qwen3.5:latest
+- Key Lessons: Added — "Da Vinci Inbox Watcher concurrency issue: if local LLM takes longer than watcher interval, multiple pipeline instances fire on same file. Fix: increase schedule interval + add API-based concurrency lock before List Inbox node."
+- Key Lessons: Added — "n8n concurrency check: GET /api/v1/executions?status=running&workflowId={id} with X-N8N-API-KEY header. Returns running executions — if count > 0, skip current cycle."
+- Pending Tasks: Marked complete — "Test qwen3.5 for Da Vinci documentation pipeline"
+- Pending Tasks: Marked complete — "Fix inbox watcher concurrency issue"
 
 Errors & Resolutions
-- Da Vinci cost always 0: Two-layer root cause fixed
-- sessionSummary property bug: Claude API Merge property name corrected
-- Da Vinci output truncation: max_tokens reverted to 32000
+- Da Vinci concurrent executions: Three Update Pipeline instances ran simultaneously because qwen3.5 local inference exceeded 1-minute watcher interval. File not yet archived when next watcher fired, triggering duplicate runs. Resolution: schedule changed to 15 minutes + concurrency lock node added.
 
 Action Items
-- Wire Langfuse into Gilgamesh, Da Vinci, Midas, MERLIN workflows
-- Monitor API credit burn rate over next few days
-- Store Langfuse API keys in Vaultwarden
+- [ ] Validate this test file processed correctly by qwen3.5 — check GitHub for proper document updates
+- [ ] If qwen3.5 output quality confirmed — update Gilgamesh routing from qwen3:14b to qwen3.5:latest
+- [ ] Add validation guard to Parse Response node (reject placeholder outputs before GitHub push)
+- [ ] Wire Langfuse into all agent workflows
 
 ### December 19, 2024 — Documentation Pipeline Test
 
@@ -1289,7 +1288,7 @@ Decisions Made
 - CT 303: Minecraft server (6GB RAM / 2 cores / 192.168.30.215:25570)
 - CT 304: Terraria server (12GB RAM / 2 cores / 192.168.30.216:7777)
 - CT 305: Pelican panel (2GB RAM / 2 cores / 192.168.30.217)
-- Gilgamesh routing: Ollama primary, Haiku fallback (Sonnet removed)
+- Gilgamesh routing: Ollama primary, Haiku fallback only
 - Da Vinci: Keep Claude Sonnet for documentation merging
 - Phase 7E redesign: user_profile Data Table (semantic) + gilgamesh_conversations Qdrant (episodic)
 - Scathach ⚔️: Career Growth agent, build order 1st
