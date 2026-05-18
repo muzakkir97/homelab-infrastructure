@@ -4,6 +4,24 @@
 
 ---
 
+## 2026-05-18 — Da Vinci Concurrent Executions
+
+**Symptoms:** Three Update Pipeline instances ran simultaneously because qwen3.5 local inference exceeded 1-minute watcher interval. File not yet archived when next watcher fired, triggering duplicate runs.
+
+**Root Cause:** Local LLM inference time (qwen3.5) exceeded inbox watcher schedule interval (1 minute). Multiple pipeline instances fired on same file, causing duplicate processing.
+
+**Resolution:** 
+1. Increased Inbox Watcher schedule from 1 minute to 15 minutes
+2. Added Check Running node that queries n8n API before List Inbox node
+3. If Update Pipeline already running, inbox watcher skips that cycle via If node
+4. Workflow order: Schedule Trigger → Check Running → If → List Inbox → rest of pipeline
+
+**Verification:** End-to-end test passed with qwen3.5:latest. No duplicate executions observed.
+
+**Lesson:** When using local LLMs with longer inference times, always add API-based concurrency lock before processing. GET /api/v1/executions?status=running&workflowId={id} with X-N8N-API-KEY header. Returns running executions — if count > 0, skip current cycle.
+
+---
+
 ## 2026-05-18 — Da Vinci Cost Tracking Always Zero
 
 **Symptoms:** Da Vinci Update Pipeline showing 0 tokens and 0 cost in gilgamesh_costs Data Table despite processing session summaries. Claude API credit burning $5.53 in ~1 day but no cost tracking.
@@ -83,3 +101,4 @@ const response = $('Merge').first().json;
 ## 2026-04-24 — httpRequestWithAuthentication Not Supported in Code Nodes
 
 **Symptoms:** n8n Code node throwing error "httpRequestWithAuthentication
+</current_troubleshoot>
