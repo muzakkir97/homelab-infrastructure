@@ -4,6 +4,31 @@
 
 ---
 
+## 2026-05-19 — Da Vinci Update Pipeline Error Loop and Cost Logging Failure
+
+**Symptoms:** Da Vinci Update Pipeline executing repeatedly every 15 minutes overnight (May 18-19), consuming Claude API tokens on each cycle despite failing validation. Error loop continued until manual intervention. Cost logging node never executed despite pipeline running multiple times.
+
+**Root Cause:** Two-layer issue:
+1. Staging-inbox contained a stuck session summary file that failed validation during Claude API processing. File remained in inbox, triggering Update Pipeline on each 15-minute watcher cycle.
+2. Pipeline architecture had single consolidated Claude API call attempting to generate 3 complete documents (AI-CONTEXT.md + changelog.md + troubleshoot.md) in one request with max_tokens=32000. Output exceeded token limit, causing Parse Response to fail mid-document.
+3. Cost logging node placed at end of pipeline after Parse Response — never executed because pipeline failed before reaching that node. Result: tokens consumed but no cost tracking recorded.
+
+**Resolution:**
+1. Deleted stuck file from staging-inbox to stop the watcher trigger loop
+2. Rebuilt Da Vinci Update Pipeline with 3 separate Haiku API calls instead of single consolidated call:
+   - Call 1: Generate AI-CONTEXT.md (max_tokens: 16000)
+   - Call 2: Generate changelog.md (max_tokens: 4000)
+   - Call 3: Generate troubleshoot.md (max_tokens: 4000)
+3. Moved cost logging node to fire immediately after each HTTP Request node, before Parse Response and Git Push nodes — ensures cost data recorded even if downstream nodes fail
+4. Corrected Haiku pricing in Log Cost nodes from $0.25/1M input + $1.25/1M output (Haiku 3 rates, incorrect) to $0.80/1M input + $4.00/1M output (Haiku 4.5 actual pricing)
+5. Each of the 3 API calls now has its own dedicated Log Cost code node in sequence: HTTP Request → Log Cost → Parse Response
+
+**Verification:** Pipeline executed successfully with 3 new rows created in gilgamesh_costs table (one per API call). No repeated error cycles observed. Cost logging fired on all 3 calls and properly calculated using corrected pricing.
+
+**Lesson:** Stuck files in inbox queues cause pipeline loops on watcher intervals. Separate API calls per file provides better error isolation and prevents single-failure cascades. Cost logging nodes must fire immediately after API calls, before downstream parsing — otherwise token consumption goes untracked if parser fails. Always verify inbox state and pipeline success nodes when investigating repeated failures. Historical cost entries pre-May-19 using Haiku are understated by ~3x due to incorrect pricing rates.
+
+---
+
 ## 2026-05-19 — Da Vinci Update Pipeline Looping on Error
 
 **Symptoms:** Da Vinci Update Pipeline executing repeatedly every 15 minutes, failing validation and creating duplicate error cycles.
