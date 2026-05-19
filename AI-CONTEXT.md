@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** May 19, 2026
+> **Last Updated:** May 20, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. **Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026.**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. **Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron.**
 
 ---
 
@@ -257,6 +257,31 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Health endpoint:** /api/public/health
 - **Status:** Deployed but not yet wired to agents — zero traces currently
 
+### network-ddns (CT 207)
+
+- **Container:** LXC Ubuntu 22.04
+- **IP:** 192.168.30.207
+- **Services:** Promtail (log forwarding), ddclient (DNS updates)
+- **Promtail Status:** Fixed May 20, 2026 — crash loop resolved
+- **Loki URL:** http://192.168.30.204:3100/loki/api/v1/push (CT 204, VLAN 30)
+- **Note:** node_exporter in this container reads host /proc/stat, so CPU alerts are host-level metrics, not CT 207-specific
+
+### minecraft-server (CT 303)
+
+- **Container:** Paper 1.21.4 on port 25570 (192.168.30.215)
+- **Panel:** Pelican Wings
+- **CPU limit:** Pending in Pelican panel (set to reasonable value)
+- **Note:** Watch for CPU ramp-up issues; set cpulimit in Proxmox if needed
+
+### terraria-server (CT 304)
+
+- **Container:** tModLoader on port 7777 (192.168.30.216)
+- **Panel:** Pelican Wings
+- **CPU Management:** cpulimit 1.5 (hard ceiling at Proxmox hypervisor level) set via `pct set 304 --cpulimit 1.5`
+- **Daily Cron:** `0 4 * * * pct exec 304 -- bash -c "kill $(pgrep -f tModLoader)" 2>/dev/null` — restart process daily at 4am to clear CPU leak
+- **Issue Fixed:** tModLoader idles high (70%+) and ramps to 97%+ CPU over hours with heavy mods. cpulimit + daily cron restart resolves the issue.
+- **Panel CPU Limit:** Set to 150% (= 1.5 cores, matching Proxmox cpulimit) in Pelican panel
+
 ### ollama-gpu (VM 400)
 
 - **Type:** KVM VM with PCIe passthrough — NOT an LXC
@@ -397,6 +422,8 @@ Examples of auto-generated skills:
 - WebDAV append pattern → GET-then-PUT code template
 - Mixed RAM validation → memtest86+ procedure
 - New LXC SSH access → pfSense rule template
+- Promtail YAML corruption detection → shell command filtering
+- tModLoader CPU leak diagnosis → cpulimit + cron restart pattern
 
 Note: Key Lessons section in AI-CONTEXT.md is the manual version of this — Phase 25.3 automates that capture.
 
@@ -920,4 +947,99 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 25.4    | Content Creation — automated reports, social posts              | 📋 Planned | —            |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT                             | ✅ Complete | Apr 24, 2026 |
 | 39      | Open WebUI                                                       | ✅ Complete | Apr 24, 2026 |
-| 41
+| 41      | Hybrid Routing (Ollama + Haiku + Sonnet)                         | ✅ Complete | May 8, 2026  |
+
+---
+
+## 📝 Session Log (Most Recent 5)
+
+### Session 5: May 20, 2026 — Infrastructure Troubleshooting: CT 207 Promtail + CT 304 tModLoader
+
+**Duration:** 2h
+**Topics:** CRITICAL CPU alert on 192.168.30.207, Promtail crash loop (53,649 restarts), wrong Loki URL (192.168.20.13 vs 192.168.30.204), CT 304 tModLoader CPU leak (97% sustained), Pterodactyl vs Pelican CPU limits, alert routing clarification
+**Decisions:** Overwrite CT 207 Promtail config with clean YAML, correct Loki IP, set CT 304 cpulimit 1.5, add daily 4am cron restart, set Pelican panel CPU limits
+**Outcomes:** Both issues resolved. 4 hours clean with no alerts post-fix. Morning briefing container count fix confirmed complete.
+**Next:** Phase 24.2 (Alert Translation), set CPU limits in Pelican panel for CT 303 + CT 304
+
+### Session 4: May 19, 2026 — Da Vinci Documentation Pipeline Rebuild
+
+**Duration:** 3h
+**Topics:** Documentation pipeline overhaul, 3 separate Haiku API calls, immediate cost logging, concurrency protection, inbox watcher schedule tuning
+**Decisions:** Rebuild as 3 separate calls (AI-CONTEXT, changelog, troubleshoot) instead of merged, fire cost logging immediately after each call, Inbox Watcher runs every 15 min, Check Running node for concurrency lock
+**Outcomes:** Pipeline rebuilt and tested. Cost logging verified. Staging inbox/archive directory structure operational.
+**Next:** Monitor pipeline stability, begin Phase 24.2
+
+### Session 3: May 15, 2026 — Phase 7E Complete: Extended Memory + Conversation Archival
+
+**Duration:** 2.5h
+**Topics:** RAG integration with extended memory, Qdrant collections, nomic-embed-text setup, conversation archival at 30+ rows, system prompt injection
+**Decisions:** Archive conversations to Qdrant when gilgamesh_memory exceeds 30 rows, inject top 5 RAG results into system prompt, skip RAG for greetings
+**Outcomes:** Extended memory working. All 20 LXC + 1 VM running. RAG retrieval tested successfully.
+**Next:** Da Vinci documentation pipeline rebuild (Phase 16.3)
+
+### Session 2: May 14, 2026 — Phase 24.8: Langfuse Deployment + Phase 24.7 Complete
+
+**Duration:** 2h
+**Topics:** Langfuse v3.174.1 stack deployment (6 containers), LLM observability setup, ntfy hub integration
+**Decisions:** Deploy Langfuse on CT 223, configure health endpoint, integrate with ntfy, plan agent wiring post-Phase 25
+**Outcomes:** Langfuse running, zero traces currently. Phase 24.7 (ntfy) confirmed complete.
+**Next:** Wire agents to Langfuse (Phase 25+), begin Phase 24.2
+
+### Session 1: May 13, 2026 — Phase 24.1 + Nextcloud Deck Integration
+
+**Duration:** 2.5h
+**Topics:** Firefly III deployment (CT 221), Nextcloud Deck integration (3 boards, 22 labels, 5 stacks), Da Vinci kanban automation
+**Decisions:** Deploy Firefly III + MariaDB, integrate Da Vinci with Deck API, create 3 project boards (Homelab, Career, Personal)
+**Outcomes:** Firefly III running on 192.168.30.224, Deck integrated, auto-card creation tested.
+**Next:** Phase 24.2 (Alert Translation), Phase 24.3 (Container Updates)
+
+---
+
+## 🔧 Key Lessons Learned
+
+### Monitoring & Alerts
+
+| Issue | Resolution |
+|-------|------------|
+| CRITICAL CPU alert on CT 207 node_exporter | Root cause was Promtail crash loop (53,649 restarts). node_exporter in LXC reads host /proc/stat — alert reflects host CPU, not container CPU. Investigation tip: check systemctl status on container before blaming hardware |
+| Promtail YAML broken after install | Shell installation commands were accidentally pasted into promtail.yml after line 30, breaking YAML syntax. Parser failed every 5 seconds for 3+ days. Fix: Overwrite entire file cleanly using `python3 -c "open(...).write(...)"` from inside container instead of heredoc |
+| Wrong Loki URL in Promtail config | CT 207 had 192.168.20.13 (VLAN 20, client devices) in promtail.yml. Correct URL is http://192.168.30.204:3100/loki/api/v1/push (CT 204 on VLAN 30, services). Verify network placement of log destinations |
+| tModLoader CPU leak on CT 304 | tModLoader has known CPU ramp-up issue when running headless with heavy mods. Idles at 70%+, hits 97%+ over hours. Pterodactyl limited via Docker config; Pelican migration did not carry limits. Fix: `pct set 304 --cpulimit 1.5` at Proxmox level + daily 4am cron: `0 4 * * * pct exec 304 -- bash -c "kill $(pgrep -f tModLoader)" 2>/dev/null` |
+| Pterodactyl vs Pelican CPU difference | Pterodactyl panel enforced Docker-level CPU limits via compose config. Pelican migration did not auto-migrate CPU limits — must set manually in both Proxmox (pct set) and Pelican panel UI |
+
+### Documentation & Workflow
+
+| Issue | Resolution |
+|-------|------------|
+| Da Vinci documentation merged to wrong file | Property name mismatch (sessionSummary vs summary) caused null reads. Verify property chains after Merge nodes — use direct node references like `$('Extract Response').first().json.updatedDoc` |
+| Haiku API cost logging missing on failure | Cost logs were firing at end of workflow. If downstream nodes failed, costs weren't captured. Fix: Fire cost logging immediately after each API call (3 separate calls for 3 files), before parse/merge nodes |
+| Documentation pipeline concurrent executions | Inbox Watcher running every 1 minute caused multiple executions queued. Fix: Increase schedule to every 15 minutes + add Check Running node to query n8n API before proceeding |
+
+### Networking & Infrastructure
+
+| Issue | Resolution |
+|-------|------------|
+| Node_exporter alert misdiagnosis | Host-level metrics (CPU, memory) trigger alerts on Prometheus even if LXC container itself is idle. The node_exporter reads /proc/stat from host, not cgroup limits. Future work: Relabel alerts to clarify scope (Phase 24.2) |
+| heredoc paste mangling on Proxmox host | `cat > file << 'EOF'` failed when pasting multi-line heredocs. Promtail install guide used heredoc; copy-paste broke quoting. Solution: Use `pct enter 207` first, then `python3 -c "..."` to avoid heredoc issues |
+
+### Container & Process Management
+
+| Issue | Resolution |
+|-------|------------|
+| Game server CPU limits not enforced | Pelican panel migration lost CPU limit configuration from Pterodactyl. CPU limits live in 2 places: Proxmox (hypervisor-level via pct set --cpulimit) and game panel (UI setting). Both must be set |
+| Process restart patterns | Long-running processes with memory leaks (tModLoader) benefit from scheduled kills. Use daily cron at 4am to kill and let panel auto-restart. Cleaner than constant monitoring |
+
+---
+
+## 📋 Pending Tasks
+
+- [ ] Set CPU limit in Pelican panel for CT 303 (Minecraft): reasonable value before it becomes a problem
+- [ ] Set CPU limit in Pelican panel for CT 304 (Terraria): 150% (= 1.5 cores, matches Proxmox cpulimit)
+- [ ] Future: Relabel Alertmanager alert for 192.168.30.207:9100 to indicate it is a host-level CPU metric (Phase 24.2 Alert Translation)
+- [ ] Begin Phase 24.2 (Alert Translation — Alertmanager → ntfy plain English)
+- [ ] Wire agents to Langfuse for observability (Phase 25+)
+- [ ] Phase 24.3 (Container Updates — Docker + apt upgrades, approval-gated)
+- [ ] Phase 24.4 (Knowledge Ingestion — URLs → Firecrawl → triple-write)
+- [ ] Phase 25.1 (Voice Interface — transcription + responses)
+- [ ] Phase 25.2 (Email Integration — IMAP monitoring)
+- [ ] Phase 25.3 (Self-Evolving Skills — auto-captured knowledge docs)
