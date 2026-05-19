@@ -4,6 +4,24 @@
 
 ---
 
+## 2026-05-19 — Da Vinci Update Pipeline Looping on Error
+
+**Symptoms:** Da Vinci Update Pipeline executing repeatedly every 15 minutes, failing validation and creating duplicate error cycles.
+
+**Root Cause:** staging-inbox contained a stuck file that failed validation during Claude API processing. File remained in inbox, triggering Update Pipeline on each 15-minute watcher cycle, causing repeated failures on the same corrupted input.
+
+**Resolution:** 
+1. Deleted stuck file from staging-inbox
+2. Rebuilt Da Vinci Update Pipeline with 3 separate Haiku API calls instead of single consolidated call (one call per file: AI-CONTEXT.md, changelog.md, troubleshoot.md)
+3. Implemented immediate cost logging after each API call, before Parse Response and Git Push nodes
+4. Cost logging now fires per-file rather than end-of-pipeline
+
+**Verification:** Pipeline executed successfully with 3 new rows created in gilgamesh_costs table (one per API call). No repeated error cycles observed.
+
+**Lesson:** Stuck files in inbox queues will cause pipeline loops on watcher intervals. Separate API calls per file provides better error isolation and immediate cost tracking. Always verify inbox state before investigating repeated pipeline failures.
+
+---
+
 ## 2026-05-18 — Da Vinci Concurrent Executions
 
 **Symptoms:** Three Update Pipeline instances ran simultaneously because qwen3.5 local inference exceeded 1-minute watcher interval. File not yet archived when next watcher fired, triggering duplicate runs.
@@ -100,5 +118,12 @@ const response = $('Merge').first().json;
 
 ## 2026-04-24 — httpRequestWithAuthentication Not Supported in Code Nodes
 
-**Symptoms:** n8n Code node throwing error "httpRequestWithAuthentication
-</current_troubleshoot>
+**Symptoms:** n8n Code node throwing error "httpRequestWithAuthentication is not a function" when attempting HTTP requests with authentication headers.
+
+**Root Cause:** n8n Code nodes do not have direct access to httpRequestWithAuthentication helper. This function is only available in HTTP Request nodes, not in custom JavaScript code execution contexts.
+
+**Resolution:** Replaced Code node with native HTTP Request node for authenticated API calls. HTTP Request node handles authentication headers and credential management natively without requiring custom code.
+
+**Verification:** API calls now execute successfully through HTTP Request node with proper authentication.
+
+**Lesson:** Use native HTTP Request nodes for API calls instead of attempting to replicate functionality in Code nodes. Code nodes are for data transformation and logic, not for making authenticated requests.
