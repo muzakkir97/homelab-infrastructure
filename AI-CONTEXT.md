@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** May 18, 2026
+> **Last Updated:** May 19, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Update Pipeline cost optimization complete with Haiku switch. **Da Vinci pipeline now uses qwen3.5:latest for local inference with concurrency protection.**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Update Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. **Concurrency protection and inbox watcher schedule finalized May 18-19, 2026.**
 
 ---
 
@@ -563,11 +563,11 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
                                └────────────────────┼──────────────────┘
                                                     ▼
                                           Memory (n8n Data Tables)
-                                                    ↓
+                                                    ▼
                                           RAG Retrieval (Qdrant → nomic-embed-text)
-                                                    ↓
+                                                    ▼
                                           Conversation Archival (30+ rows → Qdrant)
-                                                    ↓
+                                                    ▼
                                           /update → Da Vinci → Nextcloud → GitHub
                                           /sync-docs → Full Doc Pipeline
 ```
@@ -628,7 +628,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 ### Cost Tracking Note
 
-- cost_usd calculated from token rates: Haiku $0.25/1M input, $1.25/1M output
+- cost_usd calculated from token rates: Haiku $0.80/1M input, $4.00/1M output
 - Ollama tokens captured: data.input_tokens + data.output_tokens from Call Ollama node response
 - Ollama queries cost $0 (local inference)
 - command_type derived from Telegram message text directly
@@ -721,16 +721,16 @@ Session Summary → /update → Da Vinci Inbox Watcher → Da Vinci Update Pipel
                                                                             Nextcloud + GitHub + Deck
 ```
 
-#### Da Vinci Documentation Pipeline (Phase 16.3 + Cost Optimization)
+#### Da Vinci Documentation Pipeline (Phase 16.3 — Rebuilt May 19, 2026)
 
 ```
 Raw summaries → AI-CONTEXT-staging.md (rolling append)
                          ↓
         Da Vinci Inbox Watcher (every 15 minutes) → Execute Workflow trigger
                          ↓
-        Da Vinci Update Pipeline → qwen3.5:latest API (local, 256K context)
+        Da Vinci Update Pipeline → 3 separate Haiku API calls (AI-CONTEXT, changelog, troubleshoot)
                          ↓
-        Formatted AI-CONTEXT.md → Nextcloud + GitHub + cost logging
+        Immediate cost logging for each file → GitHub push → Nextcloud sync
 ```
 
 ### Commands
@@ -746,7 +746,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 |--------------|-----------------------------------------------------|
 | Webhooks     | doc-update, doc-sync, da-vinci                      |
 | Telegram     | Routes /update and /sync-docs                       |
-| qwen3.5 API  | Local inference for documentation merging (free)   |
+| Haiku API    | claude-haiku-4-5-20251001 for documentation merging |
 | Nextcloud    | File storage via admin user                         |
 | GitHub       | Version control via API push                        |
 | Da Vinci     | Async processing (she/her pronouns)                 |
@@ -760,23 +760,17 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ### Da Vinci Technical Notes
 
-- **Direct node references:** Use `$('Extract Response').first().json.updatedDoc` — do NOT rely on `$json` after Merge node
-- **max_tokens:** 32000 (prevents AI-CONTEXT.md being replaced with hallucinated content; 16000 caused truncation)
-- **qwen3.5 model:** claude-haiku-4-5-20251001 switched to qwen3.5:latest (local, 256K context)
-- **Cost logging:** Log Cost node reads input_tokens and output_tokens from qwen3.5 response (always $0 for local)
-- **Property fix:** sessionSummary property name fixed in qwen3.5 Merge node (was reading fileContent)
+- **Pipeline architecture:** 3 separate Haiku API calls (not single merged call) — one per file (AI-CONTEXT, changelog, troubleshoot)
+- **Cost logging:** Immediate logging fires after each Haiku API call completes, before parse/push
+- **Haiku pricing:** $0.80/1M input tokens, $4.00/1M output tokens
+- **Concurrency:** Check Running node at start — queries n8n API for existing Update Pipeline executions before proceeding
+- **Inbox Watcher schedule:** Every 15 minutes (was 1 minute, increased to reduce concurrent executions)
 - **Staging inbox:** AI-Stuff/Homelab/staging-inbox/ on Nextcloud. Processed files archived to AI-Stuff/Homelab/staging-archive/YYYY-MM/
-- **Grounding fix pending:** Add step to fetch current AI-CONTEXT.md from Nextcloud before qwen3.5 API call
+- **Staging archival:** Automatic upon successful pipeline completion
 - **Deck integration:** Extended workflow with 6 additional nodes for Deck kanban management (Parse Deck Actions, If, Fetch Homelab Stacks, Build Deck Requests, Loop Deck Actions, Execute Deck Action)
-- **Notification fix:** Limit node (max 1) added before Notify Complete to prevent notification spam
-- **Concurrency lock:** Check Running node queries n8n API before List Inbox node
-- **Schedule:** Inbox Watcher runs every 15 minutes (was 1 minute)
-
-### Da Vinci Pipeline Architecture
-
-- **Da Vinci — Inbox Watcher:** Schedule trigger (every 15 minutes), PROPFIND staging-inbox, calls Da Vinci — Update Pipeline via Execute Workflow, archives processed files to staging-archive/YYYY-MM/
-- **Da Vinci — Update Pipeline:** Execute Workflow trigger, fetches 3 files from GitHub, qwen3.5:latest merge, pushes to GitHub + Nextcloud, cost logging
-- **Da Vinci — Documentation Pipeline:** INACTIVE (deactivated 2026-05-18, orphaned — superseded by Update Pipeline + Inbox Watcher)
+- **Notification:** Limit node (max 1) before Notify Complete to prevent notification spam
+- **Property names:** Verify sessionSummary property name matches across nodes (was reading wrong property causing null merge)
+- **Validation:** Parse Response node rejects placeholder outputs before GitHub push
 
 ---
 
@@ -895,7 +889,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 15      | Gilgamesh Additional Slash Commands                              | ✅ Complete | Apr 24, 2026 |
 | 16.1    | Documentation Pipeline — Update Workflow                         | ✅ Complete | Apr 19, 2026 |
 | 16.2    | Documentation Pipeline — Sync Docs Workflow                      | ✅ Complete | Apr 19, 2026 |
-| 16.3    | Da Vinci Documentation Pipeline                                  | ✅ Complete | Apr 25, 2026 |
+| 16.3    | Da Vinci Documentation Pipeline                                  | ✅ Complete | May 19, 2026 |
 | 22      | Obsidian Knowledge Base                                          | ✅ Complete | Apr 24, 2026 |
 | 22.1    | Obsidian Vault Structure Expansion                               | ✅ Complete | Apr 27, 2026 |
 | 22.2    | Obsidian Daily Notes + Morning Briefing                          | ✅ Complete | Apr 27, 2026 |
@@ -928,403 +922,4 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ---
 
-## 🐛 Key Lessons Learned
-
-### Hardware & Recovery
-
-| Issue                                   | Resolution                                                  |
-|-----------------------------------------|-------------------------------------------------------------|
-| GPU PCIe address change after motherboard | Update VM config: qm set 400 --hostpci0 0000:0d:00.0,pcie=1 |
-| KVM virtualization not available       | Enable AMD-V (SVM Mode) and IOMMU in UEFI settings         |
-| Boot timeout after BIOS changes        | Disable systemd-networkd-wait-online.service               |
-| RAID conversion with active mount      | Unmount NFS share before NAS factory reset                 |
-| DOCP 3600 failed POST                  | Manual DDR4-2666 setting negotiated to rated DDR4-3200     |
-| Enterprise repo 401 errors             | Disable pve-enterprise.list/sources — add pve-no-subscription.list |
-
-### Network & VLANs
-
-| Issue                            | Resolution                                          |
-|----------------------------------|-----------------------------------------------------|
-| Proxmox LXC VLAN not working     | Add `bridge-vids 2-4094` to /etc/network/interfaces |
-| Intel i226-V NICs failing        | FreeBSD driver issue; only igc2/igc3 work on AC8F   |
-| Double NAT breaking port forward | Port forward on BOTH ISP router AND pfSense         |
-| Inter-VLAN DNS not resolving     | Use pfSense DNS Resolver forwarding to Pi-hole      |
-
-### Firewall Hardening
-
-| Issue                            | Resolution                                    |
-|----------------------------------|-----------------------------------------------|
-| Internet loss after rule changes | Source must be "subnets" not "address"        |
-| Tailscale ping failing           | Normal — use `tailscale ping` instead of ICMP |
-| Blocked traffic still works      | Disconnect Tailscale to test local firewall   |
-
-### Backup Strategy
-
-| Issue                        | Resolution                                            |
-|------------------------------|-------------------------------------------------------|
-| SMB/CIFS kernel crashes      | Switch to NFS protocol (later switched back to SMB)   |
-| NFS permission denied        | Change squash to "Map all users to admin"             |
-| Large file I/O errors on NAS | Hybrid approach — large containers to local storage   |
-| ZFS snapshot busy            | Kill stuck processes or reboot, then destroy snapshot |
-| Container locked (backup)    | `pct unlock <CTID>`                                   |
-| NFS cannot do LXC backups    | NFS + LXC UID namespace mapping incompatible — use SMB |
-| CT 220 startup failed after mp0 | Mount directory didn't exist — fixed with mkdir -p  |
-| rsync Permission denied      | LXC UID mapping — www-data (UID 33) maps to UID 100033 |
-
-### n8n & Gilgamesh
-
-| Issue                                 | Resolution                                                                                                         |
-|---------------------------------------|--------------------------------------------------------------------------------------------------------------------|
-| n8n Data Tables schema caching bug    | Delete and recreate the table entirely                                                                             |
-| Claude API 404 model not found        | Use exact model ID: `claude-haiku-4-5-20251001`                                                                    |
-| Web search partial response capture   | Add Extract Response Code node, filter by `type === "text"`                                                        |
-| Expression scoping issues             | Use Code node with `this.helpers.httpRequest`, reference `$json`                                                   |
-| NFS fails for LXC backups             | UID namespace mapping (100000-165536); use SMB instead                                                             |
-| pfSense rule not working              | Place new rules BEFORE RFC1918 block rules                                                                         |
-| n8n GitHub credential 401             | User field (`muzakkir97`) must be populated                                                                        |
-| Telegram single webhook constraint    | All update types (message + callback) must use one trigger                                                         |
-| Answer Callback node loses data       | Bypass it; handle callback acknowledgment separately                                                               |
-| Da Vinci grounding bug                | Use direct node references; increase max_tokens to 32000                                                           |
-| Open WebUI JSON parse error           | Add `proxy_buffering off` to NPM advanced config for streaming                                                     |
-| input.first()/input.last() unreliable | After Merge node, use direct node references like `$('Extract Response').first().json`                             |
-| Ollama tokens always 0                | Call Ollama node already maps prompt_eval_count → input_tokens — read data.input_tokens not data.prompt_eval_count |
-| Loki not being scraped                | Add scrape job to Prometheus config for CT 204                                                                     |
-| Pulse deployment needs websockets     | Enable Websockets Support in NPM for real-time dashboard updates                                                   |
-| Pulse agent tokens are one-time       | Generate new token per host — tokens cannot be reused                                                              |
-| Cloudflare Access blocks apps         | Apps needing persistent connections (ntfy, websockets) should use native auth not Cloudflare Access                |
-| Deck API assignLabel                  | PUT /assignLabel (no label ID in URL), body {"labelId": X}                                                         |
-| Deck API card update                  | requires owner field or returns 400; omitting description wipes it                                                |
-| Deck API headers                      | OCS-APIRequest and Accept headers required on all calls                                                            |
-| Nextcloud API auth                    | app password required, regular password returns "not logged in"                                                    |
-| Internal URL bypasses Cloudflare     | http://192.168.30.220 (port 80 only, no SSL)                                                                      |
-| Loop Over Items done output spam      | "done" output emits ALL processed items, not summary — add Limit node before notifications                        |
-| PROPFIND not in n8n HTTP Request     | Use Code node with this.helpers.httpRequest() instead                                                              |
-| Information Extractor JSON parsing    | Graceful error handling with Continue on Error, null checks in Add Timestamps                                      |
-| RAG empty results                     | Payload field is "content" not "text/pageContent" — check Qdrant schema                                            |
-| search_document/query prefixes        | Remove prefixes — incompatible with chunked content retrieval                                                      |
-| Da Vinci pipeline call chain         | Inbox Watcher → Execute Workflow → Update Pipeline. Documentation Pipeline is orphaned. Always trace trigger → execution chain before debugging node code. |
-| Da Vinci Update Pipeline sessionSummary bug | qwen3.5 Merge was reading $input.first().json.fileContent but Fetch GitHub Files outputs sessionSummary. Property name must match exactly. |
-| Da Vinci max_tokens                   | 32000 required for three complete document outputs. 16000 causes truncation — qwen3.5 hits limit before completing all three sections. |
-| Cost tracking for Update Pipeline    | pass response.usage?.input_tokens and response.usage?.output_tokens through qwen3.5 Merge return statement. Log Cost node references $('qwen3.5 Merge').first().json.input_tokens and output_tokens. |
-| Da Vinci Inbox Watcher concurrency issue | If local LLM takes longer than watcher interval, multiple pipeline instances fire on same file. Fix: increase schedule interval to 15 minutes + add API-based concurrency lock before List Inbox node. |
-| n8n concurrency check                 | GET /api/v1/executions?status=running&workflowId={id} with X-N8N-API-KEY header. Returns running executions — if count > 0, skip current cycle. |
-
-### HashiCorp Vault (Phase 13)
-
-| Issue                            | Resolution                                                     |
-|----------------------------------|----------------------------------------------------------------|
-| apt fails in new LXC             | Run `echo "nameserver 192.168.30.10" > /etc/resolv.conf` first |
-| HashiCorp repo setup fails       | Install `lsb-release` before adding repo                       |
-| Wrong repo architecture/codename | Hardcode `amd64` and `bookworm` in repo entry                  |
-| Vault fails to start in LXC      | Add `disable_mlock = true` to vault.hcl                        |
-| Token auth issues in shell       | Use `vault login <token>` not `export VAULT_TOKEN=`            |
-| Vault sealed after reboot        | `pct exec 213 -- vault operator unseal`                        |
-| Cloudflare token truncated       | kv/cloudflare only stores 7 chars — re-store full token        |
-
-### Obsidian & Knowledge Management
-
-| Issue                       | Resolution                                                         |
-|-----------------------------|--------------------------------------------------------------------|
-| Nextcloud quota exceeded    | Resize CT 220 from 20GB to 100GB with `pct resize 220 rootfs +80G` |
-| Dataview queries no results | Queries must target folder with individual notes, not same file    |
-
-### Cloudflare Access & Security
-
-| Issue                         | Resolution                                                      |
-|-------------------------------|-----------------------------------------------------------------|
-| Bitwarden HTTP 525 from phone | Cloudflare Access blocking API — bypass /api/, /identity/ paths |
-| n8n Access OTP not triggering | Cached session — test in incognito mode                         |
-
-### Ollama & GPU
-
-| Issue                                   | Resolution                                                              |
-|-----------------------------------------|-------------------------------------------------------------------------|
-| ROCm full SDK ran out of disk space     | Use minimal runtime only; extend LVM with `lvextend -l +100%FREE`       |
-| amdgpu still bound after blacklist      | Add `softdep amdgpu pre: vfio-pci` to vfio.conf, rebuild initramfs      |
-| Ollama running on CPU not GPU           | Add `HSA_OVERRIDE_GFX_VERSION=10.3.0` and render/video group membership |
-| Open WebUI no models available          | Set `OLLAMA_HOST=0.0.0.0`; point container to 172.17.0.1:11434          |
-| SSH to VM 400 permission denied as root | Use `muzakkir` user with sudo — root SSH is disabled                    |
-
-### Monitoring & Alerts
-
-| Issue                      | Resolution                                             |
-|----------------------------|--------------------------------------------------------|
-| High memory alerts at 80%  | Raise threshold to 85% (Windrose baseline ~9GB RAM)    |
-| Prometheus HighMemoryUsage | Updated rule from 80% to 85% in alerting configuration |
-| Proxmox unreachable alerts | node exporter missing after reinstall — installed prometheus-node-exporter |
-
-### n8n Community Nodes
-
-| Issue                           | Resolution                                                      |
-|---------------------------------|-----------------------------------------------------------------|
-| Dockerfile npm install breaks   | n8n uses pnpm catalog — use Settings → Community Nodes UI only  |
-| chat_id undefined on callbacks  | Use callback_query?.message?.chat?.id \|\| message?.chat?.id     |
-| Inline keyboard not showing     | Use HTTP Request node, not Telegram node for reply_markup       |
-
-### Health Tracking & Obsidian Integration
-
-| Issue                                   | Resolution                                                    |
-|-----------------------------------------|---------------------------------------------------------------|
-| [object Object] in Obsidian            | Fetch Daily Note Response Format must be Text, use .data field |
-| UTC time in health logs                 | Add 8 * 60 * 60 * 1000ms offset for MYT timezone              |
-| Duplicate appendText declaration        | Replace entire Code node with clean version                    |
-| Fetch Daily Note URL not resolving     | Must use {{ }} expression wrapper in WebDAV URL               |
-| JSON body invalid in health summary     | Switch to Using Fields Below mode in HTTP Request              |
-
-### Pulse Dashboard Deployment
-
-| Issue                              | Resolution                                                                   |
-|------------------------------------|------------------------------------------------------------------------------|
-| Pulse crash loop on CT 208         | No space left on device — resized container from 4GB to 8GB                  |
-| Pulse agent 401 on CT 302          | Token already consumed by Kuromoon — generated new token from Pulse UI       |
-| Pulse "Connection lost" through NPM | Websockets Support not enabled — toggled on in NPM proxy host                |
-
-### Langfuse Deployment
-
-| Issue                               | Resolution                                                                   |
-|-------------------------------------|------------------------------------------------------------------------------|
-| Langfuse auth redirect to localhost:3000 after signup | NEXTAUTH_URL was set to http://localhost:3000. Fix: change to https://langfuse.najhin-gaming.com in docker-compose.yml, docker compose down && up -d. |
-
-### Qdrant & RAG
-
-| Issue                               | Resolution                                                                   |
-|-------------------------------------|------------------------------------------------------------------------------|
-| PROPFIND not available in n8n HTTP Request | Use Code node with this.helpers.httpRequest() for WebDAV operations |
-| 401 on Nextcloud WebDAV            | Create Nextcloud app password, store in Vaultwarden                         |
-| Information Extractor JSON parsing failure | Set On Error to Continue, handle null gracefully in Add Timestamps |
-| RAG returning empty results         | Payload field was "content" not "text/pageContent" — check Qdrant collection schema |
-| search_document/query prefixes      | Removed both — incompatible with chunked content retrieval                  |
-| crypto.randomUUID() unavailable     | Used Date.now() * 100 + i for Qdrant point IDs                             |
-| Qdrant 400 on insert               | Point IDs must be UUID or unsigned integer                                  |
-| /update messages in history         | Filter with !startsWith('/update') to prevent command pollution             |
-
-### Pelican Panel Migration
-
-| Issue                               | Resolution                                                                   |
-|-------------------------------------|------------------------------------------------------------------------------|
-| CT create with local-lvm failed     | Use local-zfs storage instead (updated after hardware migration)            |
-| Sury PHP repo 418 error             | Add sury repo manually via apt.gpg key                                      |
-| Wings binary wrong architecture     | Use pelican-dev/wings, not pterodactyl/wings — different config paths       |
-| Wings token typo from screenshot    | Use Auto Deploy Command instead of manual token entry                       |
-| Egg import 500 error                | chown -R www-data on storage/framework/cache for write permissions          |
-| Queue worker not processing jobs    | Pelican uses 'default' queue, not 'high,standard,low'                       |
-| Double APP_INSTALLED in .env        | Use grep -v to remove duplicates before appending                           |
-
----
-
-## ❓ Pending Tasks
-
-### Immediate
-
-| Task                                                                                        | Priority |
-|---------------------------------------------------------------------------------------------|----------|
-| Wire Langfuse into Gilgamesh, Da Vinci, Midas, MERLIN workflows                            | High     |
-| Store Langfuse API keys (public + secret) in Vaultwarden                                   | High     |
-| Add Uptime Kuma monitor for Langfuse (http://192.168.30.223:3000/api/public/health)        | High     |
-| Monitor API credit burn rate over next few days to confirm under $10/month target          | High     |
-| Add Uptime Kuma monitor for Qdrant (port 6333)                                             | High     |
-| Update morning briefing container count (18 → 20)                                          | High     |
-| Add NPM proxy host for Pelican panel (gaming.najhin-gaming.com or panel.najhin-gaming.com) | High     |
-| Add Uptime Kuma monitors for CT 303, CT 304, CT 305                                         | High     |
-| Update vzdump backup jobs to include CT 303, CT 304, CT 305                                 | High     |
-| Schedule backup restore test (CT 207 recommended), update lastTestDate in MERLIN            | High     |
-| Fix Cloudflare API token in Vault (get full token from dashboard, re-store)                 | High     |
-| Activate MERLIN workflow (toggle on)                                                        | High     |
-| Monitor vzdump backup run tonight at 02:00 — verify in Proxmox backup log                   | High     |
-| Monitor nextcloud rsync run tonight at 03:00 — check /var/log/nextcloud-backup.log          | High     |
-| Replace Kinmoon NAS drive (~RM 400-500)                                                     | High     |
-| Monitor Windrose RAM usage — stop Docker container when not playing                         | High     |
-| Update subscription costs in Obsidian when known (YouTube Premium, Cloudflare Domain, TIME) | Medium   |
-| Fix /update Telegram message too long (shorten Da Vinci notification)                       | Medium   |
-
-### Infrastructure
-
-| Task                                                                         | Priority |
-|------------------------------------------------------------------------------|----------|
-| Migrate mc.najhin-gaming.com DNS/port forward from old CT 302 IP to CT 303 IP | High   |
-| Migrate terraria.najhin-gaming.com DNS/port forward to CT 304 IP             | High     |
-| Install Calamity mods on CT 304 (currently fresh tModLoader)                 | Medium   |
-| Fix morning briefing 0/0 container count (wrong node name in Proxmox API call) | Medium |
-| Remove Samsung 750 EVO after 1 week of stability (around May 22)             | Medium   |
-| Address local-zfs thin pool overprovisioning (during infrastructure cleanup) | Medium   |
-| Fix container-Inventory.md 404 (delete and re-upload with lowercase name)    | Medium   |
-| Fix Information Extractor backtick JSON parsing properly                     | Medium   |
-| Begin Phase 24.2 (Alert Translation) next session                           | High     |
-| Create muzakkir97/homelab-private repo                                       | Medium   |
-| Set up Backblaze B2 account                                                  | Medium   |
-| Phase 27 (Vault + n8n) enables n8n to fetch secrets directly                 | Medium   |
-| Consider moving VM 400 boot disk to ssd-storage                             | Medium   |
-| Clean up temp backups (saves 6.9GB local storage) - optional                 | Low      |
-| Add sdb monitoring to MERLIN daily checks                                    | Medium   |
-| Improve NAS airflow — sda at 60°C is near thermal limit for HDDs            | Medium   |
-
-### Gilgamesh & Documentation
-
-| Task                                                                                            | Priority |
-|-------------------------------------------------------------------------------------------------|----------|
-| Build Monthly Infrastructure Audit cron workflow (assign new phase number — NOT 16.3)           | High     |
-| Build Guardian security monitoring agent (after Phase 24.8)                                     | High     |
-| Review and finalize ROADMAP-v2-draft.md                                                        | High     |
-| Confirm Lepulse → Fitdays → Samsung Health sync works on phone                                  | Medium   |
-| /update redesign — file attachment via Telegram, push to GitHub + Nextcloud                     | Medium   |
-| Homepage embedded Gilgamesh chat UI (web frontend, shared memory with Telegram)                 | Medium   |
-| Integrate Vault secrets into n8n Gilgamesh workflow (Phase 27)                                  | Medium   |
-| Create Anthropic Admin API key for Midas cost tracking (future session)                         | Medium   |
-| Wire Midas → Firefly III API (Phase 24.2, future session)                                       | Medium   |
-| Add Qdrant conversation search to Format Messages (for "what did we discuss?" queries)          | Medium   |
-| Investigate assistant messages saving as Null in gilgamesh_conversations                        | Medium   |
-| Increase Top K or tune RAG for broad queries                                                    | Medium   |
-| Update AI-CONTEXT.md, current-state.md, service-catalog.md                                      | Medium   |
-
-### Infrastructure (Network & Services)
-
-| Task                                                               | Priority |
-|--------------------------------------------------------------------|----------|
-| Migrate Alertmanager alerts through n8n (central notification hub) | Medium   |
-| Switch management IP (192.168.1.20 → 192.168.10.20)                | Medium   |
-| Remove legacy LAN 192.168.1.0/24 (after switch migration)          | Medium   |
-| WiFi Access Point setup (EAP610 purchased)                         | Medium   |
-| Homepage security (Cloudflare Access)                              | Low      |
-| Off-site backup (Backblaze B2)                                     | Low      |
-| Nextcloud 2FA (TOTP)                                               | Low      |
-
-### Deferred
-
-| Task                                                                       | Priority |
-|----------------------------------------------------------------------------|----------|
-| Fedora dual-boot on Minimoon (kernel 6.12+ for RDNA 4)                     | Deferred |
-| Old P400S build repurpose (Z270E + i7-7700K)                               | Deferred |
-| Claude Project auto-sync — revisit if Anthropic releases Project Files API | Deferred |
-| Fix Homelab → Temps SSH bug                                                | Deferred |
-| DOCP RAM optimization for 128GB kit                                         | Deferred |
-
----
-
-## 📝 Session Log (Recent)
-
-### May 18, 2026 — qwen3.5 Test + Concurrency Fix
-
-Date: May 18, 2026
-Phase: qwen3.5 Test + Concurrency Fix
-
-Topics Discussed
-- Tested qwen3.5:latest (6.6GB, 256K context) for Da Vinci documentation pipeline
-- Identified concurrent execution issue — inbox watcher firing every 5 minutes while qwen3.5 takes longer
-- Three concurrent Update Pipeline executions detected, all stopped manually
-- Implemented two concurrency fixes
-
-Decisions Made
-- Da Vinci — Inbox Watcher schedule changed from every 1 minute to every 15 minutes
-- Concurrency lock added — Check Running node queries n8n API before proceeding
-- If Update Pipeline already running, inbox watcher skips that cycle via If node
-- qwen3.5:latest selected as primary model for Da Vinci pipeline (free, local, 256K context)
-- Workflow order: Schedule Trigger → Check Running → If → List Inbox → rest of pipeline
-
-Changes to AI-CONTEXT.md
-- Da Vinci Technical Notes: Inbox Watcher now runs every 15 minutes (was every 1 minute)
-- Da Vinci Technical Notes: Concurrency lock added — Check Running node checks n8n API for active Update Pipeline executions before proceeding
-- Da Vinci Technical Notes: Claude API Merge node switched to qwen3.5:latest via Ollama (http://192.168.30.221:11434/api/chat), num_ctx 65536, temperature 0.3
-- Da Vinci Technical Notes: Cost logging updated — qwen3.5 cost_usd always 0 (local inference), model logged as qwen3.5:latest
-- Key Lessons: Added — "Da Vinci Inbox Watcher concurrency issue: if local LLM takes longer than watcher interval, multiple pipeline instances fire on same file. Fix: increase schedule interval + add API-based concurrency lock before List Inbox node."
-- Key Lessons: Added — "n8n concurrency check: GET /api/v1/executions?status=running&workflowId={id} with X-N8N-API-KEY header. Returns running executions — if count > 0, skip current cycle."
-- Pending Tasks: Marked complete — "Test qwen3.5 for Da Vinci documentation pipeline"
-- Pending Tasks: Marked complete — "Fix inbox watcher concurrency issue"
-
-Errors & Resolutions
-- Da Vinci concurrent executions: Three Update Pipeline instances ran simultaneously because qwen3.5 local inference exceeded 1-minute watcher interval. File not yet archived when next watcher fired, triggering duplicate runs. Resolution: schedule changed to 15 minutes + concurrency lock node added.
-
-Action Items
-- [ ] Validate this test file processed correctly by qwen3.5 — check GitHub for proper document updates
-- [ ] If qwen3.5 output quality confirmed — update Gilgamesh routing from qwen3:14b to qwen3.5:latest
-- [ ] Add validation guard to Parse Response node (reject placeholder outputs before GitHub push)
-- [ ] Wire Langfuse into all agent workflows
-
-### December 19, 2024 — Documentation Pipeline Test
-
-Date: December 19, 2024
-Phase: Documentation Pipeline Test
-
-Topics Discussed
-- Tested documentation pipeline integration via Telegram /update command
-- Verified end-to-end workflow functionality from Telegram → n8n → Claude → GitHub
-- Documentation merging process confirmed operational
-
-Decisions Made
-- No infrastructure changes made during this verification session
-- Pipeline ready for regular use in future sessions
-
-Changes to AI-CONTEXT.md
-- None - session was pipeline verification only
-
-Errors & Resolutions
-- None - testing session only
-
-Action Items
-- No follow-up actions required from this test
-- Pipeline confirmed working correctly
-
-### May 16, 2026 — LLM Routing + Workflow Cleanup + Brainstorming Sessions
-
-Date: May 16, 2026
-Phase: Multiple (LLM Routing + Workflow Cleanup + Brainstorming Sessions)
-
-Topics Discussed
-- Game server audit and migration from Pterodactyl to Pelican panel
-- Creation of CT 303 (Minecraft), CT 304 (Terraria), CT 305 (Pelican panel)
-- Pelican Wings deployment on CT 303 and CT 304
-- Minecraft 1.21.4 Paper and Terraria tModLoader migration
-- pfSense NAT rules updated for new container IPs
-- NPM proxy + Cloudflare Access for panel.najhin-gaming.com
-- Gilgamesh routing simplified to Ollama primary, Haiku fallback
-- Claude API reserved for Da Vinci documentation pipeline
-- Workflow renaming completed
-- Phase 7E redesigned with hybrid semantic + episodic memory system
-- Agent roster updates: Guardian → Cu Chulainn, Scathach added
-- agents.md created and deployed
-
-Decisions Made
-- Pelican replaces Pterodactyl as game server panel
-- CT 302 downsized to Windrose only (10GB RAM / 2 cores)
-- CT 303: Minecraft server (6GB RAM / 2 cores / 192.168.30.215:25570)
-- CT 304: Terraria server (12GB RAM / 2 cores / 192.168.30.216:7777)
-- CT 305: Pelican panel (2GB RAM / 2 cores / 192.168.30.217)
-- Gilgamesh routing: Ollama primary, Haiku fallback only
-- Da Vinci: Keep Claude Sonnet for documentation merging
-- Phase 7E redesign: user_profile Data Table (semantic) + gilgamesh_conversations Qdrant (episodic)
-- Scathach ⚔️: Career Growth agent, build order 1st
-- Cu Chulainn ⚡: Security monitoring, build order 2nd (replaces Guardian)
-- agents.md created at docs/agents.md
-
-Changes to AI-CONTEXT.md
-- Infrastructure: Remove CT 300, add CT 303, CT 304, CT 305
-- Storage: local-lvm → local-zfs (ZFS pool, NVMe)
-- Total containers: 20 LXC + 1 VM
-- Gaming servers: Minecraft at .215:25570, Terraria at .216:7777, Windrose at .212:15777
-- Services: panel.najhin-gaming.com (Cloudflare Access + Email OTP)
-- Gilgamesh routing: Ollama primary, Haiku fallback only
-- Da Vinci: Claude Sonnet for documentation only
-- Workflow names updated in n8n Workflows table
-- Agent roster: Guardian → Cu Chulainn ⚡, Scathach ⚔️ added
-- Proxmox API token: root@pam!gilgamesh (recreated May 16, 2026)
-- Phase 7E description updated to hybrid memory system
-- Key Lessons: Pelican queue uses 'default' not 'high,standard,low'; Wings binary is pelican-dev/wings; Auto Deploy Command more reliable than manual config
-
-Errors & Resolutions
-- local-lvm not found: use local-zfs after hardware migration
-- Pelican Wings config: pelican-dev/wings uses /etc/pelican/ not /etc/pterodactyl/
-- Wings token typo: use Auto Deploy Command instead of manual copy
-- Queue worker not processing: jobs on 'default' queue
-- Morning briefing 0/0: Proxmox API token was deleted — recreated
-
-Action Items
-- [ ] Store new root@pam!gilgamesh token in Vaultwarden
-- [ ] Build Phase 7E Memory System (Memory Processor workflow + user_profile Data Table)
-- [ ] Create personal-context.md, upload to all Claude projects
-- [ ] Design Scathach phase (separate session)
-- [ ] Update ROADMAP.md + AI-CONTEXT.md (Phase 7E, Scathach, Cu Chulainn)
-- [ ] Push agents.md to GitHub (sanitized)
-- [ ] Begin Phase 24.2 (Alert Translation) next session
-
----
-
-*Last updated: May 18, 2026 — Update this file at the end of each session before pushing to GitHub*
+## 
