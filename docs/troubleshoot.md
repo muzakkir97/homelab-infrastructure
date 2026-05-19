@@ -4,6 +4,27 @@
 
 ---
 
+## 2026-05-20 — CT 207 Promtail Crash Loop and CT 304 tModLoader CPU Leak
+
+**Symptoms:** CRITICAL CPU alert on 192.168.30.207:9100 (CT 207 network-ddns). Promtail restart counter at 53,649 over 3+ days indicating continuous crash loop. CT 304 (terraria-server) sustained 97% CPU with no players connected.
+
+**Root Cause:** Two separate issues:
+1. CT 207 Promtail: Installation guide shell commands were accidentally pasted into /etc/promtail/promtail.yml starting at line 31 after initial config. YAML parser failed on every startup, causing crash loop every ~5 seconds for 3+ days. Additionally, Promtail config pointed to wrong Loki IP: 192.168.20.13 (VLAN 20 client devices) instead of 192.168.30.204 (CT 204, VLAN 30 services).
+2. CT 304 tModLoader: Known CPU ramp-up behavior when running headless with heavy mods. Process idles high and gradually consumes more CPU over hours until restarted. Pterodactyl panel had Docker-level CPU limits enforced; Pelican migration did not carry over CPU limit setting.
+
+**Resolution:**
+1. Entered CT 207 via `pct enter 207` and overwrote entire /etc/promtail/promtail.yml using `python3 -c "open('/etc/promtail/promtail.yml', 'w').write(...)"` to avoid heredoc paste issues
+2. Corrected Loki push URL in Promtail config from http://192.168.20.13:3100/loki/api/v1/push to http://192.168.30.204:3100/loki/api/v1/push
+3. Re-enabled Promtail: `systemctl enable promtail && systemctl start promtail`
+4. Set Proxmox cpulimit on CT 304 via `pct set 304 --cpulimit 1.5` (1.5 cores hard ceiling at hypervisor level)
+5. Added daily 4am cron job on Proxmox host to restart tModLoader process: `0 4 * * * pct exec 304 -- bash -c "kill $(pgrep -f tModLoader)" 2>/dev/null`
+
+**Verification:** After fixes, no alerts for 4+ hours. Promtail logs flowing to Loki. CT 304 CPU baseline dropped from 97% sustained to normal idle levels between restarts.
+
+**Lesson:** Installation instructions pasted directly into YAML config files corrupt the config completely — always use isolated config management tools (python -c, echo, proper file editors) rather than heredoc when copy-pasting. node_exporter in LXC containers reads host /proc/stat, not container CPU — alerts on host metrics will reflect host-level CPU, not container usage. Verify correct service IPs when configuring network targets (Loki on VLAN 30, not VLAN 20). Headless applications with heavy resource usage need hard limits at hypervisor level since application-level resource management may not work in all scenarios. CPU limits in Pelican panel should match Proxmox hypervisor limits for consistency.
+
+---
+
 ## 2026-05-19 — Da Vinci Update Pipeline Error Loop and Cost Logging Failure
 
 **Symptoms:** Da Vinci Update Pipeline executing repeatedly every 15 minutes overnight (May 18-19), consuming Claude API tokens on each cycle despite failing validation. Error loop continued until manual intervention. Cost logging node never executed despite pipeline running multiple times.
