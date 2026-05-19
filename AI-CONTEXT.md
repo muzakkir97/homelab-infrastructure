@@ -461,7 +461,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Knowledge Indexer runs at 3am daily (full re-index v1)
 - **Concurrency lock:** Check Running node queries n8n API before proceeding
 - **Schedule:** Inbox Watcher runs every 15 minutes (was 1 minute)
-- **Model:** qwen3.5:latest (local, 256K context, 65536 num_ctx, temperature 0.3)
+- **Model:**claude-haiku-4-5-20251001 (3 separate API calls, one per file)
 
 ### Nextcloud Deck Integration
 
@@ -634,14 +634,14 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - command_type derived from Telegram message text directly
 - **Da Vinci:** qwen3.5:latest (local, $0 cost), cost_usd always 0
 
-### n8n Workflows (Count: 16)
+### n8n Workflows (Count: 14)
 
 | Workflow                           | Purpose                                  | Nodes | Trigger  |
 |------------------------------------|------------------------------------------|-------|----------|
 | Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory | 18+ | Telegram |
 | Documentation Pipeline — Update    | Session summary → 3 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
-| Da Vinci — Update Pipeline         | GitHub fetch → qwen3.5 merge → GitHub push + Nextcloud | 12+ | Execute Workflow |
+| Da Vinci — Update Pipeline         | GitHub fetch → 3 separate Haiku API calls (AI-CONTEXT, changelog, troubleshoot) → GitHub push + Nextcloud | 12+ | Execute Workflow |
 | Da Vinci — Inbox Watcher           | Staging inbox → calls Update Pipeline    | 6     | Schedule |
 | Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily)   | 8     | Schedule |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
