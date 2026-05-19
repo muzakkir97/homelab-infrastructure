@@ -4,6 +4,49 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [May 19, 2026] - Da Vinci Update Pipeline Rebuild: 3-Call Architecture (COMPLETE)
+
+#### Added
+- **Phase 16.3 completion:** Da Vinci Documentation Pipeline redesigned with 3 separate API calls and immediate cost logging
+- **Root cause analysis:** Identified staging inbox stuck file causing error loop + truncation at 32000 max_tokens limit
+
+#### Changed
+- **Da Vinci Update Pipeline** — Rebuilt from single batched call to 3 separate claude-haiku-4-5-20251001 API calls (AI-CONTEXT 16k tokens, changelog 4k, troubleshoot 4k)
+- **Architecture:** Sequential calls with individual cost logging nodes positioned immediately after each HTTP Request (before Parse Response and GitHub Push)
+- **Pipeline flow:** Execute Workflow → Call 1 (AI-CONTEXT) + Log Cost → Call 2 (changelog) + Log Cost → Call 3 (troubleshoot) + Log Cost → Parse/Push
+- **Token budgeting:** Separated max_tokens across three files (16000 + 4000 + 4000) instead of single 32000 limit to prevent truncation
+- **Haiku pricing corrected:** input_tokens $0.80/1M, output_tokens $4.00/1M (previous entries used wrong Haiku 3 rates of $0.25/$1.25 — all pre-May-19 cost_usd values understated ~3x)
+
+#### Fixed
+- **Da Vinci staging inbox stuck file** — Session summary file failed validation repeatedly, triggering Pipeline every 15 minutes, consuming tokens but failing at Parse Response (truncated output). Deleted problematic file from staging-inbox
+- **Cost logging placement** — Moved from end-of-chain (never executed after parse failure) to immediately after each API call + Update Table node so costs fire even on downstream errors
+- **Log Cost — troubleshoot missing** — Claude API — troubleshoot was connected directly to Update Table2, bypassing cost logging. Added intermediate Log Cost node for proper data formatting
+- **Send Confirmation syntax error** — Broken template literal (backtick closed early). Rewritten as plain string concatenation with \n
+- **Error loop root cause** — Combination of stuck file + token limit exceeded + cost logging unreachable created compounding pipeline failures overnight (May 18-19)
+
+#### Technical
+- **Expected cost per run:** ~$0.03-0.05 per complete 3-file pipeline execution (3× Haiku calls at corrected pricing)
+- **Cost logging verification:** Three separate cost rows now fire per pipeline execution — one immediately after each HTTP Request completes
+- **Immediate cost tracking:** Log Cost node executes right after HTTP Request, before downstream nodes (ensures capture even if Parse/Push fails)
+- **Historical cost correction needed:** gilgamesh_costs table pre-May-19 Haiku entries should be multiplied by ~3x due to pricing error
+
+#### Verification
+- End-to-end pipeline test passed with new 3-call architecture
+- Cost logging confirmed firing immediately after each Claude API request
+- GitHub document updates validated
+- Pricing values verified against Anthropic console
+
+#### Milestone
+- **Phase 16.3 (Da Vinci Documentation Pipeline):** ✅ COMPLETE — 3-call Haiku architecture with immediate cost logging deployed and verified
+
+#### Action Items
+- [ ] Observe gilgamesh_costs table for 24 hours — confirm 3 new rows per pipeline run, total cost under $0.15/run
+- [ ] Monitor Anthropic console daily spend — confirm under $5/day target
+- [ ] Fix historical cost entries in gilgamesh_costs (multiply pre-May-19 Haiku entries by ~3x due to pricing error)
+- [ ] Begin Phase 24.2 (Alert Translation — Alertmanager → ntfy) next session
+
+---
+
 ### [May 19, 2026] - Da Vinci Update Pipeline Rebuild: 3-Call Architecture
 
 #### Changed
@@ -222,76 +265,4 @@ All notable changes to the homelab infrastructure project.
 
 #### Infrastructure
 - **CT 220 storage expansion:** Root disk 20GB → 100GB via `pct resize 220 rootfs +80G`
-- **Thin pool overprovisioning:** Warning identified on local-lvm storage (deferred to infrastructure cleanup)
-
-#### Planned
-- **Phase 24.1:** Service Update Manager (Docker + apt + Proxmox updates with Telegram approval)
-- **Data migration:** Move Nextcloud data directory to /mnt/data-storage (7.3TB HDD) in future phase
-
-#### Action Items
-- Add remaining subscriptions to Obsidian vault
-- Fix Total by Category query (backtick parsing issue)
-- Update Nextcloud to version 33.0.2
-- Begin Phase 38 (Ollama + ROCm) next session
-
----
-
-### [April 24, 2026] - Phase 15: Gilgamesh Additional Slash Commands (COMPLETE)
-
-#### Completed
-- **Phase 15:** Gilgamesh Additional Slash Commands deployed and tested
-
-#### Added
-- **6 new slash commands:** /help, /clear, /memory, /cost, /alerts, /backup
-- **Command documentation:** Complete reference guide for all Gilgamesh commands
-- **Memory management:** /clear command to reset conversation history
-- **Cost tracking display:** /cost command shows token usage and estimated costs
-- **Alert monitoring:** /alerts command displays active Alertmanager alerts
-- **Backup status:** /backup command shows last backup times for all containers
-
-#### Technical
-- **Always Output Data enabled:** Get Alerts and Clear Memory DB nodes handle empty responses
-- **Cost calculation:** Uses estimated token rates (Sonnet $3/$15 per 1M) due to cost_usd bug
-- **Error handling:** Added proper array checks and chat ID references
-- **Workflow optimization:** Removed redundant /temps and /storage commands (available in menu)
-
-#### Fixed
-- Clear Memory DB "at least one condition required": Added role not empty condition
-- Send Clear Confirmation wrong chat_id: Use $('Get Chat ID').first().json.chat_id pattern
-- Format Cost SyntaxError: Removed toLocaleString() and emojis from Code node
-- Get Alerts/Format Alerts undefined handling: Added Array.isArray() checks
-
-#### Known Issues
-- **cost_usd column bug:** gilgamesh_costs.cost_usd always returns 0 (pre-existing from earlier phases)
-- **Cost estimation:** Using token count approximation until Save Cost node investigation
-
-#### Scope Changes
-- **/logs command deferred:** Not practical without proper filtering, saved for future menu action
-- **Command consolidation:** /temps and /storage removed (redundant with existing menu system)
-
----
-
-### [April 24, 2026] - Phase 7D-Menu + Phase 14: Complete Gilgamesh Menu System
-
-#### Completed
-- **Phase 7D-Menu:** Complete inline keyboard menu system for Gilgamesh bot
-- **Phase 14:** Secrets Management & Integration phase finalized
-
-#### Added
-- **Homelab → Metrics:** Real-time Proxmox system metrics (CPU, RAM, storage usage)
-- **Homelab → Temps:** Live temperature monitoring via SSH to Kuromoon (lm-sensors)
-- **Homelab → Storage:** Complete storage overview with usage percentages
-- **Gaming submenu:** Direct Docker container status from CT 302
-- **Gilgamesh info:** Bot capabilities and feature overview
-- **Tools submenu:** Quick access links to all services
-- **Help menu:** Complete command reference and usage guide
-
-#### Technical
-- **SSH access configured:** CT 211 → Kuromoon (pfSense rule TCP 22 added)
-- **Container SSH enabled:** CT 302 root access with PermitRootLogin yes
-- **Progress bars:** ASCII characters (= and -) for mobile compatibility
-- **Storage fix:** kinmoon-nfs identified as correct Proxmox storage ID
-- **Credentials added:** SSH Password account (Kuromoon), SSH CT302 Wings
-
-#### Fixed
--
+- **Thin
