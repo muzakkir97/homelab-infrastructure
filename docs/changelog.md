@@ -4,6 +4,37 @@ All notable changes to the homelab infrastructure project.
 
 ---
 
+### [May 20, 2026] - Infrastructure Troubleshooting: CT 207 Promtail + CT 304 tModLoader CPU
+
+#### Added
+- **Key Lessons Learned table** documenting Promtail crash loop root cause analysis and tModLoader CPU leak resolution
+- **Proxmox host crontab entry** for daily 4am tModLoader process restart on CT 304
+
+#### Fixed
+- **CT 207 CRITICAL CPU alert** — Root cause: Promtail crash loop (53,649 restarts over 3+ days) caused by shell installation commands accidentally pasted into promtail.yml at line 31 onwards
+- **Promtail YAML corruption** — Overwritten entire config cleanly using `pct enter 207` + `python3 -c "open(...).write(...)"` to avoid heredoc paste failures
+- **Wrong Loki URL in Promtail** — Changed from 192.168.20.13 (VLAN 20, client devices) to 192.168.30.204 (CT 204, VLAN 30 services) with correct endpoint http://192.168.30.204:3100/loki/api/v1/push
+- **CT 304 tModLoader CPU leak** — tModLoader idles high and ramps CPU over hours with heavy mods. Fixed with Proxmox cpulimit 1.5 (1.5 cores hard ceiling) + daily 4am cron process kill
+- **Promtail service restart** — Re-enabled with `systemctl enable promtail && systemctl start promtail`
+
+#### Technical
+- **Alert clarification:** node_exporter in LXC reads host /proc/stat, not container CPU — 192.168.30.207:9100 alert reflects Proxmox host CPU, not CT 207 specific
+- **Promtail config fix method:** `pct enter 207` → `python3 -c "open('/etc/promtail/promtail.yml').write(...)"` avoids heredoc mangling on paste
+- **tModLoader restart:** `0 4 * * * pct exec 304 -- bash -c "kill \$(pgrep -f tModLoader)" 2>/dev/null` added to Proxmox host crontab
+- **CPU limit enforcement:** Pterodactyl vs Pelican difference — Pterodactyl enforced Docker-level CPU limits via panel config; Pelican migration did not carry over. Fixed at Proxmox hypervisor level (pct set 304 --cpulimit 1.5)
+
+#### Verification
+- End-to-end Promtail config validation after fix (no crashes for 4+ hours)
+- CT 304 CPU monitored after cpulimit application — sustained under 1.5 cores
+- CRITICAL CPU alert on 192.168.30.207:9100 cleared after Promtail config fix
+
+#### Action Items
+- [ ] Set CPU limit in Pelican panel for CT 304 (Terraria): 150% (matches Proxmox cpulimit 1.5)
+- [ ] Set CPU limit in Pelican panel for CT 303 (Minecraft): establish reasonable value before CPU leak occurs
+- [ ] Future: Relabel Alertmanager alert for 192.168.30.207:9100 to indicate host-level CPU metric (Phase 24.2 Alert Translation)
+
+---
+
 ### [May 19, 2026] - Da Vinci Update Pipeline Rebuild: 3-Call Architecture (COMPLETE)
 
 #### Added
@@ -265,4 +296,3 @@ All notable changes to the homelab infrastructure project.
 
 #### Infrastructure
 - **CT 220 storage expansion:** Root disk 20GB → 100GB via `pct resize 220 rootfs +80G`
-- **Thin
