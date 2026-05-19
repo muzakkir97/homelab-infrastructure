@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Update Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. **Concurrency protection and inbox watcher schedule finalized May 18-19, 2026.**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. **Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026.**
 
 ---
 
@@ -186,7 +186,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 > **Note:** CTID 201–305 are LXC containers. VMID 400 is a KVM virtual machine with PCIe GPU passthrough — it is NOT an LXC container.
 
 | ID  | Type | Name                    | IP             | Subdomain                     | Autostart | Status    |
-|-----|------|-------------------------|----------------|-------------------------------|-----------|-----------|
+|-----|------|-------------------------|----------------|--------------------------------|-----------|-----------|
 | 201 | LXC  | nginx-proxy-manager     | 192.168.30.201 | —                             | ✅         | ✅ Running |
 | 202 | LXC  | monitoring-prometheus   | 192.168.30.202 | —                             | ✅         | ✅ Running |
 | 203 | LXC  | monitoring-grafana      | 192.168.30.203 | grafana.najhin-gaming.com     | ✅         | ✅ Running |
@@ -411,7 +411,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 | Servant      | Class  | Role                                                                          | Platform                      | Status                     |
 |--------------|--------|-------------------------------------------------------------------------------|-------------------------------|----------------------------|
 | Gilgamesh 👑 | Archer | Life Interface & Personal AI Assistant                                        | Telegram (@JhinGilgamesh_bot) | ✅ Active                   |
-| Da Vinci 🎨  | Caster | Sync + Goals + Review (Stage 2 RAG active; Stage 1 doc pipeline active)     | n8n/Nextcloud                 | ⚡ Partial — Stage 2 active |
+| Da Vinci 🎨  | Caster | Sync + Goals + Review (Stage 2 RAG active; documentation pipeline active)   | n8n/Nextcloud                 | ✅ Active                   |
 | Midas 💰     | Caster | CFO — Cost Tracking & Optimization                                            | n8n                           | ✅ Active                   |
 | MERLIN 🔮    | Caster | Proactive Nudges & Scheduler                                                  | n8n                           | ✅ Active                   |
 
@@ -420,7 +420,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 | Servant             | Class    | Role                                          | Platform      | Build Order | Status     |
 |---------------------|----------|-----------------------------------------------|---------------|-------------|------------|
 | Gilgamesh 👑        | Archer   | Life Interface & Personal AI Assistant        | Telegram      | —           | ✅ Active   |
-| Da Vinci 🎨         | Caster   | Sync + Goals + Weekly Review + RAG           | n8n/Nextcloud | —           | ⚡ Partial  |
+| Da Vinci 🎨         | Caster   | Sync + Goals + Weekly Review + RAG           | n8n/Nextcloud | —           | ✅ Active   |
 | Midas 💰            | Caster   | CFO — Cost Tracking & Optimization            | n8n           | 1st         | ✅ Active   |
 | MERLIN 🔮           | Caster   | Proactive Nudges & Health Scheduler           | n8n           | 2nd         | ✅ Active   |
 | EMIYA 🏹            | Archer   | CTO — Infrastructure + Agent Spawning         | n8n           | 3rd         | 📋 Planned  |
@@ -454,14 +454,16 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 **Technical notes:**
 
 - Direct node references required: use `$('Extract Response').first().json.updatedDoc` instead of `$json` after Merge node
-- max_tokens set to 32000 to prevent AI-CONTEXT.md being replaced with hallucinated content
+- max_tokens: AI-CONTEXT 16000, changelog 4000, troubleshoot 4000 (prevents hallucinated content)
 - Grounding fix pending: add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
 - Deck integration complete with 6 additional nodes for kanban management
 - Da Vinci workflow includes Limit node before Notify Complete to prevent notification spam
 - Knowledge Indexer runs at 3am daily (full re-index v1)
 - **Concurrency lock:** Check Running node queries n8n API before proceeding
 - **Schedule:** Inbox Watcher runs every 15 minutes (was 1 minute)
-- **Model:**claude-haiku-4-5-20251001 (3 separate API calls, one per file)
+- **Model:** claude-haiku-4-5-20251001 (3 separate API calls, one per file: AI-CONTEXT, changelog, troubleshoot)
+- **Cost logging:** Fires immediately after each of the 3 API calls, before parse/push nodes — logs even on downstream failure
+- **Haiku pricing:** $0.80/1M input tokens, $4.00/1M output tokens
 
 ### Nextcloud Deck Integration
 
@@ -520,14 +522,14 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 
 **8 core features (Phases 24.1-24.8):**
 
-1. **App Management** — Firefly III, ntfy, Langfuse lifecycle (24.1)
-2. **Alert Translation** — Alertmanager alerts → plain English via ntfy (24.2)
-3. **Container Updates** — Docker image updates, apt upgrades (approval-gated) (24.3)
-4. **Knowledge Ingestion** — URLs → Firecrawl → triple-write pipeline (24.4)
-5. **Proactive Monitoring** — anomaly detection, trend alerts before things break (24.5)
-6. **Performance + Goal Optimization** — resource reallocation, goal tracking (24.6)
-7. **Universal Notifications** — ntfy hub for all agent communications (24.7)
-8. **Agent Spawning** — Level 3 templates, contextual agent creation (24.8)
+1. **App Management** — Firefly III, ntfy, Langfuse lifecycle (24.1) ✅ COMPLETE
+2. **Alert Translation** — Alertmanager alerts → plain English via ntfy (24.2) 📋 Planned
+3. **Container Updates** — Docker image updates, apt upgrades (approval-gated) (24.3) 📋 Planned
+4. **Knowledge Ingestion** — URLs → Firecrawl → triple-write pipeline (24.4) 📋 Planned
+5. **Proactive Monitoring** — anomaly detection, trend alerts before things break (24.5) 📋 Planned
+6. **Performance + Goal Optimization** — resource reallocation, goal tracking (24.6) 📋 Planned
+7. **Universal Notifications** — ntfy hub for all agent communications (24.7) ✅ COMPLETE
+8. **Langfuse AI Observability** — LLM performance tracking and tracing (24.8) ✅ COMPLETE
 
 **Design rule:** EMIYA proposes → Muzakkir approves → EMIYA executes. No autonomous destructive actions.
 
@@ -576,7 +578,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 - **Ollama qwen3:14b** — Primary route for simple queries (local, free, fast)
 - **Haiku 4.5** — Fallback if Ollama is down or unavailable (Gilgamesh + Da Vinci both use Haiku)
-- **Da Vinci Update Pipeline** — qwen3.5:latest for documentation merging (local, free)
+- **Da Vinci Update Pipeline** — claude-haiku-4-5-20251001 for documentation merging (3 separate calls: AI-CONTEXT, changelog, troubleshoot)
 - **RAG Retrieval** — Qdrant vector search with nomic-embed-text embeddings (768 dims)
 - **Extended Memory** — Conversation archival when history exceeds 30 rows
 - Routing logic runs in a Route Check If node before calling any model
@@ -632,7 +634,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - Ollama tokens captured: data.input_tokens + data.output_tokens from Call Ollama node response
 - Ollama queries cost $0 (local inference)
 - command_type derived from Telegram message text directly
-- **Da Vinci:** qwen3.5:latest (local, $0 cost), cost_usd always 0
+- **Da Vinci:** claude-haiku-4-5-20251001 (3 separate calls), cost logged immediately after each call
 
 ### n8n Workflows (Count: 14)
 
@@ -641,8 +643,8 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory | 18+ | Telegram |
 | Documentation Pipeline — Update    | Session summary → 3 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
-| Da Vinci — Update Pipeline         | GitHub fetch → 3 separate Haiku API calls (AI-CONTEXT, changelog, troubleshoot) → GitHub push + Nextcloud | 12+ | Execute Workflow |
-| Da Vinci — Inbox Watcher           | Staging inbox → calls Update Pipeline    | 6     | Schedule |
+| Da Vinci — Update Pipeline         | 3 separate Haiku API calls (AI-CONTEXT 16k, changelog 4k, troubleshoot 4k) → GitHub push + Nextcloud | 12+ | Execute Workflow |
+| Da Vinci — Inbox Watcher           | Staging inbox → calls Update Pipeline (every 15 min) | 6     | Schedule |
 | Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily)   | 8     | Schedule |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
 | Midas — Daily Brief                | 9am scheduled cost summary               | 4     | Schedule |
@@ -716,21 +718,28 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 ### Architecture
 
 ```
-Session Summary → /update → Da Vinci Inbox Watcher → Da Vinci Update Pipeline → Claude Haiku → AI-CONTEXT.md + changelog.md + troubleshoot.md
-                                                                                       ↓
-                                                                            Nextcloud + GitHub + Deck
+Session Summary → /update → Da Vinci Inbox Watcher → Da Vinci Update Pipeline → 3 Separate Haiku API Calls → AI-CONTEXT.md + changelog.md + troubleshoot.md
+                                                                                                ↓
+                                                                                    Nextcloud + GitHub + Deck
 ```
 
-#### Da Vinci Documentation Pipeline (Phase 16.3 — Rebuilt May 19, 2026)
+#### Da Vinci Documentation Pipeline (Phase 16.3 — COMPLETE May 19, 2026)
+
+**Rebuilt workflow with 3 separate API calls instead of single merged call:**
 
 ```
 Raw summaries → AI-CONTEXT-staging.md (rolling append)
                          ↓
         Da Vinci Inbox Watcher (every 15 minutes) → Execute Workflow trigger
                          ↓
-        Da Vinci Update Pipeline → 3 separate Haiku API calls (AI-CONTEXT, changelog, troubleshoot)
+        Da Vinci Update Pipeline → 3 separate Haiku API calls
+                         ├─→ Call 1: AI-CONTEXT.md (max_tokens 16000)
+                         ├─→ Call 2: changelog.md (max_tokens 4000)
+                         └─→ Call 3: troubleshoot.md (max_tokens 4000)
                          ↓
-        Immediate cost logging for each file → GitHub push → Nextcloud sync
+        Cost logging (fires immediately after EACH call, not at end)
+                         ↓
+        Parse Response → GitHub push → Nextcloud sync → Staging archival
 ```
 
 ### Commands
@@ -746,12 +755,12 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 |--------------|-----------------------------------------------------|
 | Webhooks     | doc-update, doc-sync, da-vinci                      |
 | Telegram     | Routes /update and /sync-docs                       |
-| Haiku API    | claude-haiku-4-5-20251001 for documentation merging |
+| Haiku API    | claude-haiku-4-5-20251001 for documentation merging (3 calls) |
 | Nextcloud    | File storage via admin user                         |
 | GitHub       | Version control via API push                        |
 | Da Vinci     | Async processing (she/her pronouns)                 |
 | Staging file | AI-CONTEXT-staging.md in Nextcloud (rolling append) |
-| Deck         | Kanban cards created from action actions              |
+| Deck         | Kanban cards created from action items               |
 
 ### File Coverage (sync-docs)
 
@@ -761,8 +770,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ### Da Vinci Technical Notes
 
 - **Pipeline architecture:** 3 separate Haiku API calls (not single merged call) — one per file (AI-CONTEXT, changelog, troubleshoot)
-- **Cost logging:** Immediate logging fires after each Haiku API call completes, before parse/push
+- **Cost logging:** Fires immediately after each of the 3 Haiku API calls, before parse/push nodes — captures cost even if downstream nodes fail
 - **Haiku pricing:** $0.80/1M input tokens, $4.00/1M output tokens
+- **max_tokens:** AI-CONTEXT 16000, changelog 4000, troubleshoot 4000 (prevents hallucinated content)
 - **Concurrency:** Check Running node at start — queries n8n API for existing Update Pipeline executions before proceeding
 - **Inbox Watcher schedule:** Every 15 minutes (was 1 minute, increased to reduce concurrent executions)
 - **Staging inbox:** AI-Stuff/Homelab/staging-inbox/ on Nextcloud. Processed files archived to AI-Stuff/Homelab/staging-archive/YYYY-MM/
@@ -910,16 +920,4 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 25.4    | Content Creation — automated reports, social posts              | 📋 Planned | —            |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT                             | ✅ Complete | Apr 24, 2026 |
 | 39      | Open WebUI                                                       | ✅ Complete | Apr 24, 2026 |
-| 41      | Gilgamesh + Ollama Hybrid Routing                                | ✅ Complete | Apr 24, 2026 |
-| 58      | Windrose Server Deployment                                       | ✅ Complete | Apr 19, 2026 |
-| Midas   | Midas CFO Agent                                                  | ✅ Complete | Apr 27, 2026 |
-| MERLIN  | MERLIN Reminders Agent                                           | ✅ Complete | Apr 27, 2026 |
-| Pulse   | Pulse Dashboard Deployment                                       | ✅ Complete | May 10, 2026 |
-| Deck    | Nextcloud Deck + Da Vinci Integration                            | ✅ Complete | May 14, 2026 |
-| DV-S2   | Da Vinci Stage 2 (RAG System)                                   | ✅ Complete | May 15, 2026 |
-| HW-128  | Hardware Upgrade (128GB RAM + 3-Tier Storage)                    | ✅ Complete | May 16, 2026 |
-| Pelican | Pelican Panel Migration                                          | ✅ Complete | May 16, 2026 |
-
----
-
-## 
+| 41
