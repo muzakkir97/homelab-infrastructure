@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. **Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 20, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run.**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. **Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view. VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true (attempted fix for UI bug, did not resolve).**
 
 ---
 
@@ -255,8 +255,10 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Organization:** Kuromoon, Project: Gilgamesh Agents
 - **Internal URL:** http://192.168.30.223:3000
 - **Health endpoint:** /api/public/health
-- **Status:** Wired to Da Vinci Update Pipeline — traces active
+- **Status:** Wired to Da Vinci Update Pipeline — traces active (confirmed in ClickHouse, accessible via API)
 - **Tracing:** One trace (da-vinci-update) with 8 child generations logged per pipeline run
+- **Known issue:** UI trace list shows no results despite traces being present in ClickHouse and accessible via /api/public/traces and direct URL. Root cause: Langfuse v3 self-hosted UI trace list bug where traces don't appear in list view. ClickHouse analytics_traces view only shows data >1 hour old by design. PostgreSQL traces table empty (expected behavior for v3).
+- **Environment variable:** LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true (attempted fix for UI bug, did not resolve)
 
 ### network-ddns (CT 207)
 
@@ -290,7 +292,8 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **PCIe config:** hostpci0=0000:0d:00.0,pcie=1,rombar=0 hostpci1=0000:0d:00.1,pcie=1
 - **OS:** Ubuntu 22.04
 - **SSH:** `ssh muzakkir@192.168.30.221` — use `muzakkir` user, not root
-- **Ollama models:** qwen3:14b (primary, 9.3GB), llama3.2:latest (secondary, 3B), nomic-embed-text (768 dims)
+- **Disk:** Expanded from 56GB to 86GB (May 21, 2026) via Proxmox resize + LVM extension. 34GB free post-expansion.
+- **Ollama models:** qwen3:14b (primary, 9.3GB), llama3.2:latest (secondary, 3B), nomic-embed-text (768 dims). Removed: gemma3:4b, gemma3:12b, phi4-mini (all hallucinated factual data in testing).
 - **Open WebUI:** Docker container, connects via 172.17.0.1:11434
 - **Qdrant:** Port 6333 (REST), 6334 (gRPC), storage at /opt/qdrant/storage
 
@@ -483,7 +486,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 **Technical notes:**
 
 - Direct node references required: use `$('Extract Response').first().json.updatedDoc` instead of `$json` after Merge node
-- max_tokens: AI-CONTEXT 20000, changelog 6000, troubleshoot 4000, ROADMAP 8000, agents 8000, current-state 4000, service-catalog 4000, decisions 3000 (prevents hallucinated content)
+- max_tokens: AI-CONTEXT 25000, changelog 6000, troubleshoot 4000, ROADMAP 8000, agents 8000, current-state 4000, service-catalog 4000, decisions 3000 (prevents hallucinated content)
 - Grounding fix: Per-file system prompts in Claude project instructions with explicit per-file sections (CHANGES TO AI-CONTEXT.MD, CHANGES TO CHANGELOG.MD, etc.)
 - Deck integration complete with 6 additional nodes for kanban management
 - Da Vinci workflow includes Limit node before Notify Complete to prevent notification spam
@@ -674,7 +677,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory | 18+ | Telegram |
 | Documentation Pipeline — Update    | Session summary → 8 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
-| Da Vinci — Update Pipeline         | 8 separate Haiku API calls (AI-CONTEXT 20k, changelog 6k, troubleshoot 4k, ROADMAP 8k, agents 8k, current-state 4k, service-catalog 4k, decisions 3k) → GitHub push + Nextcloud + Langfuse | 35+ | Execute Workflow |
+| Da Vinci — Update Pipeline         | 8 separate Haiku API calls (AI-CONTEXT 25k, changelog 6k, troubleshoot 4k, ROADMAP 8k, agents 8k, current-state 4k, service-catalog 4k, decisions 3k) → GitHub push + Nextcloud + Langfuse | 35+ | Execute Workflow |
 | Da Vinci — Inbox Watcher           | Staging inbox → calls Update Pipeline (every 15 min) | 6     | Schedule |
 | Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily)   | 8     | Schedule |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
@@ -755,7 +758,7 @@ Session Summary → /update → Da Vinci Inbox Watcher → Da Vinci Update Pipel
                                                                                     Nextcloud + GitHub + Langfuse
 ```
 
-#### Da Vinci Documentation Pipeline (Phase 16.4 — COMPLETE May 20, 2026)
+#### Da Vinci Documentation Pipeline (Phase 16.4 — COMPLETE May 21, 2026)
 
 **Expanded workflow from 3 files to 8 files with 8 sequential Haiku API calls:**
 
@@ -765,7 +768,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
         Da Vinci Inbox Watcher (every 15 minutes) → Execute Workflow trigger
                          ↓
         Da Vinci Update Pipeline → 8 separate Haiku API calls
-                         ├─→ Call 1: AI-CONTEXT.md (max_tokens 20000)
+                         ├─→ Call 1: AI-CONTEXT.md (max_tokens 25000)
                          ├─→ Call 2: changelog.md (max_tokens 6000)
                          ├─→ Call 3: troubleshoot.md (max_tokens 4000)
                          ├─→ Call 4: ROADMAP.md (max_tokens 8000)
@@ -790,7 +793,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | File | Update Strategy | max_tokens | Da Vinci Action |
 |------|----------------|------------|-----------------|
-| AI-CONTEXT.md | Full rewrite | 20000 | LLM merges session into master doc |
+| AI-CONTEXT.md | Full rewrite | 25000 | LLM merges session into master doc |
 | changelog.md | Append | 6000 | New entry added at top |
 | troubleshoot.md | Append | 4000 | New errors/resolutions added |
 | ROADMAP.md | Full rewrite | 8000 | Phase statuses updated |
@@ -819,7 +822,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 - **Cost logging:** Fires immediately after each of the 8 Haiku API calls, before parse/push nodes — captures cost even if downstream nodes fail
 - **Haiku pricing:** $0.80/1M input tokens, $4.00/1M output tokens
 - **max_tokens per file:**
-  - AI-CONTEXT: 20000 (comprehensive infrastructure state)
+  - AI-CONTEXT: 25000 (comprehensive infrastructure state) — bumped from 20000 (was hitting ceiling)
   - changelog: 6000 (recent changes only)
   - troubleshoot: 4000 (key lessons)
   - ROADMAP: 8000 (phases, roadmap, decisions)
@@ -836,12 +839,12 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 - **Property names:** Verify sessionSummary property name matches across nodes — use fileContent from trigger payload
 - **Validation:** Parse Response node rejects placeholder outputs before GitHub push
 - **decisions.md handling:** New file on first run (null SHA in GitHub API), automatic creation on subsequent runs
-- **Langfuse integration (May 21, 2026):** Single Langfuse node branched off Push to GitHub (after all 8 files complete). Logs one trace (da-vinci-update) with 8 child generations per run. Uses internal URL: http://192.168.30.223:3000 for VLAN 30 internal routing
+- **Langfuse integration (May 21, 2026):** Single Langfuse node branched off Push to GitHub (after all 8 files complete). Logs one trace (da-vinci-update) with 8 child generations per run. Uses internal URL: http://192.168.30.223:3000 for VLAN 30 internal routing. Timestamp uses new Date().toISOString() (UTC, no timezone offset).
 - **Cost per run estimate:** ~$0.25-0.35 for 8 files (was ~$0.11 for 3 files)
 - **Claude project instructions:** Session summary template now has explicit per-file sections (CHANGES TO AI-CONTEXT.MD, CHANGES TO CHANGELOG.MD, CHANGES TO ROADMAP.MD, CHANGES TO AGENTS.MD, CHANGES TO CURRENT-STATE.MD, CHANGES TO SERVICE-CATALOG.MD, CHANGES TO DECISIONS.MD, ERRORS FIXED) so Da Vinci gets unambiguous per-file instructions
 - **API key handling:** Hardcode Anthropic API key and GitHub token directly in each node (consistent with existing 3 nodes). Trigger payload fields only define fileContent and chatId; adding more fields adds complexity for no benefit.
 - **Code node syntax:** Single-quoted strings with concatenation for system prompts. Backtick template literals cause 400 errors on Anthropic API when used in n8n Code nodes.
-- **Tested & Verified (May 21, 2026):** Full 8-file pipeline tested. All 8 files pushed to GitHub successfully. Cost logging verified (8 rows per session). Staging inbox archival working. Per-file system prompts resolving hallucination across files. Langfuse trace and 8 generations verified in langfuse.najhin-gaming.com UI.
+- **Tested & Verified (May 21, 2026):** Full 8-file pipeline tested. All 8 files pushed to GitHub successfully. Cost logging verified (8 rows per session). Staging inbox archival working. Per-file system prompts resolving hallucination across files. Langfuse trace and 8 generations verified in langfuse.najhin-gaming.com UI. One trace per session confirmed.
 
 ---
 
@@ -988,6 +991,25 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📝 Session Log (Most Recent 5)
 
+### Session 11: May 21, 2026 — Phase 24.8 Completion + Model Testing + VM 400 Expansion + Langfuse Wiring
+
+**Duration:** 2h
+**Topics:** Updated Claude project instructions with expanded 8-file session summary template, expanded Da Vinci Update Pipeline from 3 to 8 files (ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md added), fixed 5 bugs in new pipeline nodes, bumped AI-CONTEXT max_tokens to 25000 (was hitting ceiling), tested Gemma 3:4b/3:12b/phi4-mini/llama3.2 models on VM 400, expanded VM 400 disk from 56GB to 86GB, wired Langfuse observability into Da Vinci Update Pipeline, debugged Langfuse UI trace list bug
+**Decisions:** Per-file system prompts prevent cross-file hallucination. decisions.md promoted to Phase 2. decisions.md auto-created on first run with null SHA handling. Cost per run ~$0.25-0.35. qwen3:14b stays primary (honest about limitations vs confident hallucination). Langfuse — Da Vinci uses single batch node (internal URL http://192.168.30.223:3000). AI-CONTEXT max_tokens bumped to 25000 (middle ground). Aider + local Ollama identified as better fit than Claude Code for future EMIYA code agent.
+**Outcomes:** Phase 16.4 (8-file pipeline) complete and verified. Phase 24.8 (Langfuse) wired and verified. All 8 files pushed to GitHub. 8 cost rows logged per session. Langfuse traces confirmed in ClickHouse and accessible via API, but UI trace list has known v3 self-hosted bug (traces don't appear in list view). VM 400 disk expanded to 86GB (34GB free). Gemma models removed (hallucination). qwen3:14b + llama3.2 confirmed as trustworthy.
+**Errors Fixed:**
+  - Null GitHub token in Fetch GitHub Files — hardcoded directly
+  - Null API keys in 5 new Claude nodes — hardcoded at top of each
+  - filesToPush array only had 3 files — updated to all 8 with null SHA handling
+  - sessionSummary undefined — changed to fileContent from trigger
+  - Backtick template literals in system prompts causing 400 errors — replaced with single-quoted strings + concatenation
+  - Log Cost — service-catalog had wrong command_type (copy-paste error) — corrected
+  - Langfuse ingestion returning 400 — timestamp field required in every batch event (fixed)
+  - Langfuse node ECONNREFUSED 192.168.30.223:8123 — ClickHouse port 8123 not accessible from CT 211, abandoned ClickHouse time query
+  - Gemma3:4b disk pull failed — VM 400 disk 100% full (56GB), expanded to 86GB
+  - VM 400 disk expansion failing with /dev/sda — disk device is /dev/vda (KVM virtio), used correct device
+**Next:** Monitor Langfuse traces for 24h, wire Langfuse into MERLIN, investigate UI trace list bug
+
 ### Session 10: May 21, 2026 — Phase 24.8: Langfuse Wiring to Da Vinci Update Pipeline (VERIFIED)
 
 **Duration:** 0.5h
@@ -1011,13 +1033,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 **Topics:** Reviewed file coverage from previous sessions, reconciled sync-docs command retirement vs workflow continuation, updated Claude project instructions with expanded session summary template (explicit per-file sections), debugged 5 bugs in Da Vinci Update Pipeline, discussed $0 AI Architecture Stack 2026, LM Studio vs Ollama decision, Aider vs Claude Code for future code agent
 **Decisions:** decisions.md promoted to Phase 2 priority (auto-append each session), all 8 files in sequential Haiku chain, hardcode API keys in new nodes, single-quoted strings with concatenation for system prompts (avoid backtick template literals causing 400 errors), Ollama confirmed as correct choice for homelab, Aider + local Ollama identified as better fit than Claude Code for EMIYA code agent (future phase)
 **Outcomes:** Da Vinci Update Pipeline expanded to 8 files. Cost per run ~$0.25-0.35. 8 cost rows logged per session. decisions.md created on GitHub. Claude project instructions updated with per-file sections. 5 bugs resolved: null GitHub token, null API keys in 5 new nodes, filesToPush only had 3 files, sessionSummary property name wrong, backtick template literals causing 400 errors.
-**Errors Fixed:**
-  - Fetch GitHub Files had null token — hardcoded directly in node
-  - 5 new Claude API nodes had null API key — hardcoded at top of each node
-  - filesToPush array only had 3 files — updated to all 8 with null SHA handling
-  - sessionSummary undefined — changed to fileContent from trigger
-  - Backtick template literals caused 400 errors — replaced with single-quoted strings + concatenation
-  - Log Cost — service-catalog has wrong command_type — changed to `/update (Da Vinci - service-catalog)`
 **Next:** Test full 8-file pipeline run, verify all 8 cost rows and GitHub push
 
 ### Session 7: May 20, 2026 — Infrastructure Troubleshooting: CT 207 Promtail + CT 304 tModLoader
@@ -1027,14 +1042,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 **Decisions:** Overwrite CT 207 Promtail config with clean YAML, correct Loki IP, set CT 304 cpulimit 1.5, add daily 4am cron restart, set Pelican panel CPU limits
 **Outcomes:** Both issues resolved. 4 hours clean with no alerts post-fix. Morning briefing container count fix confirmed complete.
 **Next:** Phase 24.2 (Alert Translation), set CPU limits in Pelican panel for CT 303 + CT 304
-
-### Session 6: May 19, 2026 — Da Vinci Documentation Pipeline Rebuild
-
-**Duration:** 3h
-**Topics:** Documentation pipeline overhaul, 3 separate Haiku API calls, immediate cost logging, concurrency protection, inbox watcher schedule tuning
-**Decisions:** Rebuild as 3 separate calls (AI-CONTEXT, changelog, troubleshoot) instead of merged, fire cost logging immediately after each call, Inbox Watcher runs every 15 min, Check Running node for concurrency lock
-**Outcomes:** Pipeline rebuilt and tested. Cost logging verified. Staging inbox/archive directory structure operational.
-**Next:** Monitor pipeline stability, begin Phase 24.2
 
 ---
 
@@ -1063,6 +1070,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | GitHub API null token reference | New code referenced `githubToken` from trigger payload which is never passed. Fix: Hardcode GitHub token directly in Fetch GitHub Files node |
 | Staging inbox rollover accumulation | Files stuck in staging-inbox indefinitely if validation failed. Fix: Verify Parse Response node rejects placeholder outputs before GitHub push. Archive processed files to staging-archive/YYYY-MM/ folder. |
 | Langfuse internal vs external URL | n8n → Langfuse calls should use internal URL (http://192.168.30.223:3000) when both are on same VLAN 30. Avoids unnecessary Cloudflare routing, reduces latency, simpler config. External URL (langfuse.najhin-gaming.com) used only for user browser access. |
+| Langfuse UI trace list not showing traces | Known v3 self-hosted bug: traces exist in ClickHouse and accessible via /api/public/traces and direct URL, but do not appear in Tracing list page. ClickHouse analytics_traces view only shows data >1 hour old by design. PostgreSQL traces table empty (expected behavior for v3). Background migrations all complete. Attempted fixes: LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true, timestamp correction, environment filter check. Pending: version upgrade or Langfuse team investigation. |
 
 ### Networking & Infrastructure
 
@@ -1085,6 +1093,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Backtick template literals break Anthropic API | Backticks in n8n Code nodes cause 400 errors when submitted to Claude API. Anthropic parsing issue with escaped backticks in JSON. Use single-quoted strings with string concatenation instead |
 | Trigger payload fields not matching schema | n8n trigger only passes explicitly defined fields (fileContent, chatId). Referencing undefined fields (githubToken) returns null. Solution: Hardcode sensitive values directly in node code, not as trigger fields |
 | 8 separate API calls instead of single merged | Sequential calls prevent hallucination across files. Each file gets fresh LLM context with explicit instruction for what to change. Single merged call caused Da Vinci to rewrite other files with hallucinated content. |
+| VM 400 disk expansion with wrong device | KVM virtual disks use /dev/vda (virtio), not /dev/sda (IDE). Use growpart /dev/vda 3 (not sda) for partition expansion. |
+| Model hallucination testing | Gemma 3:4b, Gemma 3:12b, and phi4-mini all confidently fabricated weather data in testing. qwen3:14b and llama3.2 were honest about limitations. For personal assistant handling real data, honesty is critical over speed. Removed hallucinating models from VM 400. |
 
 ---
 
@@ -1092,8 +1102,12 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 - [ ] Monitor Langfuse traces over 24h — verify trace/generation logging stable, no performance impact
 - [ ] Monitor Da Vinci pipeline for 24h post-Phase 24.8 — verify cost stays under $1/day, all 8 files + Langfuse work together
+- [ ] Investigate Langfuse UI trace list bug — try removing all filters (environment + time range) to see if traces appear
+- [ ] Consider upgrading Langfuse from v3.174.1 to latest version (may fix UI trace list bug)
 - [ ] Phase 24.2 (Alert Translation) — Route Alertmanager alerts through n8n, translate to plain English via ntfy
 - [ ] Set CPU limits in Pelican panel for CT 303 (Minecraft) and CT 304 (Terraria)
 - [ ] Wire Langfuse into MERLIN next (Phase 24.8 expansion)
 - [ ] Phase 25.3 (Self-Evolving Skills) — Automate skill extraction to Obsidian + Qdrant from troubleshoot.md key lessons
+- [ ] Clean up GitHub: delete stale docs/changelog.md and docs/troubleshoot.md (old pipeline artifacts)
+- [ ] Fix Homelab → Temps SSH bug in Gilgamesh menu (known issue)
 - [ ] VLAN 40 (DMZ) planning for Phase 7F (public-facing services)
