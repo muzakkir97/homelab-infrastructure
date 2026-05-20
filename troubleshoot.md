@@ -61,3 +61,13 @@
 **Resolution:** Correct command_type field to `/update (Da Vinci - service-catalog)` in the service-catalog Log Cost node
 
 **Lesson:** When duplicating nodes in sequential pipelines, audit all configuration fields, not just the primary ones. Copy-paste remnants in metadata fields cause subtle tracking errors.
+
+---
+
+**Symptoms:** Da Vinci Update Pipeline loops continuously with validation errors; staging-inbox contains stuck file that fails repeatedly every 15 minutes
+
+**Root Cause:** Stuck file in staging-inbox failed validation repeatedly, causing pipeline to restart loop without successful completion or file removal
+
+**Resolution:** Deleted stuck file from staging-inbox. Rebuilt Da Vinci Update Pipeline as 3 separate Haiku API calls (one per file: AI-CONTEXT.md, changelog.md, troubleshoot.md) with immediate cost logging after each API call, before parse/push operations. This isolation prevents one file's failure from blocking others and enables faster cost tracking.
+
+**Lesson:** In multi-file sequential workflows, separate API calls per file prevent cascading failures and allow independent retry/troubleshooting. Implement cost logging immediately after API calls rather than batching at end of pipeline to catch issues faster.
