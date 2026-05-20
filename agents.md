@@ -19,7 +19,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026 | Langfuse Wired May 21, 2026)  
+**Status:** Operational (Rebuilt May 19, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026)  
 **Type:** 3 separate Haiku API calls with immediate cost logging and Langfuse observability  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
@@ -54,7 +54,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Logs fire immediately after each Haiku API call, before parse
 
 **Langfuse Observability:**
-**Status:** Active (Wired May 21, 2026)  
+**Status:** Active and Verified (Wired May 21, 2026 | Test Run Confirmed May 21, 2026)  
 **Type:** Single trace with 8 child generations per pipeline run  
 **Trace Name:** da-vinci-update  
 **Architecture:** Langfuse node branches off Push to GitHub (after all 3 files complete)  
@@ -71,7 +71,9 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Fetch GitHub Files must hardcode token directly; does not reference trigger payload fields that are not explicitly defined in trigger schema
 - Cost logging integration: fires immediately after each of 3 Haiku API calls, before parse nodes
 - Langfuse node wiring: branches off Push to GitHub, sends all 8 generations in single batch to Langfuse for cleaner pipeline and fewer nodes
+- Langfuse internal URL (http://192.168.30.223:3000) used for n8n → Langfuse communication; CT 211 and CT 223 are on same VLAN 30, no Cloudflare routing required
 - Runtime: ~2-3 minutes per session update cycle
+- Trace verification confirmed May 21, 2026: da-vinci-update trace appears in Langfuse UI with 8 visible generations
 
 #### Cost Logging
 **Status:** Operational  
@@ -86,9 +88,10 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Expected monthly cost at daily frequency: ~$1.80/month
 
 ### Recent Updates
-**Phase 24.8 — Langfuse Wiring (Complete)**
-- Wired Langfuse observability into Da Vinci Update Pipeline
+**Phase 24.8 — Langfuse Wiring Verified (Complete)**
+- Wired Langfuse observability into Da Vinci Update Pipeline May 21, 2026
 - Single Langfuse node branches off Push to GitHub, creates one trace (da-vinci-update) with 8 child generations per run
+- Test run confirmed: da-vinci-update trace visible in Langfuse UI at https://langfuse.najhin-gaming.com with all 8 generations present
 - Langfuse uses internal URL (http://192.168.30.223:3000) for n8n calls; public URL (https://langfuse.najhin-gaming.com) for external access
 - Rationale: Single Langfuse node after all files complete = cleaner pipeline, fewer nodes, all generations sent in one batch
 - Node count increased from 18 to 19 (added 1 Langfuse observability node)
@@ -122,3 +125,4 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Validate immediate cost logging fires correctly before parse nodes
 - Verify Langfuse trace (da-vinci-update) appears at https://langfuse.najhin-gaming.com after each pipeline run
 - Confirm 8 generations visible under da-vinci-update trace
+- **Verified May 21, 2026:** da-vinci-update trace confirmed visible with all 8 generations present
