@@ -12,7 +12,7 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 
 | File | Update Strategy | max_tokens | Da Vinci Action |
 |------|----------------|------------|-----------------|
-| AI-CONTEXT.md | Full rewrite | 20000 | LLM merges session into master doc |
+| AI-CONTEXT.md | Full rewrite | 25000 | LLM merges session into master doc |
 | changelog.md | Append | 6000 | New entry added at top |
 | troubleshoot.md | Append | 4000 | New errors/resolutions added |
 | ROADMAP.md | Full rewrite | 8000 | Phase statuses updated |
@@ -31,7 +31,7 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - **Langfuse Internal URL:** http://192.168.30.223:3000 (CT 223 on VLAN 30, same as n8n CT 211)
 - **Langfuse Public URL:** https://langfuse.najhin-gaming.com
 - **Cost Logging:** Fires immediately after each API call (before parse/push); generates 8 cost rows per session update
-- **Cost per Run:** ~$0.14 (previously ~$0.11 for 3-file pipeline)
+- **Cost per Run:** ~$0.14–0.16 (previously ~$0.11 for 3-file pipeline; increased due to AI-CONTEXT max_tokens bump to 25000)
 - **Runtime:** ~5 minutes per run (previously ~4 minutes)
 - **Haiku Pricing:** $0.80/1M input tokens, $4.00/1M output tokens
 
@@ -58,28 +58,32 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - **Batch Delivery:** All 8 generations sent in single request to Langfuse
 - **Design Rationale:** Cleaner pipeline, fewer nodes, all generations grouped in single trace for better observability
 - **Alternatives Rejected:** 8 individual Langfuse nodes after each Claude API call (too many nodes, marginal benefit)
+- **Known Issue:** Langfuse v3 self-hosted UI trace list does not display traces in the Tracing list page, despite traces existing in ClickHouse and being accessible via direct URL and public API. Traces confirmed in ClickHouse via API; root cause unresolved. Attempted fixes: LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true (did not resolve). Pending investigation or version upgrade.
 
-### Recent Bug Fixes (Phase 16.4)
+### Recent Bug Fixes (Phase 24.8)
 1. **Fetch GitHub Files:** Null githubToken → hardcoded token directly in node
 2. **5 new Claude API nodes:** Null apiKey from trigger → hardcoded apiKey const at top of each node
 3. **Push to GitHub:** Only 3 files in array → updated to all 8 files with null SHA handling
 4. **sessionSummary reference:** Changed to read fileContent from trigger payload
 5. **Claude API nodes:** Backtick template literals → replaced with single-quoted strings using concatenation
 6. **Log Cost — service-catalog node:** Fixed command_type from `/update (Da Vinci - current-state)` to `/update (Da Vinci - service-catalog)`
+7. **AI-CONTEXT max_tokens:** Bumped from 20000 to 25000 (was hitting ceiling on every run)
+8. **Langfuse ingestion timestamp:** Now uses n8n server UTC time (new Date().toISOString()); do not add timezone offsets
 
 ### Pipeline Rebuild (2026-05-19)
 - **Issue:** Pipeline looping on error due to stuck file in staging-inbox that failed validation repeatedly (every 15 minutes)
 - **Resolution:** Deleted stuck file; rebuilt pipeline with per-file API calls and immediate cost logging
 - **Testing:** Verified cost logging fires immediately after each Claude API call, before parse/push operations
-- **Verification:** Monitor gilgamesh_costs for 3 new rows per pipeline run; observe API usage for 24 hours to confirm cost is under target
+- **Verification:** Monitor gilgamesh_costs for 8 new rows per pipeline run; observe API usage for 24 hours to confirm cost is under target
 
 ### Langfuse Wiring Test (2026-05-21)
 - **Status:** Completed successfully
 - **Test Date:** 2026-05-21
-- **Result:** Single trace (da-vinci-update) with 8 child generations confirmed visible in Langfuse UI
-- **Verification Steps Pending:**
-  - [ ] Verify Langfuse trace appears at https://langfuse.najhin-gaming.com after each test run
-  - [ ] Confirm 8 generations visible under da-vinci-update trace
+- **Result:** Single trace (da-vinci-update) with 8 child generations confirmed visible in Langfuse UI via direct URL and public API; confirmed in ClickHouse analytics data
+- **Verification Steps:**
+  - [x] Verify Langfuse trace appears at https://langfuse.najhin-gaming.com after test run
+  - [x] Confirm 8 generations visible under da-vinci-update trace (via API and direct URL)
+  - [ ] Investigate and fix UI trace list display bug
   - [ ] Wire Langfuse into MERLIN next
 
 ### Key Technical Notes
@@ -89,6 +93,9 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - Cost logging must fire immediately after each API call, not after parse or push operations
 - Langfuse integration uses internal VLAN URL (http://192.168.30.223:3000) for n8n calls to avoid unnecessary external routing; trace batching consolidates all 8 file generations into single observability record
 - Langfuse public URL (https://langfuse.najhin-gaming.com) used for UI verification and external access
+- Langfuse v3 self-hosted has known bug where UI trace list does not display traces despite ClickHouse containing data; traces remain accessible via direct URL and public API
+- Langfuse ingestion timestamps must use n8n server UTC time (new Date().toISOString()); do not add timezone offsets
+- Log Cost command_type strings must match file names exactly; copy-paste errors are silent bugs
 
 ### Dependencies
 - Haiku 3.5 API (8 sequential calls, one per file)
@@ -99,12 +106,12 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - n8n workflow runtime (~5 minutes per session)
 
 ## Monitoring & Verification
-- **Cost Tracking:** 8 rows logged per run in gilgamesh_costs table
-- **Observability Tracking:** 1 trace (da-vinci-update) with 8 child generations per run in Langfuse; accessible at https://langfuse.najhin-gaming.com
+- **Cost Tracking:** 8 rows logged per run in gilgamesh_costs table (~$0.14–0.16 per run)
+- **Observability Tracking:** 1 trace (da-vinci-update) with 8 child generations per run in Langfuse; accessible at https://langfuse.najhin-gaming.com via direct URL and public API
 - **File Updates:** All 8 files updated on GitHub after each session update
 - **Telegram Alerts:** Confirmation message sent on completion
-- **Langfuse UI:** Accessible at https://langfuse.najhin-gaming.com; pipeline traces visible with full generation details; internal n8n calls use http://192.168.30.223:3000
-- **Expected Cost Range:** ~$0.14 per full pipeline run (~$4.20/month at once daily)
+- **Langfuse UI:** Accessible at https://langfuse.najhin-gaming.com; pipeline traces accessible via /api/public/traces and direct trace URLs; internal n8n calls use http://192.168.30.223:3000. Note: UI trace list page has known v3 self-hosted bug (traces not displayed in list despite being in ClickHouse)
+- **Expected Cost Range:** ~$0.14–0.16 per full pipeline run (~$4.20–4.80/month at once daily)
 - **Files Pushed:** AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
 
 ---
