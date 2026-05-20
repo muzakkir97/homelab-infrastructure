@@ -14,12 +14,13 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Technical specification updates
 - Decision log maintenance
 - Cost tracking and analysis
+- Observability and tracing via Langfuse
 
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026)  
-**Type:** 3 separate Haiku API calls with immediate cost logging  
+**Status:** Operational (Rebuilt May 19, 2026 | Langfuse Wired May 21, 2026)  
+**Type:** 3 separate Haiku API calls with immediate cost logging and Langfuse observability  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
 **File Coverage (3 core files):**
@@ -35,14 +36,15 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Parse changelog response
 - Haiku API Call 3: troubleshoot Update → Cost Log (immediate)
 - Parse troubleshoot response
-- Push to GitHub (commits all 3 files) → Final Cost Logger
+- Push to GitHub (commits all 3 files) → Langfuse — Da Vinci (branch) → Final Cost Logger
 
-**Node Count:** 18 total  
+**Node Count:** 19 total  
 - 3 sequential Haiku API calls (separate, per-file)
 - 4 Log Cost nodes (1 pre-fetch, 3 immediate post-API)
 - 3 Parse nodes
 - Fetch GitHub Files
 - Push to GitHub
+- Langfuse — Da Vinci (observability node)
 - Push to Nextcloud
 - Send Confirmation
 
@@ -50,6 +52,15 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - 3 cost log rows per pipeline execution (1 per API call, fires immediately after)
 - Expected cost per run: ~$0.06 USD
 - Logs fire immediately after each Haiku API call, before parse
+
+**Langfuse Observability:**
+**Status:** Active (Wired May 21, 2026)  
+**Type:** Single trace with 8 child generations per pipeline run  
+**Trace Name:** da-vinci-update  
+**Architecture:** Langfuse node branches off Push to GitHub (after all 3 files complete)  
+**Generations:** 8 generations logged per trace (one per file processed)  
+**Internal URL:** http://192.168.30.223:3000 (VLAN 30 direct route from CT 211 to CT 223)  
+**Public URL:** https://langfuse.najhin-gaming.com (external access)  
 
 **Technical Notes:**
 - Pipeline rebuilt May 19, 2026 to address looping error caused by stuck file in staging-inbox
@@ -59,6 +70,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Backtick template literals avoided in all Code nodes; single-quoted strings with concatenation used instead (backticks cause 400 errors on Anthropic API)
 - Fetch GitHub Files must hardcode token directly; does not reference trigger payload fields that are not explicitly defined in trigger schema
 - Cost logging integration: fires immediately after each of 3 Haiku API calls, before parse nodes
+- Langfuse node wiring: branches off Push to GitHub, sends all 8 generations in single batch to Langfuse for cleaner pipeline and fewer nodes
 - Runtime: ~2-3 minutes per session update cycle
 
 #### Cost Logging
@@ -74,6 +86,13 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Expected monthly cost at daily frequency: ~$1.80/month
 
 ### Recent Updates
+**Phase 24.8 — Langfuse Wiring (Complete)**
+- Wired Langfuse observability into Da Vinci Update Pipeline
+- Single Langfuse node branches off Push to GitHub, creates one trace (da-vinci-update) with 8 child generations per run
+- Langfuse uses internal URL (http://192.168.30.223:3000) for n8n calls; public URL (https://langfuse.najhin-gaming.com) for external access
+- Rationale: Single Langfuse node after all files complete = cleaner pipeline, fewer nodes, all generations sent in one batch
+- Node count increased from 18 to 19 (added 1 Langfuse observability node)
+
 **Phase 16.5 — Pipeline Rebuild and Error Resolution (Complete)**
 - Rebuilt Da Vinci Update Pipeline from 8-file sequential to 3-file separate API calls
 - Resolved looping error: deleted stuck validation file from staging-inbox
@@ -87,15 +106,19 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Pipeline covers 3 core files (AI-CONTEXT, changelog, troubleshoot); other files handled separately
 - File update sequence is strictly sequential (no parallelization) — maintains GitHub race condition safety
 - Token budgets are fixed per file — no dynamic reallocation between updates
+- Langfuse wiring is post-push (branches off Push to GitHub), not per-API-call
 
 ### Dependencies
 - Haiku API (Claude) — 3 calls per pipeline run
 - GitHub API — file fetch and push operations
 - Cost logging database (gilgamesh_costs)
+- Langfuse API — observability and tracing
 - Session summary document (input)
 
 ### Monitoring
-**Active Observation (May 19, 2026 onwards):**
+**Active Observation (May 21, 2026 onwards):**
 - Monitor gilgamesh_costs for 3 new rows per pipeline run (1 per API call)
 - Observe API usage for 24+ hours to confirm cost is under target ($0.06 USD per run)
 - Validate immediate cost logging fires correctly before parse nodes
+- Verify Langfuse trace (da-vinci-update) appears at https://langfuse.najhin-gaming.com after each pipeline run
+- Confirm 8 generations visible under da-vinci-update trace
