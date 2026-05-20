@@ -1,7 +1,7 @@
 # Service Catalog
 
 ## Overview
-Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-05-20.
+Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-05-19.
 
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
@@ -24,11 +24,12 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 **Previously:** 3 files (AI-CONTEXT.md, changelog.md, troubleshoot.md)
 
 ### Architecture
-- **Pipeline Type:** Sequential Haiku API chain
+- **Pipeline Type:** Sequential Haiku API chain (8 separate calls, one per file)
 - **API Calls per Run:** 8 (one per file)
-- **Cost Logging:** Fires immediately after each API call; generates 8 cost rows per session update
+- **Cost Logging:** Fires immediately after each API call (before parse/push); generates 8 cost rows per session update
 - **Cost per Run:** ~$0.14 (previously ~$0.11 for 3-file pipeline)
 - **Runtime:** ~5 minutes per run (previously ~4 minutes)
+- **Haiku Pricing:** $0.80/1M input tokens, $4.00/1M output tokens
 
 ### New Files Added (Phase 16.4)
 - **ROADMAP.md** — Full rewrite via Haiku API (8000 tokens)
@@ -50,13 +51,20 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 5. **Claude API nodes:** Backtick template literals → replaced with single-quoted strings using concatenation
 6. **Log Cost — service-catalog node:** Fixed command_type from `/update (Da Vinci - current-state)` to `/update (Da Vinci - service-catalog)`
 
+### Pipeline Rebuild (2026-05-19)
+- **Issue:** Pipeline looping on error due to stuck file in staging-inbox that failed validation repeatedly (every 15 minutes)
+- **Resolution:** Deleted stuck file; rebuilt pipeline with per-file API calls and immediate cost logging
+- **Testing:** Verified cost logging fires immediately after each Claude API call, before parse/push operations
+- **Verification:** Monitor gilgamesh_costs for 3 new rows per pipeline run; observe API usage for 24 hours to confirm cost is under target
+
 ### Key Technical Notes
 - Backtick template literals in n8n Code nodes cause 400 errors on Anthropic API; use single-quoted strings with concatenation instead
 - Fetch GitHub Files must hardcode token directly; do not reference trigger payload fields that are not explicitly defined in trigger schema
 - decisions.md on first creation uses null SHA path in GitHub push to create file fresh; subsequent runs use fetched SHA
+- Cost logging must fire immediately after each API call, not after parse or push operations
 
 ### Dependencies
-- Haiku 3.5 API (8 sequential calls)
+- Haiku 3.5 API (8 sequential calls, one per file)
 - GitHub API (fetch files, push updates)
 - Workflow trigger payload (session summary via fileContent field, chatId)
 - Telegram notification service (confirmation)
@@ -71,4 +79,4 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 
 ---
 
-*Catalog maintained by Da Vinci Documentation System. Next review: Phase 17 planning.*
+*Catalog maintained by Da Vinci Documentation System. Last updated: 2026-05-19. Next review: Phase 17 planning.*
