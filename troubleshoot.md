@@ -71,3 +71,23 @@
 **Resolution:** Deleted stuck file from staging-inbox. Rebuilt Da Vinci Update Pipeline as 3 separate Haiku API calls (one per file: AI-CONTEXT.md, changelog.md, troubleshoot.md) with immediate cost logging after each API call, before parse/push operations. This isolation prevents one file's failure from blocking others and enables faster cost tracking.
 
 **Lesson:** In multi-file sequential workflows, separate API calls per file prevent cascading failures and allow independent retry/troubleshooting. Implement cost logging immediately after API calls rather than batching at end of pipeline to catch issues faster.
+
+---
+
+**Symptoms:** Langfuse ingestion node returns 400 Bad Request; batch events rejected by Langfuse API
+
+**Root Cause:** Timestamp field removed from batch events; Langfuse v3 requires timestamp (createdAt) in every event in the batch payload
+
+**Resolution:** Add `createdAt: new Date().toISOString()` to each event in the batch. Use n8n server UTC time directly via `new Date().toISOString()` without adding timezone offsets.
+
+**Lesson:** Langfuse ingestion API validates all required fields on every event in a batch, not just the batch envelope. When constructing batch payloads in n8n Code nodes, include all required fields (event_name, timestamp, trace_id, observation_id, etc.) for every event. Use server-local UTC time; do not attempt to query ClickHouse or add manual offsets.
+
+---
+
+**Symptoms:** Langfuse UI trace list shows "No results" for recent traces; traces confirmed to exist in ClickHouse and accessible via /api/public/traces
+
+**Root Cause:** Known bug in Langfuse v3 self-hosted UI where trace list view does not display traces despite data existing in ClickHouse. Analytics_traces view in ClickHouse only shows data >1 hour old by design (not a freshness issue). PostgreSQL traces table empty (expected — ClickHouse is source of truth). Background migrations complete.
+
+**Resolution:** Traces are accessible via direct URL links and public API (/api/public/traces). Use API and direct URLs for trace inspection until UI trace list bug is resolved. Consider upgrading Langfuse to latest version or filing bug report with Langfuse maintainers.
+
+**Lesson:** Langfuse v3 self-hosted has known UI bugs that do not indicate data loss. Verify trace ingestion via ClickHouse queries and public API before assuming ingestion failure. UI bugs are cosmetic; data integrity is maintained.
