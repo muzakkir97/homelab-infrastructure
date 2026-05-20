@@ -4,6 +4,21 @@ Architectural decisions, strategy calls, and naming choices made during homelab 
 
 ---
 
+### 2026-05-20 - Aider over Claude Code for future code agent
+**Decision:** Aider + local Ollama is the better fit for EMIYA's future code agent capability rather than Claude Code.
+**Why:** Claude Code is Anthropic-proprietary and costs API tokens; Aider works with any LLM including qwen3:14b on VM 400, aligning with the goal of reducing Claude API dependency.
+**Alternatives considered:** Claude Code (rejected — proprietary, token-costly, increases Claude dependency).
+
+### 2026-05-20 - LM Studio rejected for homelab
+**Decision:** Keep Ollama as the local LLM backend; do not switch to LM Studio.
+**Why:** LM Studio requires a display, is less stable as a persistent background server, and offers no integration advantage over Ollama for n8n workflows.
+**Alternatives considered:** LM Studio (rejected — GUI-dependent, not suitable for headless VM 400).
+
+### 2026-05-20 - Backtick template literals avoided in n8n Code nodes
+**Decision:** Use single-quoted strings with concatenation for all system prompts in Claude API nodes; avoid backtick template literals.
+**Why:** Backtick template literals caused 400 errors on Anthropic API when used in n8n Code nodes.
+**Alternatives considered:** Continue using template literals (rejected — confirmed cause of 400 errors).
+
 ### 2026-05-20 - decisions.md promoted to Phase 2 pipeline
 **Decision:** Include decisions.md in the core Update Pipeline (promoted from Phase 3 backlog) to ensure decisions are captured and persisted every session.
 **Why:** Decisions kept being lost between sessions when not automatically logged. A dedicated pipeline file ensures all decisions are preserved and accessible.
