@@ -988,16 +988,16 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📝 Session Log (Most Recent 5)
 
-### Session 9: May 21, 2026 — Phase 24.8: Langfuse Wiring to Da Vinci Update Pipeline
+### Session 10: May 21, 2026 — Phase 24.8: Langfuse Wiring to Da Vinci Update Pipeline (VERIFIED)
 
 **Duration:** 0.5h
-**Topics:** Wired Langfuse observability into Da Vinci Update Pipeline, verified trace and 8 generations appear in Langfuse UI
+**Topics:** Verified Langfuse observability integration with Da Vinci Update Pipeline, confirmed trace and 8 generations appear in Langfuse UI
 **Decisions:** Single Langfuse node branched off Push to GitHub (after all 8 files complete) instead of 8 individual nodes. Use internal URL: http://192.168.30.223:3000 for VLAN 30 internal routing (no need to route through Cloudflare).
-**Outcomes:** Langfuse trace (da-vinci-update) with 8 child generations logged per pipeline run. Visible in langfuse.najhin-gaming.com UI. One trace per session confirmed.
+**Outcomes:** Langfuse trace (da-vinci-update) with 8 child generations logged per pipeline run. Visible in langfuse.najhin-gaming.com UI. One trace per session confirmed and verified to contain all 8 generations (one per file: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions).
 **Errors:** None
-**Next:** Monitor Langfuse traces over 24h. Phase 24.2 (Alert Translation) or wire Langfuse into MERLIN next.
+**Next:** Monitor Langfuse traces over 24h. Proceed to Phase 24.2 (Alert Translation) or wire Langfuse into MERLIN next.
 
-### Session 8: May 21, 2026 — Phase 16.4 Pipeline Test: Full 8-File Expansion Verified
+### Session 9: May 21, 2026 — Phase 16.4 Pipeline Test: Full 8-File Expansion Verified
 
 **Duration:** 1.5h
 **Topics:** Full 8-file Da Vinci pipeline test, verified all 8 files pushed to GitHub, cost logging confirmed (8 rows per session), staging inbox archival working, per-file system prompts resolving hallucination
@@ -1005,7 +1005,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 **Outcomes:** Full pipeline tested end-to-end. All 8 files successfully pushed to GitHub. 8 cost logging rows verified. Staging inbox files archived to staging-archive/2026-05/. No errors on downstream failure.
 **Next:** Phase 24.8 (Langfuse wiring), monitor pipeline stability for 24h
 
-### Session 7: May 20, 2026 — Phase 16.4: Documentation Pipeline Expansion (8 files)
+### Session 8: May 20, 2026 — Phase 16.4: Documentation Pipeline Expansion (8 files)
 
 **Duration:** 2h
 **Topics:** Reviewed file coverage from previous sessions, reconciled sync-docs command retirement vs workflow continuation, updated Claude project instructions with expanded session summary template (explicit per-file sections), debugged 5 bugs in Da Vinci Update Pipeline, discussed $0 AI Architecture Stack 2026, LM Studio vs Ollama decision, Aider vs Claude Code for future code agent
@@ -1020,7 +1020,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
   - Log Cost — service-catalog has wrong command_type — changed to `/update (Da Vinci - service-catalog)`
 **Next:** Test full 8-file pipeline run, verify all 8 cost rows and GitHub push
 
-### Session 6: May 20, 2026 — Infrastructure Troubleshooting: CT 207 Promtail + CT 304 tModLoader
+### Session 7: May 20, 2026 — Infrastructure Troubleshooting: CT 207 Promtail + CT 304 tModLoader
 
 **Duration:** 2h
 **Topics:** CRITICAL CPU alert on 192.168.30.207, Promtail crash loop (53,649 restarts), wrong Loki URL (192.168.20.13 vs 192.168.30.204), CT 304 tModLoader CPU leak (97% sustained), Pterodactyl vs Pelican CPU limits, alert routing clarification
@@ -1028,7 +1028,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 **Outcomes:** Both issues resolved. 4 hours clean with no alerts post-fix. Morning briefing container count fix confirmed complete.
 **Next:** Phase 24.2 (Alert Translation), set CPU limits in Pelican panel for CT 303 + CT 304
 
-### Session 5: May 19, 2026 — Da Vinci Documentation Pipeline Rebuild
+### Session 6: May 19, 2026 — Da Vinci Documentation Pipeline Rebuild
 
 **Duration:** 3h
 **Topics:** Documentation pipeline overhaul, 3 separate Haiku API calls, immediate cost logging, concurrency protection, inbox watcher schedule tuning
@@ -1062,6 +1062,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Backtick template literals in n8n Code nodes | Backticks caused 400 errors on Anthropic API when used in n8n Code nodes. Fix: Use single-quoted strings with concatenation for all system prompts in Claude API nodes |
 | GitHub API null token reference | New code referenced `githubToken` from trigger payload which is never passed. Fix: Hardcode GitHub token directly in Fetch GitHub Files node |
 | Staging inbox rollover accumulation | Files stuck in staging-inbox indefinitely if validation failed. Fix: Verify Parse Response node rejects placeholder outputs before GitHub push. Archive processed files to staging-archive/YYYY-MM/ folder. |
+| Langfuse internal vs external URL | n8n → Langfuse calls should use internal URL (http://192.168.30.223:3000) when both are on same VLAN 30. Avoids unnecessary Cloudflare routing, reduces latency, simpler config. External URL (langfuse.najhin-gaming.com) used only for user browser access. |
 
 ### Networking & Infrastructure
 
@@ -1084,7 +1085,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Backtick template literals break Anthropic API | Backticks in n8n Code nodes cause 400 errors when submitted to Claude API. Anthropic parsing issue with escaped backticks in JSON. Use single-quoted strings with string concatenation instead |
 | Trigger payload fields not matching schema | n8n trigger only passes explicitly defined fields (fileContent, chatId). Referencing undefined fields (githubToken) returns null. Solution: Hardcode sensitive values directly in node code, not as trigger fields |
 | 8 separate API calls instead of single merged | Sequential calls prevent hallucination across files. Each file gets fresh LLM context with explicit instruction for what to change. Single merged call caused Da Vinci to rewrite other files with hallucinated content. |
-| Langfuse internal vs external URL | n8n → Langfuse calls should use internal URL (http://192.168.30.223:3000) when both are on same VLAN 30. Avoids unnecessary Cloudflare routing, reduces latency, simpler config. External URL (langfuse.najhin-gaming.com) used only for user browser access |
 
 ---
 
