@@ -1,7 +1,7 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
 > **Last Updated:** May 20, 2026  
-> **Total Phases:** 86 planned | 42 completed | 3 in progress | 41 future  
+> **Total Phases:** 86 planned | 43 completed | 2 in progress | 41 future  
 > **Next Session Priority:** Phase 22.8C (Homepage Widgets)
 
 ---
@@ -12,7 +12,7 @@
 |---------------------------------------|-------|----------|-------------|---------|
 | **Core Infrastructure & Security**     | 15    | 11       | 1           | 3       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
-| **AI & Automation (Gilgamesh)**       | 19    | 12       | 1           | 6       |
+| **AI & Automation (Gilgamesh)**       | 19    | 13       | 0           | 6       |
 | **Personal & Knowledge Management**    | 12    | 6        | 1           | 5       |
 | **Monitoring & Observability**        | 8     | 6        | 0           | 2       |
 | **Infrastructure Cleanup**            | 6     | 2        | 0           | 4       |
@@ -22,7 +22,7 @@
 
 ---
 
-## ✅ Completed Phases (42)
+## ✅ Completed Phases (43)
 
 ### Core Infrastructure Foundation
 | Phase | Title                                         | Completed    | Dependencies |
@@ -81,13 +81,12 @@
 
 ---
 
-## ⚡ In Progress (3)
+## ⚡ In Progress (2)
 
 | Phase | Title                           | Status                              | Dependencies | ETA     |
 |-------|---------------------------------|-------------------------------------|--------------|---------|
 | 22.8C | Homepage Widgets                | 🚧 Next session priority            | Phase 22.8B  | May     |
 | Guardian | Security Monitoring Agent     | 📋 Design phase after 22.8C         | Phase 22.8B  | Jun     |
-| Da Vinci | Stage 2 — RAG System         | 📋 After Guardian                    | Guardian     | Jun     |
 
 ---
 
@@ -183,15 +182,15 @@
 **Goal:** Add health tracking and infrastructure widgets to Homepage dashboard  
 **Deliverables:** Health tab, infrastructure tab, webhook integration with n8n
 
-### Guardian Agent (Session After)
-**Effort:** 6-8 hours  
-**Goal:** Security monitoring and threat detection  
-**Deliverables:** Alert translation, threat detection, security reporting
-
-### Da Vinci Stage 2 — RAG System (Third Session)
+### Da Vinci Stage 2 — RAG System (Session After)
 **Effort:** 8-10 hours  
 **Goal:** Knowledge retrieval across all agent conversations  
 **Deliverables:** Qdrant vector database, embedding pipeline, knowledge recall
+
+### Guardian Agent (Third Session)
+**Effort:** 6-8 hours  
+**Goal:** Security monitoring and threat detection  
+**Deliverables:** Alert translation, threat detection, security reporting
 
 ### Phase 7E — Extended Memory (Fourth Session)
 **Effort:** 8 hours  
@@ -203,7 +202,7 @@
 ## 🔗 Phase Dependencies
 
 **Critical Path Analysis:**
-1. **Gilgamesh Enhancement Track:** 22.8C → Guardian → Da Vinci Stage 2 → 7E → 7F-7J
+1. **Gilgamesh Enhancement Track:** 22.8C → Da Vinci Stage 2 → Guardian → 7E → 7F-7J
 2. **Gaming Platform Track:** Mash 59-64 (can run parallel to Gilgamesh)
 3. **Infrastructure Track:** 25-29 (low priority, independent)
 4. **Career Development Track:** 35-36 (depends on infrastructure completion)
