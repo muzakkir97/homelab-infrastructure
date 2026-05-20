@@ -9,14 +9,17 @@ Central registry of all homelab services, APIs, and infrastructure components. L
 
 ### File Coverage
 The Da Vinci Update Pipeline now handles 8 files per session update run:
-1. AI-CONTEXT.md (20000 tokens)
-2. changelog.md (6000 tokens)
-3. troubleshoot.md (4000 tokens)
-4. ROADMAP.md (8000 tokens)
-5. agents.md (8000 tokens)
-6. current-state.md (4000 tokens)
-7. service-catalog.md (4000 tokens)
-8. decisions.md (3000 tokens)
+
+| File | Update Strategy | max_tokens | Da Vinci Action |
+|------|----------------|------------|-----------------|
+| AI-CONTEXT.md | Full rewrite | 20000 | LLM merges session into master doc |
+| changelog.md | Append | 6000 | New entry added at top |
+| troubleshoot.md | Append | 4000 | New errors/resolutions added |
+| ROADMAP.md | Full rewrite | 8000 | Phase statuses updated |
+| agents.md | Full rewrite | 8000 | Agent roster and status updated |
+| current-state.md | Append/update | 4000 | Container/hardware state updated |
+| service-catalog.md | Append/update | 4000 | Service list updated |
+| decisions.md | Append | 3000 | New decisions added at top |
 
 **Previously:** 3 files (AI-CONTEXT.md, changelog.md, troubleshoot.md)
 
@@ -24,7 +27,8 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - **Pipeline Type:** Sequential Haiku API chain
 - **API Calls per Run:** 8 (one per file)
 - **Cost Logging:** Fires immediately after each API call; generates 8 cost rows per session update
-- **Cost per Run:** ~$0.25–0.35 (previously ~$0.11 for 3-file pipeline)
+- **Cost per Run:** ~$0.14 (previously ~$0.11 for 3-file pipeline)
+- **Runtime:** ~5 minutes per run (previously ~4 minutes)
 
 ### New Files Added (Phase 16.4)
 - **ROADMAP.md** — Full rewrite via Haiku API (8000 tokens)
@@ -42,18 +46,28 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 1. **Fetch GitHub Files:** Null githubToken → hardcoded token directly in node
 2. **5 new Claude API nodes:** Null apiKey from trigger → hardcoded apiKey const at top of each node
 3. **Push to GitHub:** Only 3 files in array → updated to all 8 files with null SHA handling
+4. **sessionSummary reference:** Changed to read fileContent from trigger payload
+5. **Claude API nodes:** Backtick template literals → replaced with single-quoted strings using concatenation
+6. **Log Cost — service-catalog node:** Fixed command_type from `/update (Da Vinci - current-state)` to `/update (Da Vinci - service-catalog)`
+
+### Key Technical Notes
+- Backtick template literals in n8n Code nodes cause 400 errors on Anthropic API; use single-quoted strings with concatenation instead
+- Fetch GitHub Files must hardcode token directly; do not reference trigger payload fields that are not explicitly defined in trigger schema
+- decisions.md on first creation uses null SHA path in GitHub push to create file fresh; subsequent runs use fetched SHA
 
 ### Dependencies
 - Haiku 3.5 API (8 sequential calls)
 - GitHub API (fetch files, push updates)
-- Workflow trigger payload (session summary)
+- Workflow trigger payload (session summary via fileContent field, chatId)
 - Telegram notification service (confirmation)
+- n8n workflow runtime (~5 minutes per session)
 
 ## Monitoring & Verification
-- **Cost Tracking:** 8 rows logged per run in gilgamesh_costs
-- **File Updates:** All 8 files updated on GitHub after each session
+- **Cost Tracking:** 8 rows logged per run in gilgamesh_costs table
+- **File Updates:** All 8 files updated on GitHub after each session update
 - **Telegram Alerts:** Confirmation message sent on completion
-- **Expected Cost Range:** $0.25–0.35 per full pipeline run
+- **Expected Cost Range:** ~$0.14 per full pipeline run (~$4.20/month at once daily)
+- **Files Pushed:** AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
 
 ---
 
