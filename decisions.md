@@ -4,6 +4,21 @@ Architectural decisions, strategy calls, and naming choices made during homelab 
 
 ---
 
+### 2026-05-19 - Da Vinci Update Pipeline rebuilt with 3 separate Haiku calls
+**Decision:** Rebuild Da Vinci Update Pipeline to use 3 separate Haiku API calls (one per file: AI-CONTEXT.md, changelog.md, troubleshoot.md) with immediate cost logging after each call.
+**Why:** Previous pipeline design was looping on error due to stuck validation files in staging-inbox. Separating calls per file isolates failures, enables immediate cost logging before parse/push, and provides clearer observability of each update step.
+**Alternatives considered:** Keep monolithic single-call pipeline (rejected — error loop indicated design issue), batch all files into one call (rejected — loses granularity for debugging and cost tracking).
+
+### 2026-05-19 - Cost logging moved to fire immediately after API call
+**Decision:** Cost logging now executes immediately after each Claude API call completes, before parsing and pushing results.
+**Why:** Ensures cost is captured even if downstream parse/push fails, providing accurate billing records and preventing cost loss on partial pipeline failures.
+**Alternatives considered:** Log cost after successful push (rejected — loses cost data on downstream failures), batch cost logging at end of pipeline (rejected — same risk as previous approach).
+
+### 2026-05-19 - Haiku pricing corrected in cost tracking
+**Decision:** Update Haiku pricing model to $0.80/1M input tokens and $4.00/1M output tokens.
+**Why:** Previous pricing was incorrect; correction ensures accurate cost projections and budget tracking for the pipeline.
+**Alternatives considered:** Continue with incorrect pricing (rejected — defeats cost monitoring goal).
+
 ### 2026-05-20 - Aider over Claude Code for future code agent
 **Decision:** Aider + local Ollama is the better fit for EMIYA's future code agent capability rather than Claude Code.
 **Why:** Claude Code is Anthropic-proprietary and costs API tokens; Aider works with any LLM including qwen3:14b on VM 400, aligning with the goal of reducing Claude API dependency.
