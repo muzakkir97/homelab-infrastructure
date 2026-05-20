@@ -1,7 +1,7 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** May 9, 2026  
-> **Total Phases:** 86 planned | 41 completed | 4 in progress | 41 future  
+> **Last Updated:** May 20, 2026  
+> **Total Phases:** 86 planned | 42 completed | 3 in progress | 41 future  
 > **Next Session Priority:** Phase 22.8C (Homepage Widgets)
 
 ---
@@ -12,7 +12,7 @@
 |---------------------------------------|-------|----------|-------------|---------|
 | **Core Infrastructure & Security**     | 15    | 11       | 1           | 3       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
-| **AI & Automation (Gilgamesh)**       | 19    | 11       | 2           | 6       |
+| **AI & Automation (Gilgamesh)**       | 19    | 12       | 1           | 6       |
 | **Personal & Knowledge Management**    | 12    | 6        | 1           | 5       |
 | **Monitoring & Observability**        | 8     | 6        | 0           | 2       |
 | **Infrastructure Cleanup**            | 6     | 2        | 0           | 4       |
@@ -22,7 +22,7 @@
 
 ---
 
-## ✅ Completed Phases (41)
+## ✅ Completed Phases (42)
 
 ### Core Infrastructure Foundation
 | Phase | Title                                         | Completed    | Dependencies |
@@ -63,6 +63,7 @@
 | 16.1    | Documentation Pipeline — Update Workflow        | Apr 19, 2026 | Phase 7C     |
 | 16.2    | Documentation Pipeline — Sync Docs Workflow     | Apr 19, 2026 | Phase 16.1   |
 | 16.3    | Da Vinci Documentation Pipeline                 | Apr 25, 2026 | Phase 16.2   |
+| 16.4    | Documentation Pipeline Expansion — 8 Files     | May 20, 2026 | Phase 16.3   |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT            | Apr 24, 2026 | Phase 1      |
 | 39      | Open WebUI                                      | Apr 24, 2026 | Phase 38     |
 | 41      | Gilgamesh + Ollama Hybrid Routing               | Apr 24, 2026 | Phase 38     |
@@ -80,13 +81,12 @@
 
 ---
 
-## ⚡ In Progress (4)
+## ⚡ In Progress (3)
 
 | Phase | Title                           | Status                              | Dependencies | ETA     |
 |-------|---------------------------------|-------------------------------------|--------------|---------|
 | 22.8C | Homepage Widgets                | 🚧 Next session priority            | Phase 22.8B  | May     |
-| Hardware | 128GB DDR4 RAM Upgrade       | 📦 Ordered from Taobao              | —            | Jun     |
-| Guardian | Security Monitoring Agent     | 📋 Design phase after 22.8C         | Phase 22.8B  | May     |
+| Guardian | Security Monitoring Agent     | 📋 Design phase after 22.8C         | Phase 22.8B  | Jun     |
 | Da Vinci | Stage 2 — RAG System         | 📋 After Guardian                    | Guardian     | Jun     |
 
 ---
@@ -215,4 +215,4 @@
 
 ---
 
-*Last updated: May 9, 2026 — Next update after Phase 22.8C completion*
+*Last updated: May 20, 2026 — Next update after Phase 22.8C completion*
