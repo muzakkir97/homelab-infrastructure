@@ -1,5 +1,13 @@
 # Changelog
 
+### 2026-05-19 — Pipeline Test: Da Vinci Update Pipeline Rebuilt with Per-File API Calls
+- Da Vinci Update Pipeline rebuilt with 3 separate Haiku API calls (AI-CONTEXT, changelog, troubleshoot) instead of sequential 8-file chain
+- Cost logging moved to fire immediately after each Claude API call, before parse/push operations
+- Haiku pricing corrected: $0.80/1M input tokens, $4.00/1M output tokens
+- Resolved pipeline loop: staging-inbox had stuck file failing validation repeatedly every 15 minutes — deleted stuck file and restructured pipeline
+- Per-file API calls reduce error propagation; single file failure no longer blocks entire pipeline
+- Action items: Monitor gilgamesh_costs for 3 new rows per pipeline run; observe API usage for 24 hours to confirm cost under target
+
 ### 2026-05-20 — Phase 16.4 — Documentation Pipeline Expansion
 - Expanded Da Vinci Update Pipeline from 3 files to 8 files: AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
 - Added ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md to core Update Pipeline
