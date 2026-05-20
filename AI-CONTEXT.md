@@ -670,7 +670,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory | 18+ | Telegram |
 | Documentation Pipeline — Update    | Session summary → 8 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
-| Da Vinci — Update Pipeline         | 8 separate Haiku API calls (AI-CONTEXT 20k, changelog 6k, troubleshoot 4k, ROADMAP 8k, agents 8k, current-state 4k, service-catalog 4k, decisions 3k) → GitHub push + Nextcloud | 12+ | Execute Workflow |
+| Da Vinci — Update Pipeline         | 8 separate Haiku API calls (AI-CONTEXT 20k, changelog 6k, troubleshoot 4k, ROADMAP 8k, agents 8k, current-state 4k, service-catalog 4k, decisions 3k) → GitHub push + Nextcloud | 35+ | Execute Workflow |
 | Da Vinci — Inbox Watcher           | Staging inbox → calls Update Pipeline (every 15 min) | 6     | Schedule |
 | Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily)   | 8     | Schedule |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
@@ -737,6 +737,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - Telegram messages must be **plain text only** — code blocks, backticks, and complex formatting break JSON parsing in the Claude API request body
 - Progress bars use ASCII (= and -) — Unicode block chars don't render on Telegram mobile
 - RAG payload field is "content" (not "text" or "pageContent")
+- Backtick template literals in n8n Code nodes cause 400 errors on Anthropic API — use single-quoted strings with concatenation instead
 
 ---
 
@@ -781,6 +782,19 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | /update    | Every session — merge summary into docs   | 8 files       |
 | /sync-docs | Deployment sessions — regenerate all docs | 7 files       |
 
+### File Coverage
+
+| File | Update Strategy | max_tokens | Da Vinci Action |
+|------|----------------|------------|-----------------|
+| AI-CONTEXT.md | Full rewrite | 20000 | LLM merges session into master doc |
+| changelog.md | Append | 6000 | New entry added at top |
+| troubleshoot.md | Append | 4000 | New errors/resolutions added |
+| ROADMAP.md | Full rewrite | 8000 | Phase statuses updated |
+| agents.md | Full rewrite | 8000 | Agent roster and status updated |
+| current-state.md | Append/update | 4000 | Container/hardware state updated |
+| service-catalog.md | Append/update | 4000 | Service list updated |
+| decisions.md | Append | 3000 | New decisions added at top |
+
 ### Pipeline Components
 
 | Component    | Details                                             |
@@ -793,20 +807,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Da Vinci     | Async processing (she/her pronouns)                 |
 | Staging file | AI-CONTEXT-staging.md in Nextcloud (rolling append) |
 | Deck         | Kanban cards created from action items               |
-
-### File Coverage (update vs sync-docs)
-
-**Update (/update):** 8 files
-- AI-CONTEXT.md
-- changelog.md
-- troubleshoot.md
-- ROADMAP.md (full rewrite)
-- agents.md (full rewrite)
-- current-state.md (append/update)
-- service-catalog.md (append/update)
-- decisions.md (append, Phase 2 priority)
-
-**Sync-docs (/sync-docs):** 7 files (AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog)
 
 ### Da Vinci Technical Notes (Phase 16.4)
 
@@ -833,6 +833,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 - **decisions.md handling:** New file on first run (null SHA in GitHub API), automatic creation on subsequent runs
 - **Cost per run estimate:** ~$0.25-0.35 for 8 files (was ~$0.11 for 3 files)
 - **Claude project instructions:** Session summary template now has explicit per-file sections (CHANGES TO AI-CONTEXT.MD, CHANGES TO ROADMAP.MD, CHANGES TO AGENTS.MD, etc.) so Da Vinci gets unambiguous per-file instructions
+- **API key handling:** Hardcode Anthropic API key and GitHub token directly in each node (consistent with existing 3 nodes). Trigger payload fields only define fileContent and chatId; adding more fields adds complexity for no benefit.
+- **Code node syntax:** Single-quoted strings with concatenation for system prompts. Backtick template literals cause 400 errors on Anthropic API when used in n8n Code nodes.
 
 ---
 
@@ -979,15 +981,22 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📝 Session Log (Most Recent 5)
 
-### Session 6: May 20, 2026 — Phase 16.4: Documentation Pipeline Expansion (8 files)
+### Session 7: May 20, 2026 — Phase 16.4: Documentation Pipeline Expansion (8 files)
 
-**Duration:** 1.5h
-**Topics:** Expanded Da Vinci Update Pipeline from 3 files to 8 files, added ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md, updated max_tokens per file, fixed 3 bugs (null GitHub token, null API keys in new nodes, missing 5 files in push)
-**Decisions:** All 8 files in sequential Haiku chain, decisions.md promoted to Phase 2 priority (auto-appended each session), hardcode API keys in new nodes (consistent with existing pattern), update Claude project instructions with explicit per-file sections in session summary template
-**Outcomes:** Pipeline tested successfully. 8 cost rows logged per run. decisions.md created on GitHub. Cost per run ~$0.25-0.35.
-**Next:** Monitor first full pipeline run, verify all 8 files updated correctly on GitHub
+**Duration:** 2h
+**Topics:** Reviewed file coverage from previous sessions, reconciled sync-docs command retirement vs workflow continuation, updated Claude project instructions with expanded session summary template (explicit per-file sections), debugged 5 bugs in Da Vinci Update Pipeline, discussed $0 AI Architecture Stack 2026, LM Studio vs Ollama decision, Aider vs Claude Code for future code agent
+**Decisions:** decisions.md promoted to Phase 2 priority (auto-append each session), all 8 files in sequential Haiku chain, hardcode API keys in new nodes, single-quoted strings with concatenation for system prompts (avoid backtick template literals causing 400 errors), Ollama confirmed as correct choice for homelab, Aider + local Ollama identified as better fit than Claude Code for EMIYA code agent (future phase)
+**Outcomes:** Da Vinci Update Pipeline expanded to 8 files. Cost per run ~$0.25-0.35. 8 cost rows logged per session. decisions.md created on GitHub. Claude project instructions updated with per-file sections. 5 bugs resolved: null GitHub token, null API keys in 5 new nodes, filesToPush only had 3 files, sessionSummary property name wrong, backtick template literals causing 400 errors.
+**Errors Fixed:**
+  - Fetch GitHub Files had null token — hardcoded directly in node
+  - 5 new Claude API nodes had null API key — hardcoded at top of each node
+  - filesToPush array only had 3 files — updated to all 8 with null SHA handling
+  - sessionSummary undefined — changed to fileContent from trigger
+  - Backtick template literals caused 400 errors — replaced with single-quoted strings + concatenation
+  - Log Cost — service-catalog has wrong command_type — changed to `/update (Da Vinci - service-catalog)`
+**Next:** Test full 8-file pipeline run, verify all 8 cost rows and GitHub push, Phase 24.2 (Alert Translation)
 
-### Session 5: May 20, 2026 — Infrastructure Troubleshooting: CT 207 Promtail + CT 304 tModLoader
+### Session 6: May 20, 2026 — Infrastructure Troubleshooting: CT 207 Promtail + CT 304 tModLoader
 
 **Duration:** 2h
 **Topics:** CRITICAL CPU alert on 192.168.30.207, Promtail crash loop (53,649 restarts), wrong Loki URL (192.168.20.13 vs 192.168.30.204), CT 304 tModLoader CPU leak (97% sustained), Pterodactyl vs Pelican CPU limits, alert routing clarification
@@ -995,7 +1004,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 **Outcomes:** Both issues resolved. 4 hours clean with no alerts post-fix. Morning briefing container count fix confirmed complete.
 **Next:** Phase 24.2 (Alert Translation), set CPU limits in Pelican panel for CT 303 + CT 304
 
-### Session 4: May 19, 2026 — Da Vinci Documentation Pipeline Rebuild
+### Session 5: May 19, 2026 — Da Vinci Documentation Pipeline Rebuild
 
 **Duration:** 3h
 **Topics:** Documentation pipeline overhaul, 3 separate Haiku API calls, immediate cost logging, concurrency protection, inbox watcher schedule tuning
@@ -1003,7 +1012,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 **Outcomes:** Pipeline rebuilt and tested. Cost logging verified. Staging inbox/archive directory structure operational.
 **Next:** Monitor pipeline stability, begin Phase 24.2
 
-### Session 3: May 15, 2026 — Phase 7E Complete: Extended Memory + Conversation Archival
+### Session 4: May 15, 2026 — Phase 7E Complete: Extended Memory + Conversation Archival
 
 **Duration:** 2.5h
 **Topics:** RAG integration with extended memory, Qdrant collections, nomic-embed-text setup, conversation archival at 30+ rows, system prompt injection
@@ -1011,7 +1020,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 **Outcomes:** Extended memory working. All 20 LXC + 1 VM running. RAG retrieval tested successfully.
 **Next:** Da Vinci documentation pipeline rebuild (Phase 16.3)
 
-### Session 2: May 14, 2026 — Phase 24.8: Langfuse Deployment + Phase 24.7 Complete
+### Session 3: May 14, 2026 — Phase 24.8: Langfuse Deployment + Phase 24.7 Complete
 
 **Duration:** 2h
 **Topics:** Langfuse v3.174.1 stack deployment (6 containers), LLM observability setup, ntfy hub integration
@@ -1042,6 +1051,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Documentation pipeline concurrent executions | Inbox Watcher running every 1 minute caused multiple executions queued. Fix: Increase schedule to every 15 minutes + add Check Running node to query n8n API before proceeding |
 | Per-file Da Vinci instructions getting ignored | Single merged session summary section caused Da Vinci to hallucinate content for other files. Fix: Claude project instructions now require explicit per-file sections (CHANGES TO AI-CONTEXT.MD, CHANGES TO ROADMAP.MD, etc.) — Da Vinci gets unambiguous per-file instructions |
 | New Da Vinci files not pushed to GitHub | Push to GitHub node still had hardcoded 3-file array. Fix: Updated filesToPush to all 8 files with null SHA handling for new files like decisions.md |
+| Backtick template literals in n8n Code nodes | Backticks caused 400 errors on Anthropic API when used in n8n Code nodes. Fix: Use single-quoted strings with concatenation for all system prompts in Claude API nodes |
+| GitHub API null token reference | New code referenced `githubToken` from trigger payload which is never passed. Fix: Hardcode GitHub token directly in Fetch GitHub Files node |
 
 ### Networking & Infrastructure
 
@@ -1057,20 +1068,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Game server CPU limits not enforced | Pelican panel migration lost CPU limit configuration from Pterodactyl. CPU limits live in 2 places: Proxmox (hypervisor-level via pct set --cpulimit) and game panel (UI setting). Both must be set |
 | Process restart patterns | Long-running processes with memory leaks (tModLoader) benefit from scheduled kills. Use daily cron at 4am to kill and let panel auto-restart. Cleaner than constant monitoring |
 
----
+### Code & API Integration
 
-## 📋 Pending Tasks
-
-- [ ] Verify test run: 8 cost rows in gilgamesh_costs, 8 files updated on GitHub, Telegram confirmation received
-- [ ] Check decisions.md created successfully on GitHub (new file, null SHA path)
-- [ ] Monitor cost per run — expected ~$0.25-0.35 for 8 files
-- [ ] Set CPU limit in Pelican panel for CT 303 (Minecraft): reasonable value before it becomes a problem
-- [ ] Set CPU limit in Pelican panel for CT 304 (Terraria): 150% (= 1.5 cores, matches Proxmox cpulimit)
-- [ ] Future: Relabel Alertmanager alert for 192.168.30.207:9100 to indicate it is a host-level CPU metric (Phase 24.2 Alert Translation)
-- [ ] Begin Phase 24.2 (Alert Translation — Alertmanager → ntfy plain English)
-- [ ] Wire agents to Langfuse for observability (Phase 25+)
-- [ ] Phase 24.3 (Container Updates — Docker + apt upgrades, approval-gated)
-- [ ] Phase 24.4 (Knowledge Ingestion — URLs → Firecrawl → triple-write)
-- [ ] Phase 25.1 (Voice Interface — transcription + responses)
-- [ ] Phase 25.2 (Email Integration — IMAP monitoring)
-- [ ] Phase 25.3 (Self-Evolving Skills — auto-captured knowledge docs)
+| Issue | Resolution |
+|-------|------------|
+| Backtick template literals break Anthropic API | Backticks in n8n Code nodes cause 400 errors when submitted to Claude API. Anthropic parsing issue with escaped backticks in JSON. Use single-quoted strings with string concatenation instead |
+| Trigger payload fields not matching schema | n8n trigger only passes explicitly defined fields (fileContent, chatId). Referencing undefined fields (github
