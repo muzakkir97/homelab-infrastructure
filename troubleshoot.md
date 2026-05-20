@@ -31,3 +31,33 @@
 **Resolution:** Hardcode GitHub token directly in the node (const githubToken = "...") instead of attempting dynamic retrieval from trigger data
 
 **Lesson:** In internal automation workflows, hardcoded credentials for service accounts are more reliable than trigger-based injection.
+
+---
+
+**Symptoms:** Fetch GitHub Files reads undefined sessionSummary field; workflow fails immediately after fetch
+
+**Root Cause:** Node attempted to read `sessionSummary` from trigger payload, but the trigger field is actually named `fileContent`
+
+**Resolution:** Changed node to read from correct field: `$('When Executed by Another Workflow').first().json.fileContent` instead of referencing undefined `sessionSummary`
+
+**Lesson:** Always verify trigger payload field names match what the calling workflow actually passes. Document trigger schema explicitly to prevent field name mismatches in sequential workflows.
+
+---
+
+**Symptoms:** Claude API nodes return 400 Bad Request errors on Anthropic API; requests fail validation
+
+**Root Cause:** Backtick template literals in system prompts cause malformed JSON when sent to Anthropic API from n8n Code nodes
+
+**Resolution:** Replace all backtick template literals with single-quoted strings using string concatenation. Example: change `` `Update ${file}` `` to `'Update ' + file`
+
+**Lesson:** n8n Code nodes handle template literals differently than standard JavaScript; backticks cause escaping issues in API payloads. Use explicit concatenation for all dynamic strings in n8n nodes that call external APIs.
+
+---
+
+**Symptoms:** Log Cost node logs incorrect command_type; service catalog cost rows misattributed to current-state
+
+**Root Cause:** Copy-paste error when creating Log Cost node for service-catalog — command_type field retained old value `/update (Da Vinci - current-state)` instead of being updated
+
+**Resolution:** Correct command_type field to `/update (Da Vinci - service-catalog)` in the service-catalog Log Cost node
+
+**Lesson:** When duplicating nodes in sequential pipelines, audit all configuration fields, not just the primary ones. Copy-paste remnants in metadata fields cause subtle tracking errors.
