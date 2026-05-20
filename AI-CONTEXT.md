@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. **Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron.**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. **Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 20, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority.**
 
 ---
 
@@ -462,7 +462,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 
 **Role scope:**
 
-- Documentation: maintains AI-CONTEXT.md, changelog.md, troubleshoot.md via /update and /sync-docs
+- Documentation: maintains AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md via /update and /sync-docs
 - Obsidian writes: session summaries written to vault via Nextcloud WebDAV
 - Goal tracking: monitors progress, identifies blockers, suggests next steps
 - Weekly review: Sunday analysis of week's progress, agent performance, system health
@@ -481,15 +481,15 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 **Technical notes:**
 
 - Direct node references required: use `$('Extract Response').first().json.updatedDoc` instead of `$json` after Merge node
-- max_tokens: AI-CONTEXT 16000, changelog 4000, troubleshoot 4000 (prevents hallucinated content)
-- Grounding fix pending: add step to fetch current AI-CONTEXT.md from Nextcloud before Claude API call
+- max_tokens: AI-CONTEXT 20000, changelog 6000, troubleshoot 4000, ROADMAP 8000, agents 8000, current-state 4000, service-catalog 4000, decisions 3000 (prevents hallucinated content)
+- Grounding fix pending: add step to fetch current files from Nextcloud before Claude API call
 - Deck integration complete with 6 additional nodes for kanban management
 - Da Vinci workflow includes Limit node before Notify Complete to prevent notification spam
 - Knowledge Indexer runs at 3am daily (full re-index v1)
 - **Concurrency lock:** Check Running node queries n8n API before proceeding
 - **Schedule:** Inbox Watcher runs every 15 minutes (was 1 minute)
-- **Model:** claude-haiku-4-5-20251001 (3 separate API calls, one per file: AI-CONTEXT, changelog, troubleshoot)
-- **Cost logging:** Fires immediately after each of the 3 API calls, before parse/push nodes — logs even on downstream failure
+- **Model:** claude-haiku-4-5-20251001 (8 separate API calls, one per file: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions)
+- **Cost logging:** Fires immediately after each of the 8 API calls, before parse/push nodes — logs even on downstream failure
 - **Haiku pricing:** $0.80/1M input tokens, $4.00/1M output tokens
 
 ### Nextcloud Deck Integration
@@ -605,7 +605,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 - **Ollama qwen3:14b** — Primary route for simple queries (local, free, fast)
 - **Haiku 4.5** — Fallback if Ollama is down or unavailable (Gilgamesh + Da Vinci both use Haiku)
-- **Da Vinci Update Pipeline** — claude-haiku-4-5-20251001 for documentation merging (3 separate calls: AI-CONTEXT, changelog, troubleshoot)
+- **Da Vinci Update Pipeline** — claude-haiku-4-5-20251001 for documentation merging (8 separate calls, one per file)
 - **RAG Retrieval** — Qdrant vector search with nomic-embed-text embeddings (768 dims)
 - **Extended Memory** — Conversation archival when history exceeds 30 rows
 - Routing logic runs in a Route Check If node before calling any model
@@ -621,7 +621,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - **Web search:** Real-time information via Claude's web_search tool
 - **Cost tracking:** Token usage logged to gilgamesh_costs table with command_type; cost_usd calculated from token rates
 - **Inline keyboard menu:** Full menu system with all submenus working
-- **Context sync:** /update command pushes session summaries to AI-CONTEXT.md via GitHub
+- **Context sync:** /update command pushes session summaries to 8 documentation files via GitHub
 - **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
 - **Slash commands:** 11 commands for direct actions
 - **Health tracking:** Food log, BP log, medication log via interactive button prompts (Phase 22.8B)
@@ -636,7 +636,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | /cost      | Usage tracking    | Displays token usage and estimated costs      |
 | /alerts    | System status     | Shows active Alertmanager alerts              |
 | /backup    | Backup status     | Last backup times for all containers          |
-| /update    | Session summary   | Merges session into docs (3 files)            |
+| /update    | Session summary   | Merges session into docs (8 files)            |
 | /sync-docs | Full regeneration | Regenerates all documentation (7 files)       |
 | /midas     | CFO report        | Cost analysis and savings summary             |
 | /daily     | Daily notes       | Creates Obsidian daily note (defaults today)  |
@@ -661,16 +661,16 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - Ollama tokens captured: data.input_tokens + data.output_tokens from Call Ollama node response
 - Ollama queries cost $0 (local inference)
 - command_type derived from Telegram message text directly
-- **Da Vinci:** claude-haiku-4-5-20251001 (3 separate calls), cost logged immediately after each call
+- **Da Vinci:** claude-haiku-4-5-20251001 (8 separate calls), cost logged immediately after each call
 
 ### n8n Workflows (Count: 14)
 
 | Workflow                           | Purpose                                  | Nodes | Trigger  |
 |------------------------------------|------------------------------------------|-------|----------|
 | Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory | 18+ | Telegram |
-| Documentation Pipeline — Update    | Session summary → 3 files                | 7     | Webhook  |
+| Documentation Pipeline — Update    | Session summary → 8 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
-| Da Vinci — Update Pipeline         | 3 separate Haiku API calls (AI-CONTEXT 16k, changelog 4k, troubleshoot 4k) → GitHub push + Nextcloud | 12+ | Execute Workflow |
+| Da Vinci — Update Pipeline         | 8 separate Haiku API calls (AI-CONTEXT 20k, changelog 6k, troubleshoot 4k, ROADMAP 8k, agents 8k, current-state 4k, service-catalog 4k, decisions 3k) → GitHub push + Nextcloud | 12+ | Execute Workflow |
 | Da Vinci — Inbox Watcher           | Staging inbox → calls Update Pipeline (every 15 min) | 6     | Schedule |
 | Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily)   | 8     | Schedule |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
@@ -740,29 +740,34 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 ---
 
-## 🔧 Documentation Pipeline (Phase 16.1/16.2/16.3)
+## 🔧 Documentation Pipeline (Phase 16.1/16.2/16.3/16.4)
 
 ### Architecture
 
 ```
-Session Summary → /update → Da Vinci Inbox Watcher → Da Vinci Update Pipeline → 3 Separate Haiku API Calls → AI-CONTEXT.md + changelog.md + troubleshoot.md
+Session Summary → /update → Da Vinci Inbox Watcher → Da Vinci Update Pipeline → 8 Separate Haiku API Calls → 8 Files (AI-CONTEXT + changelog + troubleshoot + ROADMAP + agents + current-state + service-catalog + decisions)
                                                                                                 ↓
                                                                                     Nextcloud + GitHub + Deck
 ```
 
-#### Da Vinci Documentation Pipeline (Phase 16.3 — COMPLETE May 19, 2026)
+#### Da Vinci Documentation Pipeline (Phase 16.4 — COMPLETE May 20, 2026)
 
-**Rebuilt workflow with 3 separate API calls instead of single merged call:**
+**Expanded workflow from 3 files to 8 files with 8 sequential Haiku API calls:**
 
 ```
 Raw summaries → AI-CONTEXT-staging.md (rolling append)
                          ↓
         Da Vinci Inbox Watcher (every 15 minutes) → Execute Workflow trigger
                          ↓
-        Da Vinci Update Pipeline → 3 separate Haiku API calls
-                         ├─→ Call 1: AI-CONTEXT.md (max_tokens 16000)
-                         ├─→ Call 2: changelog.md (max_tokens 4000)
-                         └─→ Call 3: troubleshoot.md (max_tokens 4000)
+        Da Vinci Update Pipeline → 8 separate Haiku API calls
+                         ├─→ Call 1: AI-CONTEXT.md (max_tokens 20000)
+                         ├─→ Call 2: changelog.md (max_tokens 6000)
+                         ├─→ Call 3: troubleshoot.md (max_tokens 4000)
+                         ├─→ Call 4: ROADMAP.md (max_tokens 8000)
+                         ├─→ Call 5: agents.md (max_tokens 8000)
+                         ├─→ Call 6: current-state.md (max_tokens 4000)
+                         ├─→ Call 7: service-catalog.md (max_tokens 4000)
+                         └─→ Call 8: decisions.md (max_tokens 3000)
                          ↓
         Cost logging (fires immediately after EACH call, not at end)
                          ↓
@@ -773,7 +778,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Command    | Purpose                                   | Files Updated |
 |------------|-------------------------------------------|---------------|
-| /update    | Every session — merge summary into docs   | 3 files       |
+| /update    | Every session — merge summary into docs   | 8 files       |
 | /sync-docs | Deployment sessions — regenerate all docs | 7 files       |
 
 ### Pipeline Components
@@ -782,24 +787,41 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 |--------------|-----------------------------------------------------|
 | Webhooks     | doc-update, doc-sync, da-vinci                      |
 | Telegram     | Routes /update and /sync-docs                       |
-| Haiku API    | claude-haiku-4-5-20251001 for documentation merging (3 calls) |
+| Haiku API    | claude-haiku-4-5-20251001 for documentation merging (8 calls) |
 | Nextcloud    | File storage via admin user                         |
 | GitHub       | Version control via API push                        |
 | Da Vinci     | Async processing (she/her pronouns)                 |
 | Staging file | AI-CONTEXT-staging.md in Nextcloud (rolling append) |
 | Deck         | Kanban cards created from action items               |
 
-### File Coverage (sync-docs)
+### File Coverage (update vs sync-docs)
 
-- AI-CONTEXT.md, changelog.md, troubleshoot.md (from /update)
-- README.md, roadmap.md, current-state.md, service-catalog.md
+**Update (/update):** 8 files
+- AI-CONTEXT.md
+- changelog.md
+- troubleshoot.md
+- ROADMAP.md (full rewrite)
+- agents.md (full rewrite)
+- current-state.md (append/update)
+- service-catalog.md (append/update)
+- decisions.md (append, Phase 2 priority)
 
-### Da Vinci Technical Notes
+**Sync-docs (/sync-docs):** 7 files (AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog)
 
-- **Pipeline architecture:** 3 separate Haiku API calls (not single merged call) — one per file (AI-CONTEXT, changelog, troubleshoot)
-- **Cost logging:** Fires immediately after each of the 3 Haiku API calls, before parse/push nodes — captures cost even if downstream nodes fail
+### Da Vinci Technical Notes (Phase 16.4)
+
+- **Pipeline architecture:** 8 separate Haiku API calls (one per file) instead of single merged call — sequential chain to prevent hallucination across files
+- **Cost logging:** Fires immediately after each of the 8 Haiku API calls, before parse/push nodes — captures cost even if downstream nodes fail
 - **Haiku pricing:** $0.80/1M input tokens, $4.00/1M output tokens
-- **max_tokens:** AI-CONTEXT 16000, changelog 4000, troubleshoot 4000 (prevents hallucinated content)
+- **max_tokens per file:**
+  - AI-CONTEXT: 20000 (comprehensive infrastructure state)
+  - changelog: 6000 (recent changes only)
+  - troubleshoot: 4000 (key lessons)
+  - ROADMAP: 8000 (phases, roadmap, decisions)
+  - agents: 8000 (agent descriptions and workflows)
+  - current-state: 4000 (snapshot of system state)
+  - service-catalog: 4000 (services deployed)
+  - decisions: 3000 (decisions made this session)
 - **Concurrency:** Check Running node at start — queries n8n API for existing Update Pipeline executions before proceeding
 - **Inbox Watcher schedule:** Every 15 minutes (was 1 minute, increased to reduce concurrent executions)
 - **Staging inbox:** AI-Stuff/Homelab/staging-inbox/ on Nextcloud. Processed files archived to AI-Stuff/Homelab/staging-archive/YYYY-MM/
@@ -808,6 +830,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 - **Notification:** Limit node (max 1) before Notify Complete to prevent notification spam
 - **Property names:** Verify sessionSummary property name matches across nodes (was reading wrong property causing null merge)
 - **Validation:** Parse Response node rejects placeholder outputs before GitHub push
+- **decisions.md handling:** New file on first run (null SHA in GitHub API), automatic creation on subsequent runs
+- **Cost per run estimate:** ~$0.25-0.35 for 8 files (was ~$0.11 for 3 files)
+- **Claude project instructions:** Session summary template now has explicit per-file sections (CHANGES TO AI-CONTEXT.MD, CHANGES TO ROADMAP.MD, CHANGES TO AGENTS.MD, etc.) so Da Vinci gets unambiguous per-file instructions
 
 ---
 
@@ -884,7 +909,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 |-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Perimeter       | ISP Router → pfSense firewall                                                                                                                                                                      |
 | Segmentation    | 5 VLANs with enforced firewall rules                                                                                                                                                               |
-| DNS             | Pi-hole ad/tracker blocking (~489K domains)                                                                                                                                                        |
+| DNS             | Pi-hole ad/tracker blocking (~489K domains blocked)                                                                                                                                                |
 | VPN             | Tailscale (subnet router on pfSense, primary access)                                                                                                                                               |
 | External Auth   | Cloudflare Access (Email OTP, muzakkir.kholil06@gmail.com only) for Grafana, n8n, Vault, Vaultwarden, Ollama, Nextcloud, Firefly III, Langfuse, Pelican Panel (9 apps total)                 |
 | External Access | Cloudflare Tunnel for all external services                                                                                                                                                        |
@@ -927,6 +952,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 16.1    | Documentation Pipeline — Update Workflow                         | ✅ Complete | Apr 19, 2026 |
 | 16.2    | Documentation Pipeline — Sync Docs Workflow                      | ✅ Complete | Apr 19, 2026 |
 | 16.3    | Da Vinci Documentation Pipeline                                  | ✅ Complete | May 19, 2026 |
+| 16.4    | Da Vinci Documentation Pipeline Expansion (8 files)              | ✅ Complete | May 20, 2026 |
 | 22      | Obsidian Knowledge Base                                          | ✅ Complete | Apr 24, 2026 |
 | 22.1    | Obsidian Vault Structure Expansion                               | ✅ Complete | Apr 27, 2026 |
 | 22.2    | Obsidian Daily Notes + Morning Briefing                          | ✅ Complete | Apr 27, 2026 |
@@ -952,6 +978,14 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Most Recent 5)
+
+### Session 6: May 20, 2026 — Phase 16.4: Documentation Pipeline Expansion (8 files)
+
+**Duration:** 1.5h
+**Topics:** Expanded Da Vinci Update Pipeline from 3 files to 8 files, added ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md, updated max_tokens per file, fixed 3 bugs (null GitHub token, null API keys in new nodes, missing 5 files in push)
+**Decisions:** All 8 files in sequential Haiku chain, decisions.md promoted to Phase 2 priority (auto-appended each session), hardcode API keys in new nodes (consistent with existing pattern), update Claude project instructions with explicit per-file sections in session summary template
+**Outcomes:** Pipeline tested successfully. 8 cost rows logged per run. decisions.md created on GitHub. Cost per run ~$0.25-0.35.
+**Next:** Monitor first full pipeline run, verify all 8 files updated correctly on GitHub
 
 ### Session 5: May 20, 2026 — Infrastructure Troubleshooting: CT 207 Promtail + CT 304 tModLoader
 
@@ -985,14 +1019,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 **Outcomes:** Langfuse running, zero traces currently. Phase 24.7 (ntfy) confirmed complete.
 **Next:** Wire agents to Langfuse (Phase 25+), begin Phase 24.2
 
-### Session 1: May 13, 2026 — Phase 24.1 + Nextcloud Deck Integration
-
-**Duration:** 2.5h
-**Topics:** Firefly III deployment (CT 221), Nextcloud Deck integration (3 boards, 22 labels, 5 stacks), Da Vinci kanban automation
-**Decisions:** Deploy Firefly III + MariaDB, integrate Da Vinci with Deck API, create 3 project boards (Homelab, Career, Personal)
-**Outcomes:** Firefly III running on 192.168.30.224, Deck integrated, auto-card creation tested.
-**Next:** Phase 24.2 (Alert Translation), Phase 24.3 (Container Updates)
-
 ---
 
 ## 🔧 Key Lessons Learned
@@ -1012,8 +1038,10 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Issue | Resolution |
 |-------|------------|
 | Da Vinci documentation merged to wrong file | Property name mismatch (sessionSummary vs summary) caused null reads. Verify property chains after Merge nodes — use direct node references like `$('Extract Response').first().json.updatedDoc` |
-| Haiku API cost logging missing on failure | Cost logs were firing at end of workflow. If downstream nodes failed, costs weren't captured. Fix: Fire cost logging immediately after each API call (3 separate calls for 3 files), before parse/merge nodes |
+| Haiku API cost logging missing on failure | Cost logs were firing at end of workflow. If downstream nodes failed, costs weren't captured. Fix: Fire cost logging immediately after each API call (8 calls now for 8 files), before parse/merge nodes |
 | Documentation pipeline concurrent executions | Inbox Watcher running every 1 minute caused multiple executions queued. Fix: Increase schedule to every 15 minutes + add Check Running node to query n8n API before proceeding |
+| Per-file Da Vinci instructions getting ignored | Single merged session summary section caused Da Vinci to hallucinate content for other files. Fix: Claude project instructions now require explicit per-file sections (CHANGES TO AI-CONTEXT.MD, CHANGES TO ROADMAP.MD, etc.) — Da Vinci gets unambiguous per-file instructions |
+| New Da Vinci files not pushed to GitHub | Push to GitHub node still had hardcoded 3-file array. Fix: Updated filesToPush to all 8 files with null SHA handling for new files like decisions.md |
 
 ### Networking & Infrastructure
 
@@ -1033,6 +1061,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📋 Pending Tasks
 
+- [ ] Verify test run: 8 cost rows in gilgamesh_costs, 8 files updated on GitHub, Telegram confirmation received
+- [ ] Check decisions.md created successfully on GitHub (new file, null SHA path)
+- [ ] Monitor cost per run — expected ~$0.25-0.35 for 8 files
 - [ ] Set CPU limit in Pelican panel for CT 303 (Minecraft): reasonable value before it becomes a problem
 - [ ] Set CPU limit in Pelican panel for CT 304 (Terraria): 150% (= 1.5 cores, matches Proxmox cpulimit)
 - [ ] Future: Relabel Alertmanager alert for 192.168.30.207:9100 to indicate it is a host-level CPU metric (Phase 24.2 Alert Translation)
