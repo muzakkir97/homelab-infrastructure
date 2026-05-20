@@ -61,7 +61,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ decisions.md promoted to Phase 2 core pipeline with null SHA handling for new file creation (Phase 16.4)
 - ✅ Pipeline rebuilt 2026-05-19: 8 separate Haiku API calls with immediate cost logging verified working (Phase 16.4)
 - ✅ Langfuse wired to Da Vinci Update Pipeline: single node off Push to GitHub (Phase 24.8)
-- ✅ Langfuse trace created (da-vinci-update) with 8 generations visible (Phase 24.8 test run)
+- ✅ Langfuse trace created (da-vinci-update) with 8 generations visible (Phase 24.8 test run 2026-05-21)
 
 ## Automation Status
 **Trigger:** Cron job (time TBD per Phase 16 work)
@@ -73,6 +73,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ Per-file API calls: 8 separate Haiku calls with immediate cost logging
 - ✅ Langfuse wiring: Single node branched off Push to GitHub using internal URL (http://192.168.30.223:3000)
 - ✅ Staging-inbox stuck file issue resolved: deleted stuck file, rebuilt pipeline
+- ✅ Langfuse trace (da-vinci-update) confirmed appearing in Langfuse UI with 8 child generations (Phase 24.8 test run)
 - ⚠️ Log Cost node for service-catalog has incorrect command_type (copy-paste error) — needs fix
 - ⚠️ GitHub docs/ folder contains stale changelog.md and troubleshoot.md artifacts from old pipeline — needs cleanup
 
@@ -85,14 +86,15 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Hardcoded credentials in all 8 Claude API nodes
 - 8-file separate API call pattern with immediate cost logging
 - Langfuse observability with single trace and 8 child generations per run
+- Langfuse trace visibility in UI (da-vinci-update trace with 8 generations confirmed 2026-05-21)
 
 ## Phase Status
 **Current Phase:** 24.8 — Langfuse Wiring (Da Vinci) (Complete)
-- Wired Langfuse observability into Da Vinci Update Pipeline
-- Single Langfuse node branched off Push to GitHub (after all 8 files complete)
-- Langfuse trace: da-vinci-update with 8 child generations (one per file)
-- Uses internal URL: http://192.168.30.223:3000 (CT 211 and CT 223 on same VLAN 30)
-- Test run 2026-05-21: trace and 8 generations confirmed appearing in Langfuse UI
+- ✅ Wired Langfuse observability into Da Vinci Update Pipeline
+- ✅ Single Langfuse node branched off Push to GitHub (after all 8 files complete)
+- ✅ Langfuse trace: da-vinci-update with 8 child generations (one per file)
+- ✅ Uses internal URL: http://192.168.30.223:3000 (CT 211 and CT 223 on same VLAN 30)
+- ✅ Test run 2026-05-21: trace and 8 generations confirmed appearing in Langfuse UI
 
 **Next Phase:** Wire Langfuse into MERLIN
 
@@ -110,4 +112,4 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Local LLM Strategy: Ollama confirmed as correct choice for homelab (LM Studio rejected due to GUI dependency and lack of background server stability)
 - Future Code Agent: Aider + local Ollama identified as better fit than Claude Code for moving away from Claude dependency while maintaining code quality
 - VM 400 Configuration: Headless VM suitable for Ollama persistent background server, explored Gemma 4 E4B and qwen3:14b options
-- Langfuse Integration: Observability pipeline now in place; monitoring Da Vinci Update Pipeline traces and generation metrics
+- Langfuse Integration: Observability pipeline now in place; monitoring Da Vinci Update Pipeline traces and generation metrics. Decision made to use single Langfuse node branched off Push to GitHub (after all 8 files complete) rather than 8 separate nodes after each Claude API call — cleaner pipeline, fewer nodes, all 8 generations sent in one batch. Internal URL (http://192.168.30.223:3000) used for n8n → Langfuse calls (CT 211 and CT 223 on same VLAN 30).
