@@ -9,6 +9,14 @@
 - Fixed bug: Fetch GitHub Files had null githubToken — hardcoded token directly in node
 - Fixed bug: 5 new Claude API nodes had null API key — added hardcoded apiKey const in each node
 - Fixed bug: Push to GitHub filesToPush only had 3 files — updated array to all 8 files with null SHA handling for decisions.md (new file)
-- Cost per run estimate updated to ~$0.25-0.35 (was ~$0.11) for 8-file sequential Haiku chain
-- Documentation Pipeline architecture diagram updated to show 8 sequential Haiku API calls
+- Fixed bug: sessionSummary was undefined — changed to read fileContent from trigger payload
+- Fixed bug: Claude API nodes returned 400 errors — replaced backtick template literals with single-quoted strings and concatenation
+- Fixed bug: Log Cost service-catalog node had wrong command_type — corrected from current-state to service-catalog
+- Cost per run estimate updated to ~$0.14 (was ~$0.11) for 8-file sequential Haiku chain
+- Runtime per run increased to ~5 minutes (was ~4 minutes) due to 8 sequential API calls
+- Documentation Pipeline architecture diagram updated to show 8 sequential Haiku API calls plus logging and Git operations
 - Decision: Include decisions.md in core pipeline rather than manual log or weekly summary — prevents decisions from being lost
+- Decision: Hardcode API keys directly in n8n nodes — trigger schema only defines fileContent and chatId; adding more fields adds unnecessary complexity
+- Decision: Use Ollama as local LLM backend instead of LM Studio — LM Studio requires display, less stable as background service
+- Decision: Aider + local Ollama identified as better fit than Claude Code for future EMIYA code agent — reduces Claude API dependency
+- Identified stale docs/ folder artifacts on GitHub (docs/changelog.md, docs/troubleshoot.md) from old pipeline — manual cleanup required
