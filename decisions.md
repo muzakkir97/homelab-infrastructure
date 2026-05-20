@@ -4,6 +4,16 @@ Architectural decisions, strategy calls, and naming choices made during homelab 
 
 ---
 
+### 2026-05-21 - Langfuse wiring strategy for Da Vinci
+**Decision:** Use a single Langfuse node branched off Push to GitHub (after all 8 files complete) rather than 8 separate nodes after each Claude API call.
+**Why:** Cleaner pipeline design with fewer nodes; all 8 generations sent in one batch provides better observability without pipeline clutter.
+**Alternatives considered:** 8 individual Langfuse nodes (rejected — too many nodes, marginal observability benefit).
+
+### 2026-05-21 - Langfuse uses internal URL
+**Decision:** Use http://192.168.30.223:3000 instead of https://langfuse.najhin-gaming.com for n8n → Langfuse calls.
+**Why:** CT 211 and CT 223 are on the same VLAN 30; no need to route through Cloudflare for local communication.
+**Alternatives considered:** Use public HTTPS URL (rejected — unnecessary external routing for local traffic).
+
 ### 2026-05-19 - Da Vinci Update Pipeline rebuilt with 3 separate Haiku calls
 **Decision:** Rebuild Da Vinci Update Pipeline to use 3 separate Haiku API calls (one per file: AI-CONTEXT.md, changelog.md, troubleshoot.md) with immediate cost logging after each call.
 **Why:** Previous pipeline design was looping on error due to stuck validation files in staging-inbox. Separating calls per file isolates failures, enables immediate cost logging before parse/push, and provides clearer observability of each update step.
