@@ -1,7 +1,7 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
 > **Last Updated:** May 21, 2026  
-> **Total Phases:** 88 planned | 44 completed | 2 in progress | 42 future  
+> **Total Phases:** 88 planned | 45 completed | 2 in progress | 41 future  
 > **Next Session Priority:** Phase 22.8C (Homepage Widgets)
 
 ---
@@ -12,9 +12,9 @@
 |---------------------------------------|-------|----------|-------------|---------|
 | **Core Infrastructure & Security**     | 15    | 11       | 1           | 3       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
-| **AI & Automation (Gilgamesh)**       | 21    | 15       | 1           | 5       |
+| **AI & Automation (Gilgamesh)**       | 21    | 16       | 1           | 4       |
 | **Personal & Knowledge Management**    | 12    | 6        | 1           | 5       |
-| **Monitoring & Observability**        | 8     | 7        | 0           | 1       |
+| **Monitoring & Observability**        | 8     | 8        | 0           | 0       |
 | **Infrastructure Cleanup**            | 6     | 2        | 0           | 4       |
 | **Career Development**                | 4     | 2        | 0           | 2       |
 | **Long Term Vision**                  | 7     | 0        | 0           | 7       |
@@ -22,7 +22,7 @@
 
 ---
 
-## ✅ Completed Phases (44)
+## ✅ Completed Phases (45)
 
 ### Core Infrastructure Foundation
 | Phase | Title                                         | Completed    | Dependencies |
@@ -63,7 +63,7 @@
 | 16.1    | Documentation Pipeline — Update Workflow        | Apr 19, 2026 | Phase 7C     |
 | 16.2    | Documentation Pipeline — Sync Docs Workflow     | Apr 19, 2026 | Phase 16.1   |
 | 16.3    | Da Vinci Documentation Pipeline                 | Apr 25, 2026 | Phase 16.2   |
-| 16.4    | Documentation Pipeline Expansion — 8 Files     | May 20, 2026 | Phase 16.3   |
+| 16.4    | Documentation Pipeline Expansion — 8 Files     | May 21, 2026 | Phase 16.3   |
 | 16.5    | Da Vinci Update Pipeline Rebuild                | May 19, 2026 | Phase 16.4   |
 | 24.8    | Langfuse Wiring (Da Vinci)                      | May 21, 2026 | Phase 16.5   |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT            | Apr 24, 2026 | Phase 1      |
@@ -217,4 +217,4 @@
 
 ---
 
-*Last updated: May 21, 2026 — Phase 24.8 Langfuse Wiring (Da Vinci) completed; Phase 24.9 Langfuse Wiring (MERLIN) queued as action item*
+*Last updated: May 21, 2026 — Phase 16.4 Documentation Pipeline Expansion (8 files) completed; Phase 24.8 Langfuse Wiring (Da Vinci) completed; Phase 24.9 Langfuse Wiring (MERLIN) queued as action item*
