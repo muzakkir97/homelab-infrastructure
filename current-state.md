@@ -1,5 +1,5 @@
 # Current State Documentation
-**Last Updated:** 2026-05-20 (Phase 16.4)
+**Last Updated:** 2026-05-19 (Phase 16.4)
 
 ## Overview
 Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs.
@@ -28,6 +28,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Each call receives full session summary with dedicated per-file section
 - Cost logging fires immediately after each API call (8 rows per session)
 - Estimated cost per run: ~$0.25-0.35 (increased from ~$0.11 with 3-file pipeline)
+- Haiku pricing: $0.80/1M input tokens, $4.00/1M output tokens
 
 **File Update Patterns:**
 - AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md: Full rewrite/major sections
@@ -36,7 +37,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 
 **Known Behaviors:**
 - decisions.md created as new file on first pipeline run (null SHA handled in Push to GitHub node)
-- Cost logging pattern unchanged — 8 cost rows logged per session update run
+- Cost logging pattern: 8 cost rows logged per session update run, fires immediately after each API call
 - Hardcoded API keys in all 8 Claude API nodes (consistent with existing approach)
 - Backtick template literals in n8n Code nodes cause 400 errors on Anthropic API; all system prompts use single-quoted strings with concatenation
 - Fetch GitHub Files must hardcode token directly; do not reference trigger payload fields that are not explicitly defined in trigger schema (trigger only defines fileContent and chatId)
@@ -47,6 +48,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Runtime: ~5 minutes per session update run
 - Cost per run: ~$0.14 (~$4.20/month at once daily)
 - Files covered: AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
+- Per-file API calls: 3 separate Haiku calls with immediate cost logging (as of 2026-05-19 test)
 
 **Deployment Status (Phase 16.4 Complete):**
 - ✅ Expanded from 3-file to 8-file sequential Haiku chain
@@ -54,6 +56,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ Updated Claude project instructions with explicit per-file session summary sections
 - ✅ All 8 files pushed to GitHub from filesToPush array
 - ✅ decisions.md promoted to Phase 2 core pipeline with null SHA handling for new file creation
+- ✅ Pipeline rebuilt 2026-05-19: 3 separate Haiku API calls with immediate cost logging verified working
 
 ## Automation Status
 **Trigger:** Cron job (time TBD per Phase 16 work)
@@ -62,16 +65,19 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ decisions.md dynamically created on first run (null SHA path implemented)
 - ✅ Fetch GitHub Files: hardcoded token (not passed via trigger)
 - ✅ All 8 files now pushed to GitHub from filesToPush array
+- ✅ Per-file API calls: separate Haiku calls with immediate cost logging (verified 2026-05-19)
+- ✅ Staging-inbox stuck file issue resolved: deleted stuck file, rebuilt pipeline
 - ⚠️ Log Cost node for service-catalog has incorrect command_type (copy-paste error) — needs fix
 - ⚠️ GitHub docs/ folder contains stale changelog.md and troubleshoot.md artifacts from old pipeline — needs cleanup
 
 **Tested & Working:**
 - 8-file sequential pipeline architecture
 - Per-file token budgets and update patterns
-- Cost logging for all 8 API calls
+- Cost logging for all 8 API calls, fires immediately after each call
 - decisions.md null SHA handling in Push to GitHub
 - Single-quoted string concatenation in system prompts (template literals rejected)
 - Hardcoded credentials in all 8 Claude API nodes
+- 3-file separate API call pattern with immediate cost logging (as of 2026-05-19)
 
 ## Phase Status
 **Current Phase:** 16.4 — Documentation Pipeline Expansion (Complete)
@@ -79,15 +85,17 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Fixed 5 bugs: null GitHub token, null API keys in 5 nodes, missing 5 files in Push to GitHub, sessionSummary field mapping, template literal syntax errors
 - Updated Claude project instructions with per-file session summary sections
 - decisions.md promoted to Phase 2 pipeline (core priority)
+- Pipeline rebuild 2026-05-19: verified per-file API calls with immediate cost logging
 
 **Next Phase:** 17 (TBD)
 
 ## Action Items
+- [x] Da Vinci pipeline rebuild (3-file separate calls) — Completed 2026-05-19
+- [ ] Monitor gilgamesh_costs for 3 new rows per pipeline run (24-hour observation in progress)
+- [ ] Verify cost under target — Haiku pricing verified: $0.80/1M input, $4.00/1M output
 - [ ] Fix Log Cost node for service-catalog: change command_type from `/update (Da Vinci - current-state)` to `/update (Da Vinci - service-catalog)`
 - [ ] Clean up GitHub: delete stale docs/changelog.md and docs/troubleshoot.md (old pipeline artifacts)
-- [ ] Verify test run: 8 cost rows in gilgamesh_costs, 8 files updated on GitHub, Telegram confirmation
 - [ ] Check decisions.md created successfully on GitHub (new file, null SHA path)
-- [ ] Monitor cost per run — verify ~$0.25-0.35 for 8-file pipeline
 - [ ] Test Gemma 4 E4B on VM 400 — potential lighter alternative to qwen3:14b for simple Gilgamesh queries
 - [ ] Future: Explore Aider + local Ollama for EMIYA code agent capability (Phase 3 item)
 - [ ] Discuss $0 AI Architecture Stack diagram (pending)
