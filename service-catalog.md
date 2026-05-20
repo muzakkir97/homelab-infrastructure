@@ -29,6 +29,7 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - **Observability:** Langfuse wiring active — single trace (da-vinci-update) with 8 child generations logged per run
 - **Langfuse Node Location:** Branched off Push to GitHub (after all 8 files complete)
 - **Langfuse Internal URL:** http://192.168.30.223:3000 (CT 223 on VLAN 30, same as n8n CT 211)
+- **Langfuse Public URL:** https://langfuse.najhin-gaming.com
 - **Cost Logging:** Fires immediately after each API call (before parse/push); generates 8 cost rows per session update
 - **Cost per Run:** ~$0.14 (previously ~$0.11 for 3-file pipeline)
 - **Runtime:** ~5 minutes per run (previously ~4 minutes)
@@ -47,12 +48,13 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - Push to GitHub node updated to include all 8 files in filesToPush array
 
 ### Langfuse Observability Integration (Phase 24.8)
-- **Status:** Active
+- **Status:** Active — Wired and tested (2026-05-21)
 - **Trace Name:** da-vinci-update
 - **Trace Structure:** 1 parent trace with 8 child generations (one per file: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions)
 - **Node Architecture:** Single Langfuse node branched off Push to GitHub, executing after all 8 files complete and are pushed
 - **Node Name:** Langfuse — Da Vinci (in agents.md workflow diagram)
 - **Internal URL:** http://192.168.30.223:3000 (n8n CT 211 → Langfuse CT 223 on VLAN 30)
+- **Public URL:** https://langfuse.najhin-gaming.com (for verification and UI access)
 - **Batch Delivery:** All 8 generations sent in single request to Langfuse
 - **Design Rationale:** Cleaner pipeline, fewer nodes, all generations grouped in single trace for better observability
 - **Alternatives Rejected:** 8 individual Langfuse nodes after each Claude API call (too many nodes, marginal benefit)
@@ -71,27 +73,37 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - **Testing:** Verified cost logging fires immediately after each Claude API call, before parse/push operations
 - **Verification:** Monitor gilgamesh_costs for 3 new rows per pipeline run; observe API usage for 24 hours to confirm cost is under target
 
+### Langfuse Wiring Test (2026-05-21)
+- **Status:** Completed successfully
+- **Test Date:** 2026-05-21
+- **Result:** Single trace (da-vinci-update) with 8 child generations confirmed visible in Langfuse UI
+- **Verification Steps Pending:**
+  - [ ] Verify Langfuse trace appears at https://langfuse.najhin-gaming.com after each test run
+  - [ ] Confirm 8 generations visible under da-vinci-update trace
+  - [ ] Wire Langfuse into MERLIN next
+
 ### Key Technical Notes
 - Backtick template literals in n8n Code nodes cause 400 errors on Anthropic API; use single-quoted strings with concatenation instead
 - Fetch GitHub Files must hardcode token directly; do not reference trigger payload fields that are not explicitly defined in trigger schema
 - decisions.md on first creation uses null SHA path in GitHub push to create file fresh; subsequent runs use fetched SHA
 - Cost logging must fire immediately after each API call, not after parse or push operations
-- Langfuse integration uses internal VLAN URL to avoid unnecessary external routing; trace batching consolidates all 8 file generations into single observability record
+- Langfuse integration uses internal VLAN URL (http://192.168.30.223:3000) for n8n calls to avoid unnecessary external routing; trace batching consolidates all 8 file generations into single observability record
+- Langfuse public URL (https://langfuse.najhin-gaming.com) used for UI verification and external access
 
 ### Dependencies
 - Haiku 3.5 API (8 sequential calls, one per file)
 - GitHub API (fetch files, push updates)
-- Langfuse API (http://192.168.30.223:3000) for trace logging
+- Langfuse API (http://192.168.30.223:3000 internal; https://langfuse.najhin-gaming.com public) for trace logging
 - Workflow trigger payload (session summary via fileContent field, chatId)
 - Telegram notification service (confirmation)
 - n8n workflow runtime (~5 minutes per session)
 
 ## Monitoring & Verification
 - **Cost Tracking:** 8 rows logged per run in gilgamesh_costs table
-- **Observability Tracking:** 1 trace (da-vinci-update) with 8 child generations per run in Langfuse
+- **Observability Tracking:** 1 trace (da-vinci-update) with 8 child generations per run in Langfuse; accessible at https://langfuse.najhin-gaming.com
 - **File Updates:** All 8 files updated on GitHub after each session update
 - **Telegram Alerts:** Confirmation message sent on completion
-- **Langfuse UI:** Accessible at https://langfuse.najhin-gaming.com; pipeline traces visible with full generation details
+- **Langfuse UI:** Accessible at https://langfuse.najhin-gaming.com; pipeline traces visible with full generation details; internal n8n calls use http://192.168.30.223:3000
 - **Expected Cost Range:** ~$0.14 per full pipeline run (~$4.20/month at once daily)
 - **Files Pushed:** AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
 
