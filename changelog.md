@@ -1,12 +1,12 @@
 # Changelog
 
-### 2026-05-19 — Pipeline Test: Da Vinci Update Pipeline Rebuilt with Per-File API Calls
-- Da Vinci Update Pipeline rebuilt with 3 separate Haiku API calls (AI-CONTEXT, changelog, troubleshoot) instead of sequential 8-file chain
-- Cost logging moved to fire immediately after each Claude API call, before parse/push operations
-- Haiku pricing corrected: $0.80/1M input tokens, $4.00/1M output tokens
-- Resolved pipeline loop: staging-inbox had stuck file failing validation repeatedly every 15 minutes — deleted stuck file and restructured pipeline
-- Per-file API calls reduce error propagation; single file failure no longer blocks entire pipeline
-- Action items: Monitor gilgamesh_costs for 3 new rows per pipeline run; observe API usage for 24 hours to confirm cost under target
+### 2026-05-21 — Phase 24.8 — Langfuse Wiring (Da Vinci)
+- Wired Langfuse observability into Da Vinci Update Pipeline with single trace node branched off Push to GitHub
+- Da Vinci Update Pipeline now logs one trace (da-vinci-update) with 8 generations (one per file) to Langfuse per run
+- Langfuse internal URL configured: http://192.168.30.223:3000 for n8n → Langfuse calls (CT 211 and CT 223 on same VLAN 30)
+- Decision: Single Langfuse node after all 8 files complete rather than 8 individual nodes — cleaner pipeline, fewer nodes, batch send all generations
+- Decision: Use internal URL instead of https://langfuse.najhin-gaming.com — no need to route through Cloudflare for same-VLAN communication
+- Action items: Verify trace appears in Langfuse UI; confirm 8 generations visible under da-vinci-update trace; wire Langfuse into MERLIN next
 
 ### 2026-05-20 — Phase 16.4 — Documentation Pipeline Expansion
 - Expanded Da Vinci Update Pipeline from 3 files to 8 files: AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
@@ -28,3 +28,11 @@
 - Decision: Use Ollama as local LLM backend instead of LM Studio — LM Studio requires display, less stable as background service
 - Decision: Aider + local Ollama identified as better fit than Claude Code for future EMIYA code agent — reduces Claude API dependency
 - Identified stale docs/ folder artifacts on GitHub (docs/changelog.md, docs/troubleshoot.md) from old pipeline — manual cleanup required
+
+### 2026-05-19 — Pipeline Test: Da Vinci Update Pipeline Rebuilt with Per-File API Calls
+- Da Vinci Update Pipeline rebuilt with 3 separate Haiku API calls (AI-CONTEXT, changelog, troubleshoot) instead of sequential 8-file chain
+- Cost logging moved to fire immediately after each Claude API call, before parse/push operations
+- Haiku pricing corrected: $0.80/1M input tokens, $4.00/1M output tokens
+- Resolved pipeline loop: staging-inbox had stuck file failing validation repeatedly every 15 minutes — deleted stuck file and restructured pipeline
+- Per-file API calls reduce error propagation; single file failure no longer blocks entire pipeline
+- Action items: Monitor gilgamesh_costs for 3 new rows per pipeline run; observe API usage for 24 hours to confirm cost under target
