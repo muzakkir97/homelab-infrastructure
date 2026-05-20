@@ -1,7 +1,7 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** May 20, 2026  
-> **Total Phases:** 86 planned | 43 completed | 2 in progress | 41 future  
+> **Last Updated:** May 19, 2026  
+> **Total Phases:** 87 planned | 44 completed | 1 in progress | 42 future  
 > **Next Session Priority:** Phase 22.8C (Homepage Widgets)
 
 ---
@@ -12,7 +12,7 @@
 |---------------------------------------|-------|----------|-------------|---------|
 | **Core Infrastructure & Security**     | 15    | 11       | 1           | 3       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
-| **AI & Automation (Gilgamesh)**       | 19    | 13       | 0           | 6       |
+| **AI & Automation (Gilgamesh)**       | 20    | 14       | 0           | 6       |
 | **Personal & Knowledge Management**    | 12    | 6        | 1           | 5       |
 | **Monitoring & Observability**        | 8     | 6        | 0           | 2       |
 | **Infrastructure Cleanup**            | 6     | 2        | 0           | 4       |
@@ -22,7 +22,7 @@
 
 ---
 
-## ✅ Completed Phases (43)
+## ✅ Completed Phases (44)
 
 ### Core Infrastructure Foundation
 | Phase | Title                                         | Completed    | Dependencies |
@@ -64,6 +64,7 @@
 | 16.2    | Documentation Pipeline — Sync Docs Workflow     | Apr 19, 2026 | Phase 16.1   |
 | 16.3    | Da Vinci Documentation Pipeline                 | Apr 25, 2026 | Phase 16.2   |
 | 16.4    | Documentation Pipeline Expansion — 8 Files     | May 20, 2026 | Phase 16.3   |
+| 16.5    | Da Vinci Update Pipeline Rebuild                | May 19, 2026 | Phase 16.4   |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT            | Apr 24, 2026 | Phase 1      |
 | 39      | Open WebUI                                      | Apr 24, 2026 | Phase 38     |
 | 41      | Gilgamesh + Ollama Hybrid Routing               | Apr 24, 2026 | Phase 38     |
@@ -81,12 +82,11 @@
 
 ---
 
-## ⚡ In Progress (2)
+## ⚡ In Progress (1)
 
 | Phase | Title                           | Status                              | Dependencies | ETA     |
 |-------|---------------------------------|-------------------------------------|--------------|---------|
 | 22.8C | Homepage Widgets                | 🚧 Next session priority            | Phase 22.8B  | May     |
-| Guardian | Security Monitoring Agent     | 📋 Design phase after 22.8C         | Phase 22.8B  | Jun     |
 
 ---
 
@@ -96,6 +96,8 @@
 
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
 |-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
+| Da Vinci Stage 2 | RAG System & Knowledge Retrieval     | Phase 16.5        | 8-10h  | Qdrant vector database, embedding pipeline, knowledge recall |
+| Guardian | Security Monitoring Agent                   | Phase 22.8C       | 6-8h   | Alert translation, threat detection, security reporting |
 | 7E    | Extended Memory (20+ message conversations)     | Da Vinci Stage 2  | 8h     | RAG-powered conversation continuity      |
 | 7F    | File Generation (code, configs, docs)           | Phase 7E          | 6h     | Artifact generation capabilities         |
 | 7G    | Vision API (image analysis)                     | Phase 7F          | 4h     | Llama 3.2 Vision 11B integration         |
@@ -214,4 +216,4 @@
 
 ---
 
-*Last updated: May 20, 2026 — Next update after Phase 22.8C completion*
+*Last updated: May 19, 2026 — Da Vinci Update Pipeline rebuilt with immediate cost logging and per-file API calls*
