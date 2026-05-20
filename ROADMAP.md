@@ -1,7 +1,7 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** May 19, 2026  
-> **Total Phases:** 87 planned | 44 completed | 1 in progress | 42 future  
+> **Last Updated:** May 21, 2026  
+> **Total Phases:** 88 planned | 44 completed | 2 in progress | 42 future  
 > **Next Session Priority:** Phase 22.8C (Homepage Widgets)
 
 ---
@@ -12,9 +12,9 @@
 |---------------------------------------|-------|----------|-------------|---------|
 | **Core Infrastructure & Security**     | 15    | 11       | 1           | 3       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
-| **AI & Automation (Gilgamesh)**       | 20    | 14       | 0           | 6       |
+| **AI & Automation (Gilgamesh)**       | 21    | 15       | 1           | 5       |
 | **Personal & Knowledge Management**    | 12    | 6        | 1           | 5       |
-| **Monitoring & Observability**        | 8     | 6        | 0           | 2       |
+| **Monitoring & Observability**        | 8     | 7        | 0           | 1       |
 | **Infrastructure Cleanup**            | 6     | 2        | 0           | 4       |
 | **Career Development**                | 4     | 2        | 0           | 2       |
 | **Long Term Vision**                  | 7     | 0        | 0           | 7       |
@@ -65,6 +65,7 @@
 | 16.3    | Da Vinci Documentation Pipeline                 | Apr 25, 2026 | Phase 16.2   |
 | 16.4    | Documentation Pipeline Expansion — 8 Files     | May 20, 2026 | Phase 16.3   |
 | 16.5    | Da Vinci Update Pipeline Rebuild                | May 19, 2026 | Phase 16.4   |
+| 24.8    | Langfuse Wiring (Da Vinci)                      | May 21, 2026 | Phase 16.5   |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT            | Apr 24, 2026 | Phase 1      |
 | 39      | Open WebUI                                      | Apr 24, 2026 | Phase 38     |
 | 41      | Gilgamesh + Ollama Hybrid Routing               | Apr 24, 2026 | Phase 38     |
@@ -82,11 +83,12 @@
 
 ---
 
-## ⚡ In Progress (1)
+## ⚡ In Progress (2)
 
 | Phase | Title                           | Status                              | Dependencies | ETA     |
 |-------|---------------------------------|-------------------------------------|--------------|---------|
 | 22.8C | Homepage Widgets                | 🚧 Next session priority            | Phase 22.8B  | May     |
+| 24.9  | Langfuse Wiring (MERLIN)        | 🚧 Action item: wire next agent     | Phase 24.8   | May     |
 
 ---
 
@@ -96,14 +98,11 @@
 
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
 |-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
-| Da Vinci Stage 2 | RAG System & Knowledge Retrieval     | Phase 16.5        | 8-10h  | Qdrant vector database, embedding pipeline, knowledge recall |
+| Da Vinci Stage 2 | RAG System & Knowledge Retrieval     | Phase 24.8        | 8-10h  | Qdrant vector database, embedding pipeline, knowledge recall |
 | Guardian | Security Monitoring Agent                   | Phase 22.8C       | 6-8h   | Alert translation, threat detection, security reporting |
 | 7E    | Extended Memory (20+ message conversations)     | Da Vinci Stage 2  | 8h     | RAG-powered conversation continuity      |
 | 7F    | File Generation (code, configs, docs)           | Phase 7E          | 6h     | Artifact generation capabilities         |
 | 7G    | Vision API (image analysis)                     | Phase 7F          | 4h     | Llama 3.2 Vision 11B integration         |
-| 7H    | Document Upload (PDF/text processing)           | Phase 7G          | 6h     | Document analysis and Q&A                |
-| 7I    | Quality Assurance (compare with Claude Pro)     | Phase 7H          | 4h     | A/B testing and quality metrics          |
-| 7J    | Migration (full switch to Gilgamesh)            | Phase 7I          | 2h     | Replace Claude Pro subscription          |
 
 ### 🎮 Gaming Platform Pipeline (Priority: Medium)
 
@@ -204,16 +203,18 @@
 ## 🔗 Phase Dependencies
 
 **Critical Path Analysis:**
-1. **Gilgamesh Enhancement Track:** 22.8C → Da Vinci Stage 2 → Guardian → 7E → 7F-7J
+1. **Gilgamesh Enhancement Track:** 22.8C → Da Vinci Stage 2 → Guardian → 7E → 7F-7G
 2. **Gaming Platform Track:** Mash 59-64 (can run parallel to Gilgamesh)
 3. **Infrastructure Track:** 25-29 (low priority, independent)
 4. **Career Development Track:** 35-36 (depends on infrastructure completion)
+5. **Observability Track:** Phase 24.8 (Da Vinci) → Phase 24.9 (MERLIN) → wire remaining agents
 
 **Parallel Development Opportunities:**
 - Gaming platform phases can run alongside AI development
 - Infrastructure cleanup can happen during slower development periods
 - Hardware upgrades can be integrated into any session
+- Langfuse wiring can be integrated into agent development sessions
 
 ---
 
-*Last updated: May 19, 2026 — Da Vinci Update Pipeline rebuilt with immediate cost logging and per-file API calls*
+*Last updated: May 21, 2026 — Phase 24.8 Langfuse Wiring (Da Vinci) completed; Phase 24.9 Langfuse Wiring (MERLIN) queued as action item*
