@@ -91,3 +91,43 @@
 **Resolution:** Traces are accessible via direct URL links and public API (/api/public/traces). Use API and direct URLs for trace inspection until UI trace list bug is resolved. Consider upgrading Langfuse to latest version or filing bug report with Langfuse maintainers.
 
 **Lesson:** Langfuse v3 self-hosted has known UI bugs that do not indicate data loss. Verify trace ingestion via ClickHouse queries and public API before assuming ingestion failure. UI bugs are cosmetic; data integrity is maintained.
+
+---
+
+**Symptoms:** Knowledge Indexer crashes when downloading files from new Obsidian folders; "Document loader is not initialized" error on manual runs
+
+**Root Cause:** New folders added to indexing (04-personal/, 08-agents/, 09-people/, 10-projects/) contained empty files or files that failed download, causing loader initialization to fail for the entire batch
+
+**Resolution:** Added If node filter before Document Loader node to skip files where `$json.data` is empty or null. Filter checks: `$json.data && $json.data.length > 0` to prevent empty payloads from reaching loader.
+
+**Lesson:** Sequential document processing workflows need defensive checks for empty/null data before passing to loaders. Always validate payload existence before instantiating resource-intensive components. Empty data is recoverable if filtered early; failures downstream cascade to entire batch.
+
+---
+
+**Symptoms:** Da Vinci — Personal Knowledge gateway SKIP detection overwrites profile with empty content; "SKIP\n\nReasoning..." treated as valid data instead of rejection signal
+
+**Root Cause:** SKIP detection used strict equality (`content === 'SKIP'`) but Claude returns multi-line response like `SKIP\n\nReasoning: ...`. Condition failed, code proceeded to save empty profile, overwriting previous data.
+
+**Resolution:** Changed SKIP detection to use `content.trim().startsWith('SKIP')` instead of strict equality. Now correctly identifies rejection signals regardless of trailing whitespace or reasoning text.
+
+**Lesson:** LLM response parsing must account for multi-line outputs and whitespace. Use startsWith/includes for signal detection rather than strict equality on multi-line responses. Always trim before pattern matching on Claude output.
+
+---
+
+**Symptoms:** Da Vinci — Personal Knowledge gateway fails to replace {{date}} placeholder; date shows literally in profile as "{{date}}" instead of actual date
+
+**Root Cause:** Date placeholder replacement delegated to Claude prompt, but Claude sometimes fails to recognize or replace template syntax, especially when prompt is constructed dynamically
+
+**Resolution:** Replace {{date}} with actual MYT date (YYYY-MM-DD format) in the Code node BEFORE sending payload to Claude API. Use `let currentProfile = bootstrapTemplate.replace(/\{\{date\}\}/g, getTodayMYT())` in Code node. This ensures date is always substituted regardless of Claude's parsing.
+
+**Lesson:** Template substitution for infrastructure values should happen in deterministic code paths, not delegated to LLM processing. Use regex replace in Code nodes for system values; reserve Claude processing for semantic decisions only. Separating concerns prevents both parsing failures and data inconsistencies.
+
+---
+
+**Symptoms:** VM 400 disk expansion commands fail; growpart returns "No partitions found" or "Device not found"
+
+**Root Cause:** Assumed VM 400 uses /dev/sda (SATA), but Proxmox KVM deployment uses /dev/vda (virtio). Commands targeted wrong device.
+
+**Resolution:** Use /dev/vda instead of /dev/sda for all VM 400 disk operations. Sequence: `growpart /dev/vda 3` → `pvresize /dev/vda3` → `lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv` → `resize2fs`. Confirm device with `lsblk` before any resize command.
+
+**Lesson:** KVM/virtio VMs use vda naming; bare metal and older hypervisors use sda. Always run `lsblk` to verify actual device names before destructive storage operations. Device naming varies by hypervisor — assumptions cause data loss.
