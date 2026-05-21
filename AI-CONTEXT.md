@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** May 21, 2026
+> **Last Updated:** May 22, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. **Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view. VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true (attempted fix for UI bug, did not resolve).**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. **Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view. VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true (attempted fix for UI bug, did not resolve). Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed).**
 
 ---
 
@@ -98,7 +98,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 - **Agent coordination** → shared state
 
 ### Layer 6: Observability (Monitoring)
-- **Langfuse** → LLM performance tracking (wired to Da Vinci)
+- **Langfuse** → LLM performance tracking (wired to Da Vinci and Gilgamesh)
 - **Midas** → Cost analysis + optimization
 - **Grafana** → Infrastructure metrics
 - **Da Vinci** → Agent behavior logs
@@ -255,10 +255,12 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Organization:** Kuromoon, Project: Gilgamesh Agents
 - **Internal URL:** http://192.168.30.223:3000
 - **Health endpoint:** /api/public/health
-- **Status:** Wired to Da Vinci Update Pipeline — traces active (confirmed in ClickHouse, accessible via API)
-- **Tracing:** One trace (da-vinci-update) with 8 child generations logged per pipeline run
-- **Known issue:** UI trace list shows no results despite traces being present in ClickHouse and accessible via /api/public/traces and direct URL. Root cause: Langfuse v3 self-hosted UI trace list bug where traces don't appear in list view. ClickHouse analytics_traces view only shows data >1 hour old by design. PostgreSQL traces table empty (expected behavior for v3).
-- **Environment variable:** LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true (attempted fix for UI bug, did not resolve)
+- **Status:** Wired to Da Vinci Update Pipeline and Gilgamesh — traces active and visible in UI (1-hour analytics delay resolved)
+- **Tracing:** Two trace types:
+  - **da-vinci-update:** One trace with 8 child generations logged per Da Vinci pipeline run (files: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions)
+  - **gilgamesh-chat:** One trace per Gilgamesh message with input/output/metadata (routedTo, ragUsed, commandType, chatId)
+- **UI Status:** Working — trace list now displays traces with 1-hour analytics aggregation delay (traces appear after 1 hour, not immediately). Direct API (/api/public/traces) returns results immediately. Direct URL access works immediately.
+- **Environment variable:** LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true (attempted fix for early-session UI bug, not needed now)
 
 ### network-ddns (CT 207)
 
@@ -292,8 +294,8 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **PCIe config:** hostpci0=0000:0d:00.0,pcie=1,rombar=0 hostpci1=0000:0d:00.1,pcie=1
 - **OS:** Ubuntu 22.04
 - **SSH:** `ssh muzakkir@192.168.30.221` — use `muzakkir` user, not root
-- **Disk:** Expanded from 56GB to 86GB (May 21, 2026) via Proxmox resize + LVM extension. 34GB free post-expansion.
-- **Ollama models:** qwen3:14b (primary, 9.3GB), llama3.2:latest (secondary, 3B), nomic-embed-text (768 dims). Removed: gemma3:4b, gemma3:12b, phi4-mini (all hallucinated factual data in testing).
+- **Disk:** Expanded from 56GB to 86GB (May 21, 2026) via Proxmox resize + LVM extension (device: /dev/vda, not /dev/sda). 34GB free post-expansion.
+- **Ollama models:** qwen3:14b (primary, 9.3GB), qwen3.5:latest (secondary), llama3.2:latest (3B), nomic-embed-text (768 dims). Removed (May 22): gemma3:4b, gemma3:12b, phi4-mini (all hallucinated factual data in testing).
 - **Open WebUI:** Docker container, connects via 172.17.0.1:11434
 - **Qdrant:** Port 6333 (REST), 6334 (gRPC), storage at /opt/qdrant/storage
 
@@ -331,26 +333,29 @@ second-brain/
 ├── 01-homelab/        # Infrastructure documentation
 ├── 02-career/         # Career transition materials
 ├── 03-knowledge/      # Learning notes, references
-├── 04-personal/       # Personal management, subscriptions, finance
+├── 04-personal/       # Personal management, subscriptions, finance (indexed in Qdrant)
 │   ├── subscriptions/ # Individual notes per subscription
 │   ├── finance/       # Budget tracking, grocery lists
 │   ├── grocery/       # Shopping lists and meal planning
-│   └── health/        # Blood pressure tracking, food logs
+│   ├── health/        # Blood pressure tracking, food logs
+│   └── muzakkir-profile.md  # Personal profile managed by Da Vinci Personal Knowledge gateway
 ├── 05-templates/      # Note templates
 ├── 06-archive/        # Completed or outdated notes
 ├── 07-daily/          # Daily notes from Phase 22.2
-├── 08-projects/       # Active projects and goals
-├── 09-meetings/       # Meeting notes and agendas
-└── 10-reference/      # Quick reference materials
+├── 08-agents/         # Agent configurations and knowledge (was 08-projects)
+├── 09-people/         # People notes (was 09-meetings)
+├── 10-projects/       # Active projects and goals (was 10-reference)
+└── 11-reference/      # Quick reference materials
 ```
 
-### Key Features (Phase 22.1 + 22.2 + 22.8B)
+### Key Features (Phase 22.1 + 22.2 + 22.8B + Phase 24.9)
 
 - **Subscription tracker:** 6 subscriptions tracked in 04-personal/subscriptions/
 - **Dashboard:** Dataview queries at 04-personal/dashboard showing costs and totals
 - **Daily notes:** Auto-created at midnight via n8n (Phase 22.2)
 - **Morning briefing:** 7am Telegram summary via MERLIN
 - **Health tracking:** Food log, BP log, medication log via Gilgamesh buttons (Phase 22.8B)
+- **Personal profile:** muzakkir-profile.md managed by Da Vinci Personal Knowledge gateway, indexed in Qdrant obsidian_knowledge collection, recalled by Gilgamesh via RAG (Phase 24.9)
 - **/daily command:** Gilgamesh creates immediate daily notes
 
 ---
@@ -441,8 +446,8 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 
 | Servant      | Class  | Role                                                                          | Platform                      | Status                     |
 |--------------|--------|-------------------------------------------------------------------------------|-------------------------------|----------------------------|
-| Gilgamesh 👑 | Archer | Life Interface & Personal AI Assistant                                        | Telegram (@JhinGilgamesh_bot) | ✅ Active                   |
-| Da Vinci 🎨  | Caster | Sync + Goals + Review (Stage 2 RAG active; documentation pipeline active)   | n8n/Nextcloud                 | ✅ Active                   |
+| Gilgamesh 👑 | Archer | Life Interface & Personal AI Assistant (Langfuse wired May 22, 2026)         | Telegram (@JhinGilgamesh_bot) | ✅ Active                   |
+| Da Vinci 🎨  | Caster | Sync + Goals + Review (Stage 2 RAG active; documentation pipeline active; Personal Knowledge gateway active) | n8n/Nextcloud | ✅ Active |
 | Midas 💰     | Caster | CFO — Cost Tracking & Optimization                                            | n8n                           | ✅ Active                   |
 | MERLIN 🔮    | Caster | Proactive Nudges & Scheduler                                                  | n8n                           | ✅ Active                   |
 
@@ -450,8 +455,8 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 
 | Servant             | Class    | Role                                          | Platform      | Build Order | Status     |
 |---------------------|----------|-----------------------------------------------|---------------|-------------|------------|
-| Gilgamesh 👑        | Archer   | Life Interface & Personal AI Assistant        | Telegram      | —           | ✅ Active   |
-| Da Vinci 🎨         | Caster   | Sync + Goals + Weekly Review + RAG           | n8n/Nextcloud | —           | ✅ Active   |
+| Gilgamesh 👑        | Archer   | Life Interface & Personal AI Assistant (Langfuse wired, RAG for personal profile) | Telegram | —         | ✅ Active   |
+| Da Vinci 🎨         | Caster   | Sync + Goals + Weekly Review + RAG (Personal Knowledge gateway active) | n8n/Nextcloud | —      | ✅ Active   |
 | Midas 💰            | Caster   | CFO — Cost Tracking & Optimization            | n8n           | 1st         | ✅ Active   |
 | MERLIN 🔮           | Caster   | Proactive Nudges & Health Scheduler           | n8n           | 2nd         | ✅ Active   |
 | EMIYA 🏹            | Archer   | CTO — Infrastructure + Agent Spawning         | n8n           | 3rd         | 📋 Planned  |
@@ -461,16 +466,18 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 
 - Roster reduced from 9 to 6 agents for focused deployment
 - Build order is firm: Midas complete, MERLIN complete, then EMIYA (24.1-24.8), Guardian
+- All agents write Obsidian data through Da Vinci Personal Knowledge gateway (not directly)
 
-### Da Vinci — Sync + Goals + Weekly Review + RAG
+### Da Vinci — Sync + Goals + Weekly Review + RAG + Personal Knowledge Gateway
 
 **Role scope:**
 
 - Documentation: maintains AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md via /update and /sync-docs
-- Obsidian writes: session summaries written to vault via Nextcloud WebDAV
+- Obsidian writes: session summaries written to vault via Nextcloud WebDAV; personal knowledge writes via Da Vinci Personal Knowledge gateway
 - Goal tracking: monitors progress, identifies blockers, suggests next steps
 - Weekly review: Sunday analysis of week's progress, agent performance, system health
 - RAG retrieval (Stage 2): Qdrant + nomic-embed-text for knowledge recall across all agents
+- Personal Knowledge gateway: receives facts from Gilgamesh and future agents via webhook, assesses quality, writes to muzakkir-profile.md, logs cost
 - Observability logs: all agents log activity to Da Vinci
 - Kanban management: Nextcloud Deck card creation and status updates
 - Langfuse tracing: logs trace (da-vinci-update) with 8 child generations per pipeline run
@@ -478,8 +485,8 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 **Stage 2 stack:** Qdrant (VM 400, port 6333/6334) + nomic-embed-text + n8n Knowledge Indexer workflow
 
 **Collections:**
-- obsidian_knowledge: 1567 points (9 indexed folders)
-- gilgamesh_conversations: 1 point (conversation archival)
+- obsidian_knowledge: 1,736 points (90 indexed files including 04-personal/, 08-agents/, 09-people/, 10-projects/)
+- gilgamesh_conversations: archived long-term memories
 
 **Pronouns:** she/her
 
@@ -490,7 +497,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Grounding fix: Per-file system prompts in Claude project instructions with explicit per-file sections (CHANGES TO AI-CONTEXT.MD, CHANGES TO CHANGELOG.MD, etc.)
 - Deck integration complete with 6 additional nodes for kanban management
 - Da Vinci workflow includes Limit node before Notify Complete to prevent notification spam
-- Knowledge Indexer runs at 3am daily (full re-index v1)
+- Knowledge Indexer runs at 3am daily (full re-index v1), indexes 90 files now (was ~70 before Phase 24.9)
 - **Concurrency lock:** Check Running node queries n8n API before proceeding
 - **Schedule:** Inbox Watcher runs every 15 minutes (was 1 minute)
 - **Model:** claude-haiku-4-5-20251001 (8 separate API calls, one per file: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions)
@@ -498,6 +505,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - **Langfuse integration:** Single Langfuse node branched off Push to GitHub (after all 8 files complete). Logs one trace (da-vinci-update) with 8 child generations per run. Uses internal URL: http://192.168.30.223:3000
 - **Haiku pricing:** $0.80/1M input tokens, $4.00/1M output tokens
 - **Cost per run estimate:** ~$0.25-0.35 for 8 files (up from ~$0.11 for 3 files)
+- **Personal Knowledge gateway:** Separate n8n workflow (Da Vinci — Personal Knowledge). Webhook POST /davinci-personal-knowledge. Uses Claude Haiku max_tokens 4000. Writes to muzakkir-profile.md via WebDAV. Filters out one-time events, stores durable personal facts. Quality gate prevents noise.
 
 ### Nextcloud Deck Integration
 
@@ -577,15 +585,16 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 
 ### Design Principles
 
-- Gilgamesh = Telegram-only (life interface)
+- Gilgamesh = Telegram-only (life interface), wired to Langfuse (traces input/output/metadata)
 - All agents communicate via ntfy (universal notification hub)
 - All agents log activity to Da Vinci
+- All agents write Obsidian data through Da Vinci Personal Knowledge gateway (Da Vinci is sole writer)
 - All agents use Fate/GO servant theming for consistency
 - Universal data flow: Input → processing → triple-write (Data Tables + Obsidian + Qdrant)
 
 ---
 
-## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15/41/Da Vinci Stage 2/Phase 7E)
+## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15/41/Da Vinci Stage 2/Phase 7E/Phase 24.9)
 
 ### Architecture
 
@@ -597,34 +606,43 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
                          Ollama qwen3:14b      Haiku 4.5           Haiku 4.5
                          (simple, local)    (Ollama fallback)    (Da Vinci only)
                                └────────────────────┼──────────────────┘
-                                                    ▼
+                                                    ↓
                                           Memory (n8n Data Tables)
-                                                    ▼
+                                                    ↓
                                           RAG Retrieval (Qdrant → nomic-embed-text)
-                                                    ▼
+                                          (obsidian_knowledge + personal profile)
+                                                    ↓
                                           Conversation Archival (30+ rows → Qdrant)
-                                                    ▼
+                                                    ↓
+                                          Send to Da Vinci Personal Knowledge
+                                          (facts >20 chars → quality gate → muzakkir-profile.md)
+                                                    ↓
+                                          Langfuse Tracing (gilgamesh-chat)
+                                                    ↓
                                           /update → Da Vinci → Nextcloud → GitHub
                                           /sync-docs → Full Doc Pipeline
 ```
 
-### Smart Routing + RAG + Extended Memory (Phase 41 + Da Vinci Stage 2 + Phase 7E — COMPLETE)
+### Smart Routing + RAG + Extended Memory + Personal Knowledge (Phase 41 + Da Vinci Stage 2 + Phase 7E + Phase 24.9 — COMPLETE)
 
 - **Ollama qwen3:14b** — Primary route for simple queries (local, free, fast)
 - **Haiku 4.5** — Fallback if Ollama is down or unavailable (Gilgamesh + Da Vinci both use Haiku)
 - **Da Vinci Update Pipeline** — claude-haiku-4-5-20251001 for documentation merging (8 separate calls, one per file)
-- **RAG Retrieval** — Qdrant vector search with nomic-embed-text embeddings (768 dims)
+- **RAG Retrieval** — Qdrant vector search with nomic-embed-text embeddings (768 dims) against obsidian_knowledge (1,736 chunks including personal profile)
 - **Extended Memory** — Conversation archival when history exceeds 30 rows
+- **Personal Knowledge** — Gilgamesh sends facts to Da Vinci Personal Knowledge gateway, which writes to muzakkir-profile.md and indexes in Qdrant
+- **Langfuse Tracing** — Gilgamesh fires async trace (gilgamesh-chat) with input/output/metadata (routedTo, ragUsed, commandType, chatId)
 - Routing logic runs in a Route Check If node before calling any model
 - RAG skipped for greetings (<10 chars or regex match)
 - /update messages filtered from conversation history
+- Personal knowledge sent async via Code node (fire-and-forget, 5s timeout)
 
 ### Features
 
 - **Conversation memory:** Last 15 messages stored in n8n Data Tables (reduced from 20 for RAG integration)
 - **Extended memory:** Conversations archived to Qdrant at 30+ rows
 - **Smart routing:** Ollama (local, primary) → Haiku (fallback)
-- **RAG knowledge recall:** Queries Qdrant for relevant Obsidian content + conversations
+- **RAG knowledge recall:** Queries Qdrant for relevant Obsidian content + personal profile + conversations
 - **Web search:** Real-time information via Claude's web_search tool
 - **Cost tracking:** Token usage logged to gilgamesh_costs table with command_type; cost_usd calculated from token rates
 - **Inline keyboard menu:** Full menu system with all submenus working
@@ -632,6 +650,8 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
 - **Slash commands:** 11 commands for direct actions
 - **Health tracking:** Food log, BP log, medication log via interactive button prompts (Phase 22.8B)
+- **Personal knowledge:** Recalls profile facts via RAG (name, preferences, history)
+- **Langfuse observability:** Traces visible in langfuse.najhin-gaming.com with input/output/metadata
 
 ### Slash Commands
 
@@ -659,6 +679,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Haiku Model   | claude-haiku-4-5-20251001 (Ollama fallback + Da Vinci)   |
 | n8n Container | CT 211, 192.168.30.211                                    |
 | Qdrant        | VM 400, ports 6333 (REST) + 6334 (gRPC)                  |
+| Langfuse      | CT 223, http://192.168.30.223:3000 (internal VLAN 30 URL) |
 | Proxmox API   | root@pam!gilgamesh token                                  |
 | Proxmox node  | muzakkir (not kuromoon)                                   |
 
@@ -669,17 +690,19 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - Ollama queries cost $0 (local inference)
 - command_type derived from Telegram message text directly
 - **Da Vinci:** claude-haiku-4-5-20251001 (8 separate calls), cost logged immediately after each call
+- **Da Vinci Personal Knowledge gateway:** claude-haiku-4-5-20251001 max_tokens 4000, cost logged after assessment
 
-### n8n Workflows (Count: 14)
+### n8n Workflows (Count: 15)
 
 | Workflow                           | Purpose                                  | Nodes | Trigger  |
 |------------------------------------|------------------------------------------|-------|----------|
-| Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory | 18+ | Telegram |
+| Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory, personal knowledge, Langfuse | 20+  | Telegram |
 | Documentation Pipeline — Update    | Session summary → 8 files                | 7     | Webhook  |
 | Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
 | Da Vinci — Update Pipeline         | 8 separate Haiku API calls (AI-CONTEXT 25k, changelog 6k, troubleshoot 4k, ROADMAP 8k, agents 8k, current-state 4k, service-catalog 4k, decisions 3k) → GitHub push + Nextcloud + Langfuse | 35+ | Execute Workflow |
 | Da Vinci — Inbox Watcher           | Staging inbox → calls Update Pipeline (every 15 min) | 6     | Schedule |
-| Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily)   | 8     | Schedule |
+| Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily, 90 files) | 8     | Schedule |
+| Da Vinci — Personal Knowledge      | Receives facts from agents → Claude assessment → muzakkir-profile.md → Qdrant | 7     | Webhook  |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
 | Midas — Daily Brief                | 9am scheduled cost summary               | 4     | Schedule |
 | MERLIN — Reminders                 | 8am daily infrastructure checks          | 8     | Schedule |
@@ -689,7 +712,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Push to GitHub                     | Legacy (unpublished)                     | 4     | Webhook  |
 | Da Vinci — Documentation Pipeline  | INACTIVE (deactivated 2026-05-18, orphaned) | 17+ | Webhook |
 
-> Note: Hybrid routing (Phase 41), RAG retrieval (Da Vinci Stage 2), and Extended Memory (Phase 7E) are all integrated into the Gilgamesh — Life Interface workflow. Health tracking (Phase 22.8B) is also integrated.
+> Note: Hybrid routing (Phase 41), RAG retrieval (Da Vinci Stage 2), Extended Memory (Phase 7E), Personal Knowledge (Phase 24.9), and Langfuse Tracing are all integrated into the Gilgamesh — Life Interface workflow. Health tracking (Phase 22.8B) is also integrated.
 
 ### Inline Keyboard Menu Status
 
@@ -719,17 +742,17 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | health_bp_log            | Blood pressure readings                         | id, logged_at, systolic, diastolic, notes, chat_id |
 | health_med_log           | Medication tracking                             | id, logged_at, medication, dosage, notes, chat_id |
 
-### RAG System (Da Vinci Stage 2)
+### RAG System (Da Vinci Stage 2 + Phase 24.9)
 
 | Component | Details |
 |-----------|---------|
 | **Vector DB** | Qdrant on VM 400 (http://192.168.30.221:6333) |
 | **Embeddings** | nomic-embed-text (768 dimensions) |
-| **Collections** | obsidian_knowledge (1567 points), gilgamesh_conversations (1 point) |
-| **Indexed Folders** | 00-inbox, 01-homelab, 02-career, 03-knowledge, 07-daily, 08-projects, 09-meetings, 10-reference, AI-Stuff/Homelab/homelab-infrastructure |
-| **Excluded** | 04-personal/ (privacy), 05-templates/, 06-archive/ |
-| **Indexing** | Daily 3am via "Da Vinci — Knowledge Indexer" workflow (full re-index v1) |
-| **Retrieval** | Top 5 results, similarity threshold 0.7, injected into system prompt |
+| **Collections** | obsidian_knowledge (1,736 points), gilgamesh_conversations (archived) |
+| **Indexed Folders** | 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal (NEW), 07-daily, 08-agents (was 08-projects), 09-people (was 09-meetings), 10-projects (was 10-reference) |
+| **Excluded** | 05-templates/, 06-archive/ |
+| **Indexing** | Daily 3am via "Da Vinci — Knowledge Indexer" workflow (full re-index v1). 90 files indexed (was ~70). Empty file filter added. |
+| **Retrieval** | Top 5 results, similarity threshold 0.7, injected into system prompt. Used for both agent context and personal profile recall. |
 
 ### SSH & API Access
 
@@ -745,6 +768,9 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - Progress bars use ASCII (= and -) — Unicode block chars don't render on Telegram mobile
 - RAG payload field is "content" (not "text" or "pageContent")
 - Backtick template literals in n8n Code nodes cause 400 errors on Anthropic API — use single-quoted strings with concatenation instead
+- VM 400 disk block device is /dev/vda (KVM virtio), not /dev/sda (IDE)
+- Gemma 3 models hallucinate factual data — not trustworthy for personal assistant role
+- Langfuse UI trace list has 1-hour analytics delay by design — traces appear in list after 1 hour, but API and direct URL access work immediately
 
 ---
 
@@ -852,18 +878,20 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Bot                | Platform         | Source              | Status   | Purpose                                                        |
 |--------------------|------------------|---------------------|----------|----------------------------------------------------------------|
-| @JhinGilgamesh_bot | Telegram         | n8n CT 211          | ✅ Active | Personal AI agent — chat, homelab control, /update, /sync-docs |
+| @JhinGilgamesh_bot | Telegram         | n8n CT 211          | ✅ Active | Personal AI agent — chat, homelab control, /update, /sync-docs, personal knowledge |
 | Midas              | Telegram         | n8n CT 211          | ✅ Active | CFO cost tracking — /midas reports, 9am daily briefs           |
 | MERLIN             | Telegram         | n8n CT 211          | ✅ Active | Reminders — 8am daily infrastructure checks                    |
 | Daily Note Creator | Nextcloud WebDAV | n8n CT 211          | ✅ Active | Midnight daily note creation in Obsidian vault                 |
 | Morning Briefing   | Telegram         | n8n CT 211          | ✅ Active | 7am daily summary to Telegram                                  |
 | Health Tracking    | Obsidian WebDAV  | n8n CT 211          | ✅ Active | Food/BP/medication logging via Gilgamesh buttons               |
+| Personal Knowledge | Obsidian WebDAV  | n8n CT 211          | ✅ Active | muzakkir-profile.md managed by Da Vinci gateway (Phase 24.9)   |
 | Homelab Alerts     | Telegram         | Alertmanager CT 205 | ✅ Active | Critical alerts (host down, high CPU/memory/disk)              |
 | Homelab Alerts     | Discord webhook  | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel                        |
 | Homelab-Ntfy       | ntfy CT 222      | Uptime Kuma CT 206  | ✅ Active | Service down alerts via ntfy                                   |
 | Nextcloud Deck     | Deck CT 220      | n8n CT 211          | ✅ Active | Kanban project management via Da Vinci                         |
+| Langfuse           | CT 223           | n8n CT 211 + Gilgamesh | ✅ Active | LLM tracing (da-vinci-update + gilgamesh-chat traces)         |
 
-**Planned:** Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n. Langfuse wiring into MERLIN.
+**Planned:** Wire Langfuse into MERLIN and Midas. Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n. Triggered Qdrant re-indexing after Da Vinci Personal Knowledge writes.
 
 ### Nextcloud Deck Integration
 
@@ -979,6 +1007,8 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 24.6    | Performance + Goal Optimization — resource + goal tracking       | 📋 Planned | —            |
 | 24.7    | Universal Notifications — ntfy hub deployment                    | ✅ Complete | May 13, 2026 |
 | 24.8    | Langfuse AI Observability                                        | ✅ Complete | May 21, 2026 |
+| 24.9    | Personal Knowledge System (muzakkir-profile.md + gateway)        | ✅ Complete | May 22, 2026 |
+| 24.10   | Triggered Qdrant Re-indexing (on Da Vinci Personal Knowledge write) | 📋 Planned | —            |
 | 25.1    | Voice Interface — Claude API transcription + voice responses     | 📋 Planned | —            |
 | 25.2    | Email Integration — IMAP monitoring + smart filtering            | 📋 Planned | —            |
 | 25.3    | Self-Evolving Skills — Hermes-style learning loop (knowledge docs + RAG recall) | 📋 Planned | —            |
@@ -990,6 +1020,24 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ---
 
 ## 📝 Session Log (Most Recent 5)
+
+### Session 12: May 22, 2026 — Phase 24.9: Personal Knowledge System + Langfuse Gilgamesh Wiring
+
+**Duration:** 2h
+**Topics:** Verified Langfuse UI trace list working (1-hour analytics delay resolved overnight), wired Langfuse into Gilgamesh (traces visible with input/output), created Da Vinci Personal Knowledge gateway, built muzakkir-profile.md in Obsidian 04-personal/, updated Gilgamesh to send facts to Da Vinci via webhook, integrated Langfuse tracing into Gilgamesh Extract Response node, tested model behavior on VM 400, updated Knowledge Indexer (added 04-personal/, fixed folder names), discussed $0 AI Architecture Stack diagram
+**Decisions:** All agents write Obsidian through Da Vinci Personal Knowledge gateway (not directly), Gilgamesh reads Obsidian directly via RAG, quality filter: store durable facts (skip one-time events), SKIP detection uses startsWith not ===, date placeholder replaced in code not by Claude, use internal Langfuse URL (http://192.168.30.223:3000), qwen3:14b stays primary (honesty critical), VM 400 disk device is /dev/vda not /dev/sda
+**Outcomes:** Phase 24.9 complete. Langfuse UI working (traces visible after 1 hour, direct API immediate). Gilgamesh wired to Langfuse (gilgamesh-chat trace). Da Vinci Personal Knowledge gateway deployed (muzakkir-profile.md). Gilgamesh successfully recalling personal profile via RAG (knows "Muzakkir" name, dark mode preference). Knowledge Indexer expanded to 90 files, 1,736 Qdrant chunks. System prompt updated — Gilgamesh now knows its name + master's name.
+**Errors Fixed:**
+  - Langfuse UI trace list "No results" → resolved overnight (1-hour analytics aggregation delay by design)
+  - Gilgamesh system prompt didn't mention its name → qwen3:14b confused "Gil" as name query → fixed with explicit "Your name is Gilgamesh" in Route Model
+  - Knowledge Indexer "Document loader not initialized" → empty files in new folders → added If node filter
+  - Knowledge Indexer folder names stale (08-projects/09-meetings/10-reference) → vault restructured to 08-agents/09-people/10-projects → updated folder list
+  - Fetch Current Profile 404 → muzakkir-profile.md not yet synced → replaced HTTP Request with Code node fallback to template
+  - SKIP detection bug → Da Vinci returns "SKIP\n\nReasoning" but code checked === 'SKIP' → fixed with startsWith('SKIP')
+  - "Assignment to constant variable" → const currentProfile → changed to let
+  - VM 400 disk expansion failed with /dev/sda → device is /dev/vda on KVM → used correct device
+  - muzakkir-profile.md.md duplicate in Nextcloud → Nextcloud + Obsidian sync conflict → needs manual deletion
+**Next:** Delete conflict artifact (muzakkir-profile.md.md), build triggered Qdrant re-indexing (immediate after Da Vinci writes), wire Langfuse into MERLIN/Midas, test personal knowledge stability 24h
 
 ### Session 11: May 21, 2026 — Phase 24.8 Completion + Model Testing + VM 400 Expansion + Langfuse Wiring
 
@@ -1017,7 +1065,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 **Decisions:** Single Langfuse node branched off Push to GitHub (after all 8 files complete) instead of 8 individual nodes. Use internal URL: http://192.168.30.223:3000 for VLAN 30 internal routing (no need to route through Cloudflare).
 **Outcomes:** Langfuse trace (da-vinci-update) with 8 child generations logged per pipeline run. Visible in langfuse.najhin-gaming.com UI. One trace per session confirmed and verified to contain all 8 generations (one per file: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions).
 **Errors:** None
-**Next:** Monitor Langfuse traces over 24h. Proceed to Phase 24.2 (Alert Translation) or wire Langfuse into MERLIN next.
+**Next:** Wire Langfuse into Gilgamesh (May 22). Monitor stability 24h.
 
 ### Session 9: May 21, 2026 — Phase 16.4 Pipeline Test: Full 8-File Expansion Verified
 
@@ -1034,14 +1082,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 **Decisions:** decisions.md promoted to Phase 2 priority (auto-append each session), all 8 files in sequential Haiku chain, hardcode API keys in new nodes, single-quoted strings with concatenation for system prompts (avoid backtick template literals causing 400 errors), Ollama confirmed as correct choice for homelab, Aider + local Ollama identified as better fit than Claude Code for EMIYA code agent (future phase)
 **Outcomes:** Da Vinci Update Pipeline expanded to 8 files. Cost per run ~$0.25-0.35. 8 cost rows logged per session. decisions.md created on GitHub. Claude project instructions updated with per-file sections. 5 bugs resolved: null GitHub token, null API keys in 5 new nodes, filesToPush only had 3 files, sessionSummary property name wrong, backtick template literals causing 400 errors.
 **Next:** Test full 8-file pipeline run, verify all 8 cost rows and GitHub push
-
-### Session 7: May 20, 2026 — Infrastructure Troubleshooting: CT 207 Promtail + CT 304 tModLoader
-
-**Duration:** 2h
-**Topics:** CRITICAL CPU alert on 192.168.30.207, Promtail crash loop (53,649 restarts), wrong Loki URL (192.168.20.13 vs 192.168.30.204), CT 304 tModLoader CPU leak (97% sustained), Pterodactyl vs Pelican CPU limits, alert routing clarification
-**Decisions:** Overwrite CT 207 Promtail config with clean YAML, correct Loki IP, set CT 304 cpulimit 1.5, add daily 4am cron restart, set Pelican panel CPU limits
-**Outcomes:** Both issues resolved. 4 hours clean with no alerts post-fix. Morning briefing container count fix confirmed complete.
-**Next:** Phase 24.2 (Alert Translation), set CPU limits in Pelican panel for CT 303 + CT 304
 
 ---
 
@@ -1070,7 +1110,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | GitHub API null token reference | New code referenced `githubToken` from trigger payload which is never passed. Fix: Hardcode GitHub token directly in Fetch GitHub Files node |
 | Staging inbox rollover accumulation | Files stuck in staging-inbox indefinitely if validation failed. Fix: Verify Parse Response node rejects placeholder outputs before GitHub push. Archive processed files to staging-archive/YYYY-MM/ folder. |
 | Langfuse internal vs external URL | n8n → Langfuse calls should use internal URL (http://192.168.30.223:3000) when both are on same VLAN 30. Avoids unnecessary Cloudflare routing, reduces latency, simpler config. External URL (langfuse.najhin-gaming.com) used only for user browser access. |
-| Langfuse UI trace list not showing traces | Known v3 self-hosted bug: traces exist in ClickHouse and accessible via /api/public/traces and direct URL, but do not appear in Tracing list page. ClickHouse analytics_traces view only shows data >1 hour old by design. PostgreSQL traces table empty (expected behavior for v3). Background migrations all complete. Attempted fixes: LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true, timestamp correction, environment filter check. Pending: version upgrade or Langfuse team investigation. |
+| Langfuse UI trace list showed "No results" initially | Known v3 self-hosted design: ClickHouse analytics_traces view only shows data >1 hour old for aggregation stability. Traces exist immediately in raw tables, visible via API (/api/public/traces) and direct URL access. UI list view shows traces after 1 hour. Not a bug, expected behavior. |
+| SKIP detection string comparison | Da Vinci returns "SKIP\n\nReasoning..." but code checked === 'SKIP'. SKIP text overwrote the profile. Fix: Use content.trim().startsWith('SKIP') instead of strict equality. |
+| Obsidian Nextcloud sync conflict during writes | When Da Vinci writes via WebDAV while Obsidian syncs, Nextcloud creates .md.md duplicate file. Fix: Manual deletion post-write, or implement lock mechanism on Nextcloud side (future). |
 
 ### Networking & Infrastructure
 
@@ -1096,18 +1138,33 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | VM 400 disk expansion with wrong device | KVM virtual disks use /dev/vda (virtio), not /dev/sda (IDE). Use growpart /dev/vda 3 (not sda) for partition expansion. |
 | Model hallucination testing | Gemma 3:4b, Gemma 3:12b, and phi4-mini all confidently fabricated weather data in testing. qwen3:14b and llama3.2 were honest about limitations. For personal assistant handling real data, honesty is critical over speed. Removed hallucinating models from VM 400. |
 
+### Knowledge Management & RAG
+
+| Issue | Resolution |
+|-------|------------|
+| RAG retrieval not returning personal facts | Personal profile (muzakkir-profile.md) created but not indexed. Fix: Add 04-personal/ to Knowledge Indexer folder list + run daily 3am re-index. Profile now indexed in Qdrant (1,736 chunks). Gilgamesh recalls via RAG (knows name, preferences). |
+| Embedding updates not immediate | Knowledge Indexer runs daily at 3am. Changes to muzakkir-profile.md don't appear in RAG until next 3am re-index. Future: Build triggered re-indexing (execute on Da Vinci Personal Knowledge writes) for immediate recall. |
+| Quality filtering in Personal Knowledge gateway | Da Vinci needs to distinguish durable facts from conversational noise. Fix: Explicit system prompt instruction: store facts that are consistent, intentional, and personal (e.g., "prefers dark mode" → save, "I slept at 12am tonight" → skip). Uses quality gate before WebDAV write. |
+
 ---
 
-## 📌 Pending Tasks (May 21, 2026)
+## 📌 Pending Tasks
 
-- [ ] Monitor Langfuse traces over 24h — verify trace/generation logging stable, no performance impact
-- [ ] Monitor Da Vinci pipeline for 24h post-Phase 24.8 — verify cost stays under $1/day, all 8 files + Langfuse work together
-- [ ] Investigate Langfuse UI trace list bug — try removing all filters (environment + time range) to see if traces appear
-- [ ] Consider upgrading Langfuse from v3.174.1 to latest version (may fix UI trace list bug)
-- [ ] Phase 24.2 (Alert Translation) — Route Alertmanager alerts through n8n, translate to plain English via ntfy
-- [ ] Set CPU limits in Pelican panel for CT 303 (Minecraft) and CT 304 (Terraria)
-- [ ] Wire Langfuse into MERLIN next (Phase 24.8 expansion)
-- [ ] Phase 25.3 (Self-Evolving Skills) — Automate skill extraction to Obsidian + Qdrant from troubleshoot.md key lessons
-- [ ] Clean up GitHub: delete stale docs/changelog.md and docs/troubleshoot.md (old pipeline artifacts)
+- [ ] Delete muzakkir-profile.md.md conflict artifact from Nextcloud 04-personal/
+- [ ] Build triggered Qdrant re-indexing — after Da Vinci Personal Knowledge writes, immediately re-index that specific file (currently waits for 3am daily re-index)
+- [ ] Wire Langfuse into MERLIN and Midas
+- [ ] Merge morning workflows → single 7am digest (midnight daily notes + 7am morning briefing + 8am MERLIN → consolidate to 1 message)
 - [ ] Fix Homelab → Temps SSH bug in Gilgamesh menu (known issue)
-- [ ] VLAN 40 (DMZ) planning for Phase 7F (public-facing services)
+- [ ] GitHub cleanup: delete stale docs/changelog.md and docs/troubleshoot.md (old pipeline artifacts)
+- [ ] Langfuse upgrade from v3.174.1 to latest (verify if any UI improvements)
+- [ ] Phase 24.2 Alert Translation — Route Alertmanager alerts through n8n, translate to plain English via ntfy
+- [ ] Set CPU limits in Pelican panel for CT 303 (Minecraft) and CT 304 (Terraria)
+- [ ] Midas → Firefly III integration (medium priority, after Gil memory stable)
+- [ ] Gil reads system prompt from Obsidian (04-personal/ or 08-agents/) instead of hardcoded in Route Model
+- [ ] Gil web search via Firecrawl → Da Vinci → Obsidian research pipeline (Phase 24.4)
+- [ ] EMIYA basic: Proxmox monitoring → Da Vinci → Obsidian (container health, storage, alerts)
+- [ ] Guardian basic: security alerts
+- [ ] VLAN 40 (DMZ) planning for Phase 7F
+- [ ] Phase 25.3 (Self-Evolving Skills) — Automate skill extraction to Obsidian + Qdrant from troubleshoot.md key lessons
+- [ ] Monitor Langfuse + Personal Knowledge stability for 24h post-Phase 24.9
+- [ ] Re-tell Gil "I work best late at night" — late night preference was lost due to SKIP bug (now fixed, can re-submit)
