@@ -1,11 +1,11 @@
 # Service Catalog
 
 ## Overview
-Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-05-21.
+Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-05-22.
 
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
-**Phase:** 24.8 — Langfuse Wiring (Da Vinci)
+**Phase:** 24.9 — Personal Knowledge System (Gil → Da Vinci → Obsidian)
 
 ### File Coverage
 The Da Vinci Update Pipeline now handles 8 files per session update run:
@@ -47,8 +47,8 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - decisions.md handled with null SHA on first creation
 - Push to GitHub node updated to include all 8 files in filesToPush array
 
-### Langfuse Observability Integration (Phase 24.8)
-- **Status:** Active — Wired and tested (2026-05-21)
+### Langfuse Observability Integration (Phase 24.8–24.9)
+- **Status:** Active — Wired and tested (2026-05-21); UI trace list now working (2026-05-22)
 - **Trace Name:** da-vinci-update
 - **Trace Structure:** 1 parent trace with 8 child generations (one per file: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions)
 - **Node Architecture:** Single Langfuse node branched off Push to GitHub, executing after all 8 files complete and are pushed
@@ -58,9 +58,9 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - **Batch Delivery:** All 8 generations sent in single request to Langfuse
 - **Design Rationale:** Cleaner pipeline, fewer nodes, all generations grouped in single trace for better observability
 - **Alternatives Rejected:** 8 individual Langfuse nodes after each Claude API call (too many nodes, marginal benefit)
-- **Known Issue:** Langfuse v3 self-hosted UI trace list does not display traces in the Tracing list page, despite traces existing in ClickHouse and being accessible via direct URL and public API. Traces confirmed in ClickHouse via API; root cause unresolved. Attempted fixes: LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true (did not resolve). Pending investigation or version upgrade.
+- **UI Trace List Bug:** Resolved (2026-05-22) — 1-hour analytics delay by design for aggregation stability. Traces now visible in Langfuse UI trace list with all 8 child generations. Direct URL and public API access worked immediately after fix.
 
-### Recent Bug Fixes (Phase 24.8)
+### Recent Bug Fixes (Phase 24.8–24.9)
 1. **Fetch GitHub Files:** Null githubToken → hardcoded token directly in node
 2. **5 new Claude API nodes:** Null apiKey from trigger → hardcoded apiKey const at top of each node
 3. **Push to GitHub:** Only 3 files in array → updated to all 8 files with null SHA handling
@@ -69,6 +69,12 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 6. **Log Cost — service-catalog node:** Fixed command_type from `/update (Da Vinci - current-state)` to `/update (Da Vinci - service-catalog)`
 7. **AI-CONTEXT max_tokens:** Bumped from 20000 to 25000 (was hitting ceiling on every run)
 8. **Langfuse ingestion timestamp:** Now uses n8n server UTC time (new Date().toISOString()); do not add timezone offsets
+9. **Knowledge Indexer empty file filter:** Added If node to skip files where $json.data is empty (prevents crash on new empty folders)
+10. **Knowledge Indexer folder list:** Updated to 04-personal/, 08-agents/, 09-people/, 10-projects/ (was 08-projects, 09-meetings, 10-reference — stale)
+11. **Da Vinci Personal Knowledge SKIP detection:** Changed from === 'SKIP' to startsWith('SKIP') — Da Vinci returns "SKIP\n\nReasoning" which was being overwritten
+12. **Da Vinci Personal Knowledge date placeholder:** Changed from Claude handling {{date}} to Code node replacing it before API call (more reliable)
+13. **VM 400 disk expansion:** Used /dev/vda not /dev/sda (KVM virtio device naming)
+14. **Gilgamesh system prompt:** Explicitly states "Your name is Gilgamesh. Users will call you Gil as a nickname. Never ask the user for their name when they greet you as Gil. Your master is Muzakkir." (qwen3:14b was confused about identity)
 
 ### Pipeline Rebuild (2026-05-19)
 - **Issue:** Pipeline looping on error due to stuck file in staging-inbox that failed validation repeatedly (every 15 minutes)
@@ -83,8 +89,8 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - **Verification Steps:**
   - [x] Verify Langfuse trace appears at https://langfuse.najhin-gaming.com after test run
   - [x] Confirm 8 generations visible under da-vinci-update trace (via API and direct URL)
-  - [ ] Investigate and fix UI trace list display bug
-  - [ ] Wire Langfuse into MERLIN next
+  - [x] Investigate and fix UI trace list display bug (resolved 2026-05-22 — 1-hour analytics delay)
+  - [ ] Wire Langfuse into MERLIN and Midas next
 
 ### Key Technical Notes
 - Backtick template literals in n8n Code nodes cause 400 errors on Anthropic API; use single-quoted strings with concatenation instead
@@ -93,9 +99,12 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - Cost logging must fire immediately after each API call, not after parse or push operations
 - Langfuse integration uses internal VLAN URL (http://192.168.30.223:3000) for n8n calls to avoid unnecessary external routing; trace batching consolidates all 8 file generations into single observability record
 - Langfuse public URL (https://langfuse.najhin-gaming.com) used for UI verification and external access
-- Langfuse v3 self-hosted has known bug where UI trace list does not display traces despite ClickHouse containing data; traces remain accessible via direct URL and public API
+- Langfuse v3 self-hosted UI trace list bug (2026-05-21) resolved overnight due to 1-hour analytics aggregation delay; traces now visible in list with all generations
 - Langfuse ingestion timestamps must use n8n server UTC time (new Date().toISOString()); do not add timezone offsets
 - Log Cost command_type strings must match file names exactly; copy-paste errors are silent bugs
+- SKIP detection in Da Vinci nodes must use startsWith() not strict equality (===) — Da Vinci may return multiline responses like "SKIP\n\nReasoning..."
+- Date placeholders ({{date}}) must be replaced in Code nodes before Claude API call, not by Claude itself — more reliable and deterministic
+- VM 400 block device is /dev/vda not /dev/sda (KVM virtio); always use vda for disk operations on VM 400
 
 ### Dependencies
 - Haiku 3.5 API (8 sequential calls, one per file)
@@ -107,13 +116,75 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 
 ## Monitoring & Verification
 - **Cost Tracking:** 8 rows logged per run in gilgamesh_costs table (~$0.14–0.16 per run)
-- **Observability Tracking:** 1 trace (da-vinci-update) with 8 child generations per run in Langfuse; accessible at https://langfuse.najhin-gaming.com via direct URL and public API
+- **Observability Tracking:** 1 trace (da-vinci-update) with 8 child generations per run in Langfuse; accessible at https://langfuse.najhin-gaming.com via direct URL, list view, and public API
 - **File Updates:** All 8 files updated on GitHub after each session update
 - **Telegram Alerts:** Confirmation message sent on completion
-- **Langfuse UI:** Accessible at https://langfuse.najhin-gaming.com; pipeline traces accessible via /api/public/traces and direct trace URLs; internal n8n calls use http://192.168.30.223:3000. Note: UI trace list page has known v3 self-hosted bug (traces not displayed in list despite being in ClickHouse)
+- **Langfuse UI:** Accessible at https://langfuse.najhin-gaming.com; pipeline traces visible in trace list (UI bug resolved 2026-05-22). All 8 child generations visible in trace detail view. Internal n8n calls use http://192.168.30.223:3000.
 - **Expected Cost Range:** ~$0.14–0.16 per full pipeline run (~$4.20–4.80/month at once daily)
 - **Files Pushed:** AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
 
 ---
 
-*Catalog maintained by Da Vinci Documentation System. Last updated: 2026-05-21. Next review: Phase 25 planning.*
+## Da Vinci — Personal Knowledge Gateway
+**Status:** Active (deployed 2026-05-22)  
+**Type:** Internal n8n Webhook Service  
+**URL:** http://192.168.30.211:5678/webhook/davinci-personal-knowledge  
+**Method:** POST  
+**Auth Method:** None (internal VLAN 30 only)  
+**Purpose:** Receive personal facts from agents (Gil, EMIYA, Midas), assess durability via Claude Haiku, merge with existing profile, write durable facts to muzakkir-profile.md in Obsidian, skip one-time events and conversational noise  
+**Workflow Name:** Da Vinci — Personal Knowledge  
+**Container:** CT 211 (automation-n8n)  
+**Profile Location:** Obsidian/second-brain/04-personal/muzakkir-profile.md  
+**Profile Access:** WebDAV GET with 404 fallback to bootstrap template  
+**Profile Write:** WebDAV PUT (Nextcloud)  
+**Assessment Model:** Claude Haiku 3.5  
+**Assessment Tokens:** max_tokens 4000  
+**Quality Filter:** Stores durable personal facts (e.g., "prefers dark mode"), SKIPs one-time events (e.g., "I slept at 12am tonight") and conversational noise  
+**Cost Logging:** Fires after Claude assessment; entries logged to gilgamesh_costs table  
+**Dependencies:** Claude Haiku API, WebDAV (Nextcloud), agents sending via POST request  
+**Consumers:** Gilgamesh (writes via async fire-and-forget after all messages >20 chars not starting with /), future agents (EMIYA, Midas all route Obsidian writes through Da Vinci)  
+**Profile Indexed:** Yes — 04-personal/ included in Qdrant obsidian_knowledge collection for RAG by Gilgamesh
+
+---
+
+## Gilgamesh (Gil) Personal Knowledge Pipeline
+**Status:** Active (wired 2026-05-22)  
+**Type:** n8n Workflow Branch (off Extract Response node)  
+**Node Name:** Send to Da Vinci — Personal Knowledge  
+**Trigger:** All messages >20 chars that don't start with /  
+**Delivery:** Async fire-and-forget, 5-second timeout  
+**Target:** Da Vinci — Personal Knowledge gateway (http://192.168.30.211:5678/webhook/davinci-personal-knowledge)  
+**Payload:** Includes chatId, message text, timestamp  
+**Reliability:** Non-blocking; if gateway fails, Gil continues operation normally  
+**Examples Saved:** Dark mode preference ("I prefer dark mode")  
+**Examples Skipped:** One-time events ("I slept at 12am tonight"), time-specific facts ("I'm tired right now")
+
+---
+
+## Knowledge Indexer (Qdrant Updates)
+**Status:** Active (updated 2026-05-22)  
+**Purpose:** Index Obsidian vault files into Qdrant for RAG by Gilgamesh and future agents  
+**Qdrant Collection:** obsidian_knowledge  
+**Folders Indexed:**
+- 04-personal/ (added 2026-05-22, includes muzakkir-profile.md)
+- 08-agents/
+- 09-people/
+- 10-projects/
+
+**File Count:** 90 files (was ~70)  
+**Chunk Count:** 1,736 chunks (was 1,567)  
+**Empty File Filter:** If node added to skip files where $json.data is empty (prevents crash)  
+**Scheduled Re-index:** Daily at 3am UTC  
+**Pending Feature:** Triggered re-index immediately after Da Vinci writes profile (not yet implemented — scheduled for Phase 24.10)
+
+---
+
+## Langfuse (Observability Platform)
+**Status:** Active  
+**Version:** v3.174.1 (self-hosted)  
+**Internal URL:** http://192.168.30.223:3000 (CT 223 on VLAN 30)  
+**Public URL:** https://langfuse.najhin-gaming.com  
+**Purpose:** Trace logging for Da Vinci documentation pipeline and Gilgamesh chat agent  
+**Da Vinci Traces:** Trace name = da-vinci-update; 8 child generations per run (one per file: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions)  
+**Gilgamesh Traces:** Trace name = gilgamesh-chat; input = user message, output = response content; tags: chat/gilgamesh/routedTo; metadata: routedTo, ragUsed, commandType, chatId  
+**Analytics Delay:** 1 hour (by design for aggregation stability) —
