@@ -1,7 +1,7 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** May 21, 2026  
-> **Total Phases:** 88 planned | 45 completed | 2 in progress | 41 future  
+> **Last Updated:** May 22, 2026  
+> **Total Phases:** 88 planned | 47 completed | 1 in progress | 40 future  
 > **Next Session Priority:** Phase 22.8C (Homepage Widgets)
 
 ---
@@ -10,10 +10,10 @@
 
 | Category                              | Total | Complete | In Progress | Planned |
 |---------------------------------------|-------|----------|-------------|---------|
-| **Core Infrastructure & Security**     | 15    | 11       | 1           | 3       |
+| **Core Infrastructure & Security**     | 15    | 11       | 0           | 4       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
-| **AI & Automation (Gilgamesh)**       | 21    | 16       | 1           | 4       |
-| **Personal & Knowledge Management**    | 12    | 6        | 1           | 5       |
+| **AI & Automation (Gilgamesh)**       | 21    | 17       | 1           | 3       |
+| **Personal & Knowledge Management**    | 12    | 7        | 1           | 4       |
 | **Monitoring & Observability**        | 8     | 8        | 0           | 0       |
 | **Infrastructure Cleanup**            | 6     | 2        | 0           | 4       |
 | **Career Development**                | 4     | 2        | 0           | 2       |
@@ -22,7 +22,7 @@
 
 ---
 
-## ✅ Completed Phases (45)
+## ✅ Completed Phases (47)
 
 ### Core Infrastructure Foundation
 | Phase | Title                                         | Completed    | Dependencies |
@@ -66,6 +66,7 @@
 | 16.4    | Documentation Pipeline Expansion — 8 Files     | May 21, 2026 | Phase 16.3   |
 | 16.5    | Da Vinci Update Pipeline Rebuild                | May 19, 2026 | Phase 16.4   |
 | 24.8    | Langfuse Wiring (Da Vinci)                      | May 21, 2026 | Phase 16.5   |
+| 24.9    | Personal Knowledge System (Gil → Da Vinci → Obsidian) | May 22, 2026 | Phase 24.8 |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT            | Apr 24, 2026 | Phase 1      |
 | 39      | Open WebUI                                      | Apr 24, 2026 | Phase 38     |
 | 41      | Gilgamesh + Ollama Hybrid Routing               | Apr 24, 2026 | Phase 38     |
@@ -83,12 +84,11 @@
 
 ---
 
-## ⚡ In Progress (2)
+## ⚡ In Progress (1)
 
 | Phase | Title                           | Status                              | Dependencies | ETA     |
 |-------|---------------------------------|-------------------------------------|--------------|---------|
 | 22.8C | Homepage Widgets                | 🚧 Next session priority            | Phase 22.8B  | May     |
-| 24.9  | Langfuse Wiring (MERLIN)        | 🚧 Action item: wire next agent     | Phase 24.8   | May     |
 
 ---
 
@@ -98,7 +98,8 @@
 
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
 |-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
-| Da Vinci Stage 2 | RAG System & Knowledge Retrieval     | Phase 24.8        | 8-10h  | Qdrant vector database, embedding pipeline, knowledge recall |
+| 24.10 | Triggered Qdrant Re-indexing                    | Phase 24.9        | 4h     | Immediate re-index after Da Vinci writes to profile |
+| Da Vinci Stage 2 | RAG System & Knowledge Retrieval     | Phase 24.9        | 8-10h  | Qdrant vector database, embedding pipeline, knowledge recall |
 | Guardian | Security Monitoring Agent                   | Phase 22.8C       | 6-8h   | Alert translation, threat detection, security reporting |
 | 7E    | Extended Memory (20+ message conversations)     | Da Vinci Stage 2  | 8h     | RAG-powered conversation continuity      |
 | 7F    | File Generation (code, configs, docs)           | Phase 7E          | 6h     | Artifact generation capabilities         |
@@ -123,7 +124,6 @@
 | 22.8E  | Life Ledger (Photo + Text)      | Phase 22.8D  | 8h     | Vision AI for expense tracking           |
 | 22.15  | Price Database Tracking         | Phase 22.8E  | 6h     | Grocery price comparison and budgeting   |
 | 22.16  | Homepage Settings Tab           | Phase 22.15  | 4h     | User-configurable budget percentages     |
-| 22.11  | Nextcloud Calendar Integration  | Phase 22.16  | 3h     | CalDAV sync with Obsidian tasks          |
 
 ### 🔧 Infrastructure Cleanup (Priority: Low-Medium)
 
@@ -183,38 +183,38 @@
 **Goal:** Add health tracking and infrastructure widgets to Homepage dashboard  
 **Deliverables:** Health tab, infrastructure tab, webhook integration with n8n
 
-### Da Vinci Stage 2 — RAG System (Session After)
+### Phase 24.10 — Triggered Qdrant Re-indexing (Session After)
+**Effort:** 4 hours  
+**Goal:** Immediate Qdrant re-index after Da Vinci writes to profile  
+**Deliverables:** Post-write indexing trigger, faster knowledge recall latency
+
+### Da Vinci Stage 2 — RAG System (Third Session)
 **Effort:** 8-10 hours  
 **Goal:** Knowledge retrieval across all agent conversations  
 **Deliverables:** Qdrant vector database, embedding pipeline, knowledge recall
 
-### Guardian Agent (Third Session)
+### Guardian Agent (Fourth Session)
 **Effort:** 6-8 hours  
 **Goal:** Security monitoring and threat detection  
 **Deliverables:** Alert translation, threat detection, security reporting
-
-### Phase 7E — Extended Memory (Fourth Session)
-**Effort:** 8 hours  
-**Goal:** 20+ message conversation continuity via RAG  
-**Deliverables:** Enhanced conversation memory, context preservation
 
 ---
 
 ## 🔗 Phase Dependencies
 
 **Critical Path Analysis:**
-1. **Gilgamesh Enhancement Track:** 22.8C → Da Vinci Stage 2 → Guardian → 7E → 7F-7G
+1. **Gilgamesh Enhancement Track:** 22.8C → 24.10 → Da Vinci Stage 2 → Guardian → 7E → 7F-7G
 2. **Gaming Platform Track:** Mash 59-64 (can run parallel to Gilgamesh)
 3. **Infrastructure Track:** 25-29 (low priority, independent)
 4. **Career Development Track:** 35-36 (depends on infrastructure completion)
-5. **Observability Track:** Phase 24.8 (Da Vinci) → Phase 24.9 (MERLIN) → wire remaining agents
+5. **Observability Track:** Phase 24.8 (Da Vinci) → Phase 24.9 (Personal Knowledge) → wire remaining agents
 
 **Parallel Development Opportunities:**
 - Gaming platform phases can run alongside AI development
 - Infrastructure cleanup can happen during slower development periods
 - Hardware upgrades can be integrated into any session
-- Langfuse wiring can be integrated into agent development sessions
+- Agent Langfuse wiring can be integrated into agent development sessions
 
 ---
 
-*Last updated: May 21, 2026 — Phase 16.4 Documentation Pipeline Expansion (8 files) completed; Phase 24.8 Langfuse Wiring (Da Vinci) completed; Phase 24.9 Langfuse Wiring (MERLIN) queued as action item*
+*Last updated: May 22, 2026 — Phase 24.9 Personal Knowledge System (Gil → Da Vinci → Obsidian) completed; muzakkir-profile.md created and indexed; Qdrant expanded to 1,736 chunks; Phase 24.10 Triggered Qdrant Re-indexing queued as next priority*
