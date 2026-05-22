@@ -176,15 +176,10 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 **Empty File Filter:** If node added to skip files where $json.data is empty (prevents crash)  
 **Scheduled Re-index:** Daily at 3am UTC  
 **Pending Feature:** Triggered re-index immediately after Da Vinci writes profile (not yet implemented — scheduled for Phase 24.10)
+**Note:** Previous folder lists in agents.md, current-state.md, and service-catalog.md contained hallucinated entries (01-inbox/, 02-notes/, 03-reference/, 05-templates/, 06-books/, 07-courses/, 08-projects/, 09-meetings/, 10-reference/, 11-learning/, 12-research/, 13-archive/). Confirmed folders as of 2026-05-22 are 04-personal/, 08-agents/, 09-people/, 10-projects/. Full vault structure includes: 00-inbox/, 01-homelab/, 02-career/, 03-knowledge/, 04-personal/, 05-templates/, 06-archive/, 07-daily/, 08-agents/, 09-people/, 10-projects/, 11-reference/. Requires manual verification against n8n Knowledge Indexer workflow node configuration to confirm complete indexed folder list.
 
 ---
 
 ## Langfuse (Observability Platform)
 **Status:** Active  
-**Version:** v3.174.1 (self-hosted)  
-**Internal URL:** http://192.168.30.223:3000 (CT 223 on VLAN 30)  
-**Public URL:** https://langfuse.najhin-gaming.com  
-**Purpose:** Trace logging for Da Vinci documentation pipeline and Gilgamesh chat agent  
-**Da Vinci Traces:** Trace name = da-vinci-update; 8 child generations per run (one per file: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions)  
-**Gilgamesh Traces:** Trace name = gilgamesh-chat; input = user message, output = response content; tags: chat/gilgamesh/routedTo; metadata: routedTo, ragUsed, commandType, chatId  
-**Analytics Delay:** 1 hour (by design for aggregation stability) —
+**Version:** v3.174.1 (self-
