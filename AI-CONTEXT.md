@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. **Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view. VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true (attempted fix for UI bug, did not resolve). Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed).**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. **Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view. VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true (attempted fix for UI bug, did not resolve). Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied.**
 
 ---
 
@@ -295,7 +295,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **OS:** Ubuntu 22.04
 - **SSH:** `ssh muzakkir@192.168.30.221` — use `muzakkir` user, not root
 - **Disk:** Expanded from 56GB to 86GB (May 21, 2026) via Proxmox resize + LVM extension (device: /dev/vda, not /dev/sda). 34GB free post-expansion.
-- **Ollama models:** qwen3:14b (primary, 9.3GB), qwen3.5:latest (secondary), llama3.2:latest (3B), nomic-embed-text (768 dims). Removed (May 22): gemma3:4b, gemma3:12b, phi4-mini (all hallucinated factual data in testing).
+- **Ollama models:** qwen3:14b (primary, 9.3GB), qwen3.5:latest (secondary), nomic-embed-text (768 dims). Removed (May 21-22): gemma3:4b, gemma3:12b, phi4-mini, llama3.2:latest (all hallucinated factual data in testing).
 - **Open WebUI:** Docker container, connects via 172.17.0.1:11434
 - **Qdrant:** Port 6333 (REST), 6334 (gRPC), storage at /opt/qdrant/storage
 
@@ -520,6 +520,9 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 
 ### Midas — CFO (Cost Tracking & Optimization)
 
+**Status:** Active (Partial — v1 deployed April 27, 2026)
+**Ascension Stage:** 2/4
+
 **Two workflows:**
 
 1. **CFO Report** — `/midas` command shows token usage, costs by model, savings from Ollama
@@ -527,11 +530,17 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 
 **Features:**
 
-- Tracks Gilgamesh costs (Sonnet, Haiku, Ollama)
+- Tracks Gilgamesh costs (Haiku, Ollama)
 - USD to MYR conversion (hardcoded rate: 4.7)
 - Ollama savings calculated at Haiku equivalent rate
 - $10 monthly API spend limit monitoring
 - command_type tracking for detailed cost breakdown
+
+**Active Responsibilities:**
+- /midas command: full API cost report via Telegram
+- 9am daily brief: cost summary sent to Telegram
+- Reads gilgamesh_costs Data Table for token/cost data
+- Planned v2: Firefly III API integration (budget sync, MYR currency)
 
 **Why Midas:**
 
@@ -539,6 +548,9 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 - King of wealth → perfect CFO role
 
 ### MERLIN — Proactive Nudges & Health Scheduler
+
+**Status:** Active (Partial — v1 deployed April 27, 2026)
+**Ascension Stage:** 2/4
 
 **Why Merlin:**
 
@@ -554,6 +566,13 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 - Scheduled maintenance windows
 - Proactive infrastructure health checks
 - Health nudges: medication reminders, BP readings, exercise prompts
+
+**Active Responsibilities:**
+- SSL certificate expiry check (hardcoded date — Cloudflare API token truncated in Vault, pending re-store)
+- Backup restore test reminder (tracks lastTestDate)
+- Proxmox memory check (threshold 85%)
+- Vault seal status check
+- 8am daily schedule via n8n Cron trigger
 
 **Current Implementation:**
 
@@ -749,7 +768,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | **Vector DB** | Qdrant on VM 400 (http://192.168.30.221:6333) |
 | **Embeddings** | nomic-embed-text (768 dimensions) |
 | **Collections** | obsidian_knowledge (1,736 points), gilgamesh_conversations (archived) |
-| **Indexed Folders** | 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal (NEW), 07-daily, 08-agents (was 08-projects), 09-people (was 09-meetings), 10-projects (was 10-reference) |
+| **Indexed Folders** | 04-personal/, 08-agents/, 09-people/, 10-projects/ (confirmed May 22, 2026) |
 | **Excluded** | 05-templates/, 06-archive/ |
 | **Indexing** | Daily 3am via "Da Vinci — Knowledge Indexer" workflow (full re-index v1). 90 files indexed (was ~70). Empty file filter added. |
 | **Retrieval** | Top 5 results, similarity threshold 0.7, injected into system prompt. Used for both agent context and personal profile recall. |
@@ -760,7 +779,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - **SSH to VM 400:** `ssh muzakkir@192.168.30.221` — use muzakkir user, not root
 - **SSH to CT 302:** Password auth enabled (PermitRootLogin yes)
 - **Proxmox API:** root@pam!gilgamesh token (recreated May 16, 2026)
-- **Storage IDs:** kinmoon-nfs (not kinmoon-smb in Proxmox)
+- **Proxmox node:** muzakkir (not kuromoon)
 
 ### Known Constraints
 
@@ -1021,6 +1040,26 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 ## 📝 Session Log (Most Recent 5)
 
+### Session 13: May 22, 2026 — Documentation Audit & Corrections (No Deployment)
+
+**Duration:** 1h
+**Topics:** Full audit of all 8 Da Vinci documentation files against full conversation history. Found 11 discrepancies across 4 files: ROADMAP.md had 5 archived phases (22.8C/22.8D/22.8E/22.15/22.16) still showing as active/planned; current-state.md had completely hallucinated hardware specs (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas marked Planned/0/4 but deployed April 27, 2026 as Active/2/4; Knowledge Indexer folder lists inconsistent across 3 files; AI-CONTEXT.md still listed llama3.2 as installed (removed May 21-22); Phase 7E missing from ROADMAP.md completed table.
+**Decisions:** All corrections applied directly (no deployment — corrections only). Hardware section should always be REPLACE SECTION to prevent drift. Ollama models list: remove llama3.2:latest. Knowledge Indexer folders require manual verification against n8n workflow node.
+**Outcomes:** 11 discrepancies identified and corrections provided for Da Vinci next session. ROADMAP.md archived 5 phases. current-state.md hardware corrected. agents.md MERLIN/Midas status updated. AI-CONTEXT.md models list corrected. Phase 7E added to completed table. Langfuse + Personal Knowledge stability confirmed 24h post-deployment.
+**Errors Fixed:**
+  - ROADMAP.md In Progress: 22.8C still showing — removed, empty In Progress section
+  - ROADMAP.md Planned table: 22.8D/22.8E/22.15/22.16 all archived May 10 (Homepage retired) — removed with reason
+  - current-state.md Compute: EPYC 5645/256GB listed (hallucinated from January hypothetical) — corrected to actual Ryzen 5 5600X/128GB
+  - current-state.md Storage: CT 215 referenced (doesn't exist), Nextcloud is CT 220 — corrected
+  - current-state.md GPU: RTX 4070 listed (hallucinated) — corrected to actual RX 6700 XT
+  - agents.md MERLIN: Status Planned/0/4 — corrected to Active/2/4 (deployed April 27)
+  - agents.md Midas: Status Planned/0/4 — corrected to Active/2/4 (deployed April 27)
+  - agents.md Knowledge Indexer: Multiple folder lists across files all different — flagged for manual verification
+  - AI-CONTEXT.md Ollama models: llama3.2:latest still listed — removed (hallucinated in testing)
+  - ROADMAP.md completed table: Phase 7E missing — added May 15, 2026 completion
+  - ROADMAP.md Guardian: dependency listed as Phase 22.8C (archived) — corrected to Phase 24.9
+**Next:** Apply corrections in next Da Vinci pipeline run. Manually verify Knowledge Indexer folder list against n8n workflow. Delete muzakkir-profile.md.md conflict artifact. Phase 24.10 (Triggered Qdrant Re-indexing).
+
 ### Session 12: May 22, 2026 — Phase 24.9: Personal Knowledge System + Langfuse Gilgamesh Wiring
 
 **Duration:** 2h
@@ -1075,14 +1114,6 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 **Outcomes:** Full pipeline tested end-to-end. All 8 files successfully pushed to GitHub. 8 cost logging rows verified. Staging inbox files archived to staging-archive/2026-05/. No errors on downstream failure.
 **Next:** Phase 24.8 (Langfuse wiring), monitor pipeline stability for 24h
 
-### Session 8: May 20, 2026 — Phase 16.4: Documentation Pipeline Expansion (8 files)
-
-**Duration:** 2h
-**Topics:** Reviewed file coverage from previous sessions, reconciled sync-docs command retirement vs workflow continuation, updated Claude project instructions with expanded session summary template (explicit per-file sections), debugged 5 bugs in Da Vinci Update Pipeline, discussed $0 AI Architecture Stack 2026, LM Studio vs Ollama decision, Aider vs Claude Code for future code agent
-**Decisions:** decisions.md promoted to Phase 2 priority (auto-append each session), all 8 files in sequential Haiku chain, hardcode API keys in new nodes, single-quoted strings with concatenation for system prompts (avoid backtick template literals causing 400 errors), Ollama confirmed as correct choice for homelab, Aider + local Ollama identified as better fit than Claude Code for EMIYA code agent (future phase)
-**Outcomes:** Da Vinci Update Pipeline expanded to 8 files. Cost per run ~$0.25-0.35. 8 cost rows logged per session. decisions.md created on GitHub. Claude project instructions updated with per-file sections. 5 bugs resolved: null GitHub token, null API keys in 5 new nodes, filesToPush only had 3 files, sessionSummary property name wrong, backtick template literals causing 400 errors.
-**Next:** Test full 8-file pipeline run, verify all 8 cost rows and GitHub push
-
 ---
 
 ## 🔧 Key Lessons Learned
@@ -1113,6 +1144,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Langfuse UI trace list showed "No results" initially | Known v3 self-hosted design: ClickHouse analytics_traces view only shows data >1 hour old for aggregation stability. Traces exist immediately in raw tables, visible via API (/api/public/traces) and direct URL access. UI list view shows traces after 1 hour. Not a bug, expected behavior. |
 | SKIP detection string comparison | Da Vinci returns "SKIP\n\nReasoning..." but code checked === 'SKIP'. SKIP text overwrote the profile. Fix: Use content.trim().startsWith('SKIP') instead of strict equality. |
 | Obsidian Nextcloud sync conflict during writes | When Da Vinci writes via WebDAV while Obsidian syncs, Nextcloud creates .md.md duplicate file. Fix: Manual deletion post-write, or implement lock mechanism on Nextcloud side (future). |
+| Documentation audit uncovered systemic hallucinations | Da Vinci generated fictional hardware specs (EPYC 5645/256GB/RTX 4070) that didn't exist, pulled from January hypothetical discussions. Root cause: context windows don't preserve "hypothetical" vs "actual" distinctions. Fix: Hardware section must always use REPLACE SECTION marker in session summaries to force regeneration from source of truth (Proxmox API). Stale data across 4 files for 5+ days before caught. Lesson: Weekly documentation audits against conversation history to catch drift. |
 
 ### Networking & Infrastructure
 
@@ -1136,35 +1168,4 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Trigger payload fields not matching schema | n8n trigger only passes explicitly defined fields (fileContent, chatId). Referencing undefined fields (githubToken) returns null. Solution: Hardcode sensitive values directly in node code, not as trigger fields |
 | 8 separate API calls instead of single merged | Sequential calls prevent hallucination across files. Each file gets fresh LLM context with explicit instruction for what to change. Single merged call caused Da Vinci to rewrite other files with hallucinated content. |
 | VM 400 disk expansion with wrong device | KVM virtual disks use /dev/vda (virtio), not /dev/sda (IDE). Use growpart /dev/vda 3 (not sda) for partition expansion. |
-| Model hallucination testing | Gemma 3:4b, Gemma 3:12b, and phi4-mini all confidently fabricated weather data in testing. qwen3:14b and llama3.2 were honest about limitations. For personal assistant handling real data, honesty is critical over speed. Removed hallucinating models from VM 400. |
-
-### Knowledge Management & RAG
-
-| Issue | Resolution |
-|-------|------------|
-| RAG retrieval not returning personal facts | Personal profile (muzakkir-profile.md) created but not indexed. Fix: Add 04-personal/ to Knowledge Indexer folder list + run daily 3am re-index. Profile now indexed in Qdrant (1,736 chunks). Gilgamesh recalls via RAG (knows name, preferences). |
-| Embedding updates not immediate | Knowledge Indexer runs daily at 3am. Changes to muzakkir-profile.md don't appear in RAG until next 3am re-index. Future: Build triggered re-indexing (execute on Da Vinci Personal Knowledge writes) for immediate recall. |
-| Quality filtering in Personal Knowledge gateway | Da Vinci needs to distinguish durable facts from conversational noise. Fix: Explicit system prompt instruction: store facts that are consistent, intentional, and personal (e.g., "prefers dark mode" → save, "I slept at 12am tonight" → skip). Uses quality gate before WebDAV write. |
-
----
-
-## 📌 Pending Tasks
-
-- [ ] Delete muzakkir-profile.md.md conflict artifact from Nextcloud 04-personal/
-- [ ] Build triggered Qdrant re-indexing — after Da Vinci Personal Knowledge writes, immediately re-index that specific file (currently waits for 3am daily re-index)
-- [ ] Wire Langfuse into MERLIN and Midas
-- [ ] Merge morning workflows → single 7am digest (midnight daily notes + 7am morning briefing + 8am MERLIN → consolidate to 1 message)
-- [ ] Fix Homelab → Temps SSH bug in Gilgamesh menu (known issue)
-- [ ] GitHub cleanup: delete stale docs/changelog.md and docs/troubleshoot.md (old pipeline artifacts)
-- [ ] Langfuse upgrade from v3.174.1 to latest (verify if any UI improvements)
-- [ ] Phase 24.2 Alert Translation — Route Alertmanager alerts through n8n, translate to plain English via ntfy
-- [ ] Set CPU limits in Pelican panel for CT 303 (Minecraft) and CT 304 (Terraria)
-- [ ] Midas → Firefly III integration (medium priority, after Gil memory stable)
-- [ ] Gil reads system prompt from Obsidian (04-personal/ or 08-agents/) instead of hardcoded in Route Model
-- [ ] Gil web search via Firecrawl → Da Vinci → Obsidian research pipeline (Phase 24.4)
-- [ ] EMIYA basic: Proxmox monitoring → Da Vinci → Obsidian (container health, storage, alerts)
-- [ ] Guardian basic: security alerts
-- [ ] VLAN 40 (DMZ) planning for Phase 7F
-- [ ] Phase 25.3 (Self-Evolving Skills) — Automate skill extraction to Obsidian + Qdrant from troubleshoot.md key lessons
-- [ ] Monitor Langfuse + Personal Knowledge stability for 24h post-Phase 24.9
-- [ ] Re-tell Gil "I work best late at night" — late night preference was lost due to SKIP bug (now fixed, can re-submit)
+| Model hallucination testing | Gemma 3:4b, Gemma 3:12b, and phi4-mini all confid
