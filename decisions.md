@@ -4,6 +4,26 @@ Architectural decisions, strategy calls, and naming choices made during homelab 
 
 ---
 
+### 2026-05-22 - Documentation audit reveals hallucination pattern in hardware specs and folder lists
+**Decision:** Conduct full audit of all 8 Da Vinci documentation files against conversation history. Identified 11 discrepancies across 4 files (ROADMAP.md, current-state.md, agents.md, AI-CONTEXT.md). Root causes: Da Vinci hallucinated hardware (EPYC 5645/256GB/RTX 4070 from January hypothetical discussion instead of actual Ryzen 5 5600X/128GB/RX 6700 XT), folder names (Knowledge Indexer list never matched actual vault), and failed to propagate May 10 phase retirement decision (22.8C/22.8D/22.8E/22.15/22.16) to ROADMAP.
+**Why:** Documentation drift compounds over sessions. Hardware and folder lists are critical infrastructure facts that must stay synchronized. Previous sessions' decisions were not reaching all relevant files because session summaries lacked explicit per-file sections.
+**Alternatives considered:** Continue accepting hallucinated specs (rejected — causes infrastructure misalignment and wasted troubleshooting), manual audits only (rejected — too slow, happens every session).
+
+### 2026-05-22 - Hardware section in current-state.md must always be REPLACE SECTION in session summaries
+**Decision:** Any hardware change, clarification, or correction must include explicit REPLACE SECTION markup in the current-state.md section of the session summary to prevent drift.
+**Why:** Hardware specs are infrastructure facts, not narrative updates. Appending new information causes old hallucinated specs to persist. REPLACE SECTION forces overwrite of entire subsection.
+**Alternatives considered:** Append-only updates (rejected — doesn't remove hallucinated data), manual verification (rejected — already proven unreliable).
+
+### 2026-05-22 - Phase retirement decisions must include explicit ROADMAP.md REPLACE SECTION
+**Decision:** Any phase that is archived, cancelled, or moved must include explicit REPLACE SECTION markup in the ROADMAP.md section of the session summary for all affected tables (In Progress, Planned, Completed).
+**Why:** May 10, 2026 decision to retire Homepage and archive phases 22.8C/22.8D/22.8E/22.15/22.16 never reached ROADMAP.md because that session summary used short-form format without explicit ROADMAP sections. Lesson learned: decisions about phase lifecycle must be explicitly propagated.
+**Alternatives considered:** Trust narrative update (rejected — failed May 10), separate phase management file (rejected — adds complexity beyond current pipeline).
+
+### 2026-05-22 - Knowledge Indexer folder list requires manual verification against n8n workflow
+**Decision:** Cannot determine correct Qdrant Knowledge Indexer folder list from documentation alone. Three different lists exist across agents.md, current-state.md, and service-catalog.md — none fully matching actual vault structure. Use known folders (04-personal/, 08-agents/, 09-people/, 10-projects/) as baseline and manually verify against n8n Knowledge Indexer node configuration next session.
+**Why:** Hallucinated folder lists (05-books/, 06-projects/, 07-reference/, 11-learning/, 12-research/, 13-archive/) don't exist in actual vault. Documentation cannot be trusted as source of truth for this configuration. Must verify against running system.
+**Alternatives considered:** Trust current documentation (rejected — proven unreliable), generate new folder list from Obsidian export (rejected — requires manual Obsidian access from this session), skip verification (rejected — hallucinated lists cause RAG failures).
+
 ### 2026-05-22 - All agents route Obsidian writes through Da Vinci — Personal Knowledge gateway
 **Decision:** Gilgamesh, EMIYA, Midas and all future agents send data to Da Vinci rather than writing directly to Obsidian. Da Vinci owns all Obsidian writes.
 **Why:** Consistent formatting across all agents, prevents file conflicts, Da Vinci acts as quality gate for personal knowledge. Centralizes write authority.
@@ -80,33 +100,4 @@ Architectural decisions, strategy calls, and naming choices made during homelab 
 **Alternatives considered:** Use faster models (rejected — hallucination risk unacceptable for factual data), keep all models (rejected — disk space needed, slow inference).
 
 ### 2026-05-21 - Langfuse — Da Vinci uses single batch node
-**Decision:** Wire Langfuse via one node (branched off Push to GitHub) that sends 1 trace + 8 generations in a single batch per run.
-**Why:** Cleaner pipeline design with fewer nodes; all 8 generations sent in one batch provides better observability without pipeline clutter. Matches decisions from earlier in the day.
-**Alternatives considered:** 8 individual Langfuse nodes (rejected — too many nodes, marginal observability benefit).
-
-### 2026-05-21 - Langfuse internal URL used
-**Decision:** Use http://192.168.30.223:3000 instead of https://langfuse.najhin-gaming.com for n8n → Langfuse calls.
-**Why:** CT 211 and CT 223 are on the same VLAN 30; no need to route through Cloudflare for local communication. Matches decisions from earlier in the day.
-**Alternatives considered:** Use public HTTPS URL (rejected — unnecessary external routing for local traffic).
-
-### 2026-05-21 - Langfuse timestamp uses new Date().toISOString()
-**Decision:** Use n8n server UTC time (new Date().toISOString()) for Langfuse batch event timestamps; do not add timezone offsets.
-**Why:** Langfuse v3 requires timestamp in every batch event. n8n server UTC time is correct and consistent with ClickHouse's clock in normal operation.
-**Alternatives considered:** Query ClickHouse for time (rejected — port 8123 not accessible from CT 211), add timezone offset (rejected — causes timestamp mismatch with server clock).
-
-### 2026-05-21 - LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true
-**Decision:** Change LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES from false to true in CT 223 docker-compose.yml.
-**Why:** Attempted fix for Langfuse UI trace list bug (traces not appearing in list view despite being in ClickHouse). Did not resolve the issue but left as true for potential future benefit.
-**Alternatives considered:** Keep false (rejected — attempted to unlock experimental features), upgrade Langfuse version (deferred to future action item).
-
-### 2026-05-21 - VM 400 disk expanded to 86GB
-**Decision:** Expand VM 400 (ollama-gpu) disk from 56GB to 86GB via Proxmox resize + LVM extension (growpart /dev/vda 3, pvresize, lvextend, resize2fs).
-**Why:** VM 400 disk was 100% full (56GB) during Ollama model testing (Gemma3:12b required 8.1GB). Expansion provides 34GB free space for future models and testing.
-**Alternatives considered:** Delete old models only (rejected — not enough capacity for comprehensive testing), use separate storage (rejected — adds complexity, Proxmox resize simpler).
-
-### 2026-05-21 - Expanded Da Vinci Update Pipeline from 3 files to 8 files
-**Decision:** Expand the documentation pipeline to handle 8 files sequentially: AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, and decisions.md.
-**Why:** Documentation coverage was incomplete; decisions and architectural information were scattered. Consolidating into a unified pipeline ensures all critical documentation stays in sync with every session. Decisions.md is now auto-logged.
-**Alternatives considered:** Keep 3-file pipeline and maintain separate manual sync process (rejected — creates inconsistency and drift), update all files in parallel (rejected — would overwhelm token budget).
-
-### 2
+**Decision:** Wire Langfuse via one node (branched off Push to
