@@ -1,8 +1,8 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
 > **Last Updated:** May 22, 2026  
-> **Total Phases:** 88 planned | 47 completed | 1 in progress | 40 future  
-> **Next Session Priority:** Phase 22.8C (Homepage Widgets)
+> **Total Phases:** 88 planned | 48 completed | 0 in progress | 40 future  
+> **Next Session Priority:** Phase 24.10 (Triggered Qdrant Re-indexing)
 
 ---
 
@@ -12,8 +12,8 @@
 |---------------------------------------|-------|----------|-------------|---------|
 | **Core Infrastructure & Security**     | 15    | 11       | 0           | 4       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
-| **AI & Automation (Gilgamesh)**       | 21    | 17       | 1           | 3       |
-| **Personal & Knowledge Management**    | 12    | 7        | 1           | 4       |
+| **AI & Automation (Gilgamesh)**       | 22    | 18       | 0           | 4       |
+| **Personal & Knowledge Management**    | 12    | 7        | 0           | 5       |
 | **Monitoring & Observability**        | 8     | 8        | 0           | 0       |
 | **Infrastructure Cleanup**            | 6     | 2        | 0           | 4       |
 | **Career Development**                | 4     | 2        | 0           | 2       |
@@ -22,7 +22,7 @@
 
 ---
 
-## ✅ Completed Phases (47)
+## ✅ Completed Phases (48)
 
 ### Core Infrastructure Foundation
 | Phase | Title                                         | Completed    | Dependencies |
@@ -59,6 +59,7 @@
 | 7D      | Gilgamesh Enhancements (Memory, Routing, Search)| Apr 6, 2026  | Phase 7C     |
 | 7D-Sec  | Cloudflare Access for n8n                       | Apr 7, 2026  | Phase 7D     |
 | 7D-Menu | Gilgamesh Inline Keyboard Menu                  | Apr 24, 2026 | Phase 7D     |
+| 7E      | Extended Memory (Conversation Archival)        | May 15, 2026 | Phase 7D     |
 | 15      | Gilgamesh Additional Slash Commands             | Apr 24, 2026 | Phase 7D     |
 | 16.1    | Documentation Pipeline — Update Workflow        | Apr 19, 2026 | Phase 7C     |
 | 16.2    | Documentation Pipeline — Sync Docs Workflow     | Apr 19, 2026 | Phase 16.1   |
@@ -84,11 +85,9 @@
 
 ---
 
-## ⚡ In Progress (1)
+## ⚡ In Progress (0)
 
-| Phase | Title                           | Status                              | Dependencies | ETA     |
-|-------|---------------------------------|-------------------------------------|--------------|---------|
-| 22.8C | Homepage Widgets                | 🚧 Next session priority            | Phase 22.8B  | May     |
+No phases currently in progress. Next session: Phase 24.10.
 
 ---
 
@@ -100,7 +99,7 @@
 |-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
 | 24.10 | Triggered Qdrant Re-indexing                    | Phase 24.9        | 4h     | Immediate re-index after Da Vinci writes to profile |
 | Da Vinci Stage 2 | RAG System & Knowledge Retrieval     | Phase 24.9        | 8-10h  | Qdrant vector database, embedding pipeline, knowledge recall |
-| Guardian | Security Monitoring Agent                   | Phase 22.8C       | 6-8h   | Alert translation, threat detection, security reporting |
+| Guardian | Security Monitoring Agent                   | Phase 24.9        | 6-8h   | Alert translation, threat detection, security reporting |
 | 7E    | Extended Memory (20+ message conversations)     | Da Vinci Stage 2  | 8h     | RAG-powered conversation continuity      |
 | 7F    | File Generation (code, configs, docs)           | Phase 7E          | 6h     | Artifact generation capabilities         |
 | 7G    | Vision API (image analysis)                     | Phase 7F          | 4h     | Llama 3.2 Vision 11B integration         |
@@ -120,10 +119,10 @@
 
 | Phase  | Title                           | Dependencies | Effort | Notes                                    |
 |--------|---------------------------------|--------------|--------|------------------------------------------|
-| 22.8D  | MERLIN Medication Checks        | Phase 22.8C  | 4h     | Daily medication reminders via buttons  |
-| 22.8E  | Life Ledger (Photo + Text)      | Phase 22.8D  | 8h     | Vision AI for expense tracking           |
-| 22.15  | Price Database Tracking         | Phase 22.8E  | 6h     | Grocery price comparison and budgeting   |
-| 22.16  | Homepage Settings Tab           | Phase 22.15  | 4h     | User-configurable budget percentages     |
+| 22.8D  | MERLIN Medication Checks        | ARCHIVED     | —      | Archived May 10, 2026 — Homepage retired. Medication reminders already implemented in Phase 22.8B. |
+| 22.8E  | Life Ledger (Photo + Text)      | ARCHIVED     | —      | Archived May 10, 2026 — Homepage chain dead. Vision expense tracking moved to Phase 7G (Vision API). |
+| 22.15  | Price Database Tracking         | ARCHIVED     | —      | Archived May 10, 2026 — Grocery tracking handled by Firefly III (CT 221). |
+| 22.16  | Homepage Settings Tab           | ARCHIVED     | —      | Archived May 10, 2026 — Homepage replaced by Pulse Dashboard. |
 
 ### 🔧 Infrastructure Cleanup (Priority: Low-Medium)
 
@@ -178,32 +177,32 @@
 
 ## 🎯 Recommended Next Session Order
 
-### Phase 22.8C — Homepage Widgets (Next Session)
+### Phase 24.10 — Triggered Qdrant Re-indexing (Next Session)
 **Effort:** 4 hours  
-**Goal:** Add health tracking and infrastructure widgets to Homepage dashboard  
-**Deliverables:** Health tab, infrastructure tab, webhook integration with n8n
+**Goal:** Immediately re-index Qdrant after Da Vinci writes to muzakkir-profile.md (currently waits for 3am daily cron)  
+**Deliverables:** Post-write indexing trigger in Da Vinci Personal Knowledge workflow, faster knowledge recall latency
 
-### Phase 24.10 — Triggered Qdrant Re-indexing (Session After)
-**Effort:** 4 hours  
-**Goal:** Immediate Qdrant re-index after Da Vinci writes to profile  
-**Deliverables:** Post-write indexing trigger, faster knowledge recall latency
-
-### Da Vinci Stage 2 — RAG System (Third Session)
+### Da Vinci Stage 2 — RAG System (Session After)
 **Effort:** 8-10 hours  
-**Goal:** Knowledge retrieval across all agent conversations  
-**Deliverables:** Qdrant vector database, embedding pipeline, knowledge recall
+**Goal:** Knowledge retrieval across all agent conversations using Qdrant embeddings  
+**Deliverables:** Full RAG pipeline, embedding pipeline, knowledge recall by all agents
 
-### Guardian Agent (Fourth Session)
+### Guardian Agent (Third Session)
 **Effort:** 6-8 hours  
-**Goal:** Security monitoring and threat detection  
-**Deliverables:** Alert translation, threat detection, security reporting
+**Goal:** Security monitoring and threat detection agent  
+**Deliverables:** Alert translation, threat detection, Telegram security reporting
+
+### Phase 24.2 — Alert Translation (Fourth Session)
+**Effort:** 3-4 hours  
+**Goal:** Route Alertmanager alerts through n8n, translate to plain English via ntfy  
+**Deliverables:** Plain English alerts via ntfy push notifications
 
 ---
 
 ## 🔗 Phase Dependencies
 
 **Critical Path Analysis:**
-1. **Gilgamesh Enhancement Track:** 22.8C → 24.10 → Da Vinci Stage 2 → Guardian → 7E → 7F-7G
+1. **Gilgamesh Enhancement Track:** 24.10 → Da Vinci Stage 2 → Guardian → 7E → 7F-7G
 2. **Gaming Platform Track:** Mash 59-64 (can run parallel to Gilgamesh)
 3. **Infrastructure Track:** 25-29 (low priority, independent)
 4. **Career Development Track:** 35-36 (depends on infrastructure completion)
@@ -217,4 +216,4 @@
 
 ---
 
-*Last updated: May 22, 2026 — Phase 24.9 Personal Knowledge System (Gil → Da Vinci → Obsidian) completed; muzakkir-profile.md created and indexed; Qdrant expanded to 1,736 chunks; Phase 24.10 Triggered Qdrant Re-indexing queued as next priority*
+*Last updated: May 22, 2026 — Documentation Audit & Corrections complete. Phase 24.9 Personal Knowledge System confirmed complete with muzakkir-profile.md indexed. Removed 5 archived phases (22.8C, 22.8D, 22.8E, 22.15, 22.16 — Homepage retired May 10). Added Phase 7E (Extended Memory) to completed. Phase 24.10 Triggered Qdrant Re-indexing queued as next priority.*
