@@ -1,5 +1,5 @@
 # Current State Documentation
-**Last Updated:** 2026-05-22 (Phase 24.9)
+**Last Updated:** 2026-05-22 (Phase 24.9 — Documentation Audit & Corrections)
 
 ## Overview
 Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs.
@@ -55,7 +55,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - SKIP detection in Da Vinci gateway uses startsWith('SKIP') not strict equality (Da Vinci may return "SKIP\n\nReasoning...")
 - Date placeholder ({{date}}) replaced in Code node before Claude API call with actual MYT date (YYYY-MM-DD format)
 
-## Da Vinci Update Pipeline Status (Phase 24.8)
+## Da Vinci Update Pipeline Status (Phase 24.8-24.9)
 **Pipeline Architecture:**
 - Total nodes: 36 (8 sequential Haiku API calls + 8 Log Cost nodes + 8 Parse nodes + Update Tables + Push to GitHub + Langfuse — Da Vinci + Push to Nextcloud + Send Confirmation)
 - Runtime: ~5 minutes per session update run
@@ -64,7 +64,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Per-file API calls: 8 separate Haiku calls with immediate cost logging
 - Langfuse observability: Wired Phase 24.8 — trace name da-vinci-update with 8 child generations per run
 
-**Deployment Status (Phase 24.8-24.9):**
+**Deployment Status (Phase 24.9):**
 - ✅ Expanded from 3-file to 8-file sequential Haiku chain (Phase 16.4)
 - ✅ Resolved 5 critical bugs during deployment (Phase 16.4)
 - ✅ Updated Claude project instructions with explicit per-file session summary sections (Phase 16.4)
@@ -77,6 +77,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ Log Cost — service-catalog command_type fixed: corrected from `/update (Da Vinci - current-state)` to `/update (Da Vinci - service-catalog)`
 - ✅ Da Vinci Personal Knowledge gateway deployed (Phase 24.9)
 - ✅ Langfuse wired to Gilgamesh agent (Phase 24.9)
+- ✅ Documentation audit completed (Phase 24.9) — 11 discrepancies corrected across 4 files
 
 ## Automation Status
 **Trigger:** Cron job (time TBD per Phase 16 work)
@@ -94,8 +95,11 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ Da Vinci Personal Knowledge gateway filters via startsWith('SKIP') not strict equality
 - ✅ Date placeholder replaced in Code node before Claude call (not by Claude)
 - ✅ Knowledge Indexer: added empty file filter to prevent crash on empty downloads
+- ✅ Hardware specs corrected (Phase 24.9): EPYC 5645/256GB/RTX 4070 were hallucinated; real hardware is Ryzen 5 5600X, 128GB DDR4, RX 6700 XT
+- ✅ CT 215 reference corrected to CT 220 (Nextcloud)
 - ⚠️ GitHub docs/ folder contains stale changelog.md and troubleshoot.md artifacts from old pipeline — needs cleanup
 - ⚠️ muzakkir-profile.md.md duplicate file exists in Nextcloud 04-personal/ folder (conflict artifact from Obsidian sync + WebDAV write race)
+- ⚠️ Knowledge Indexer folder list requires manual verification against n8n workflow node — inconsistent lists found across 3 documentation files
 
 **Tested & Working:**
 - 8-file sequential pipeline architecture
@@ -111,25 +115,25 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Da Vinci Personal Knowledge gateway (filter, assess, merge, write, log)
 - Gilgamesh sending personal facts to Da Vinci Personal Knowledge gateway
 - Langfuse wired to Gilgamesh (trace: gilgamesh-chat, contains input/output/metadata)
-- Knowledge Indexer indexing 90 files from 10 folders (04-personal through 13-archive)
+- Knowledge Indexer indexing 90 files from confirmed folders
 - muzakkir-profile.md creation and RAG retrieval by Gil
 - Gil successfully recalling personal facts via Qdrant RAG (name: Muzakkir, dark mode preference)
 
 ## Hardware Infrastructure
 
 ### Compute
-- **Proxmox Host:** EPYC 5645 w/ 256GB RAM, 2x 2TB NVME
-- **CT 211 (n8n-automation):** 4 vCPU, 4GB RAM, Ubuntu 22.04 LTS
-- **VM 400 (ollama-gpu):** 4 vCPU, 16GB RAM, 86GB disk (expanded from 56GB 2026-05-21), Ubuntu 22.04 LTS, RTX 4070 GPU
+- **Proxmox Host (Kuromoon):** Ryzen 5 5600X, 128GB DDR4-3200 (4x32GB Corsair Vengeance LPX, installed May 16, 2026), RX 6700 XT 12GB (passed through to VM 400), ASUS TUF B550M-E mATX motherboard
+- **CT 211 (automation-n8n):** 4 vCPU, 4GB RAM, Debian 12
+- **VM 400 (ollama-gpu):** 4 vCPU, 16GB RAM, 86GB disk (expanded from 56GB 2026-05-21), Ubuntu 22.04 LTS, RX 6700 XT 12GB GPU (AMD, ROCm backend)
 
 ### Storage
-- **Nextcloud (CT 215):** Primary project backup repository
-- **GitHub:** Documentation and automation code repository
-- **ClickHouse (CT 223):** Analytics database for cost tracking and Langfuse observability
+- **GitHub:** Primary source of truth for all 8 documentation files
+- **Nextcloud (CT 220):** File backup and collaboration (second-brain/, 04-personal/, staging-inbox/, etc.)
+- **VM 400 (Ollama + Qdrant):** Local LLM inference server and vector database
 
 ## Containerized Services
 
-### CT 211 (n8n-automation)
+### CT 211 (automation-n8n)
 - **Image:** n8n:latest
 - **IP:** 192.168.30.211
 - **Purpose:** Workflow automation, Da Vinci Update Pipeline, Da Vinci Personal Knowledge gateway, Gilgamesh, and future agents
@@ -138,8 +142,8 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
   - Da Vinci — Personal Knowledge (gateway: POST /davinci-personal-knowledge)
   - Gilgamesh (chat + RAG + memory + Langfuse)
   - Knowledge Indexer (Qdrant sync)
-  - MERLIN (weather + alerts + Langfuse incoming)
-  - Midas (notifications)
+  - MERLIN (weather + alerts + Langfuse incoming) — deployed April 27, 2026
+  - Midas (notifications) — deployed April 27, 2026
   - And others
 - **Databases:** PostgreSQL (internal)
 - **Connections:** Anthropic API, GitHub API, Nextcloud, ClickHouse (CT 223), Ollama (VM 400), Qdrant (VM 400), Langfuse (CT 223)
@@ -158,7 +162,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 
 ### Other Infrastructure
 - **RM 30 (cost database):** ClickHouse instance for cost metrics
-- **CT 215 (Nextcloud):** File backup and collaboration (second-brain/, 04-personal/, etc.)
+- **CT 220 (Nextcloud):** File backup and collaboration (second-brain/, 04-personal/, etc.)
 - **VM 400 (Ollama + Qdrant):** Local LLM inference server and vector database
 
 ## VM 400 (ollama-gpu) Status
@@ -166,39 +170,27 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - **Available Space:** 34GB free post-expansion
 - **Block Device:** /dev/vda (KVM virtio, not /dev/sda)
 - **Installed Ollama Models:**
-  - qwen3:14b (primary model, confirmed honest about limitations)
+  - qwen3:14b (primary model, 9.3GB, confirmed honest about limitations)
   - qwen3.5:latest (secondary comparison model)
-  - nomic-embed-text:latest (embeddings for Qdrant)
-- **Removed Models:** 
-  - gemma3:4b (hallucinated factual data)
-  - gemma3:12b (hallucinated factual data)
-  - phi4-mini (hallucinated factual data)
-  - llama3.2 (similar hallucination issues during testing)
+  - nomic-embed-text:latest (embeddings for Qdrant, 768 dims)
+- **Removed Models (all hallucinated factual data in testing):**
+  - gemma3:4b (removed May 21-22)
+  - gemma3:12b (removed May 21-22)
+  - phi4-mini (removed May 21-22)
+  - llama3.2:latest (removed May 21-22)
 - **Qdrant Vector Database:**
   - Collection: obsidian_knowledge
   - Chunks: 1,736 (was 1,567 before adding 04-personal/ folder)
-  - Indexed folders: 04-personal/, 05-books/, 06-projects/, 07-reference/, 08-agents/, 09-people/, 10-projects/, 11-learning/, 12-research/, 13-archive/
-- **Purpose:** Local LLM inference for Gilgamesh and future agents (EMIYA, Midas, etc.); vector embeddings for RAG
+  - Indexed folders: 04-personal/ (added May 22, 2026, includes muzakkir-profile.md), 08-agents/, 09-people/, 10-projects/
+  - Note: Folder list requires manual verification against n8n Knowledge Indexer workflow node
+- **Purpose:** Local LLM inference for Gilgamesh and future agents (MERLIN, Midas, etc.); vector embeddings for RAG
 - **Strategy:** Ollama confirmed as correct choice for homelab (LM Studio rejected due to GUI dependency and lack of background server stability)
 
 ## Obsidian Integration (Personal Knowledge System)
-- **Vault Location:** second-brain/ in Nextcloud (CT 215)
+- **Vault Location:** second-brain/ in Nextcloud (CT 220)
 - **04-personal/ Folder:** Now included in Qdrant indexing (privacy exclusion reversed — all internal VLAN 30)
 - **muzakkir-profile.md:** Personal profile file managed by Da Vinci Personal Knowledge gateway
   - Path: 04-personal/muzakkir-profile.md
   - Current content: dark mode preference
   - Source: Gilgamesh sends facts via Da Vinci gateway
-  - Updated: Da Vinci assesses and merges new facts with existing profile
-  - Indexed in Qdrant obsidian_knowledge collection
-  - Accessible to Gil via RAG for memory/recall
-- **All Agent Writes:** Route through Da Vinci — Personal Knowledge gateway (not direct writes)
-  - Rationale: consistent formatting, no file conflicts, Da Vinci as quality gate
-  - Future agents (EMIYA, Midas, Guardian) will also write through this gateway
-- **Agent Reads:** Agents query Qdrant/RAG directly (no gating required)
-
-## Knowledge Indexer Status (Phase 24.9)
-- **Indexing Frequency:** Daily at 3am (manual trigger available)
-- **Indexed Folders:** 04-personal/, 05-books/, 06-projects/, 07-reference/, 08-agents/, 09-people/, 10-projects/, 11-learning/, 12-research/, 13-archive/
-- **File Count:** 90 files (was ~70 before adding 04-personal/)
-- **Qdrant Chunks:** 1,736 (was 1,567)
-- **Empty File Filter:** Added Phase 24.9 — prevents "Document loader is not initialized" crash on empty
+  - Updated: Da
