@@ -139,28 +139,24 @@ Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas
 #### Knowledge Indexer
 **Status:** Operational (Updated May 22, 2026 | Verified May 22, 2026)  
 **Type:** Scheduled daily (3am UTC) WebDAV → Qdrant pipeline  
-**Folders Indexed:**
-1. 01-inbox/
-2. 02-notes/
-3. 03-reference/
-4. 04-personal/ (added May 22, 2026 — was excluded for privacy, now included as internal VLAN 30 only)
-5. 05-templates/
-6. 06-books/
-7. 07-courses/
-8. 08-agents/ (was 08-projects/, renamed May 22, 2026)
-9. 09-people/ (was 09-meetings/, renamed May 22, 2026)
-10. 10-projects/ (was 10-reference/, renamed May 22, 2026)
+**Folders Indexed (confirmed May 22, 2026):**
+1. 04-personal/ (added May 22, 2026 — includes muzakkir-profile.md)
+2. 08-agents/ (was 08-projects/, renamed May 22, 2026)
+3. 09-people/ (was 09-meetings/, renamed May 22, 2026)
+4. 10-projects/ (was 10-reference/, renamed May 22, 2026)
+
+**Note:** Previous folder lists in documentation (01-inbox/, 02-notes/, 03-reference/, 05-templates/, 06-books/, 07-courses/) were hallucinated. Actual vault structure includes: 00-inbox/, 01-homelab/, 02-career/, 03-knowledge/, 04-personal/, 05-templates/, 06-archive/, 07-daily/, 08-agents/, 09-people/, 10-projects/, 11-reference/. Knowledge Indexer currently indexes 4 confirmed folders (04-personal, 08-agents, 09-people, 10-projects); complete folder list requires manual verification against n8n Knowledge Indexer workflow node configuration.
 
 **Indexing Stats:**
-- Files indexed: 90 (was ~70, expanded May 22, 2026)
+- Files indexed: ~90 (exact count pending verification)
 - Qdrant collection: obsidian_knowledge
-- Chunks: 1,736 (was 1,567, +169 from expanded folders and muzakkir-profile.md)
+- Chunks: 1,736 (as of May 22, 2026, includes muzakkir-profile.md)
 - Embedding model: nomic-embed-text:latest (VM 400 Ollama)
 
 **Technical Notes:**
 - Added If node filter (May 22, 2026) to skip empty file downloads — prevents "Document loader is not initialized" crash
 - 04-personal/ now included per decision to include all internal VLAN 30 data in RAG (Gilgamesh needs to read profile)
-- Scheduled at 3am UTC for off-peak indexing; triggered re-indexing planned as future enhancement
+- Scheduled at 3am UTC for off-peak indexing; triggered re-indexing planned for Phase 24.10
 - Filters by file extension (.md only) at download stage
 
 **Cost Pattern:**
@@ -195,6 +191,13 @@ Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas
 - Fixed 5 bugs in personal knowledge gateway: SKIP detection (startsWith vs ===), date placeholder replacement, profile fetch fallback, constant reassignment, VM 400 disk device naming
 - All agents (Gilgamesh, future EMIYA/Midas) route Obsidian writes through Da Vinci, not directly
 
+**Documentation Audit (May 22, 2026 — Corrections Only)**
+- Identified and corrected 11 discrepancies across 4 files (ROADMAP.md, current-state.md, agents.md, AI-CONTEXT.md)
+- AI-CONTEXT.md: removed hallucinated llama3.2:latest from installed models list
+- ROADMAP.md: archived 5 phases (22.8C, 22.8D, 22.8E, 22.15, 22.16) retired May 10, 2026; moved In Progress section from 1 to 0; updated Critical Path; added Phase 7E to completed table; updated next session recommendation to Phase 24.10 (Triggered Qdrant Re-indexing)
+- agents.md: updated MERLIN status from Planned/0/4 to Active (Partial)/2/4 (deployed April 27, 2026); updated Midas status from Planned/0/4 to Active (Partial)/2/4 (deployed April 27, 2026); corrected Knowledge Indexer folder list to 4 confirmed folders; flagged Knowledge Indexer folder list for manual verification
+- current-state.md: replaced hallucinated hardware specs (EPYC 5645/256GB/RTX 4070) with actual hardware (Ryzen 5 5600X, 128GB DDR4, RX 6700 XT); corrected storage reference from non-existent CT 215 to CT 220 (Nextcloud); corrected Knowledge Indexer indexed folders list
+
 **Phase 24.8 — Da Vinci Update Pipeline Expansion to 8 Files + Langfuse Wiring (Complete)**
 - Expanded Da Vinci Update Pipeline from 3-file to 8-file sequential Haiku API chain May 21, 2026
 - Added 5 new files: ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
@@ -226,6 +229,7 @@ Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas
 - Personal knowledge gateway assessment uses max_tokens 4000 (Claude Haiku limit for sync response)
 - Knowledge Indexer runs once daily (3am UTC) — triggered re-indexing planned for Phase 24.10
 - All agents must route through Da Vinci gateway for Obsidian writes (no direct write access)
+- Knowledge Indexer folder list incomplete — requires manual verification against n8n workflow node
 
 ### Dependencies
 - Haiku API (Claude) — 8 calls per session update + N calls per personal knowledge updates
@@ -379,22 +383,55 @@ Personal conversational AI assistant. Provides real-time responses with Qdrant R
 
 ## MERLIN
 **Servant Class:** Caster  
-**Ascension Stage:** 0/4  
-**Status:** Planned  
+**Ascension Stage:** 2/4  
+**Status:** Active (Partial — v1 deployed April 27, 2026)  
 
 ### Overview
-Diagnostic and troubleshooting agent. Will analyze system errors, logs, and alerts. Routes findings through Da Vinci gateway to Obsidian troubleshoot.md and Qdrant.
+Reminders and scheduler agent. Deployed April 27, 2026 as MERLIN v1. Runs daily at 8am. Checks SSL expiry (hardcoded date — Cloudflare API token pending fix), backup restore test age, Proxmox memory usage (85% threshold), Vault seal status. MERLIN v2 planned: Cloudflare API SSL check, /merlin on-demand command, per-service memory checks, health reminders (BP medication, measurements).
 
-### Planned Responsibilities
-- Log aggregation and error analysis
-- Qdrant knowledge search for similar issues
-- Troubleshooting recommendations
+### Active Responsibilities
+- SSL certificate expiry check (hardcoded date — Cloudflare API token truncated in Vault, pending re-store)
+- Backup restore test reminder (tracks lastTestDate)
+- Proxmox memory check (threshold 85%)
+- Vault seal status check
+- 8am daily schedule via n8n Cron trigger
+
+### Planned Responsibilities (v2)
+- Cloudflare API SSL certificate checks (API token retrieval from Vault)
+- /merlin on-demand command via Telegram
+- Per-service memory usage breakdown
+- Health reminders (BP medication, body measurements)
 - Langfuse integration for diagnostic tracing
-- Route findings to Da Vinci → Obsidian troubleshoot.md
 
-### Status
-- Phase 24.10 planned: Wire Langfuse into MERLIN and other agents
-- Foundation: awaiting deployment
+### Technical Notes
+- Deployment: April 27, 2026 as v1 (basic checks only)
+- Runs on Cron trigger (8am UTC)
+- Sends alerts via Telegram
+- Hardcoded SSL expiry date: requires manual update (Cloudflare API token not fully stored in Vault)
+- Integrates with Proxmox API (memory threshold monitoring)
+- Vault seal status check validates core infrastructure
+
+### Known Limitations
+- SSL check hardcoded — no live Cloudflare API calls (token truncated in Vault)
+- No on-demand command support (scheduled only)
+- No per-service memory granularity (Proxmox-wide threshold only)
+- No health reminder scheduling (v1 placeholder)
+- Langfuse not yet wired (Phase 24.10 planned)
+
+### Dependencies
+- Proxmox API — memory usage monitoring
+- Vault API — seal status check
+- Telegram API — alert delivery
+- Cron trigger — 8am daily execution
+- Cloudflare API (v2 planned) — SSL certificate checks
+
+### Monitoring
+**Active Observation:**
+- Monitor 8am daily Telegram alerts for MERLIN checks
+- Verify Proxmox memory check fires correctly
+- Validate Vault seal status reports
+- Watch for SSL expiry hardcoded date (May 2026 expiry approaching)
+- Track failing Cloudflare API calls (expected until token re-stored)
 
 ---
 
@@ -421,40 +458,29 @@ Infrastructure and monitoring agent. Will observe homelab health (Proxmox, conta
 
 ## Midas
 **Servant Class:** Berserker  
-**Ascension Stage:** 0/4  
-**Status:** Planned  
+**Ascension Stage:** 2/4  
+**Status:** Active (Partial — v1 deployed April 27, 2026)  
 
 ### Overview
-Financial and resource tracking agent. Will monitor system resource costs, Firefly III budgets, and compute utilization. Routes findings through Da Vinci gateway.
+Financial and resource tracking agent (CFO). Deployed April 27, 2026 as Midas v1. Provides /midas command for full cost report and daily 9am cost brief via Telegram. Tracks API spend from gilgamesh_costs table. Midas v2 planned: Firefly III integration for budget sync and personal finance tracking.
 
-### Planned Responsibilities
-- Resource cost tracking
-- Firefly III integration (budget sync)
-- Compute utilization analysis
-- Da Vinci — Personal Knowledge gateway integration (facts → Obsidian)
+### Active Responsibilities
+- /midas command: full API cost report via Telegram
+- 9am daily brief: cost summary sent to Telegram
+- Reads gilgamesh_costs Data Table for token/cost data
+
+### Planned Responsibilities (v2)
+- Firefly III API integration (budget sync, MYR currency)
+- Personal finance tracking
+- Monthly budget forecasting
 - Langfuse tracing
 
-### Status
-- Phase 24.10 planned: Wire Langfuse into Midas
-- Foundation: awaiting Firefly III integration
+### Technical Notes
+- Deployment: April 27, 2026 as v1 (API cost tracking only)
+- /midas command: on-demand cost report (user-triggered via Telegram)
+- 9am Telegram brief: automated daily summary
+- Data source: gilgamesh_costs Data Table (populated by Da Vinci)
+- Cost metrics: token usage, Haiku pricing ($0.80/1M input, $4.00/1M output)
 
----
-
-## Guardian
-**Servant Class:** Rider  
-**Ascension Stage:** 0/4  
-**Status:** Planned  
-
-### Overview
-Security monitoring and alert agent. Will track VLAN 30 security events, intrusion attempts, and credential exposure. Routes findings through Da Vinci gateway.
-
-### Planned Responsibilities
-- Security event aggregation
-- Alert analysis and classification
-- Unauthorized access detection
-- Da Vinci — Personal Knowledge gateway integration (alerts → Obsidian)
-- Langfuse tracing
-
-### Status
-- Phase 24.10 planned: Wire Langfuse into Guardian
-- Foundation: awaiting deployment
+### Known Limitations
+- v1 limited to API costs
