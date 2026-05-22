@@ -1,5 +1,19 @@
 # Changelog
 
+### 2026-05-22 — Phase 24.11 — Documentation Audit & Corrections (No deployment — corrections only)
+- Full audit of all 8 Da Vinci documentation files against full conversation history
+- Found 11 discrepancies across 4 files: ROADMAP.md, current-state.md, agents.md, AI-CONTEXT.md
+- Root cause identified: Da Vinci hallucinated hardware specs (EPYC 5645/256GB/RTX 4070) and folder names in current-state.md and agents.md; ROADMAP.md stale since May 10 (Homepage retirement decision never propagated); MERLIN/Midas status never updated in agents.md after April 27 deployment
+- Corrected AI-CONTEXT.md: removed llama3.2:latest from installed models list (removed May 21 due to hallucination)
+- Corrected ROADMAP.md: removed phases 22.8C, 22.8D, 22.8E, 22.15, 22.16 from In Progress and Planned tables (archived May 10 when Homepage retired, replaced by Pulse Dashboard CT 208); updated Guardian dependency from Phase 22.8C to Phase 24.9; reorganized Recommended Next Session Order to prioritize Phase 24.10 (Triggered Qdrant Re-indexing), Da Vinci Stage 2, Guardian, then Phase 24.2
+- Corrected current-state.md Hardware Infrastructure: Proxmox host corrected to Ryzen 5 5600X, 128GB DDR4-3200, RX 6700 XT 12GB (NOT EPYC 5645/256GB/RTX 4070 — hallucinated specs); VM 400 corrected to 86GB disk (expanded May 21), RX 6700 XT GPU with ROCm backend; corrected Storage section (CT 220 for Nextcloud, NOT CT 215 which does not exist); corrected Knowledge Indexer indexed folders (04-personal/, 08-agents/, 09-people/, 10-projects/)
+- Corrected agents.md: MERLIN updated from Planned/0/4 to Active Partial/2/4 (deployed April 27, 2026); Midas updated from Planned/0/4 to Active Partial/2/4 (deployed April 27, 2026); corrected Knowledge Indexer indexed folders and flagged previous lists (01-05, 06-07, 11-13) as hallucinated
+- Identified Knowledge Indexer folder list inconsistency: three different lists exist across agents.md, current-state.md, service-catalog.md; none fully match actual vault structure; requires manual verification against n8n Knowledge Indexer workflow node
+- Decision: Hardware specs in documentation must use explicit REPLACE SECTION in session summaries to prevent drift from actual infrastructure
+- Decision: Any phase retirement must include explicit REPLACE SECTION in ROADMAP.md section of session summary to prevent stale entries propagating
+- Decision: Da Vinci should not extrapolate hardware from hypothetical "dream homelab" discussions without clear context marking
+- Action items: Drop corrected files into Nextcloud staging-inbox for Da Vinci processing; manually verify Knowledge Indexer node in n8n for exact folder list; re-store truncated Cloudflare API token in Vault (blocks MERLIN SSL check); next session: Phase 24.10 (Triggered Qdrant Re-indexing)
+
 ### 2026-05-22 — Phase 24.9 — Personal Knowledge System (Gil → Da Vinci → Obsidian)
 - Langfuse UI trace list confirmed working (1-hour analytics delay resolved overnight); Da Vinci traces visible in list with 8 generations each; Gilgamesh traces visible with input/output populated
 - Wired Langfuse into Gilgamesh — traces fire async from Extract Response node (trace name: gilgamesh-chat); input = user message, output = response content; metadata: routedTo, ragUsed, commandType, chatId
@@ -24,7 +38,7 @@
 - Bumped AI-CONTEXT max_tokens to 25000 (was 20000, hitting ceiling)
 - Tested Gemma 3:4b, Gemma 3:12b, phi4-mini, llama3.2, qwen3.5 models on VM 400
 - Expanded VM 400 disk from 56GB to 86GB (Proxmox resize + LVM extension); 34GB free post-expansion
-- Removed gemma3:4b, gemma3:12b, phi4-mini from VM 400 Ollama (all hallucinated factual data); qwen3:14b remains primary
+- Removed gemma3:4b, gemma3:12b, phi4-mini from VM 400 Ollama (all hallucinated factual data in testing); qwen3:14b remains primary
 - Wired Langfuse observability into Da Vinci Update Pipeline with single trace node (Langfuse — Da Vinci) branched off Push to GitHub
 - Da Vinci Update Pipeline now logs one trace (da-vinci-update) with 8 generations (one per file) to Langfuse per run
 - Langfuse traces confirmed in ClickHouse and accessible via direct URL and public API; UI trace list shows no results (known v3 self-hosted bug)
