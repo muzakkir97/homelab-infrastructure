@@ -17,6 +17,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Observability and tracing via Langfuse
 - Personal knowledge assessment and merge (Obsidian muzakkir-profile.md management)
 - Qdrant knowledge indexing and vault synchronization
+- Triggered re-indexing via webhook after profile updates
 
 ### Active Workflows
 
@@ -53,14 +54,15 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Parse service-catalog response
 - Haiku API Call 8: decisions Update → Cost Log (immediate)
 - Parse decisions response
-- Push to GitHub (commits all 8 files) → Langfuse — Da Vinci (branch) → Final Cost Logger
+- Push to GitHub (commits all 8 files) → Trigger Reindex (webhook POST /davinci-reindex-personal) → Langfuse — Da Vinci (branch) → Final Cost Logger
 
-**Node Count:** 35 total  
+**Node Count:** 36 total  
 - 8 sequential Haiku API calls (separate, per-file)
 - 9 Log Cost nodes (1 pre-fetch, 8 immediate post-API)
 - 8 Parse nodes
 - Fetch GitHub Files
 - Push to GitHub
+- Trigger Reindex (webhook POST to Knowledge Indexer)
 - Langfuse — Da Vinci (observability node)
 - Push to Nextcloud
 - Send Confirmation
@@ -93,16 +95,17 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Langfuse internal URL (http://192.168.30.223:3000) used for n8n → Langfuse communication; CT 211 and CT 223 are on same VLAN 30, no Cloudflare routing required
 - Langfuse timestamp ingestion requires n8n server UTC time via new Date().toISOString(); do not add timezone offsets
 - Langfuse v3 self-hosted UI trace list now working (verified May 22, 2026); analytics_traces view shows data >1 hour old by design for aggregation stability
-- Runtime: ~5 minutes per session update cycle
+- Trigger Reindex fires after Push to GitHub (Phase 24.10 deployed May 25, 2026) — calls Knowledge Indexer webhook with reindexType: 'partial' to re-index 04-personal/ folder after muzakkir-profile.md updates (~990ms duration)
+- Runtime: ~5 minutes per session update cycle (includes ~1s triggered reindex)
 - Trace verification confirmed May 21, 2026: da-vinci-update traces appear in ClickHouse with 8 visible generations per trace, accessible via public API and UI list
 
 #### Da Vinci Personal Knowledge Gateway
-**Status:** Operational (Deployed May 22, 2026 | Verified May 22, 2026)  
+**Status:** Operational (Deployed May 22, 2026 | Verified May 22, 2026 | Integrated Phase 24.10 May 25, 2026)  
 **Type:** Separate n8n workflow (Da Vinci — Personal Knowledge)  
 **Trigger:** Webhook POST /davinci-personal-knowledge (CT 211 internal: http://192.168.30.211:5678/webhook/davinci-personal-knowledge)  
 
 **Purpose:**
-Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas). Assesses facts via Claude Haiku. Merges with existing profile. Writes to Obsidian muzakkir-profile.md. Logs costs to gilgamesh_costs.
+Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas). Assesses facts via Claude Haiku. Merges with existing profile. Writes to Obsidian muzakkir-profile.md. Triggers Knowledge Indexer reindex. Logs costs to gilgamesh_costs.
 
 **Architecture:**
 - Webhook trigger (POST /davinci-personal-knowledge)
@@ -114,6 +117,7 @@ Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas
 - Worth Saving? (If node — checks for SKIP response)
 - Push to Obsidian (WebDAV PUT to Obsidian/second-brain/04-personal/muzakkir-profile.md)
 - Log Cost (gilgamesh_costs, command_type: /update (Da Vinci - muzakkir-profile))
+- Trigger Reindex (webhook POST /davinci-reindex-personal to Knowledge Indexer)
 
 **Profile Path:** Obsidian/second-brain/04-personal/muzakkir-profile.md
 
@@ -135,29 +139,43 @@ Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas
 - Async fire-and-forget pattern in agent branches (5s timeout)
 - Cost: ~$0.02-0.03 per profile update (Haiku 4000 max_tokens)
 - Expected frequency: 5-20 updates per day (depends on agent message volume)
+- Phase 24.10 integration: Trigger Reindex fires after successful Obsidian write, POST to /davinci-reindex-personal webhook (Knowledge Indexer partial reindex, ~990ms)
 
 #### Knowledge Indexer
-**Status:** Operational (Updated May 22, 2026 | Verified May 22, 2026)  
-**Type:** Scheduled daily (3am UTC) WebDAV → Qdrant pipeline  
-**Folders Indexed (confirmed May 22, 2026):**
-1. 04-personal/ (added May 22, 2026 — includes muzakkir-profile.md)
-2. 08-agents/ (was 08-projects/, renamed May 22, 2026)
-3. 09-people/ (was 09-meetings/, renamed May 22, 2026)
-4. 10-projects/ (was 10-reference/, renamed May 22, 2026)
+**Status:** Operational (Updated May 22, 2026 | Verified May 22, 2026 | Webhook Trigger Added May 25, 2026)  
+**Type:** Scheduled daily (3am UTC) WebDAV → Qdrant pipeline + on-demand webhook trigger  
+**Webhook Trigger (Phase 24.10):** POST /davinci-reindex-personal (CT 211 internal: http://192.168.30.211:5678/webhook/davinci-reindex-personal)  
 
-**Note:** Previous folder lists in documentation (01-inbox/, 02-notes/, 03-reference/, 05-templates/, 06-books/, 07-courses/) were hallucinated. Actual vault structure includes: 00-inbox/, 01-homelab/, 02-career/, 03-knowledge/, 04-personal/, 05-templates/, 06-archive/, 07-daily/, 08-agents/, 09-people/, 10-projects/, 11-reference/. Knowledge Indexer currently indexes 4 confirmed folders (04-personal, 08-agents, 09-people, 10-projects); complete folder list requires manual verification against n8n Knowledge Indexer workflow node configuration.
+**Folders Indexed (10 total confirmed):**
+1. 00-inbox/
+2. 01-homelab/
+3. 02-career/
+4. 03-knowledge/
+5. 04-personal/ (added May 22, 2026 — includes muzakkir-profile.md)
+6. 07-daily/
+7. 08-agents/ (was 08-projects/, renamed May 22, 2026)
+8. 09-people/ (was 09-meetings/, renamed May 22, 2026)
+9. 10-projects/ (was 10-reference/, renamed May 22, 2026)
+10. AI-Stuff/Homelab/homelab-infrastructure/
+
+**Note:** Previous folder lists in documentation (01-inbox/, 02-notes/, 03-reference/, 05-templates/, 06-books/, 07-courses/) were hallucinated. Actual vault structure verified as 10-folder list above.
 
 **Indexing Stats:**
 - Files indexed: ~90 (exact count pending verification)
 - Qdrant collection: obsidian_knowledge
-- Chunks: 1,736 (as of May 22, 2026, includes muzakkir-profile.md)
+- Chunks: 1,736+ (as of May 22, 2026, includes muzakkir-profile.md; grows after each profile update)
 - Embedding model: nomic-embed-text:latest (VM 400 Ollama)
+
+**Indexing Modes:**
+- **Full Rebuild (Schedule trigger, 3am UTC):** Indexes all 10 folders, ~21s duration. Runs nightly for comprehensive vault sync.
+- **Partial Reindex (Webhook trigger, /davinci-reindex-personal):** Indexes only 04-personal/ folder (~11 files, ~1s duration). Fired by Da Vinci Personal Knowledge Gateway after muzakkir-profile.md write. Optimized for real-time profile updates without full vault re-index.
 
 **Technical Notes:**
 - Added If node filter (May 22, 2026) to skip empty file downloads — prevents "Document loader is not initialized" crash
 - 04-personal/ now included per decision to include all internal VLAN 30 data in RAG (Gilgamesh needs to read profile)
-- Scheduled at 3am UTC for off-peak indexing; triggered re-indexing planned for Phase 24.10
+- Scheduled full rebuild at 3am UTC for off-peak indexing; triggered partial reindex active since Phase 24.10 (May 25, 2026)
 - Filters by file extension (.md only) at download stage
+- Webhook trigger detects partial reindex via body.reindexType === 'partial'; Define Folders node conditionally indexes 04-personal/ only (fast path) vs all 10 folders (slow path)
 
 **Cost Pattern:**
 - No direct Haiku costs (embedding via local Ollama)
@@ -179,6 +197,15 @@ Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas
 - Expected monthly cost at daily frequency: ~$4.80-5.40/month (session updates + personal knowledge)
 
 ### Recent Updates
+**Phase 24.10 — Triggered Qdrant Re-indexing (Complete — Deployed May 25, 2026)**
+- Added webhook trigger (/davinci-reindex-personal) to Knowledge Indexer workflow
+- Integrated Trigger Reindex node into Da Vinci Personal Knowledge Gateway (fires after Obsidian write)
+- Integrated Trigger Reindex node into Da Vinci Update Pipeline (fires after Push to GitHub)
+- Partial reindex path active: When webhook body contains reindexType: 'partial', Knowledge Indexer indexes only 04-personal/ folder (~1s)
+- Full rebuild path (3am UTC schedule) unchanged: indexes all 10 folders (~21s)
+- Profile updates now immediately reflected in Qdrant obsidian_knowledge collection
+- Node count increased from 35 to 36 (added Trigger Reindex node)
+
 **Phase 24.9 — Personal Knowledge System (Complete)**
 - Deployed Da Vinci — Personal Knowledge gateway (separate n8n workflow) to receive facts from all agents
 - Gilgamesh wired to send personal facts via async webhook to Da Vinci gateway (branch off Extract Response node)
@@ -227,9 +254,9 @@ Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas
 - Token budgets are fixed per file — no dynamic reallocation between updates
 - Langfuse wiring is post-push (branches off Push to GitHub), not per-API-call
 - Personal knowledge gateway assessment uses max_tokens 4000 (Claude Haiku limit for sync response)
-- Knowledge Indexer runs once daily (3am UTC) — triggered re-indexing planned for Phase 24.10
+- Knowledge Indexer partial reindex (webhook) runs immediately after profile write (~1s); full rebuild (schedule) runs once daily (3am UTC) — may cause split-brain between realtime updates and nightly reindex
 - All agents must route through Da Vinci gateway for Obsidian writes (no direct write access)
-- Knowledge Indexer folder list incomplete — requires manual verification against n8n workflow node
+- Knowledge Indexer folder list complete (10 folders verified), but future folder additions require manual n8n workflow update
 
 ### Dependencies
 - Haiku API (Claude) — 8 calls per session update + N calls per personal knowledge updates
@@ -239,6 +266,7 @@ Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas
 - Nextcloud WebDAV API — Obsidian vault synchronization, profile fetch/push
 - Qdrant API — knowledge indexing and RAG retrieval
 - Ollama (VM 400) — embedding (nomic-embed-text:latest)
+- n8n internal webhooks — triggered reindex communication
 - Session summary document (input) with explicit per-file sections
 
 ### Monitoring
@@ -250,11 +278,22 @@ Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas
 - Verify Langfuse traces (gilgamesh-chat) appear after Gilgamesh conversations
 - Confirm 8 generations visible under each da-vinci-update trace
 - Monitor personal knowledge gateway webhook for successful fact processing (5-20 updates per day)
-- Verify Qdrant obsidian_knowledge chunks remain ~1,700-1,800 after daily re-indexing
+- Verify Qdrant obsidian_knowledge chunks remain ~1,700-1,800 after daily full rebuild; grow incrementally after triggered partial reindex
 - Watch for file conflicts (muzakkir-profile.md.md artifacts) from Obsidian local sync
+- Monitor Trigger Reindex webhook calls: should see /davinci-reindex-personal calls after personal knowledge writes and after Push to GitHub (Phase 24.10 added)
 - **Verified May 22, 2026:** da-vinci-update and gilgamesh-chat traces visible in Langfuse UI, Qdrant indexing includes 04-personal/, Gil successfully recalling profile info via RAG
+- **Verified May 25, 2026:** Phase 24.10 triggered reindex operational, partial reindex (~1s) firing after muzakkir-profile.md writes
 
 ### Testing & Validation
+**Phase 24.10 Validation (May 25, 2026):**
+- [x] Knowledge Indexer webhook trigger (/davinci-reindex-personal) functional
+- [x] Partial reindex path active (04-personal/ only, ~1s duration)
+- [x] Full rebuild path preserved (3am UTC schedule, all 10 folders, ~21s)
+- [x] Trigger Reindex node firing after Da Vinci Personal Knowledge writes
+- [x] Trigger Reindex node firing after Da Vinci Update Pipeline completes
+- [x] Qdrant obsidian_knowledge updated within 1-2s of profile write
+- [x] Profile updates visible to Gilgamesh RAG queries immediately post-reindex
+
 **Phase 24.9 Validation (May 22, 2026):**
 - [x] Da Vinci Personal Knowledge gateway webhook functional
 - [x] Gilgamesh personal facts successfully sent to gateway
@@ -277,39 +316,72 @@ Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas
 **Alias:** Gil  
 
 ### Overview
-Personal conversational AI assistant. Provides real-time responses with Qdrant RAG (Obsidian vault knowledge), personal profile awareness, and model routing. Sends personal facts to Da Vinci gateway for persistent profile management. Integrates with Langfuse for conversation tracing.
+Personal conversational AI assistant. Provides real-time responses with Qdrant RAG (Obsidian vault knowledge), personal profile awareness, and model routing. Sends personal facts to Da Vinci gateway for persistent profile management. Integrates with Langfuse for conversation tracing. Web search capability via Firecrawl enables real-time internet queries.
 
 ### Core Responsibilities
 - Real-time conversational responses to user queries
 - RAG via Qdrant (obsidian_knowledge collection)
 - Personal profile awareness (muzakkir-profile.md via RAG)
-- Model routing and selection (qwen3:14b primary, qwen3.5 secondary)
+- Model routing and selection (qwen3:14b primary, Claude Haiku secondary)
+- Web search capability (Firecrawl /search API)
 - Sending personal facts to Da Vinci Personal Knowledge gateway
 - Langfuse conversation tracing
+- Conversation history management (buffer: last 15 messages)
 
 ### Active Workflows
 
 #### Gilgamesh Chat Pipeline
-**Status:** Operational (Updated May 22, 2026)  
-**Type:** Chat workflow with RAG, model routing, and personal knowledge integration  
-**Trigger:** User message in Gilgamesh chat interface  
+**Status:** Operational (Updated May 22, 2026 | Web Search Added May 25, 2026 | Conversation Buffer Verified May 25, 2026)  
+**Type:** Chat workflow with RAG, model routing, web search, and personal knowledge integration  
+**Trigger:** Telegram message or callback_query (POST /gilgamesh-chat)  
 
 **Architecture:**
-- Webhook trigger (POST /gilgamesh-chat)
-- Chat input validation
-- Qdrant RAG query (obsidian_knowledge collection)
-- Route Model node (qwen3:14b primary, fallback to qwen3.5)
-- Extract Response (Chat output)
-- Langfuse — Gilgamesh branch (async, logs trace: gilgamesh-chat)
-- Send to Da Vinci — Personal Knowledge branch (async, fire-and-forget, 5s timeout)
+- Telegram Trigger (message and callback_query)
+- Get row(s) — fetches gilgamesh_conversations Data Table (all rows for context)
+- Format Messages (Code node) — builds messages array: fetches last 15 rows from gilgamesh_conversations as conversation history, skips RAG for short/greeting messages, performs Qdrant RAG query (nomic-embed-text embeddings, score_threshold 0.3, limit 5), builds system prompt with RAG context, sets model default: claude-sonnet-4-20250514 (overridden by Route Model)
+- Mode Active? / Check Session Mode / Switch — routes health tracking modes (food log, BP log, medication log)
+- If (Needs Web Search?) — keyword detection: search, latest, current, today, weather, news, price, who is, when is, what is, how much, find, look up, cari, semak, berapa
+  - true → Web Search (Firecrawl /search, query: userMessage, Sources: Web, Limit: 5, Timeout: 60000ms) → Inject Search Results (Code node: parses data.web array, injects into last user message and searchContext field) → Route Model
+  - false → Route Model
+- Route Model (Code node) — checks Ollama health (GET /api/tags, 3s timeout), routes: if searchContext present → Haiku (local models cannot follow injected context); if Ollama online → qwen3:14b; else → Haiku. Injects searchContext into system prompt when present. Format Messages model default (claude-sonnet-4-20250514) never used; always overridden by Route Model.
+- Route Check — true → Call Ollama; false → Filter System Message → Call Claude API
+- Merge (append) — combines Ollama or Claude API response
+- Extract Response (Code node) — normalizes response: detects Ollama (data.response is string) vs Claude wrapped (data.response is object, uses claudeData.content array). Strips markdown (**, *, __, _, backticks, headers). Outputs: content (string), model, routedTo, input_tokens, output_tokens.
+- Save User Message → Save Assistant Message → gilgamesh_conversations Data Table
+- Send a text message (Telegram) — text: $('Extract Response').first().json.content, no Parse Mode
+- Count Conversations → Archive to Qdrant → Should Archive? → Delete Archived Rows
+- Langfuse — Gilgamesh (async branch, trace: gilgamesh-chat)
+- Send to Da Vinci — Personal Knowledge (async branch, fire-and-forget, 5s timeout)
+- Skip Short Messages → Information Extractor → Add Timestamps → Should Log? → Write to life_log
+
+**Conversation Buffer Memory:**
+- Implemented via Format Messages: fetches last 15 rows from gilgamesh_conversations Data Table (user + assistant messages in chronological order)
+- Injected as messages history array in prompt context
+- Enables multi-turn conversation awareness without long-context LLM (Phase 7E conversation buffer requirement already operational)
+- Conversation archival: Count Conversations → Archive to Qdrant → Should Archive? → Delete Archived Rows (maintains rolling buffer, older convos moved to vector DB)
+
+**Web Search Integration (Phase 24.10+ Feature):**
+- If (Needs Web Search?) node detects search intent via keyword matching (case-insensitive: search, latest, current, today, weather, news, price, who is, when is, what is, how much, find, look up, cari, semak, berapa)
+- Web Search node calls Firecrawl /search endpoint (POST https://api.firecrawl.dev/v1/search)
+  - Query: userMessage
+  - Sources: Web
+  - Limit: 5
+  - Timeout: 60000ms
+- Inject Search Results parses Firecrawl output (data.web array, not flat items)
+  - Each result contains: url, title, description, content
+  - Injected into last user message content and searchContext field
+- Route Model detects non-empty searchContext and force-routes to Haiku (qwen3:14b cannot follow injected search context regardless of prompt instructions)
+- Search context injected into system prompt: "Here are recent search results for your query:\n\n[injected results]"
+- Cost: ~$0.001-0.002 per search query (Haiku pricing)
 
 **System Prompt (Route Model node):**
 "Your name is Gilgamesh. Users will call you Gil as a nickname. Never ask the user for their name when they greet you as Gil. Your master is Muzakkir. You are his personal AI assistant. Respond conversationally and directly."
 
 **RAG Integration:**
 - Queries Qdrant obsidian_knowledge collection with user message
-- Retrieves relevant chunks from Obsidian vault (04-personal/, 08-agents/, 09-people/, 10-projects/)
+- Retrieves relevant chunks from Obsidian vault (10 folders: 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/Homelab/homelab-infrastructure)
 - Includes muzakkir-profile.md in context for profile awareness
+- Score threshold: 0.3, limit: 5 results per query
 
 **Langfuse Tracing:**
 - Branch off Extract Response node
@@ -323,164 +395,4 @@ Personal conversational AI assistant. Provides real-time responses with Qdrant R
 - Async fire-and-forget to Da Vinci — Personal Knowledge gateway
 - Sends messages >20 characters (excluding commands starting with /)
 - Uses internal VLAN 30 URL: http://192.168.30.211:5678/webhook/davinci-personal-knowledge
-- 5s timeout for non-blocking execution
-
-**Technical Notes:**
-- Model: qwen3:14b (Ollama, VM 400) — primary (honest, no hallucination)
-- Fallback: qwen3.5:latest (Ollama, VM 400) — secondary
-- RAG uses nomic-embed-text:latest embeddings (VM 400 Ollama)
-- System prompt enforces name clarity (Gilgamesh/Gil) and role (Muzakkir's assistant)
-- Personal profile awareness via muzakkir-profile.md (indexed in Qdrant)
-- Async webhook calls prevent chat latency from gateway/Langfuse delays
-
-**Cost Pattern:**
-- Haiku cost: $0 (local Ollama models)
-- Langfuse trace: $0 (self-hosted)
-- Expected monthly cost: $0 (fully local inference)
-
-### Recent Updates
-**Phase 24.9 — Langfuse Integration + Personal Knowledge Pipeline (Complete)**
-- Added Langfuse — Gilgamesh observability branch (logs gilgamesh-chat traces with input/output/metadata)
-- Added Send to Da Vinci — Personal Knowledge branch (async webhook to personal knowledge gateway)
-- Updated Route Model system prompt: explicitly names self as Gilgamesh/Gil, identifies Muzakkir as master
-- Both branches fire async off Extract Response node (non-blocking chat)
-- Gilgamesh now aware of personal profile via RAG (muzakkir-profile.md)
-- Successfully tested profile recall (knows name Muzakkir, dark mode preference)
-
-### Known Limitations
-- Model routing is manual (Route Model node) — no dynamic inference time selection
-- RAG limited to indexed Obsidian vault (1,736 chunks as of May 22, 2026)
-- Personal knowledge limited to what Da Vinci deems durable (SKIP filter discards ephemeral facts)
-- Chat session isolation: no long-context memory within conversation (stateless per message)
-- Async personal knowledge pipeline may have delayed profile updates (eventual consistency)
-
-### Dependencies
-- Ollama (VM 400): qwen3:14b (primary), qwen3.5:latest (secondary), nomic-embed-text:latest
-- Qdrant API: obsidian_knowledge collection
-- Langfuse API: trace logging
-- Da Vinci — Personal Knowledge gateway: fact processing and profile merge
-- n8n webhook: /gilgamesh-chat trigger
-
-### Monitoring
-**Active Observation (May 22, 2026 onwards):**
-- Monitor gilgamesh-chat traces in Langfuse UI (should appear per conversation)
-- Verify RAG context retrieval (check that relevant chunks are included in prompts)
-- Validate model routing (qwen3:14b primary, fallback working)
-- Watch personal knowledge gateway webhook logs for fact ingestion (should see messages sent to gateway)
-- Confirm profile awareness: test that Gilgamesh recalls profile facts correctly
-- Monitor Ollama VM 400 resource usage during chat (GPU memory, CPU)
-- Track response latency (~2-5s expected with RAG + async branches)
-
-**Verified May 22, 2026:**
-- [x] Langfuse traces appearing in UI (gilgamesh-chat)
-- [x] Personal knowledge gateway receiving facts
-- [x] Profile awareness working (Gil knows name, dark mode preference)
-- [x] System prompt correct (Gilgamesh/Gil naming, Muzakkir as master)
-- [x] RAG context including muzakkir-profile.md chunks
-- [x] Async branches non-blocking (chat latency not impacted)
-
----
-
-## MERLIN
-**Servant Class:** Caster  
-**Ascension Stage:** 2/4  
-**Status:** Active (Partial — v1 deployed April 27, 2026)  
-
-### Overview
-Reminders and scheduler agent. Deployed April 27, 2026 as MERLIN v1. Runs daily at 8am. Checks SSL expiry (hardcoded date — Cloudflare API token pending fix), backup restore test age, Proxmox memory usage (85% threshold), Vault seal status. MERLIN v2 planned: Cloudflare API SSL check, /merlin on-demand command, per-service memory checks, health reminders (BP medication, measurements).
-
-### Active Responsibilities
-- SSL certificate expiry check (hardcoded date — Cloudflare API token truncated in Vault, pending re-store)
-- Backup restore test reminder (tracks lastTestDate)
-- Proxmox memory check (threshold 85%)
-- Vault seal status check
-- 8am daily schedule via n8n Cron trigger
-
-### Planned Responsibilities (v2)
-- Cloudflare API SSL certificate checks (API token retrieval from Vault)
-- /merlin on-demand command via Telegram
-- Per-service memory usage breakdown
-- Health reminders (BP medication, body measurements)
-- Langfuse integration for diagnostic tracing
-
-### Technical Notes
-- Deployment: April 27, 2026 as v1 (basic checks only)
-- Runs on Cron trigger (8am UTC)
-- Sends alerts via Telegram
-- Hardcoded SSL expiry date: requires manual update (Cloudflare API token not fully stored in Vault)
-- Integrates with Proxmox API (memory threshold monitoring)
-- Vault seal status check validates core infrastructure
-
-### Known Limitations
-- SSL check hardcoded — no live Cloudflare API calls (token truncated in Vault)
-- No on-demand command support (scheduled only)
-- No per-service memory granularity (Proxmox-wide threshold only)
-- No health reminder scheduling (v1 placeholder)
-- Langfuse not yet wired (Phase 24.10 planned)
-
-### Dependencies
-- Proxmox API — memory usage monitoring
-- Vault API — seal status check
-- Telegram API — alert delivery
-- Cron trigger — 8am daily execution
-- Cloudflare API (v2 planned) — SSL certificate checks
-
-### Monitoring
-**Active Observation:**
-- Monitor 8am daily Telegram alerts for MERLIN checks
-- Verify Proxmox memory check fires correctly
-- Validate Vault seal status reports
-- Watch for SSL expiry hardcoded date (May 2026 expiry approaching)
-- Track failing Cloudflare API calls (expected until token re-stored)
-
----
-
-## EMIYA
-**Servant Class:** Archer  
-**Ascension Stage:** 0/4  
-**Status:** Planned  
-
-### Overview
-Infrastructure and monitoring agent. Will observe homelab health (Proxmox, containers, storage). Routes findings through Da Vinci gateway to Obsidian.
-
-### Planned Responsibilities
-- Container health monitoring (LXC/KVM)
-- Storage and disk alerts
-- Network diagnostics
-- Da Vinci — Personal Knowledge gateway integration (facts → Obsidian)
-- Langfuse tracing
-
-### Status
-- Phase 24.10 planned: Wire Langfuse into EMIYA
-- Foundation: awaiting deployment
-
----
-
-## Midas
-**Servant Class:** Berserker  
-**Ascension Stage:** 2/4  
-**Status:** Active (Partial — v1 deployed April 27, 2026)  
-
-### Overview
-Financial and resource tracking agent (CFO). Deployed April 27, 2026 as Midas v1. Provides /midas command for full cost report and daily 9am cost brief via Telegram. Tracks API spend from gilgamesh_costs table. Midas v2 planned: Firefly III integration for budget sync and personal finance tracking.
-
-### Active Responsibilities
-- /midas command: full API cost report via Telegram
-- 9am daily brief: cost summary sent to Telegram
-- Reads gilgamesh_costs Data Table for token/cost data
-
-### Planned Responsibilities (v2)
-- Firefly III API integration (budget sync, MYR currency)
-- Personal finance tracking
-- Monthly budget forecasting
-- Langfuse tracing
-
-### Technical Notes
-- Deployment: April 27, 2026 as v1 (API cost tracking only)
-- /midas command: on-demand cost report (user-triggered via Telegram)
-- 9am Telegram brief: automated daily summary
-- Data source: gilgamesh_costs Data Table (populated by Da Vinci)
-- Cost metrics: token usage, Haiku pricing ($0.80/1M input, $4.00/1M output)
-
-### Known Limitations
-- v1 limited to API costs
+- 5s timeout for
