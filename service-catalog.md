@@ -1,11 +1,11 @@
 # Service Catalog
 
 ## Overview
-Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-05-22.
+Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-05-25.
 
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
-**Phase:** 24.9 — Personal Knowledge System (Gil → Da Vinci → Obsidian)
+**Phase:** 24.10 — Triggered Qdrant Re-indexing (Complete)
 
 ### File Coverage
 The Da Vinci Update Pipeline now handles 8 files per session update run:
@@ -70,7 +70,7 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 7. **AI-CONTEXT max_tokens:** Bumped from 20000 to 25000 (was hitting ceiling on every run)
 8. **Langfuse ingestion timestamp:** Now uses n8n server UTC time (new Date().toISOString()); do not add timezone offsets
 9. **Knowledge Indexer empty file filter:** Added If node to skip files where $json.data is empty (prevents crash on new empty folders)
-10. **Knowledge Indexer folder list:** Updated to 04-personal/, 08-agents/, 09-people/, 10-projects/ (was 08-projects, 09-meetings, 10-reference — stale)
+10. **Knowledge Indexer folder list:** Updated to 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/Homelab/homelab-infrastructure (confirmed 2026-05-25; requires periodic verification against n8n workflow node configuration)
 11. **Da Vinci Personal Knowledge SKIP detection:** Changed from === 'SKIP' to startsWith('SKIP') — Da Vinci returns "SKIP\n\nReasoning" which was being overwritten
 12. **Da Vinci Personal Knowledge date placeholder:** Changed from Claude handling {{date}} to Code node replacing it before API call (more reliable)
 13. **VM 400 disk expansion:** Used /dev/vda not /dev/sda (KVM virtio device naming)
@@ -137,6 +137,7 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 **Profile Location:** Obsidian/second-brain/04-personal/muzakkir-profile.md  
 **Profile Access:** WebDAV GET with 404 fallback to bootstrap template  
 **Profile Write:** WebDAV PUT (Nextcloud)  
+**Triggered Re-index Webhook:** http://192.168.30.211:5678/webhook/davinci-reindex-personal (POST) — triggers partial Knowledge Indexer run for 04-personal/ folder only (~1s completion time)  
 **Assessment Model:** Claude Haiku 3.5  
 **Assessment Tokens:** max_tokens 4000  
 **Quality Filter:** Stores durable personal facts (e.g., "prefers dark mode"), SKIPs one-time events (e.g., "I slept at 12am tonight") and conversational noise  
@@ -147,39 +148,36 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 
 ---
 
-## Gilgamesh (Gil) Personal Knowledge Pipeline
-**Status:** Active (wired 2026-05-22)  
-**Type:** n8n Workflow Branch (off Extract Response node)  
-**Node Name:** Send to Da Vinci — Personal Knowledge  
-**Trigger:** All messages >20 chars that don't start with /  
-**Delivery:** Async fire-and-forget, 5-second timeout  
-**Target:** Da Vinci — Personal Knowledge gateway (http://192.168.30.211:5678/webhook/davinci-personal-knowledge)  
-**Payload:** Includes chatId, message text, timestamp  
-**Reliability:** Non-blocking; if gateway fails, Gil continues operation normally  
-**Examples Saved:** Dark mode preference ("I prefer dark mode")  
-**Examples Skipped:** One-time events ("I slept at 12am tonight"), time-specific facts ("I'm tired right now")
-
----
-
-## Knowledge Indexer (Qdrant Updates)
-**Status:** Active (updated 2026-05-22)  
+## Da Vinci — Knowledge Indexer (Qdrant Updates)
+**Status:** Active (updated 2026-05-25, Phase 24.10 deployed)  
+**Type:** Internal n8n Workflow  
+**Trigger Types:** Scheduled (daily 3am UTC) + Webhook (POST /davinci-reindex-partial for triggered re-index after profile writes)  
 **Purpose:** Index Obsidian vault files into Qdrant for RAG by Gilgamesh and future agents  
 **Qdrant Collection:** obsidian_knowledge  
-**Folders Indexed:**
-- 04-personal/ (added 2026-05-22, includes muzakkir-profile.md)
+**Folders Indexed (Full Rebuild):**
+- 00-inbox/
+- 01-homelab/
+- 02-career/
+- 03-knowledge/
+- 04-personal/ (includes muzakkir-profile.md)
+- 07-daily/
 - 08-agents/
 - 09-people/
 - 10-projects/
+- AI-Stuff/Homelab/homelab-infrastructure/
 
-**File Count:** 90 files (was ~70)  
-**Chunk Count:** 1,736 chunks (was 1,567)  
+**Folders Indexed (Partial/Triggered Re-index):** 04-personal/ only (~1s completion)  
+**File Count:** ~90 files  
+**Chunk Count:** ~1,736 chunks  
 **Empty File Filter:** If node added to skip files where $json.data is empty (prevents crash)  
-**Scheduled Re-index:** Daily at 3am UTC  
-**Pending Feature:** Triggered re-index immediately after Da Vinci writes profile (not yet implemented — scheduled for Phase 24.10)
-**Note:** Previous folder lists in agents.md, current-state.md, and service-catalog.md contained hallucinated entries (01-inbox/, 02-notes/, 03-reference/, 05-templates/, 06-books/, 07-courses/, 08-projects/, 09-meetings/, 10-reference/, 11-learning/, 12-research/, 13-archive/). Confirmed folders as of 2026-05-22 are 04-personal/, 08-agents/, 09-people/, 10-projects/. Full vault structure includes: 00-inbox/, 01-homelab/, 02-career/, 03-knowledge/, 04-personal/, 05-templates/, 06-archive/, 07-daily/, 08-agents/, 09-people/, 10-projects/, 11-reference/. Requires manual verification against n8n Knowledge Indexer workflow node configuration to confirm complete indexed folder list.
+**Scheduled Full Re-index:** Daily at 3am UTC (~21s completion)  
+**Triggered Partial Re-index:** Fires after Da Vinci — Personal Knowledge completes profile write via POST /davinci-reindex-personal webhook (active 2026-05-25)  
+**Model Used for Embeddings:** nomic-embed-text (Ollama)  
+**Dependencies:** Ollama (nomic-embed-text), WebDAV (Nextcloud), Qdrant API  
+**Note:** Full vault structure confirmed 2026-05-25 as: 00-inbox/, 01-homelab/, 02-career/, 03-knowledge/, 04-personal/, 05-templates/, 06-archive/, 07-daily/, 08-agents/, 09-people/, 10-projects/, 11-reference/. Knowledge Indexer workflow indexes 10 of 12 folders (excludes 05-templates/, 06-archive/, 11-reference/). Requires periodic verification against n8n workflow node "Define Folders" configuration.
 
 ---
 
-## Langfuse (Observability Platform)
-**Status:** Active  
-**Version:** v3.174.1 (self-
+## Gilgamesh Chat Pipeline — Web Search Integration
+**Status:** Active (deployed 2026-05-25)  
+**Type:** n8n Workflow with Firec
