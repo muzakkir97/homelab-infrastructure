@@ -141,3 +141,49 @@
 **Resolution:** Execute full documentation audit across all 8 files. ROADMAP.md: remove phases 22.8C/22.8D/22.8E/22.15/22.16 from In Progress and Planned tables, add as ARCHIVED with May 10 date. current-state.md: REPLACE entire Hardware section with correct specs (Ryzen 5 5600X, 128GB DDR4-3200, RX 6700 XT, not EPYC/RTX), correct CT 215 references to CT 220. agents.md: update MERLIN and Midas ascension stage to 2/4 and status to Active (Partial, deployed April 27, 2026), update Knowledge Indexer indexed folders to 04-personal, 08-agents, 09-people, 10-projects with note for manual verification. AI-CONTEXT.md: remove llama3.2:latest from installed models (removed May 21-22). All REPLACE SECTION entries must be explicitly labeled in future session summaries. Add Phase 7E to ROADMAP.md completed table (Extended Memory, May 15, 2026).
 
 **Lesson:** Hardware infrastructure and phase status must always use REPLACE SECTION in session summaries; these sections drift when treated as incremental updates. Da Vinci hallucination can inject outdated hypothetical specs into documentation if original context is not tagged as "[HYPOTHETICAL]" or "[ARCHIVED]". Knowledge Indexer folder list cannot be reliably reconstructed from documentation alone — requires manual verification against n8n node configuration to prevent future drift. Multi-file documentation with overlapping scope (e.g., hardware listed in current-state AND AI-CONTEXT) requires audit checklist to catch inconsistencies before deployment.
+
+---
+
+**Symptoms:** If node "Needs Web Search?" returns error "Wrong type: 'true' is a boolean but was expecting a string"
+
+**Root Cause:** If node expression return value was a native JavaScript boolean (true/false), but n8n If nodes expect string comparison ("true"/"false")
+
+**Resolution:** Changed expression to return `.toString()` and compared against string "true" in If node condition. Example: `(searchKeywords.some(keyword => userMessage.toLowerCase().includes(keyword))).toString()`
+
+**Lesson:** n8n If nodes perform string-based condition evaluation, not native type evaluation. Boolean returns from Code nodes must be converted to strings before passing to If node conditions. Test If node routing with explicit string values ("true" or "false") rather than native booleans.
+
+---
+
+**Symptoms:** Web search results not injected into Gilgamesh LLM context; qwen3:14b receives Firecrawl results but responds "I don't have real-time data" ignoring injected context
+
+**Root Cause:** Attempted to inject Firecrawl search results into system prompt and user message, but qwen3:14b ignores injected context regardless of prompt instruction strength — fundamental local model limitation, not prompt engineering problem
+
+**Resolution:** Added `searchContext` field to Route Model node output. When searchContext is non-empty (search query detected), force Route Model to route exclusively to Claude Haiku instead of qwen3:14b. Haiku correctly follows injected Firecrawl results. Documented routing decision: search queries cost ~$0.001-0.002 (Haiku pricing) but guarantee correct context-aware responses.
+
+**Lesson:** Local LLMs (qwen3:14b, Ollama-hosted) have fundamental limitations with injected context that cannot be overcome via prompt engineering. When dynamically injecting external data (web search, RAG results), local models may ignore context entirely. Route to cloud-hosted models (Claude Haiku) when injection is critical; accept cost trade-off for reliability. This is a model capability limitation, not a configuration issue.
+
+---
+
+**Symptoms:** Extract Response node outputs full Claude API object (stringified JSON) instead of clean text string; Telegram "Bad request: can't parse entities" errors at various byte offsets
+
+**Root Cause:** Call Claude API node wraps response in `data.response` object field. Extract Response code checked only `data.response !== undefined` for Ollama detection, which also matched wrapped Claude responses. Stringified JSON object containing `**`, `*`, `__`, `_`, `[`, `]`, backticks was sent to Telegram, triggering entity parsing errors.
+
+**Resolution:** Changed Extract Response condition to `typeof data.response === 'string'` for Ollama branch (raw string response). Added separate branch for Claude: `claudeData = data.response (if object) || data (if direct)`. Extract Response always outputs clean stripped text (removes markdown: `**`, `*`, `__`, `_`, backticks, headers) before sending to Send a text message node. Send a text message: Parse Mode left blank (no markdown parsing).
+
+**Lesson:** Different LLM API response formats require type checking in extract/normalize nodes. Claude wraps responses in objects; Ollama returns raw strings. Always use `typeof` checks to distinguish response formats. Markdown stripping must happen before Telegram sends to prevent entity parsing errors. Test with both local and cloud API responses to catch format mismatches.
+
+---
+
+**Symptoms:** Send to Da Vinci — Personal Knowledge node fails with "responseContent.substring is not a function"
+
+**Root Cause:** Claude API returns content as nested array structure (content[0].text), but downstream Code node assumed responseContent was a flat string
+
+**Resolution:** Added Array.isArray check with robust fallback: `if (Array.isArray(extracted.content)) { responseContent = extracted.content.map(c => c.text || c.content || '').join('') } else { responseContent = extracted.content }`. This handles both array-wrapped and direct string responses.
+
+**Lesson:** Cloud API responses frequently nest content in arrays or objects. Extract nodes passing data to downstream workflows must validate structure and flatten/stringify appropriately. Use defensive checks (Array.isArray, typeof, optional chaining) before calling string methods on extracted values.
+
+---
+
+**Symptoms:** Gilgamesh conversation history incomplete; only user messages visible in gilgamesh_conversations Data Table, assistant messages missing
+
+**Root Cause:** Save Assistant Message node may not be firing correctly due to timing issues, condition logic, or Data Table write failure; assistant responses are generated and sent to Telegram but
