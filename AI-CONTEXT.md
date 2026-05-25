@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** May 22, 2026
+> **Last Updated:** May 25, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. **Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view. VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true (attempted fix for UI bug, did not resolve). Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied.**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. **Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026.**
 
 ---
 
@@ -76,7 +76,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 - **Fallback:** Claude Haiku (API)
 - **Complex:** Claude Haiku (API for Da Vinci only)
 - **Vision:** Llama 3.2 Vision 11B (VM 400)
-- **Routing:** Smart complexity detection
+- **Routing:** Smart complexity detection + web search routing
 
 ### Layer 3: App (Services)
 - **Firefly III** → Personal finance tracking (CT 221)
@@ -92,7 +92,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 - **Proactive recall** → Context-aware knowledge injection
 
 ### Layer 5: Memory (Agent State)
-- **Conversation history** → 15 messages (gilgamesh_memory)
+- **Conversation history** → 15 messages (gilgamesh_conversations)
 - **Session modes** → health_logging, etc.
 - **Goal tracking** → progress + blockers
 - **Agent coordination** → shared state
@@ -260,7 +260,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
   - **da-vinci-update:** One trace with 8 child generations logged per Da Vinci pipeline run (files: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions)
   - **gilgamesh-chat:** One trace per Gilgamesh message with input/output/metadata (routedTo, ragUsed, commandType, chatId)
 - **UI Status:** Working — trace list now displays traces with 1-hour analytics aggregation delay (traces appear after 1 hour, not immediately). Direct API (/api/public/traces) returns results immediately. Direct URL access works immediately.
-- **Environment variable:** LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true (attempted fix for early-session UI bug, not needed now)
+- **Environment variable:** LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true
 
 ### network-ddns (CT 207)
 
@@ -397,6 +397,7 @@ second-brain/
 - Vision capabilities for screenshots/diagrams
 - Artifact generation (code, configs)
 - Monthly cost under $10
+- Real-time web search capability
 
 ### Cost Projection Table
 
@@ -446,7 +447,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 
 | Servant      | Class  | Role                                                                          | Platform                      | Status                     |
 |--------------|--------|-------------------------------------------------------------------------------|-------------------------------|----------------------------|
-| Gilgamesh 👑 | Archer | Life Interface & Personal AI Assistant (Langfuse wired May 22, 2026)         | Telegram (@JhinGilgamesh_bot) | ✅ Active                   |
+| Gilgamesh 👑 | Archer | Life Interface & Personal AI Assistant (Langfuse wired May 22, 2026; Web search live May 25, 2026) | Telegram (@JhinGilgamesh_bot) | ✅ Active                   |
 | Da Vinci 🎨  | Caster | Sync + Goals + Review (Stage 2 RAG active; documentation pipeline active; Personal Knowledge gateway active) | n8n/Nextcloud | ✅ Active |
 | Midas 💰     | Caster | CFO — Cost Tracking & Optimization                                            | n8n                           | ✅ Active                   |
 | MERLIN 🔮    | Caster | Proactive Nudges & Scheduler                                                  | n8n                           | ✅ Active                   |
@@ -455,7 +456,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 
 | Servant             | Class    | Role                                          | Platform      | Build Order | Status     |
 |---------------------|----------|-----------------------------------------------|---------------|-------------|------------|
-| Gilgamesh 👑        | Archer   | Life Interface & Personal AI Assistant (Langfuse wired, RAG for personal profile) | Telegram | —         | ✅ Active   |
+| Gilgamesh 👑        | Archer   | Life Interface & Personal AI Assistant (Langfuse wired, RAG for personal profile, web search) | Telegram | —         | ✅ Active   |
 | Da Vinci 🎨         | Caster   | Sync + Goals + Weekly Review + RAG (Personal Knowledge gateway active) | n8n/Nextcloud | —      | ✅ Active   |
 | Midas 💰            | Caster   | CFO — Cost Tracking & Optimization            | n8n           | 1st         | ✅ Active   |
 | MERLIN 🔮           | Caster   | Proactive Nudges & Health Scheduler           | n8n           | 2nd         | ✅ Active   |
@@ -497,7 +498,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - Grounding fix: Per-file system prompts in Claude project instructions with explicit per-file sections (CHANGES TO AI-CONTEXT.MD, CHANGES TO CHANGELOG.MD, etc.)
 - Deck integration complete with 6 additional nodes for kanban management
 - Da Vinci workflow includes Limit node before Notify Complete to prevent notification spam
-- Knowledge Indexer runs at 3am daily (full re-index v1), indexes 90 files now (was ~70 before Phase 24.9)
+- Knowledge Indexer runs at 3am daily (full re-index v1), indexes 90 files now (was ~70 before Phase 24.9). Partial reindex triggered via webhook after Da Vinci writes (Phase 24.10).
 - **Concurrency lock:** Check Running node queries n8n API before proceeding
 - **Schedule:** Inbox Watcher runs every 15 minutes (was 1 minute)
 - **Model:** claude-haiku-4-5-20251001 (8 separate API calls, one per file: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions)
@@ -506,6 +507,7 @@ Theme: Homelab agents named after Fate/Grand Order servants. Final roster locked
 - **Haiku pricing:** $0.80/1M input tokens, $4.00/1M output tokens
 - **Cost per run estimate:** ~$0.25-0.35 for 8 files (up from ~$0.11 for 3 files)
 - **Personal Knowledge gateway:** Separate n8n workflow (Da Vinci — Personal Knowledge). Webhook POST /davinci-personal-knowledge. Uses Claude Haiku max_tokens 4000. Writes to muzakkir-profile.md via WebDAV. Filters out one-time events, stores durable personal facts. Quality gate prevents noise.
+- **Triggered Qdrant Re-indexing (Phase 24.10):** Webhook POST /davinci-reindex-personal triggers partial reindex (04-personal/ only, ~1s). Fires async after Da Vinci writes. Full reindex still runs daily at 3am (~21s, indexes all 10 folders).
 
 ### Nextcloud Deck Integration
 
@@ -530,9 +532,10 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 
 **Features:**
 
-- Tracks Gilgamesh costs (Haiku, Ollama)
+- Tracks Gilgamesh costs (Haiku, Ollama, Firecrawl searches)
 - USD to MYR conversion (hardcoded rate: 4.7)
 - Ollama savings calculated at Haiku equivalent rate
+- Firecrawl search cost (~$0.001-0.002/search = 2 credits)
 - $10 monthly API spend limit monitoring
 - command_type tracking for detailed cost breakdown
 
@@ -613,60 +616,88 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 
 ---
 
-## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15/41/Da Vinci Stage 2/Phase 7E/Phase 24.9)
+## 🤖 Gilgamesh AI Agent (Phase 7C/7D/7D-Menu/15/41/Da Vinci Stage 2/Phase 7E/Phase 24.9/Phase 24.10/Web Search)
 
-### Architecture
+### REPLACE SECTION: Gilgamesh Chat Pipeline — Architecture
 
+**Architecture:**
 ```
-Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
+Telegram (@JhinGilgamesh_bot) → n8n Workflow → Get Conversation History
                                                     ↓
-                               ┌────────────────────┼──────────────────┐
-                               ▼                    ▼                  ▼
-                         Ollama qwen3:14b      Haiku 4.5           Haiku 4.5
-                         (simple, local)    (Ollama fallback)    (Da Vinci only)
-                               └────────────────────┼──────────────────┘
+                                          Format Messages (RAG + history)
                                                     ↓
-                                          Memory (n8n Data Tables)
-                                                    ↓
-                                          RAG Retrieval (Qdrant → nomic-embed-text)
-                                          (obsidian_knowledge + personal profile)
-                                                    ↓
-                                          Conversation Archival (30+ rows → Qdrant)
-                                                    ↓
-                                          Send to Da Vinci Personal Knowledge
-                                          (facts >20 chars → quality gate → muzakkir-profile.md)
-                                                    ↓
-                                          Langfuse Tracing (gilgamesh-chat)
-                                                    ↓
-                                          /update → Da Vinci → Nextcloud → GitHub
-                                          /sync-docs → Full Doc Pipeline
+                                    If (Needs Web Search?)
+                                      ↙              ↖
+                               (true)               (false)
+                                 ↓                    ↓
+                        Web Search (Firecrawl)   Route Model
+                                 ↓                    ↓
+                         Inject Search Results    Call Ollama or
+                                 ↓                 Call Claude API
+                               Route Model            ↓
+                                 ↓               Merge Response
+                        Call Claude API              ↓
+                                 ↓             Extract Response
+                        Merge Response              ↓
+                                 ↓          Save User Message
+                        Extract Response      Save Assistant Message
+                                 ↓          → gilgamesh_conversations
+                        Save User Message         ↓
+                        Save Assistant Message  Send Telegram
+                        → gilgamesh_conversations ↓
+                                 ↓          Count Conversations
+                        Send Telegram             ↓
+                                 ↓          Archive to Qdrant (async)
+                        Count Conversations      ↓
+                                 ↓          Langfuse Trace (async)
+                        Archive to Qdrant (async) ↓
+                                 ↓         Send to Personal Knowledge (async)
+                        Langfuse Trace (async)
+                                 ↓
+                   Send to Personal Knowledge (async)
 ```
 
-### Smart Routing + RAG + Extended Memory + Personal Knowledge (Phase 41 + Da Vinci Stage 2 + Phase 7E + Phase 24.9 — COMPLETE)
+**Key Components:**
 
-- **Ollama qwen3:14b** — Primary route for simple queries (local, free, fast)
-- **Haiku 4.5** — Fallback if Ollama is down or unavailable (Gilgamesh + Da Vinci both use Haiku)
-- **Da Vinci Update Pipeline** — claude-haiku-4-5-20251001 for documentation merging (8 separate calls, one per file)
-- **RAG Retrieval** — Qdrant vector search with nomic-embed-text embeddings (768 dims) against obsidian_knowledge (1,736 chunks including personal profile)
-- **Extended Memory** — Conversation archival when history exceeds 30 rows
-- **Personal Knowledge** — Gilgamesh sends facts to Da Vinci Personal Knowledge gateway, which writes to muzakkir-profile.md and indexes in Qdrant
-- **Langfuse Tracing** — Gilgamesh fires async trace (gilgamesh-chat) with input/output/metadata (routedTo, ragUsed, commandType, chatId)
-- Routing logic runs in a Route Check If node before calling any model
-- RAG skipped for greetings (<10 chars or regex match)
-- /update messages filtered from conversation history
-- Personal knowledge sent async via Code node (fire-and-forget, 5s timeout)
+| Component | Details |
+|-----------|---------|
+| **Telegram Trigger** | POST endpoint listening for /messages and /callback_query |
+| **Format Messages** | Builds conversation history (last 15 rows from gilgamesh_conversations), performs Qdrant RAG query, sets claude-sonnet-4 as default model |
+| **If (Needs Web Search?)** | Keyword detection: search, latest, current, today, weather, news, price, who is, when is, what is, how much, find, look up, cari, semak, berapa |
+| **Web Search** | Firecrawl /search endpoint (5 results, 60s timeout) if intent detected |
+| **Inject Search Results** | Code node parses Firecrawl data.web array, injects into context with searchContext field |
+| **Route Model** | Checks Ollama health (3s timeout), routes: searchContext present → Haiku; Ollama online → qwen3:14b; else → Haiku. Overrides Format Messages default. |
+| **Call Ollama** | POST http://192.168.30.221:11434/api/generate with streaming |
+| **Call Claude API** | Anthropic API with claude-haiku-4-5-20251001 (fallback) |
+| **Extract Response** | Normalizes Ollama (string) vs Claude (object) responses, strips markdown, outputs normalized fields |
+| **Save Messages** | Appends to gilgamesh_conversations Data Table (user + assistant rows) |
+| **Send Telegram** | Text message, no Parse Mode (markdown stripped) |
+| **Archive** | Async: when rows >30, archives to Qdrant gilgamesh_conversations collection |
+| **Langfuse** | Async trace (gilgamesh-chat) with input/output/metadata logged to CT 223 |
+| **Personal Knowledge** | Async webhook fire-and-forget (5s timeout) to Da Vinci gateway |
+
+**Conversation Buffer Memory:** Already operational. Format Messages Code node fetches last 15 rows from gilgamesh_conversations table and injects as history in messages array.
+
+**Search Routing Rationale:** qwen3:14b ignores injected search context (trained behavior: "I don't have real-time data"). Claude Haiku correctly follows injected Firecrawl results. Search queries always force Haiku routing.
+
+**Cost:**
+- Ollama queries: $0 (local inference)
+- Haiku fallback: ~$0.001 per query (token efficiency)
+- Web search: ~$0.001-0.002 per search (2 Firecrawl credits)
+
+**Pronouns:** she/her. Gilgamesh knows its name + master's name (Muzakkir).
 
 ### Features
 
-- **Conversation memory:** Last 15 messages stored in n8n Data Tables (reduced from 20 for RAG integration)
-- **Extended memory:** Conversations archived to Qdrant at 30+ rows
-- **Smart routing:** Ollama (local, primary) → Haiku (fallback)
+- **Conversation memory:** Last 15 messages stored in n8n Data Tables (buffer memory)
+- **Extended memory:** Conversations archived to Qdrant at 30+ rows (long-term recall)
+- **Smart routing:** Ollama (local, primary) → Haiku (fallback or search)
 - **RAG knowledge recall:** Queries Qdrant for relevant Obsidian content + personal profile + conversations
-- **Web search:** Real-time information via Claude's web_search tool
-- **Cost tracking:** Token usage logged to gilgamesh_costs table with command_type; cost_usd calculated from token rates
+- **Web search:** Real-time information via Firecrawl /search API (keyword-based intent detection)
+- **Cost tracking:** Token usage logged to gilgamesh_costs table with command_type; cost_usd calculated from token rates (includes Firecrawl search cost)
 - **Inline keyboard menu:** Full menu system with all submenus working
 - **Context sync:** /update command pushes session summaries to 8 documentation files via GitHub
-- **Documentation pipeline:** /sync-docs triggers full documentation regeneration (7 files)
+- **Documentation pipeline:** /sync-docs triggers full documentation regeneration (8 files)
 - **Slash commands:** 11 commands for direct actions
 - **Health tracking:** Food log, BP log, medication log via interactive button prompts (Phase 22.8B)
 - **Personal knowledge:** Recalls profile facts via RAG (name, preferences, history)
@@ -683,7 +714,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | /alerts    | System status     | Shows active Alertmanager alerts              |
 | /backup    | Backup status     | Last backup times for all containers          |
 | /update    | Session summary   | Merges session into docs (8 files)            |
-| /sync-docs | Full regeneration | Regenerates all documentation (7 files)       |
+| /sync-docs | Full regeneration | Regenerates all documentation (8 files)       |
 | /midas     | CFO report        | Cost analysis and savings summary             |
 | /daily     | Daily notes       | Creates Obsidian daily note (defaults today)  |
 
@@ -696,6 +727,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Ollama Model  | qwen3:14b (primary local model, 9.3GB, 12GB VRAM, VM 400) |
 | Embedding Model | nomic-embed-text (768 dims, VM 400)                    |
 | Haiku Model   | claude-haiku-4-5-20251001 (Ollama fallback + Da Vinci)   |
+| Web Search    | Firecrawl /search API (2 credits per search)              |
 | n8n Container | CT 211, 192.168.30.211                                    |
 | Qdrant        | VM 400, ports 6333 (REST) + 6334 (gRPC)                  |
 | Langfuse      | CT 223, http://192.168.30.223:3000 (internal VLAN 30 URL) |
@@ -707,6 +739,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - cost_usd calculated from token rates: Haiku $0.80/1M input, $4.00/1M output
 - Ollama tokens captured: data.input_tokens + data.output_tokens from Call Ollama node response
 - Ollama queries cost $0 (local inference)
+- Firecrawl search cost: ~$0.001-0.002 per search (2 credits at community tier)
 - command_type derived from Telegram message text directly
 - **Da Vinci:** claude-haiku-4-5-20251001 (8 separate calls), cost logged immediately after each call
 - **Da Vinci Personal Knowledge gateway:** claude-haiku-4-5-20251001 max_tokens 4000, cost logged after assessment
@@ -715,12 +748,12 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 
 | Workflow                           | Purpose                                  | Nodes | Trigger  |
 |------------------------------------|------------------------------------------|-------|----------|
-| Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory, personal knowledge, Langfuse | 20+  | Telegram |
+| Gilgamesh — Life Interface         | Main bot, menu, commands, hybrid routing, RAG, extended memory, personal knowledge, web search, Langfuse | 25+  | Telegram |
 | Documentation Pipeline — Update    | Session summary → 8 files                | 7     | Webhook  |
-| Documentation Pipeline — Sync Docs | Full doc regeneration → 7 files          | 7     | Webhook  |
+| Documentation Pipeline — Sync Docs | Full doc regeneration → 8 files          | 7     | Webhook  |
 | Da Vinci — Update Pipeline         | 8 separate Haiku API calls (AI-CONTEXT 25k, changelog 6k, troubleshoot 4k, ROADMAP 8k, agents 8k, current-state 4k, service-catalog 4k, decisions 3k) → GitHub push + Nextcloud + Langfuse | 35+ | Execute Workflow |
 | Da Vinci — Inbox Watcher           | Staging inbox → calls Update Pipeline (every 15 min) | 6     | Schedule |
-| Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily, 90 files) | 8     | Schedule |
+| Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily, 90 files); partial reindex triggered (04-personal/ only, ~1s) | 8     | Schedule + Webhook |
 | Da Vinci — Personal Knowledge      | Receives facts from agents → Claude assessment → muzakkir-profile.md → Qdrant | 7     | Webhook  |
 | Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
 | Midas — Daily Brief                | 9am scheduled cost summary               | 4     | Schedule |
@@ -731,7 +764,7 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | Push to GitHub                     | Legacy (unpublished)                     | 4     | Webhook  |
 | Da Vinci — Documentation Pipeline  | INACTIVE (deactivated 2026-05-18, orphaned) | 17+ | Webhook |
 
-> Note: Hybrid routing (Phase 41), RAG retrieval (Da Vinci Stage 2), Extended Memory (Phase 7E), Personal Knowledge (Phase 24.9), and Langfuse Tracing are all integrated into the Gilgamesh — Life Interface workflow. Health tracking (Phase 22.8B) is also integrated.
+> Note: Hybrid routing (Phase 41), RAG retrieval (Da Vinci Stage 2), Extended Memory (Phase 7E), Personal Knowledge (Phase 24.9), Triggered Qdrant Re-indexing (Phase 24.10), and Web Search are all integrated into the Gilgamesh — Life Interface workflow. Health tracking (Phase 22.8B) is also integrated.
 
 ### Inline Keyboard Menu Status
 
@@ -768,9 +801,10 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 | **Vector DB** | Qdrant on VM 400 (http://192.168.30.221:6333) |
 | **Embeddings** | nomic-embed-text (768 dimensions) |
 | **Collections** | obsidian_knowledge (1,736 points), gilgamesh_conversations (archived) |
-| **Indexed Folders** | 04-personal/, 08-agents/, 09-people/, 10-projects/ (confirmed May 22, 2026) |
+| **Indexed Folders** | 10 total: 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/Homelab/homelab-infrastructure (90 files total) |
 | **Excluded** | 05-templates/, 06-archive/ |
-| **Indexing** | Daily 3am via "Da Vinci — Knowledge Indexer" workflow (full re-index v1). 90 files indexed (was ~70). Empty file filter added. |
+| **Indexing** | Daily 3am via "Da Vinci — Knowledge Indexer" workflow (full re-index v1). 90 files indexed. Empty file filter added. |
+| **Partial Reindex** | Triggered via webhook /davinci-reindex-personal after Da Vinci writes to muzakkir-profile.md (Phase 24.10). Reindexes 04-personal/ folder only (~1s). |
 | **Retrieval** | Top 5 results, similarity threshold 0.7, injected into system prompt. Used for both agent context and personal profile recall. |
 
 ### SSH & API Access
@@ -789,7 +823,11 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Route Check
 - Backtick template literals in n8n Code nodes cause 400 errors on Anthropic API — use single-quoted strings with concatenation instead
 - VM 400 disk block device is /dev/vda (KVM virtio), not /dev/sda (IDE)
 - Gemma 3 models hallucinate factual data — not trustworthy for personal assistant role
+- llama3.2 removed from VM 400 (hallucinated data in testing)
 - Langfuse UI trace list has 1-hour analytics delay by design — traces appear in list after 1 hour, but API and direct URL access work immediately
+- Web search queries always route to Haiku: qwen3:14b cannot follow injected search context regardless of instruction strength (model limitation, not prompt engineering)
+- Extract Response must detect Ollama vs Claude responses: `typeof data.response === 'string'` for Ollama branch, `claudeData = data.response || data` for Claude branch (Call Claude API wraps in object)
+- Send a text message: Parse Mode must NOT be set (leave blank). Extract Response strips all markdown before output.
 
 ---
 
@@ -832,7 +870,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Command    | Purpose                                   | Files Updated |
 |------------|-------------------------------------------|---------------|
 | /update    | Every session — merge summary into docs   | 8 files       |
-| /sync-docs | Deployment sessions — regenerate all docs | 7 files       |
+| /sync-docs | Deployment sessions — regenerate all docs | 8 files       |
 
 ### File Coverage
 
@@ -897,7 +935,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Bot                | Platform         | Source              | Status   | Purpose                                                        |
 |--------------------|------------------|---------------------|----------|----------------------------------------------------------------|
-| @JhinGilgamesh_bot | Telegram         | n8n CT 211          | ✅ Active | Personal AI agent — chat, homelab control, /update, /sync-docs, personal knowledge |
+| @JhinGilgamesh_bot | Telegram         | n8n CT 211          | ✅ Active | Personal AI agent — chat, homelab control, /update, /sync-docs, personal knowledge, web search |
 | Midas              | Telegram         | n8n CT 211          | ✅ Active | CFO cost tracking — /midas reports, 9am daily briefs           |
 | MERLIN             | Telegram         | n8n CT 211          | ✅ Active | Reminders — 8am daily infrastructure checks                    |
 | Daily Note Creator | Nextcloud WebDAV | n8n CT 211          | ✅ Active | Midnight daily note creation in Obsidian vault                 |
@@ -909,8 +947,9 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | Homelab-Ntfy       | ntfy CT 222      | Uptime Kuma CT 206  | ✅ Active | Service down alerts via ntfy                                   |
 | Nextcloud Deck     | Deck CT 220      | n8n CT 211          | ✅ Active | Kanban project management via Da Vinci                         |
 | Langfuse           | CT 223           | n8n CT 211 + Gilgamesh | ✅ Active | LLM tracing (da-vinci-update + gilgamesh-chat traces)         |
+| Firecrawl          | Cloud API        | n8n CT 211          | ✅ Active | Web search for Gilgamesh (keyword-based intent routing)        |
 
-**Planned:** Wire Langfuse into MERLIN and Midas. Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n. Triggered Qdrant re-indexing after Da Vinci Personal Knowledge writes.
+**Planned:** Wire Langfuse into MERLIN and Midas. Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n. Triggered Qdrant re-indexing after Da Vinci Personal Knowledge writes (complete May 25, 2026).
 
 ### Nextcloud Deck Integration
 
@@ -922,6 +961,21 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | **Labels** | 22 labels on Homelab (category, priority, agent, effort), 9 on Career/Personal |
 | **API Base** | http://192.168.30.220/index.php/apps/deck/api/v1.0 |
 | **Auth** | Basic auth with app password (credential: NextCloud-Deck) |
+
+### Firecrawl Web Search Integration
+
+| Component | Details |
+|-----------|---------|
+| **Service** | Firecrawl (@firecrawl.dev) |
+| **Type** | Cloud API for web search and content scraping |
+| **Endpoint** | POST https://api.firecrawl.dev/v1/search |
+| **Auth** | API key stored in n8n credential "Firecrawl account" |
+| **n8n Node** | @mendable/n8n-nodes-firecrawl v2.1.1 |
+| **Tier** | Community (free, no credit card required) |
+| **Cost** | ~2 credits per search (~$0.001-0.002 per search at community pricing) |
+| **Gilgamesh Integration** | Keyword-based intent detection in If node, search results injected into context, search queries force-routed to Haiku |
+| **Results Format** | data.web array with item.title, item.url, item.description per result |
+| **Status** | Active (deployed May 25, 2026) |
 
 ---
 
@@ -1027,7 +1081,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 24.7    | Universal Notifications — ntfy hub deployment                    | ✅ Complete | May 13, 2026 |
 | 24.8    | Langfuse AI Observability                                        | ✅ Complete | May 21, 2026 |
 | 24.9    | Personal Knowledge System (muzakkir-profile.md + gateway)        | ✅ Complete | May 22, 2026 |
-| 24.10   | Triggered Qdrant Re-indexing (on Da Vinci Personal Knowledge write) | 📋 Planned | —            |
+| 24.10   | Triggered Qdrant Re-indexing (on Da Vinci Personal Knowledge write) | ✅ Complete | May 25, 2026 |
 | 25.1    | Voice Interface — Claude API transcription + voice responses     | 📋 Planned | —            |
 | 25.2    | Email Integration — IMAP monitoring + smart filtering            | 📋 Planned | —            |
 | 25.3    | Self-Evolving Skills — Hermes-style learning loop (knowledge docs + RAG recall) | 📋 Planned | —            |
@@ -1035,10 +1089,36 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT                             | ✅ Complete | Apr 24, 2026 |
 | 39      | Open WebUI                                                       | ✅ Complete | Apr 24, 2026 |
 | 41      | Hybrid Routing (Ollama + Haiku + Sonnet)                         | ✅ Complete | May 8, 2026  |
+| 52      | DOCP Memory Optimization (128GB DDR4-3200)                       | ✅ Complete | May 2026     |
+| Web Search | Gilgamesh Web Search (Firecrawl integration)                  | ✅ Complete | May 25, 2026 |
 
 ---
 
 ## 📝 Session Log (Most Recent 5)
+
+### Session 15: May 25, 2026 — Phase 24.10 + Phase 52 + Web Search Deployment
+
+**Duration:** 3h
+**Topics:** Phase 24.10 (Triggered Qdrant Re-indexing) deployed via webhook /davinci-reindex-personal. Phase 52 (DOCP Memory Optimization) confirmed complete. Web Search feature built and deployed in Gilgamesh. Firecrawl API integrated with keyword-based intent detection. Search results forced to Haiku routing. 16 Gilgamesh feature wishlist compiled. Documentation audit findings: Knowledge Indexer indexes 10 folders (not 4), Claude Sonnet 4 overridden in Route Model.
+**Decisions:** Triggered reindex via webhook after Da Vinci writes (async, ~1s). Partial reindex (04-personal/ only) reduces full 21s rebuild. Full daily reindex still at 3am. Web search routed to Haiku (qwen3:14b cannot follow injected context). Firecrawl community node used (zero friction). Search keyword list: search, latest, current, today, weather, news, price, who is, when is, what is, how much, find, look up, cari, semak, berapa. Da Vinci Stage 2 marked complete — RAG fully operational. Phase 7E duplicate in ROADMAP removed (conversation buffer already working). Model routing correction: Format Messages sets Sonnet 4 default, Route Model overrides.
+**Outcomes:** Phase 24.10 complete. Partial reindex webhook fires at ~990ms post-write. Full daily reindex ~21s. Web Search live in Gilgamesh. Firecrawl searches working (2 credits per search). 16-feature wishlist documented. Phase 52 confirmed. Knowledge Indexer folder count verified at 10 (including AI-Stuff/Homelab/homelab-infrastructure).
+**Errors Fixed:**
+  - Qdrant re-indexing not triggered after profile writes — webhook /davinci-reindex-personal not wired in Personal Knowledge gateway → added async HTTP Request node (timeout 5s)
+  - Reindex path not specified — webhook without reindexType field triggers full rebuild (21s) — added check in Knowledge Indexer If node: reindexType === 'partial' → index only 04-personal/ (~1s)
+  - Web Search results not reaching LLM — qwen3:14b ignores injected context entirely (fundamental limitation, not prompt fixable) → always route search queries to Haiku (added searchContext routing in Route Model)
+  - If node returning boolean true instead of string — need .toString() — added `.toString()` to If expression return value
+  - Firecrawl output structure unknown initially — docs vague — discovered data.web array with per-item structure via testing
+  - Extract Response failing on web search results — code expected claudeData for Claude responses but searchContext forced null response in some branches → added fallback typeof checks
+**Next:** Apply all corrections in next Da Vinci pipeline run. Test web search across varied query types (current news, weather, prices, "who is" queries). Monitor Phase 24.10 stability over 48h. Decide next priority: Midas v2 (Firefly III + receipts) vs Smart Morning Briefing vs Guardian Agent.
+
+### Session 14: May 25, 2026 — Documentation Audit: Knowledge Indexer Folder Reconciliation
+
+**Duration:** 1h
+**Topics:** Full reconciliation of Knowledge Indexer folder list across AI-CONTEXT, agents, and n8n workflow nodes. Found that actual n8n workflow indexes 10 folders, but AI-CONTEXT and agents.md documented only 4. Discovered Sonnet 4 set in Format Messages (not used — Route Model overrides to qwen3:14b). Clarified Da Vinci Stage 2 vs Phase 7E (RAG pipeline complete, conversation buffer already working).
+**Decisions:** Correct AI-CONTEXT and agents to reflect 10 actual indexed folders. Remove Phase 7E from ROADMAP Planned table (duplicate — already in Completed). Mark Da Vinci Stage 2 as effectively complete (Qdrant, embeddings, Knowledge Indexer all live). Conversation buffer memory (last 15 rows) already operational in Format Messages.
+**Outcomes:** Knowledge Indexer folder list corrected. 10 folders confirmed: 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/Homelab/homelab-infrastructure. Model routing clarified: Format Messages default (Sonnet 4) overridden by Route Model.
+**Errors:** None (documentation/reconciliation session only).
+**Next:** Incorporate corrections into next /update. Phase 24.10 + Web Search testing (Session 15).
 
 ### Session 13: May 22, 2026 — Documentation Audit & Corrections (No Deployment)
 
@@ -1093,79 +1173,4 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
   - Log Cost — service-catalog had wrong command_type (copy-paste error) — corrected
   - Langfuse ingestion returning 400 — timestamp field required in every batch event (fixed)
   - Langfuse node ECONNREFUSED 192.168.30.223:8123 — ClickHouse port 8123 not accessible from CT 211, abandoned ClickHouse time query
-  - Gemma3:4b disk pull failed — VM 400 disk 100% full (56GB), expanded to 86GB
-  - VM 400 disk expansion failing with /dev/sda — disk device is /dev/vda (KVM virtio), used correct device
-**Next:** Monitor Langfuse traces for 24h, wire Langfuse into MERLIN, investigate UI trace list bug
-
-### Session 10: May 21, 2026 — Phase 24.8: Langfuse Wiring to Da Vinci Update Pipeline (VERIFIED)
-
-**Duration:** 0.5h
-**Topics:** Verified Langfuse observability integration with Da Vinci Update Pipeline, confirmed trace and 8 generations appear in Langfuse UI
-**Decisions:** Single Langfuse node branched off Push to GitHub (after all 8 files complete) instead of 8 individual nodes. Use internal URL: http://192.168.30.223:3000 for VLAN 30 internal routing (no need to route through Cloudflare).
-**Outcomes:** Langfuse trace (da-vinci-update) with 8 child generations logged per pipeline run. Visible in langfuse.najhin-gaming.com UI. One trace per session confirmed and verified to contain all 8 generations (one per file: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions).
-**Errors:** None
-**Next:** Wire Langfuse into Gilgamesh (May 22). Monitor stability 24h.
-
-### Session 9: May 21, 2026 — Phase 16.4 Pipeline Test: Full 8-File Expansion Verified
-
-**Duration:** 1.5h
-**Topics:** Full 8-file Da Vinci pipeline test, verified all 8 files pushed to GitHub, cost logging confirmed (8 rows per session), staging inbox archival working, per-file system prompts resolving hallucination
-**Decisions:** Pipeline production-ready. Per-file system prompts (explicit CHANGES TO X.MD sections) prevent cross-file hallucination. decisions.md auto-created on first run with null SHA handling. Cost per run ~$0.25-0.35.
-**Outcomes:** Full pipeline tested end-to-end. All 8 files successfully pushed to GitHub. 8 cost logging rows verified. Staging inbox files archived to staging-archive/2026-05/. No errors on downstream failure.
-**Next:** Phase 24.8 (Langfuse wiring), monitor pipeline stability for 24h
-
----
-
-## 🔧 Key Lessons Learned
-
-### Monitoring & Alerts
-
-| Issue | Resolution |
-|-------|------------|
-| CRITICAL CPU alert on CT 207 node_exporter | Root cause was Promtail crash loop (53,649 restarts). node_exporter in LXC reads host /proc/stat — alert reflects host CPU, not container CPU. Investigation tip: check systemctl status on container before blaming hardware |
-| Promtail YAML broken after install | Shell installation commands were accidentally pasted into promtail.yml after line 30, breaking YAML syntax. Parser failed every 5 seconds for 3+ days. Fix: Overwrite entire file cleanly using `python3 -c "open(...).write(...)"` from inside container instead of heredoc |
-| Wrong Loki URL in Promtail config | CT 207 had 192.168.20.13 (VLAN 20, client devices) in promtail.yml. Correct URL is http://192.168.30.204:3100/loki/api/v1/push (CT 204 on VLAN 30, services). Verify network placement of log destinations |
-| tModLoader CPU leak on CT 304 | tModLoader has known CPU ramp-up issue when running headless with heavy mods. Idles at 70%+, hits 97%+ over hours. Pterodactyl limited via Docker config; Pelican migration did not carry limits. Fix: `pct set 304 --cpulimit 1.5` at Proxmox level + daily 4am cron: `0 4 * * * pct exec 304 -- bash -c "kill $(pgrep -f tModLoader)" 2>/dev/null` |
-| Pterodactyl vs Pelican CPU difference | Pterodactyl panel enforced Docker-level CPU limits via compose config. Pelican migration did not auto-migrate CPU limits — must set manually in both Proxmox (pct set) and Pelican panel UI |
-
-### Documentation & Workflow
-
-| Issue | Resolution |
-|-------|------------|
-| Da Vinci documentation merged to wrong file | Property name mismatch (sessionSummary vs summary) caused null reads. Verify property chains after Merge nodes — use direct node references like `$('Extract Response').first().json.updatedDoc` |
-| Haiku API cost logging missing on failure | Cost logs were firing at end of workflow. If downstream nodes failed, costs weren't captured. Fix: Fire cost logging immediately after each API call (8 calls now for 8 files), before parse/merge nodes |
-| Documentation pipeline concurrent executions | Inbox Watcher running every 1 minute caused multiple executions queued. Fix: Increase schedule to every 15 minutes + add Check Running node to query n8n API before proceeding |
-| Per-file Da Vinci instructions getting ignored | Single merged session summary section caused Da Vinci to hallucinate content for other files. Fix: Claude project instructions now require explicit per-file sections (CHANGES TO AI-CONTEXT.MD, CHANGES TO CHANGELOG.MD, CHANGES TO ROADMAP.MD, CHANGES TO AGENTS.MD, CHANGES TO CURRENT-STATE.MD, CHANGES TO SERVICE-CATALOG.MD, CHANGES TO DECISIONS.MD, ERRORS FIXED) — Da Vinci gets unambiguous per-file instructions |
-| New Da Vinci files not pushed to GitHub | Push to GitHub node still had hardcoded 3-file array. Fix: Updated filesToPush to all 8 files with null SHA handling for new files like decisions.md |
-| Backtick template literals in n8n Code nodes | Backticks caused 400 errors on Anthropic API when used in n8n Code nodes. Fix: Use single-quoted strings with concatenation for all system prompts in Claude API nodes |
-| GitHub API null token reference | New code referenced `githubToken` from trigger payload which is never passed. Fix: Hardcode GitHub token directly in Fetch GitHub Files node |
-| Staging inbox rollover accumulation | Files stuck in staging-inbox indefinitely if validation failed. Fix: Verify Parse Response node rejects placeholder outputs before GitHub push. Archive processed files to staging-archive/YYYY-MM/ folder. |
-| Langfuse internal vs external URL | n8n → Langfuse calls should use internal URL (http://192.168.30.223:3000) when both are on same VLAN 30. Avoids unnecessary Cloudflare routing, reduces latency, simpler config. External URL (langfuse.najhin-gaming.com) used only for user browser access. |
-| Langfuse UI trace list showed "No results" initially | Known v3 self-hosted design: ClickHouse analytics_traces view only shows data >1 hour old for aggregation stability. Traces exist immediately in raw tables, visible via API (/api/public/traces) and direct URL access. UI list view shows traces after 1 hour. Not a bug, expected behavior. |
-| SKIP detection string comparison | Da Vinci returns "SKIP\n\nReasoning..." but code checked === 'SKIP'. SKIP text overwrote the profile. Fix: Use content.trim().startsWith('SKIP') instead of strict equality. |
-| Obsidian Nextcloud sync conflict during writes | When Da Vinci writes via WebDAV while Obsidian syncs, Nextcloud creates .md.md duplicate file. Fix: Manual deletion post-write, or implement lock mechanism on Nextcloud side (future). |
-| Documentation audit uncovered systemic hallucinations | Da Vinci generated fictional hardware specs (EPYC 5645/256GB/RTX 4070) that didn't exist, pulled from January hypothetical discussions. Root cause: context windows don't preserve "hypothetical" vs "actual" distinctions. Fix: Hardware section must always use REPLACE SECTION marker in session summaries to force regeneration from source of truth (Proxmox API). Stale data across 4 files for 5+ days before caught. Lesson: Weekly documentation audits against conversation history to catch drift. |
-
-### Networking & Infrastructure
-
-| Issue | Resolution |
-|-------|------------|
-| Node_exporter alert misdiagnosis | Host-level metrics (CPU, memory) trigger alerts on Prometheus even if LXC container itself is idle. The node_exporter reads /proc/stat from host, not cgroup limits. Future work: Relabel alerts to clarify scope (Phase 24.2) |
-| heredoc paste mangling on Proxmox host | `cat > file << 'EOF'` failed when pasting multi-line heredocs. Promtail install guide used heredoc; copy-paste broke quoting. Solution: Use `pct enter 207` first, then `python3 -c "..."` to avoid heredoc issues |
-
-### Container & Process Management
-
-| Issue | Resolution |
-|-------|------------|
-| Game server CPU limits not enforced | Pelican panel migration lost CPU limit configuration from Pterodactyl. CPU limits live in 2 places: Proxmox (hypervisor-level via pct set --cpulimit) and game panel (UI setting). Both must be set |
-| Process restart patterns | Long-running processes with memory leaks (tModLoader) benefit from scheduled kills. Use daily cron at 4am to kill and let panel auto-restart. Cleaner than constant monitoring |
-
-### Code & API Integration
-
-| Issue | Resolution |
-|-------|------------|
-| Backtick template literals break Anthropic API | Backticks in n8n Code nodes cause 400 errors when submitted to Claude API. Anthropic parsing issue with escaped backticks in JSON. Use single-quoted strings with string concatenation instead |
-| Trigger payload fields not matching schema | n8n trigger only passes explicitly defined fields (fileContent, chatId). Referencing undefined fields (githubToken) returns null. Solution: Hardcode sensitive values directly in node code, not as trigger fields |
-| 8 separate API calls instead of single merged | Sequential calls prevent hallucination across files. Each file gets fresh LLM context with explicit instruction for what to change. Single merged call caused Da Vinci to rewrite other files with hallucinated content. |
-| VM 400 disk expansion with wrong device | KVM virtual disks use /dev/vda (virtio), not /dev/sda (IDE). Use growpart /dev/vda 3 (not sda) for partition expansion. |
-| Model hallucination testing | Gemma 3:4b, Gemma 3:12b, and phi4-mini all confid
+  - Gemma3:4b disk pull failed — VM 400 disk 100
