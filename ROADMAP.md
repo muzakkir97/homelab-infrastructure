@@ -1,8 +1,8 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** May 22, 2026  
-> **Total Phases:** 88 planned | 48 completed | 0 in progress | 40 future  
-> **Next Session Priority:** Phase 24.10 (Triggered Qdrant Re-indexing)
+> **Last Updated:** May 25, 2026  
+> **Total Phases:** 91 planned | 52 completed | 0 in progress | 39 future  
+> **Next Session Priority:** Midas v2 (Financial Intelligence) OR Smart Morning Briefing OR Guardian Agent
 
 ---
 
@@ -12,17 +12,17 @@
 |---------------------------------------|-------|----------|-------------|---------|
 | **Core Infrastructure & Security**     | 15    | 11       | 0           | 4       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
-| **AI & Automation (Gilgamesh)**       | 22    | 18       | 0           | 4       |
+| **AI & Automation (Gilgamesh)**       | 26    | 22       | 0           | 4       |
 | **Personal & Knowledge Management**    | 12    | 7        | 0           | 5       |
 | **Monitoring & Observability**        | 8     | 8        | 0           | 0       |
 | **Infrastructure Cleanup**            | 6     | 2        | 0           | 4       |
 | **Career Development**                | 4     | 2        | 0           | 2       |
 | **Long Term Vision**                  | 7     | 0        | 0           | 7       |
-| **Hardware & Upgrades**               | 3     | 1        | 0           | 2       |
+| **Hardware & Upgrades**               | 3     | 3        | 0           | 0       |
 
 ---
 
-## ✅ Completed Phases (48)
+## ✅ Completed Phases (52)
 
 ### Core Infrastructure Foundation
 | Phase | Title                                         | Completed    | Dependencies |
@@ -68,9 +68,11 @@
 | 16.5    | Da Vinci Update Pipeline Rebuild                | May 19, 2026 | Phase 16.4   |
 | 24.8    | Langfuse Wiring (Da Vinci)                      | May 21, 2026 | Phase 16.5   |
 | 24.9    | Personal Knowledge System (Gil → Da Vinci → Obsidian) | May 22, 2026 | Phase 24.8 |
+| 24.10   | Triggered Qdrant Re-indexing                    | May 25, 2026 | Phase 24.9   |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT            | Apr 24, 2026 | Phase 1      |
 | 39      | Open WebUI                                      | Apr 24, 2026 | Phase 38     |
 | 41      | Gilgamesh + Ollama Hybrid Routing               | Apr 24, 2026 | Phase 38     |
+| Web Search | Gilgamesh Web Search (Firecrawl Integration)  | May 25, 2026 | Phase 24.10  |
 | Midas   | Midas CFO Agent                                 | Apr 27, 2026 | Phase 7D     |
 | MERLIN  | MERLIN Reminders Agent                          | Apr 27, 2026 | Phase 7D     |
 
@@ -83,11 +85,16 @@
 | 22.8A | Button Menu System + Community Nodes      | Apr 27, 2026 | Phase 7D-Menu|
 | 22.8B | Health Tracking (Food/BP/Medication Logging) | Apr 28, 2026 | Phase 22.8A |
 
+### Hardware
+| Phase | Title                                      | Completed    | Dependencies |
+|-------|--------------------------------------------|--------------|--------------|
+| 52    | DOCP Memory Optimization                   | May 2026     | —            |
+
 ---
 
 ## ⚡ In Progress (0)
 
-No phases currently in progress. Next session: Phase 24.10.
+No phases currently in progress.
 
 ---
 
@@ -97,12 +104,19 @@ No phases currently in progress. Next session: Phase 24.10.
 
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
 |-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
-| 24.10 | Triggered Qdrant Re-indexing                    | Phase 24.9        | 4h     | Immediate re-index after Da Vinci writes to profile |
-| Da Vinci Stage 2 | RAG System & Knowledge Retrieval     | Phase 24.9        | 8-10h  | Qdrant vector database, embedding pipeline, knowledge recall |
-| Guardian | Security Monitoring Agent                   | Phase 24.9        | 6-8h   | Alert translation, threat detection, security reporting |
-| 7E    | Extended Memory (20+ message conversations)     | Da Vinci Stage 2  | 8h     | RAG-powered conversation continuity      |
-| 7F    | File Generation (code, configs, docs)           | Phase 7E          | 6h     | Artifact generation capabilities         |
-| 7G    | Vision API (image analysis)                     | Phase 7F          | 4h     | Llama 3.2 Vision 11B integration         |
+| Da Vinci Stage 2 | RAG System & Knowledge Retrieval     | Phase 24.10       | —      | COMPLETE — RAG pipeline fully operational via Phase 24.9. Qdrant embeddings, Knowledge Indexer, and Gilgamesh RAG queries all active. No separate deployment required. |
+| Guardian | Security Monitoring Agent                   | Phase 24.10       | 6-8h   | Alert translation, threat detection, security reporting |
+| Smart Morning Briefing | Dynamic Briefing (weather, schedule, health, tasks) | Phase 24.10 | 2h | Real-time weather via Firecrawl, calendar awareness, health nudges, task integration |
+| Midas v2 | Financial Intelligence (Firefly III + Receipt Capture) | Phase Midas | 10-12h | Expense tracking, receipt/PDF import, spending insights |
+| Proactive Goal Nudges | Condition-based alerts via ntfy      | Phase 24.10       | 3-4h   | Goal tracking with Telegram notifications |
+| Weekly Automated Review | Sunday digest (health, spending, homelab) | Phase 24.10 | 2-3h | Summarized weekly activity report |
+| "What did I do?" Recall | Natural language query over life_log | Phase 24.10 | 2h     | Search personal activity history |
+| URL/Article Summarizer | Send link, Gil summarizes via Firecrawl | Phase Web Search | 1-2h | Link-based content summarization |
+| Grocery/Task List Management | Telegram-based list sync          | Phase 24.10       | 2h     | Task and grocery list management |
+| Calendar Awareness | Google Calendar integration           | Phase 24.10       | 3-4h   | Schedule-aware responses |
+| News Digest | Curated tech/AI/Malaysia news on demand | Phase Web Search | 2h     | Daily news briefing |
+| Voice Notes | Whisper transcription → Obsidian   | Phase 24.10       | 4h     | Voice message processing |
+| Plan My Day | Schedule + tasks + energy = daily suggestion | Phase 24.10 | 4-5h | Daily planning assistant |
 
 ### 🎮 Gaming Platform Pipeline (Priority: Medium)
 
@@ -166,54 +180,47 @@ No phases currently in progress. Next session: Phase 24.10.
 | 50    | Advanced AI Workloads                | Phase 43     | 20h    | Large model training and inference      |
 | 51    | Open Source Contributions            | Phase 46     | Ongoing| Give back to projects used              |
 
-### 🔩 Hardware (Priority: Medium)
-
-| Phase | Title                                | Dependencies | Effort | Notes                                   |
-|-------|--------------------------------------|--------------|--------|-----------------------------------------|
-| 52    | DOCP Memory Optimization             | RAM Upgrade  | 2h     | Tune 128GB kit for optimal performance |
-| 53    | Second Proxmox Node                  | Budget       | 16h    | High availability cluster setup         |
-
 ---
 
 ## 🎯 Recommended Next Session Order
 
-### Phase 24.10 — Triggered Qdrant Re-indexing (Next Session)
-**Effort:** 4 hours  
-**Goal:** Immediately re-index Qdrant after Da Vinci writes to muzakkir-profile.md (currently waits for 3am daily cron)  
-**Deliverables:** Post-write indexing trigger in Da Vinci Personal Knowledge workflow, faster knowledge recall latency
+### Midas v2 — Financial Intelligence (Next Session)
+**Effort:** 10-12 hours  
+**Goal:** Firefly III integration with receipt and PDF statement capture  
+**Deliverables:** Expense tracking, receipt OCR, PDF import, spending insights via Gil
 
-### Da Vinci Stage 2 — RAG System (Session After)
-**Effort:** 8-10 hours  
-**Goal:** Knowledge retrieval across all agent conversations using Qdrant embeddings  
-**Deliverables:** Full RAG pipeline, embedding pipeline, knowledge recall by all agents
+### Smart Morning Briefing (Alternative Next Session)
+**Effort:** 2 hours  
+**Goal:** Dynamic briefing with real-time weather, schedule, health nudges, tasks  
+**Deliverables:** Morning routine automation, Firecrawl weather integration, task awareness
 
 ### Guardian Agent (Third Session)
 **Effort:** 6-8 hours  
 **Goal:** Security monitoring and threat detection agent  
 **Deliverables:** Alert translation, threat detection, Telegram security reporting
 
-### Phase 24.2 — Alert Translation (Fourth Session)
+### Proactive Goal Nudges (Fourth Session)
 **Effort:** 3-4 hours  
-**Goal:** Route Alertmanager alerts through n8n, translate to plain English via ntfy  
-**Deliverables:** Plain English alerts via ntfy push notifications
+**Goal:** Condition-based alerts via ntfy integration  
+**Deliverables:** Goal tracking notifications, habit reminders
 
 ---
 
 ## 🔗 Phase Dependencies
 
 **Critical Path Analysis:**
-1. **Gilgamesh Enhancement Track:** 24.10 → Da Vinci Stage 2 → Guardian → 7E → 7F-7G
-2. **Gaming Platform Track:** Mash 59-64 (can run parallel to Gilgamesh)
-3. **Infrastructure Track:** 25-29 (low priority, independent)
-4. **Career Development Track:** 35-36 (depends on infrastructure completion)
-5. **Observability Track:** Phase 24.8 (Da Vinci) → Phase 24.9 (Personal Knowledge) → wire remaining agents
+1. **Gilgamesh Enhancement Track:** Phase 24.10 → Guardian → Goal Nudges → Plan My Day
+2. **Knowledge & Tracking Track:** Smart Morning Briefing → Midas v2 → Weekly Review
+3. **Gaming Platform Track:** Mash 59-64 (can run parallel to Gilgamesh)
+4. **Infrastructure Track:** 25-29 (low priority, independent)
+5. **Career Development Track:** 35-36 (depends on infrastructure completion)
 
 **Parallel Development Opportunities:**
 - Gaming platform phases can run alongside AI development
 - Infrastructure cleanup can happen during slower development periods
-- Hardware upgrades can be integrated into any session
-- Agent Langfuse wiring can be integrated into agent development sessions
+- Agent feature development can be integrated into existing workflows
+- Gilgamesh feature wishlist (16 items) can be prioritized into dedicated sessions
 
 ---
 
-*Last updated: May 22, 2026 — Documentation Audit & Corrections complete. Phase 24.9 Personal Knowledge System confirmed complete with muzakkir-profile.md indexed. Removed 5 archived phases (22.8C, 22.8D, 22.8E, 22.15, 22.16 — Homepage retired May 10). Added Phase 7E (Extended Memory) to completed. Phase 24.10 Triggered Qdrant Re-indexing queued as next priority.*
+*Last updated: May 25, 2026 — Phase 24.10 (Triggered Qdrant Re-indexing) complete and deployed. Phase 52 (DOCP Memory Optimization) confirmed complete. Web Search (Gilgamesh) deployed with Firecrawl integration. Da Vinci Stage 2 marked complete — RAG pipeline fully operational via Phase 24.9. Phase 7E duplicate removed from Planned table (already in Completed, conversation buffer already operational). Gilgamesh feature wishlist (16 items) added to Planned phases. Next session priority: Midas v2 (financial intelligence) OR Smart Morning Briefing OR Guardian Agent.*
