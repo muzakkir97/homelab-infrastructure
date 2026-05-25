@@ -4,6 +4,36 @@ Architectural decisions, strategy calls, and naming choices made during homelab 
 
 ---
 
+### 2026-05-25 - Search queries in Gilgamesh force-route to Claude Haiku, not qwen3:14b
+**Decision:** All search queries detected by the "Needs Web Search?" If node are routed to Claude Haiku instead of qwen3:14b, even when Ollama is online.
+**Why:** qwen3:14b ignores injected search context regardless of prompt instruction strength — consistently responds "I don't have real-time data" even with actual Firecrawl results in the user message context. This is a fundamental local model limitation, not a prompt engineering problem. Claude Haiku correctly follows injected search results. Trade-off: search queries cost ~$0.001-0.002 each (Haiku pricing) instead of $0 (local), but acceptable for personal use volume.
+**Alternatives considered:** Stronger prompt instructions (rejected — tested, qwen3:14b still ignores context), use qwen3.5 (rejected — same issue), skip web search when Ollama online (rejected — reduces functionality for local cost savings).
+
+### 2026-05-25 - Firecrawl chosen over Brave Search, Serper, and SearXNG for web search
+**Decision:** Integrate Firecrawl API (firecrawl.dev) as the web search backend for Gilgamesh instead of evaluating Brave Search, Serper, or SearXNG.
+**Why:** Firecrawl community node already installed in n8n (v2.1.1), free tier available without credit card requirement, no new containers needed. Brave changed free tier in Feb 2026 (now requires credit card). Serper offers 2,500 one-time free queries (limited). SearXNG would require new LXC container. Firecrawl was zero-friction deployment.
+**Alternatives considered:** Brave Search API (rejected — CC required), Serper (rejected — limited free queries), SearXNG (rejected — new container needed), build custom crawler (rejected — over-engineered for personal use).
+
+### 2026-05-25 - Web search results injected into last user message, not system prompt
+**Decision:** When Firecrawl returns web search results, inject them into the last user message context, not as a system prompt addition.
+**Why:** Local models (qwen3:14b) respond better to user-turn context injection than system prompt additions. Since search queries now route to Haiku anyway, this distinction is less critical, but kept for consistency with earlier n8n architecture decisions.
+**Alternatives considered:** Inject into system prompt (rejected — local models ignore system modifications), separate search results as tool output (rejected — adds complexity beyond current prompt pattern).
+
+### 2026-05-25 - Da Vinci Stage 2 considered complete — no separate deployment needed
+**Decision:** Mark Da Vinci Stage 2 (RAG System & Knowledge Retrieval) as effectively complete. RAG pipeline (Qdrant + nomic-embed-text embeddings + Knowledge Indexer + Gilgamesh RAG queries) fully operational via Phase 24.9 deployment. No additional "Stage 2" build or deployment required.
+**Why:** RAG foundation is complete and operational. The remaining planned work (Phase 7E "Extended Memory — 20+ message conversations") is a distinct feature about conversation buffer memory (already operational via gilgamesh_conversations Data Table). Conversation buffer (last 15 messages) already implemented in Format Messages. Stage 2 architecture goal achieved without a separate deployment event.
+**Alternatives considered:** Treat Phase 7E as "Stage 2 completion" (rejected — Phase 7E is conversation feature, not RAG), create separate Stage 2 build (rejected — duplicates Phase 24.9 work), leave Stage 2 as open (rejected — RAG is functionally complete).
+
+### 2026-05-25 - ROADMAP Phase 7E duplicate resolved — keep Completed entry, remove Planned
+**Decision:** Phase 7E (Extended Memory — 20+ message conversations) appears in both Completed and Planned tables. Keep the Completed entry (May 15, 2026: conversation archival functionality). Remove from Planned table — conversation buffer memory is already operational in Format Messages (fetches last 15 gilgamesh_conversations rows), no additional build needed.
+**Why:** Completed entry (conversation archival to Qdrant) is a distinct, deployable feature from 2026-05-15. Planned entry appears to be a duplicate that confused "conversation buffer memory" (already working) with "extended memory phase". Conversation buffer (last 15 messages) is operational; no Phase 7E re-deployment required.
+**Alternatives considered:** Keep both (rejected — duplicate, confusing), move Completed to archive (rejected — conversation archival is a real completed feature), rename Planned to distinct feature (rejected — feature already working in Format Messages).
+
+### 2026-05-25 - Gilgamesh feature wishlist documented as 16 planned features
+**Decision:** Compile and document Gilgamesh feature wishlist as 16 distinct phases across High/Medium/Long-term priority tiers. Source: original brainstorm + internet research on personal AI assistant features 2025-2026. Features include: Proactive Goal Nudges, Weekly Automated Review, "What did I do?" Recall, URL/Article Summarizer, Grocery/Task List management, Smart Morning Briefing, Calendar Awareness, Financial Intelligence (Midas v2), News Digest, Voice Notes, Plan My Day.
+**Why:** Structured roadmap of potential Gilgamesh enhancements provides prioritized build queue. Brainstorm identified user needs; internet research confirmed common personal assistant features in 2025-2026 landscape. Documented with effort estimates (1-12 hours) enables session planning.
+**Alternatives considered:** Keep as ad-hoc brainstorm (rejected — loses prioritization), drop low-priority items (rejected — may become valuable later), assign all to Phase (rejected — too many to build in one session).
+
 ### 2026-05-22 - Documentation audit reveals hallucination pattern in hardware specs and folder lists
 **Decision:** Conduct full audit of all 8 Da Vinci documentation files against conversation history. Identified 11 discrepancies across 4 files (ROADMAP.md, current-state.md, agents.md, AI-CONTEXT.md). Root causes: Da Vinci hallucinated hardware (EPYC 5645/256GB/RTX 4070 from January hypothetical discussion instead of actual Ryzen 5 5600X/128GB/RX 6700 XT), folder names (Knowledge Indexer list never matched actual vault), and failed to propagate May 10 phase retirement decision (22.8C/22.8D/22.8E/22.15/22.16) to ROADMAP.
 **Why:** Documentation drift compounds over sessions. Hardware and folder lists are critical infrastructure facts that must stay synchronized. Previous sessions' decisions were not reaching all relevant files because session summaries lacked explicit per-file sections.
@@ -51,53 +81,4 @@ Architectural decisions, strategy calls, and naming choices made during homelab 
 
 ### 2026-05-22 - Date placeholder replaced in Code node before Claude call
 **Decision:** {{date}} template in profile replaced with today's MYT date (YYYY-MM-DD) in the Claude API — Assess & Merge Code node before sending to Claude. Never rely on Claude to replace it.
-**Why:** More reliable and deterministic than asking Claude to do string replacement. Code node has direct access to server time; Claude may hallucinate or skip replacement.
-**Alternatives considered:** Let Claude replace {{date}} (rejected — unreliable), hardcode date in profile (rejected — stale after one day).
-
-### 2026-05-22 - Gil uses internal URL for Da Vinci personal knowledge gateway
-**Decision:** Gil's Send to Da Vinci node uses http://192.168.30.211:5678/webhook/davinci-personal-knowledge (internal VLAN 30) instead of external Cloudflare URL.
-**Why:** CT 211 and CT 400 are on same VLAN 30. Internal routing is faster, avoids unnecessary external hops, eliminates Cloudflare dependency for internal traffic.
-**Alternatives considered:** Use external https://davinci.najhin-gaming.com (rejected — unnecessary external routing, adds latency).
-
-### 2026-05-22 - qwen3:14b stays as primary Ollama model; gemma3 and phi4-mini removed
-**Decision:** Keep qwen3:14b as primary. Remove gemma3:4b, gemma3:12b, phi4-mini (tested this session). Retain qwen3.5:latest as secondary.
-**Why:** All three removed models hallucinated factual data confidently in testing. qwen3:14b honest about limitations. Personal assistant handling real data requires honesty over speed.
-**Alternatives considered:** Use faster models (rejected — hallucination risk unacceptable), keep all models (rejected — disk space, slow inference).
-
-### 2026-05-22 - VM 400 disk block device is /dev/vda not /dev/sda
-**Decision:** KVM virtio disks use /dev/vda naming convention. All VM 400 disk operations must reference /dev/vda partition, not /dev/sda.
-**Why:** VM 400 is KVM-based (not QEMU/IDE). Correct device naming is required for growpart, pvresize, lvextend, and resize2fs to succeed.
-**Alternatives considered:** Use /dev/sda (rejected — device doesn't exist, causes operation failure).
-
-### 2026-05-21 - decisions.md promoted to Phase 2 pipeline
-**Decision:** Include decisions.md in the core Update Pipeline (promoted from Phase 3 backlog) to ensure decisions are captured and persisted every session.
-**Why:** Decisions kept being lost between sessions when not automatically logged. A dedicated pipeline file ensures all decisions are preserved and accessible.
-**Alternatives considered:** Manual decisions log (rejected — too easy to forget between sessions), weekly summary only (rejected — decisions happen every session and need immediate capture).
-
-### 2026-05-21 - Claude project instructions updated to require explicit per-file sections
-**Decision:** Each session summary must now have a dedicated section for each of the 8 Da Vinci files (AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md) so Da Vinci receives unambiguous per-file update instructions.
-**Why:** Previous single merged AI-CONTEXT section caused other files to drift as Da Vinci hallucinated which changes applied to which files.
-**Alternatives considered:** Single merged section (rejected — caused hallucination in Da Vinci), inline comments (rejected — less clear than explicit sections).
-
-### 2026-05-21 - Hardcoded API keys in new Claude API nodes
-**Decision:** Hardcode API key directly in each Claude API node rather than passing via trigger payload, consistent with existing 3 nodes in the pipeline.
-**Why:** Maintains consistency with the original pipeline implementation and avoids unnecessary complexity. Trigger schema only defines fileContent and chatId; referencing undefined trigger fields caused null errors.
-**Alternatives considered:** Pass via trigger payload (rejected — would require trigger schema changes and adds complexity for no benefit).
-
-### 2026-05-21 - Backtick template literals avoided in n8n Code nodes
-**Decision:** Use single-quoted strings with concatenation for all system prompts in Claude API nodes; avoid backtick template literals.
-**Why:** Backtick template literals caused 400 errors on Anthropic API when used in n8n Code nodes. Malformed JSON in request body.
-**Alternatives considered:** Continue using template literals (rejected — confirmed cause of 400 errors).
-
-### 2026-05-21 - AI-CONTEXT max_tokens bumped to 25000
-**Decision:** Increase AI-CONTEXT.md max_tokens from 20000 to 25000 (middle ground between ceiling and RM 30 budget limit).
-**Why:** Da Vinci was hitting 20000 token ceiling every run, truncating documentation. 25000 provides breathing room without exceeding cost targets (~$0.22/run total for 8 files).
-**Alternatives considered:** 32000 (rejected — exceeds RM 30 budget ceiling), keep 20000 (rejected — consistently hitting limit).
-
-### 2026-05-21 - Model testing conclusion — qwen3:14b stays as primary
-**Decision:** Keep qwen3:14b as primary local model on VM 400; remove Gemma 3:4b, Gemma 3:12b, and phi4-mini.
-**Why:** Gemma 3 and phi4-mini all hallucinated factual weather data confidently in testing. qwen3:14b and llama3.2 were honest about their limitations. For a personal assistant handling real data, honesty is critical over speed.
-**Alternatives considered:** Use faster models (rejected — hallucination risk unacceptable for factual data), keep all models (rejected — disk space needed, slow inference).
-
-### 2026-05-21 - Langfuse — Da Vinci uses single batch node
-**Decision:** Wire Langfuse via one node (branched off Push to
+**
