@@ -1,5 +1,34 @@
 # Changelog
 
+### 2026-05-25 — Phase 24.10 (Triggered Qdrant Re-indexing) + Web Search (Gilgamesh)
+- Memory audit: Claude memory vs project files — identified 7 discrepancies, all corrected
+- Phase 24.10 completed: triggered Qdrant re-indexing after Da Vinci writes to muzakkir-profile.md
+- Phase 52 (DOCP Memory Optimization) confirmed complete — done independently by Muzakkir
+- Da Vinci Stage 2 clarification: RAG foundation is complete (Phase 24.9), conversation buffer memory already implemented in Format Messages (last 15 rows from gilgamesh_conversations). Phase 7E planned ("20+ message conversations") is distinct from Stage 2.
+- Gilgamesh feature brainstorm: full wishlist compiled (16 features across High/Medium/Long-term categories), web search added from internet research
+- Web Search feature built and deployed: Firecrawl API wired into Gilgamesh — Gil can now answer real-time questions
+- Web Search architecture: keyword detection If node (search, latest, current, today, weather, news, price, who is, when is, what is, how much, find, look up, cari, semak, berapa) → Firecrawl /search → inject results into user message context → force-route to Haiku (qwen3:14b ignores injected context regardless of instruction strength)
+- Search query cost: ~$0.001-0.002 per query at Haiku pricing (acceptable for personal use volume)
+- Firecrawl integration: community node @mendable/n8n-nodes-firecrawl v2.1.1, free tier active (2 credits per search, no credit card required)
+- Documentation audit finding: Knowledge Indexer actually indexes 10 folders (not 4 as documented), model is Claude Sonnet 4 in Format Messages (overridden by Route Model to qwen3:14b/Haiku)
+- Corrected model routing: Format Messages sets model to claude-sonnet-4-20250514 as default, but Route Model overrides: primary = qwen3:14b (Ollama), fallback = claude-haiku-4-5-20251001. Search queries force-route to Haiku.
+- Corrected Knowledge Indexer folder list: 10 folders indexed (00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/Homelab/homelab-infrastructure)
+- Da Vinci — Knowledge Indexer: added Webhook trigger (POST /davinci-reindex-personal) for partial reindex. Trigger type detection: body.reindexType === 'partial' → indexes only 04-personal/ (~1s). Schedule trigger (3am UTC) → full 10-folder rebuild (~21s).
+- Phase 24.10 deployed: Da Vinci — Personal Knowledge Gateway fires HTTP POST to /davinci-reindex-personal webhook after successful Obsidian write. Reindex completes in ~990ms.
+- Conversation buffer memory: already operational — Format Messages fetches last 15 rows from gilgamesh_conversations as history
+- Extract Response bug fixed: Call Claude API wraps response in data.response object. Fixed with typeof check: if Ollama (typeof data.response === 'string') else uses claudeData = data.response (object) or data (direct)
+- Firecrawl output structure: results nested under data.web array (item.data?.web). Inject Search Results reads web array, not flat items.
+- If node "Needs Web Search?" fixed: return `.toString()` and compare against string "true" in condition (was comparing boolean true to string)
+- Send a text message: Parse Mode must NOT be set (leave blank). Extract Response strips all markdown before output. Content always string, never JSON object.
+- ROADMAP bug noted: Phase 7E appears in both Completed and Planned tables — remove from Planned
+- Decision: Search queries force-route to Haiku, not qwen3:14b. Reason: qwen3:14b ignores injected search context regardless of prompt strength; consistently responds "I don't have real-time data" even with actual results in context. Haiku correctly follows injected Firecrawl results.
+- Decision: Firecrawl chosen over Brave Search API, Serper, SearXNG. Reason: community node already installed (v2.1.1), free tier without credit card, no new containers needed.
+- Decision: Web search results injected into last user message (not system prompt). Reason: local models ignore system additions but respond better to user-turn context.
+- Decision: Da Vinci Stage 2 considered complete — no separate deployment needed. RAG pipeline fully operational via Phase 24.9. Remaining work (Phase 7E conversation buffer) already working in Format Messages.
+- Decision: Phase 7E duplicate resolved — keep in Completed only. Remove from Planned (conversation buffer already working in Format Messages).
+- Decision: Gilgamesh feature wishlist documented as 16 planned features across 3 priority tiers (High/Medium/Long-term). To be tracked in ROADMAP as individual planned phases.
+- Action items: Test Gil with varied search queries (news, prices, exchange rates); test non-search queries to confirm Ollama routing works; fix assistant messages not appearing in conversation history (Save Assistant Message may not be firing); decide next session priority (Midas v2 vs Smart Morning Briefing vs Guardian)
+
 ### 2026-05-22 — Phase 24.11 — Documentation Audit & Corrections (No deployment — corrections only)
 - Full audit of all 8 Da Vinci documentation files against full conversation history
 - Found 11 discrepancies across 4 files: ROADMAP.md, current-state.md, agents.md, AI-CONTEXT.md
