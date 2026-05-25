@@ -1,5 +1,5 @@
 # Current State Documentation
-**Last Updated:** 2026-05-22 (Phase 24.9 — Documentation Audit & Corrections)
+**Last Updated:** 2026-05-25 (Phase 24.10 — Triggered Qdrant Re-indexing & Web Search Deployment)
 
 ## Overview
 Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs.
@@ -31,7 +31,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Haiku pricing: $0.80/1M input tokens, $4.00/1M output tokens
 - Langfuse observability: Active as of Phase 24.8 — single trace (da-vinci-update) with 8 child generations per run
 
-**Personal Knowledge Gateway (Phase 24.9):**
+**Personal Knowledge Gateway (Phase 24.9, Enhanced Phase 24.10):**
 - Separate n8n workflow: Da Vinci — Personal Knowledge
 - Webhook: POST /davinci-personal-knowledge (internal CT 211 URL)
 - Receives facts from all agents (currently wired from Gilgamesh)
@@ -39,6 +39,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Quality filter: stores durable personal facts, SKIPs one-time events and conversational noise
 - Writes to Obsidian via WebDAV, costs logged to gilgamesh_costs table
 - All agents route Obsidian writes through this gateway (not direct writes)
+- Phase 24.10: Webhook trigger added for triggered re-indexing. POST /davinci-reindex-personal fires after successful muzakkir-profile.md write
 
 **File Update Patterns:**
 - AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md: Full rewrite/major sections
@@ -55,16 +56,16 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - SKIP detection in Da Vinci gateway uses startsWith('SKIP') not strict equality (Da Vinci may return "SKIP\n\nReasoning...")
 - Date placeholder ({{date}}) replaced in Code node before Claude API call with actual MYT date (YYYY-MM-DD format)
 
-## Da Vinci Update Pipeline Status (Phase 24.8-24.9)
+## Da Vinci Update Pipeline Status (Phase 24.8-24.10)
 **Pipeline Architecture:**
-- Total nodes: 36 (8 sequential Haiku API calls + 8 Log Cost nodes + 8 Parse nodes + Update Tables + Push to GitHub + Langfuse — Da Vinci + Push to Nextcloud + Send Confirmation)
+- Total nodes: 36+ (8 sequential Haiku API calls + 8 Log Cost nodes + 8 Parse nodes + Update Tables + Push to GitHub + Langfuse — Da Vinci + Push to Nextcloud + Send Confirmation)
 - Runtime: ~5 minutes per session update run
 - Cost per run: ~$0.14-0.16 (~$4.20-4.80/month at once daily)
 - Files covered: AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
 - Per-file API calls: 8 separate Haiku calls with immediate cost logging
 - Langfuse observability: Wired Phase 24.8 — trace name da-vinci-update with 8 child generations per run
 
-**Deployment Status (Phase 24.9):**
+**Deployment Status (Phase 24.10):**
 - ✅ Expanded from 3-file to 8-file sequential Haiku chain (Phase 16.4)
 - ✅ Resolved 5 critical bugs during deployment (Phase 16.4)
 - ✅ Updated Claude project instructions with explicit per-file session summary sections (Phase 16.4)
@@ -78,11 +79,13 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ Da Vinci Personal Knowledge gateway deployed (Phase 24.9)
 - ✅ Langfuse wired to Gilgamesh agent (Phase 24.9)
 - ✅ Documentation audit completed (Phase 24.9) — 11 discrepancies corrected across 4 files
+- ✅ Phase 24.10 deployed (May 25, 2026): Triggered Qdrant re-indexing via webhook POST /davinci-reindex-personal
+- ✅ Gilgamesh web search feature deployed (May 25, 2026): Firecrawl API wired, keyword detection, search-to-Haiku routing, search results injected
 
 ## Automation Status
 **Trigger:** Cron job (time TBD per Phase 16 work)
 
-**Known Limitations & Resolutions (Phase 24.9):**
+**Known Limitations & Resolutions (Phase 24.10):**
 - ✅ decisions.md dynamically created on first run (null SHA path implemented)
 - ✅ Fetch GitHub Files: hardcoded token (not passed via trigger)
 - ✅ All 8 files now pushed to GitHub from filesToPush array
@@ -97,9 +100,14 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ Knowledge Indexer: added empty file filter to prevent crash on empty downloads
 - ✅ Hardware specs corrected (Phase 24.9): EPYC 5645/256GB/RTX 4070 were hallucinated; real hardware is Ryzen 5 5600X, 128GB DDR4, RX 6700 XT
 - ✅ CT 215 reference corrected to CT 220 (Nextcloud)
+- ✅ Extract Response bug fixed: Call Claude API wraps response in data.response object; fixed with typeof check for Ollama detection (Phase 24.10)
+- ✅ Web Search routing: qwen3:14b ignores injected search context; force-route search queries to Haiku (Phase 24.10)
+- ✅ If node boolean condition fixed: return value converted to .toString() and compared as string (Phase 24.10)
+- ✅ Phase 24.10 Qdrant re-indexing webhook deployed: POST /davinci-reindex-personal, partial reindex (04-personal/ only) ~990ms
+- ✅ Knowledge Indexer folder count corrected (Phase 24.10): indexes 10 folders, not 4
 - ⚠️ GitHub docs/ folder contains stale changelog.md and troubleshoot.md artifacts from old pipeline — needs cleanup
 - ⚠️ muzakkir-profile.md.md duplicate file exists in Nextcloud 04-personal/ folder (conflict artifact from Obsidian sync + WebDAV write race)
-- ⚠️ Knowledge Indexer folder list requires manual verification against n8n workflow node — inconsistent lists found across 3 documentation files
+- ⚠️ Assistant messages not appearing in gilgamesh_conversations Data Table (only user messages visible) — Save Assistant Message may not be firing correctly
 
 **Tested & Working:**
 - 8-file sequential pipeline architecture
@@ -115,14 +123,18 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Da Vinci Personal Knowledge gateway (filter, assess, merge, write, log)
 - Gilgamesh sending personal facts to Da Vinci Personal Knowledge gateway
 - Langfuse wired to Gilgamesh (trace: gilgamesh-chat, contains input/output/metadata)
-- Knowledge Indexer indexing 90 files from confirmed folders
+- Knowledge Indexer indexing 10 folders (00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/Homelab/homelab-infrastructure)
 - muzakkir-profile.md creation and RAG retrieval by Gil
 - Gil successfully recalling personal facts via Qdrant RAG (name: Muzakkir, dark mode preference)
+- Web search deployed in Gilgamesh (Firecrawl /search API, keyword detection, results injection)
+- Search queries routing to Claude Haiku (qwen3:14b cannot follow injected context)
+- Conversation buffer memory operational (last 15 rows from gilgamesh_conversations in Format Messages)
+- Phase 24.10 triggered Qdrant re-indexing after muzakkir-profile.md writes (webhook: /davinci-reindex-personal)
 
 ## Hardware Infrastructure
 
 ### Compute
-- **Proxmox Host (Kuromoon):** Ryzen 5 5600X, 128GB DDR4-3200 (4x32GB Corsair Vengeance LPX, installed May 16, 2026), RX 6700 XT 12GB (passed through to VM 400), ASUS TUF B550M-E mATX motherboard
+- **Proxmox Host (Kuromoon):** Ryzen 5 5600X, 128GB DDR4-3200 (4x32GB Corsair Vengeance LPX, installed & tuned May 16, 2026), RX 6700 XT 12GB (passed through to VM 400), ASUS TUF B550M-E mATX motherboard
 - **CT 211 (automation-n8n):** 4 vCPU, 4GB RAM, Debian 12
 - **VM 400 (ollama-gpu):** 4 vCPU, 16GB RAM, 86GB disk (expanded from 56GB 2026-05-21), Ubuntu 22.04 LTS, RX 6700 XT 12GB GPU (AMD, ROCm backend)
 
@@ -139,14 +151,21 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - **Purpose:** Workflow automation, Da Vinci Update Pipeline, Da Vinci Personal Knowledge gateway, Gilgamesh, and future agents
 - **Workflows:** 
   - Da Vinci Update Pipeline (8-file document sync)
-  - Da Vinci — Personal Knowledge (gateway: POST /davinci-personal-knowledge)
-  - Gilgamesh (chat + RAG + memory + Langfuse)
-  - Knowledge Indexer (Qdrant sync)
+  - Da Vinci — Personal Knowledge (gateway: POST /davinci-personal-knowledge, triggered reindex: POST /davinci-reindex-personal)
+  - Gilgamesh (chat + RAG + web search + memory + Langfuse) — enhanced May 25, 2026
+  - Knowledge Indexer (Qdrant sync, 10 folders, webhook-triggered partial reindex)
   - MERLIN (weather + alerts + Langfuse incoming) — deployed April 27, 2026
   - Midas (notifications) — deployed April 27, 2026
   - And others
 - **Databases:** PostgreSQL (internal)
-- **Connections:** Anthropic API, GitHub API, Nextcloud, ClickHouse (CT 223), Ollama (VM 400), Qdrant (VM 400), Langfuse (CT 223)
+- **Connections:** Anthropic API, GitHub API, Nextcloud, ClickHouse (CT 223), Ollama (VM 400), Qdrant (VM 400), Langfuse (CT 223), Firecrawl API (external)
+- **Recent Changes (Phase 24.10):**
+  - Gilgamesh enhanced: If (Needs Web Search?) → Web Search (Firecrawl /search) → Inject Search Results → Route Model
+  - Firecrawl community node (@mendable/n8n-nodes-firecrawl v2.1.1) integrated
+  - Route Model logic updated: search queries force-route to Haiku; Ollama health check; fallback to Haiku if offline
+  - Extract Response fixed: robust detection of Ollama (string) vs Claude API (object) responses
+  - Format Messages: conversation buffer confirmed operational (last 15 rows from gilgamesh_conversations)
+  - Da Vinci — Knowledge Indexer: webhook trigger added for partial reindex (04-personal/ only, ~990ms)
 
 ### CT 223 (observability-langfuse)
 - **Image:** langfuse/langfuse:3.174.1
@@ -154,43 +173,6 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - **Purpose:** LLM observability and cost tracking
 - **Status:** Wired to Da Vinci Update Pipeline and Gilgamesh — traces active and visible
 - **Dependencies:** PostgreSQL (internal), ClickHouse (internal)
-- **Known Issue:** UI trace list shows no results despite traces being present in ClickHouse — RESOLVED Phase 24.9 (1-hour analytics delay by design for aggregation stability; traces now visible in UI overnight)
 - **Configuration:** LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true (set 2026-05-21)
 - **Traces:**
-  - da-vinci-update: 8 child generations (one per documentation file), fires daily after Push to GitHub
-  - gilgamesh-chat: input/output/metadata, fires on every user message, async from Extract Response node
-
-### Other Infrastructure
-- **RM 30 (cost database):** ClickHouse instance for cost metrics
-- **CT 220 (Nextcloud):** File backup and collaboration (second-brain/, 04-personal/, etc.)
-- **VM 400 (Ollama + Qdrant):** Local LLM inference server and vector database
-
-## VM 400 (ollama-gpu) Status
-- **Disk:** 86GB (expanded from 56GB on 2026-05-21 via Proxmox resize + LVM extension)
-- **Available Space:** 34GB free post-expansion
-- **Block Device:** /dev/vda (KVM virtio, not /dev/sda)
-- **Installed Ollama Models:**
-  - qwen3:14b (primary model, 9.3GB, confirmed honest about limitations)
-  - qwen3.5:latest (secondary comparison model)
-  - nomic-embed-text:latest (embeddings for Qdrant, 768 dims)
-- **Removed Models (all hallucinated factual data in testing):**
-  - gemma3:4b (removed May 21-22)
-  - gemma3:12b (removed May 21-22)
-  - phi4-mini (removed May 21-22)
-  - llama3.2:latest (removed May 21-22)
-- **Qdrant Vector Database:**
-  - Collection: obsidian_knowledge
-  - Chunks: 1,736 (was 1,567 before adding 04-personal/ folder)
-  - Indexed folders: 04-personal/ (added May 22, 2026, includes muzakkir-profile.md), 08-agents/, 09-people/, 10-projects/
-  - Note: Folder list requires manual verification against n8n Knowledge Indexer workflow node
-- **Purpose:** Local LLM inference for Gilgamesh and future agents (MERLIN, Midas, etc.); vector embeddings for RAG
-- **Strategy:** Ollama confirmed as correct choice for homelab (LM Studio rejected due to GUI dependency and lack of background server stability)
-
-## Obsidian Integration (Personal Knowledge System)
-- **Vault Location:** second-brain/ in Nextcloud (CT 220)
-- **04-personal/ Folder:** Now included in Qdrant indexing (privacy exclusion reversed — all internal VLAN 30)
-- **muzakkir-profile.md:** Personal profile file managed by Da Vinci Personal Knowledge gateway
-  - Path: 04-personal/muzakkir-profile.md
-  - Current content: dark mode preference
-  - Source: Gilgamesh sends facts via Da Vinci gateway
-  - Updated: Da
+  - da-
