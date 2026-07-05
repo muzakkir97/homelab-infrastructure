@@ -4,6 +4,33 @@ Architectural decisions, strategy calls, and naming choices made during homelab 
 
 ---
 
+### 2026-07-05 - Bridge mode activation on HG8145B7N to eliminate double NAT
+**Decision:** Called TIME support and activated true bridge mode on the Huawei HG8145B7N ISP router, permanently eliminating the double-NAT topology that was blocking UDP port forwarding for gaming servers.
+**Why:** Double NAT is a well-documented root cause of exactly this class of UDP forwarding problem. TIME explicitly supports bridge mode on request for this router model. Bridge mode permanently eliminates an entire category of future networking friction (not just Enshrouded, but any future service needing inbound access) rather than working around it repeatedly via reboots and port mapping tweaks. The migration was underway anyway, so deferring it would have wasted the disruption already caused.
+**Alternatives considered:** Continue troubleshooting double-NAT indirectly (rejected — infinite game of port mapping tweaks without fixing root cause), wait for a more convenient maintenance window (rejected — disruption already underway), use Steam relay as permanent solution (rejected — doesn't generalize to non-Steam services like Minecraft/Terraria).
+
+### 2026-07-05 - Deploy AX1800 access point immediately post-bridge-mode
+**Decision:** Deployed the previously-purchased TP-Link EAP610/AX1800 access point on the same night as the bridge mode migration, rather than deferring it to a future session, once it became clear the ISP router's own Wi-Fi was permanently dead post-bridging and roommates/friends needed working Wi-Fi immediately.
+**Why:** Bridge mode disables all local services on the ISP router (DHCP, routing, Wi-Fi), so the household lost internet access on their existing Wi-Fi immediately. Deploying the AX1800 same night restored connectivity for other occupants and was logistically simpler than coordinating a separate maintenance window later.
+**Alternatives considered:** Ask roommates to wait for a future session (rejected — leaves them without internet), use cellular hotspot as temporary bridge (rejected — insufficient bandwidth for household use), revert bridge mode temporarily (rejected — defeats the entire point of the migration).
+
+### 2026-07-05 - TL-SG108E ports 7-8 VLAN assignment corrected from legacy default to VLAN20_MAIN
+**Decision:** Corrected the PVID and untagged VLAN membership of switch ports 7 and 8 from the legacy default VLAN 1 (never migrated when the VLAN architecture was originally built) to VLAN20_MAIN (PVID 20, untagged).
+**Why:** Port 7 was blocking the AX1800 access point from receiving any real IP addresses from pfSense's DHCP server on VLAN20, causing clients to receive APIPA addresses (169.254.x.x) instead. Port 8 had the identical misconfiguration and was proactively fixed to prevent the same issue when friends attempted to use it for wired connections. This was a known gap already flagged in ROADMAP.md Phase 26, but the misconfiguration turned out to be the actual blocking issue for AP deployment tonight.
+**Alternatives considered:** Leave ports on VLAN 1 (rejected — breaks any VLAN20 device plugged into those ports), migrate the switch's management IP instead (rejected — larger scope, deferred to Phase 26 as a separate item), use a different switch port for the AP (rejected — ports 7-8 were already going to be used, problem fixed rather than worked around).
+
+### 2026-07-05 - Enshrouded external connectivity fix deferred post-bridge-mode pending DNS and retest
+**Decision:** Deferred retesting Enshrouded's external UDP connectivity (the entire point of the bridge mode migration) and fixing DNS records until the next session, despite both being immediate action items. Reasoning: the bridge mode migration and AP deployment had consumed all available troubleshooting time; DNS updates and a proper retest (Termux UDP test + pfSense packet capture) require a fresh maintenance window to avoid compounding issues from fatigue.
+**Why:** Attempting DNS updates and UDP retests at the end of a 4+ hour session of network changes increases the risk of copy-paste errors (IP addresses) and misinterpretation of packet capture results. Better to document the exact action items and execute them cleanly in the next session when the changes have stabilized and the network is fully at rest.
+**Alternatives considered:** Complete DNS updates before session end (rejected — fatigue risk, could miss re-checking other DNS records), skip DNS updates altogether (rejected — external Enshrouded connectivity will not work until DNS is fixed), retest immediately (rejected — same fatigue risk, no time to interpret results carefully).
+
+### 2026-07-05 - Use switch's Easy Smart Configuration Utility for port VLAN management
+**Decision:** Used the TP-Link TL-SG108E's Easy Smart Configuration Utility (web-based, accessed via temporary static IP on a personal PC) to modify port VLAN assignments, rather than attempting to permanently renumber the switch's management IP (which remains on legacy 192.168.1.0/24) in the same session.
+**Why:** The switch's management IP (192.168.1.20) is on an unrelated legacy subnet; accessing it for a permanent renumber would have required a separate network configuration step that was out-of-scope for an emergency AP deployment. The web utility works fine with a temporary static IP on the connecting device, and the switch IP renumber remains a Phase 26 cleanup item rather than a blocker for tonight's work.
+**Alternatives considered:** Permanently renumber switch IP to VLAN10_MGMT (rejected — out-of-scope for emergency AP fix, deferred to Phase 26), use SSH/CLI access (rejected — complexity unnecessary when web UI works), skip port VLAN fixes entirely (rejected — that was the actual blocking issue for AP functionality).
+
+---
+
 ### 2026-05-25 - Search queries in Gilgamesh force-route to Claude Haiku, not qwen3:14b
 **Decision:** All search queries detected by the "Needs Web Search?" If node are routed to Claude Haiku instead of qwen3:14b, even when Ollama is online.
 **Why:** qwen3:14b ignores injected search context regardless of prompt instruction strength — consistently responds "I don't have real-time data" even with actual Firecrawl results in the user message context. This is a fundamental local model limitation, not a prompt engineering problem. Claude Haiku correctly follows injected search results. Trade-off: search queries cost ~$0.001-0.002 each (Haiku pricing) instead of $0 (local), but acceptable for personal use volume.
@@ -36,49 +63,4 @@ Architectural decisions, strategy calls, and naming choices made during homelab 
 
 ### 2026-05-22 - Documentation audit reveals hallucination pattern in hardware specs and folder lists
 **Decision:** Conduct full audit of all 8 Da Vinci documentation files against conversation history. Identified 11 discrepancies across 4 files (ROADMAP.md, current-state.md, agents.md, AI-CONTEXT.md). Root causes: Da Vinci hallucinated hardware (EPYC 5645/256GB/RTX 4070 from January hypothetical discussion instead of actual Ryzen 5 5600X/128GB/RX 6700 XT), folder names (Knowledge Indexer list never matched actual vault), and failed to propagate May 10 phase retirement decision (22.8C/22.8D/22.8E/22.15/22.16) to ROADMAP.
-**Why:** Documentation drift compounds over sessions. Hardware and folder lists are critical infrastructure facts that must stay synchronized. Previous sessions' decisions were not reaching all relevant files because session summaries lacked explicit per-file sections.
-**Alternatives considered:** Continue accepting hallucinated specs (rejected — causes infrastructure misalignment and wasted troubleshooting), manual audits only (rejected — too slow, happens every session).
-
-### 2026-05-22 - Hardware section in current-state.md must always be REPLACE SECTION in session summaries
-**Decision:** Any hardware change, clarification, or correction must include explicit REPLACE SECTION markup in the current-state.md section of the session summary to prevent drift.
-**Why:** Hardware specs are infrastructure facts, not narrative updates. Appending new information causes old hallucinated specs to persist. REPLACE SECTION forces overwrite of entire subsection.
-**Alternatives considered:** Append-only updates (rejected — doesn't remove hallucinated data), manual verification (rejected — already proven unreliable).
-
-### 2026-05-22 - Phase retirement decisions must include explicit ROADMAP.md REPLACE SECTION
-**Decision:** Any phase that is archived, cancelled, or moved must include explicit REPLACE SECTION markup in the ROADMAP.md section of the session summary for all affected tables (In Progress, Planned, Completed).
-**Why:** May 10, 2026 decision to retire Homepage and archive phases 22.8C/22.8D/22.8E/22.15/22.16 never reached ROADMAP.md because that session summary used short-form format without explicit ROADMAP sections. Lesson learned: decisions about phase lifecycle must be explicitly propagated.
-**Alternatives considered:** Trust narrative update (rejected — failed May 10), separate phase management file (rejected — adds complexity beyond current pipeline).
-
-### 2026-05-22 - Knowledge Indexer folder list requires manual verification against n8n workflow
-**Decision:** Cannot determine correct Qdrant Knowledge Indexer folder list from documentation alone. Three different lists exist across agents.md, current-state.md, and service-catalog.md — none fully matching actual vault structure. Use known folders (04-personal/, 08-agents/, 09-people/, 10-projects/) as baseline and manually verify against n8n Knowledge Indexer node configuration next session.
-**Why:** Hallucinated folder lists (05-books/, 06-projects/, 07-reference/, 11-learning/, 12-research/, 13-archive/) don't exist in actual vault. Documentation cannot be trusted as source of truth for this configuration. Must verify against running system.
-**Alternatives considered:** Trust current documentation (rejected — proven unreliable), generate new folder list from Obsidian export (rejected — requires manual Obsidian access from this session), skip verification (rejected — hallucinated lists cause RAG failures).
-
-### 2026-05-22 - All agents route Obsidian writes through Da Vinci — Personal Knowledge gateway
-**Decision:** Gilgamesh, EMIYA, Midas and all future agents send data to Da Vinci rather than writing directly to Obsidian. Da Vinci owns all Obsidian writes.
-**Why:** Consistent formatting across all agents, prevents file conflicts, Da Vinci acts as quality gate for personal knowledge. Centralizes write authority.
-**Alternatives considered:** Direct agent writes to Obsidian (rejected — causes conflicts, inconsistent formatting), per-agent folders (rejected — adds complexity, no unified quality control).
-
-### 2026-05-22 - Gil reads Obsidian directly, not through Da Vinci
-**Decision:** Gil queries Qdrant/RAG directly for read operations. Only writes go through Da Vinci — Personal Knowledge gateway.
-**Why:** Read path doesn't need gating or quality filtering. Direct RAG access is faster and simpler for retrieving personal context during conversations.
-**Alternatives considered:** Route all Gil reads through Da Vinci (rejected — unnecessary complexity, adds latency).
-
-### 2026-05-22 - 04-personal/ included in Qdrant indexing
-**Decision:** Reverse previous privacy exclusion — 04-personal/ folder now indexed by Knowledge Indexer in Qdrant obsidian_knowledge collection.
-**Why:** All infrastructure is internal VLAN 30 with no external exposure. Gil needs to read personal profile via RAG to maintain conversation context.
-**Alternatives considered:** Keep 04-personal/ excluded (rejected — Gil can't access own profile), separate Qdrant collection (rejected — adds complexity, redundant indexing).
-
-### 2026-05-22 - Da Vinci quality filter: stores durable personal facts, SKIPs ephemeral data
-**Decision:** Da Vinci assesses each fact with Claude Haiku — stores persistent characteristics ("prefers dark mode"), SKIPs one-time events ("slept at 12am tonight") and conversational noise.
-**Why:** Personal knowledge base should contain stable, reusable context. Transient facts clutter the profile and reduce RAG relevance.
-**Alternatives considered:** Store everything (rejected — noise reduces usefulness), manual curation (rejected — defeats automation goal).
-
-### 2026-05-22 - SKIP detection uses startsWith not strict equality
-**Decision:** Da Vinci Code nodes check content.trim().startsWith('SKIP') instead of === 'SKIP'. Da Vinci may return "SKIP\n\nReasoning..." with trailing content.
-**Why:** Prevents SKIP-flagged content from overwriting the profile when reasoning text follows the SKIP marker. Happened in this session when equality check failed.
-**Alternatives considered:** Strict equality check (rejected — caused data loss), trim then equality (rejected — doesn't handle multiline content correctly).
-
-### 2026-05-22 - Date placeholder replaced in Code node before Claude call
-**Decision:** {{date}} template in profile replaced with today's MYT date (YYYY-MM-DD) in the Claude API — Assess & Merge Code node before sending to Claude. Never rely on Claude to replace it.
-**
+**Why:** Documentation drift compounds over sessions. Hardware and folder lists are critical infrastructure facts that must stay synchronized. Previous
