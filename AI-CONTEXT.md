@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** May 25, 2026
+> **Last Updated:** July 5, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 20 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. **Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026.**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 21 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026. **Gaming platform expanded July 5, 2026: Enshrouded server (CT 306) deployed in Pelican Panel. Network architecture migrated from double-NAT (ISP router + pfSense) to true bridge mode on Huawei HG8145B7N, eliminating all double-NAT routing conflicts permanently. pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed to 202.184.101.136 (was 202.184.35.79). TP-Link EAP610 AX1800 access point (SSID A21-22A) deployed and configured — root cause of AP failure identified and fixed: TL-SG108E switch ports 7-8 were on legacy VLAN 1, not VLAN20_MAIN. All 21 containers + 1 VM running. DNS records require update. Enshrouded external UDP connectivity not yet retested post-bridging.**
 
 ---
 
@@ -121,7 +121,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 | NAS              | Kinmoon  | UGREEN DXP2800, 5.4TB RAID 1            | 192.168.10.100 | Backups (RAID 1, ext4)           |
 | DNS Server       | —        | Raspberry Pi 4                           | 192.168.30.10  | Pi-hole (~489K domains blocked)   |
 | Gaming PC        | Minimoon | Ryzen 7 7800X3D, RX 9070 XT 16GB         | 192.168.20.101 | **Gaming only — never homelab**   |
-| WiFi AP          | —        | TP-Link EAP610                           | TBD            | Purchased, pending setup          |
+| WiFi AP          | —        | TP-Link EAP610 AX1800                    | 192.168.20.x   | Deployed July 5, 2026 (SSID A21-22A) |
 
 ### GPU Notes (Kuromoon)
 
@@ -155,29 +155,63 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 
 ## 🌐 Network Architecture
 
-### Topology: Router-on-a-Stick
+### Topology: Single NAT (Bridge Mode — Permanent July 5, 2026)
 
 ```
-Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
-                                              ↓
-                                    802.1Q Trunk (igc2)
-                                              ↓
-                                    TP-Link TL-SG108E
-                                              ↓
+Internet → TIME Fiber (GPON, bridged mode) → Huawei HG8145B7N (bridge mode, no NAT/routing/DHCP)
+                                                      ↓
+                                         pfSense WAN (pppoe0, 202.184.101.136)
+                                                      ↓
+                                            802.1Q Trunk (igc2)
+                                                      ↓
+                                        TP-Link TL-SG108E
+                                                      ↓
                     ┌─────────┬─────────┬─────────┬─────────┐
                   VLAN10   VLAN20   VLAN30   VLAN40   VLAN50
                   Mgmt     Main    Services   DMZ    Malware
 ```
+
+**Major Change (July 5, 2026):** Eliminated double NAT topology by placing ISP router (Huawei HG8145B7N) into true bridge mode. pfSense now has direct PPPoE connection to the ISP. **This was the underlying root cause of the Enshrouded UDP forwarding failure** — double NAT was blocking inbound UDP traffic. Bridge mode is permanent and resolves this category of problem for all future services requiring inbound access.
+
+### ISP Router Configuration (Huawei HG8145B7N)
+
+- **Mode:** True bridge mode (all routing, NAT, DHCP, Wi-Fi disabled on this device)
+- **Function:** Pure pass-through for single PPPoE session only
+- **Wi-Fi/LAN ports on ISP router:** Now provide NO internet to directly-connected devices — this is expected, permanent behavior of bridge mode, not a fault
+- **Reason for bridge mode:** To eliminate double-NAT layer and allow pfSense direct internet access for proper port forwarding and external service connectivity
+
+### pfSense Configuration (Post-Bridge Mode)
+
+- **WAN interface:** Changed from DHCP to **PPPoE (pppoe0)**
+- **PPPoE credentials:** Username `muzakkir655@timebb`, password stored in Vault
+- **Public IP:** `202.184.101.136` (changed from `202.184.35.79` as a result of bridge mode migration — direct assignment via PPPoE, may change on reconnects as still DHCP-assigned by ISP)
+- **Note:** ISP router's port forwarding table is now irrelevant (dead) — all port forwarding handled exclusively by pfSense
 
 ### VLAN Design (OPERATIONAL)
 
 | VLAN ID | Name            | Subnet          | Gateway      | Purpose                                |
 |---------|-----            |-----------------|--------------|----------------------------------------|
 | 10      | VLAN10_MGMT     | 192.168.10.0/24 | 192.168.10.1 | Infrastructure (Proxmox, pfSense, NAS) |
-| 20      | VLAN20_MAIN     | 192.168.20.0/24 | 192.168.20.1 | Client devices                         |
+| 20      | VLAN20_MAIN     | 192.168.20.0/24 | 192.168.20.1 | Client devices + Wi-Fi (AX1800)       |
 | 30      | VLAN30_SERVICES | 192.168.30.0/24 | 192.168.30.1 | All service containers + Pi-hole       |
 | 40      | VLAN40_DMZ      | 192.168.40.0/24 | 192.168.40.1 | Future public-facing services          |
 | 50      | VLAN50_MALWARE  | 192.168.50.0/24 | 192.168.50.1 | Isolated security lab (air-gapped)     |
+
+### TP-Link TL-SG108E VLAN Port Assignments (Fixed July 5, 2026)
+
+Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffic):
+
+| Port | PVID | Untagged VLAN | Purpose |
+|------|------|---------------|---------|
+| 1-2  | trunk | Tagged, all VLANs | Uplinks (to pfSense / other switches) |
+| 3    | 20   | VLAN20_MAIN | Client device |
+| 4    | 20   | VLAN20_MAIN | Client device |
+| 5    | 30   | VLAN30_SERVICES | Homelab service device |
+| 6    | 10   | VLAN10_MGMT | Management device |
+| 7    | 20   | VLAN20_MAIN | TP-Link EAP610 AX1800 access point uplink (fixed from legacy VLAN 1 this session) |
+| 8    | 20   | VLAN20_MAIN | Available for client wired connections (fixed from legacy VLAN 1 this session) |
+
+**Note:** Switch's own management IP (192.168.1.20) remains on legacy 192.168.1.0/24 range — deferred cleanup (Phase 26).
 
 ---
 
@@ -206,10 +240,11 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 | 303 | LXC  | minecraft-server        | 192.168.30.215 | —                             | ✅         | ✅ Running |
 | 304 | LXC  | terraria-server         | 192.168.30.216 | —                             | ✅         | ✅ Running |
 | 305 | LXC  | gaming-panel-pelican    | 192.168.30.217 | panel.najhin-gaming.com       | ✅         | ✅ Running |
+| 306 | LXC  | enshrouded-server       | 192.168.30.218 | —                             | ✅         | ✅ Running |
 | 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
 
-**Current Total: 20 LXC containers + 1 KVM VM**
-**Planned Total: 20 LXC containers + 1 KVM VM (all on VLAN 30, all autostart enabled)**
+**Current Total: 21 LXC containers + 1 KVM VM**
+**Planned Total: 21 LXC containers + 1 KVM VM (all on VLAN 30, all autostart enabled)**
 
 ### Pulse Dashboard (CT 208)
 
@@ -287,6 +322,22 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Issue Fixed (May 20, 2026):** tModLoader idles high (70%+) and ramps to 97%+ CPU over hours with heavy mods. cpulimit + daily cron restart resolves the issue.
 - **Panel CPU Limit:** Set to 150% (= 1.5 cores, matching Proxmox cpulimit) in Pelican panel
 
+### enshrouded-server (CT 306)
+
+- **Container:** Enshrouded dedicated server in Pelican Panel (Docker, Proton-wrapped)
+- **IP:** 192.168.30.218
+- **Port:** 15636 (LAN: 192.168.30.218:15636)
+- **Panel:** Pelican Wings (panel.najhin-gaming.com)
+- **Config file location:** `/home/container/enshrouded_server.json` inside Docker container
+- **Server log location:** `/home/container/logs/enshrouded_server.log` — reliable for verifying real player activity
+- **Server password:** Auto-generated as `4TGU-MHE` in userGroups[0].password field (not yet fixed to be genuinely blank — carried over pending item)
+- **External connectivity status (July 5, 2026):**
+  - **Prior issue:** UDP forwarding blocked by double-NAT topology — root cause identified and resolved via ISP bridge mode
+  - **LAN connectivity:** Confirmed working via Pelican panel (reachable from internal network)
+  - **External connectivity:** NOT YET RETESTED post-bridge-mode. Double NAT eliminated; DNS records still point to old IP (202.184.35.79) and require update to new IP (202.184.101.136). Requires manual retest with packet capture once DNS updated.
+  - **Friend connectivity method:** Steam relay/friend-invite mechanism confirmed working (masks that direct UDP forwarding was previously broken) — now should work directly via fixed port forwarding with bridge mode
+- **Note on Pelican stats:** Panel's CPU/Memory/Disk display cosmetically broken for this Proton-wrapped egg (shows 0%/0 bytes/Unavailable regardless of actual server activity) — use server log for ground truth
+
 ### ollama-gpu (VM 400)
 
 - **Type:** KVM VM with PCIe passthrough — NOT an LXC
@@ -304,6 +355,7 @@ Internet → ISP Router (192.168.100.1) → pfSense (WAN: DHCP)
 - **Pelican Panel (CT 305):** Next-gen game server panel (192.168.30.217), SQLite + Redis + PHP 8.3, access: panel.najhin-gaming.com
 - **Minecraft Server (CT 303):** Paper 1.21.4 on port 25570 (192.168.30.215), Pelican Wings
 - **Terraria Server (CT 304):** tModLoader on port 7777 (192.168.30.216), Pelican Wings
+- **Enshrouded Server (CT 306):** Dedicated server on port 15636 (192.168.30.218), Pelican Wings
 - **Windrose (CT 302):** Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE
 
 ---
@@ -985,7 +1037,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Job              | Schedule | Storage                  | Containers                                  | Retention                    |
 |------------------|----------|--------------------------|---------------------------------------------|------------------------------|
-| Nightly Backup   | 02:00    | hdd-backup-1 (Local HDD) | All 20 LXC containers + VM 400            | 7 daily, 4 weekly           |
+| Nightly Backup   | 02:00    | hdd-backup-1 (Local HDD) | All 21 LXC containers + VM 400            | 7 daily, 4 weekly           |
 | Nextcloud Data   | 03:00    | Kinmoon NAS (rsync)      | /mnt/hdd-backup-1/nextcloud-data           | Mirror sync                  |
 
 ### Storage
@@ -1020,7 +1072,7 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 
 | Layer           | Implementation                                                                                                                                                                                     |
 |-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Perimeter       | ISP Router → pfSense firewall                                                                                                                                                                      |
+| Perimeter       | ISP Fiber (bridge mode) → pfSense firewall (single NAT)                                                                                                                                            |
 | Segmentation    | 5 VLANs with enforced firewall rules                                                                                                                                                               |
 | DNS             | Pi-hole ad/tracker blocking (~489K domains blocked)                                                                                                                                                |
 | VPN             | Tailscale (subnet router on pfSense, primary access)                                                                                                                                               |
@@ -1086,15 +1138,34 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 | 25.2    | Email Integration — IMAP monitoring + smart filtering            | 📋 Planned | —            |
 | 25.3    | Self-Evolving Skills — Hermes-style learning loop (knowledge docs + RAG recall) | 📋 Planned | —            |
 | 25.4    | Content Creation — automated reports, social posts              | 📋 Planned | —            |
+| 26      | Legacy Network Cleanup — Switch IP migration, ISP router decom   | 📋 Planned | —            |
 | 38      | Ollama + ROCm on Kuromoon RX 6700 XT                             | ✅ Complete | Apr 24, 2026 |
 | 39      | Open WebUI                                                       | ✅ Complete | Apr 24, 2026 |
 | 41      | Hybrid Routing (Ollama + Haiku + Sonnet)                         | ✅ Complete | May 8, 2026  |
 | 52      | DOCP Memory Optimization (128GB DDR4-3200)                       | ✅ Complete | May 2026     |
 | Web Search | Gilgamesh Web Search (Firecrawl integration)                  | ✅ Complete | May 25, 2026 |
+| Gaming Expansion | Enshrouded server + Bridge Mode network migration         | ✅ Complete | Jul 5, 2026  |
 
 ---
 
 ## 📝 Session Log (Most Recent 5)
+
+### Session 16: July 5, 2026 — Gaming Platform Expansion + Emergency Network Bridge Mode Migration
+
+**Duration:** 4.5h
+**Topics:** Enshrouded dedicated server (CT 306) deployed in Pelican Panel. Root cause of Enshrouded UDP forwarding failure identified: **double NAT topology (ISP router + pfSense)** — eliminated via ISP bridge mode. Huawei HG8145B7N placed into true bridge mode (permanent fix). pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed: 202.184.35.79 → 202.184.101.136. TP-Link EAP610 AX1800 access point deployed (SSID A21-22A). **Root cause of AP failure identified:** TL-SG108E switch ports 7-8 on legacy VLAN 1, not VLAN20_MAIN. Extended network troubleshooting: ISP router's own Wi-Fi/LAN now provide no internet (expected bridge mode behavior). All 21 containers + 1 VM running. DNS records require update.
+**Decisions:** Activated ISP bridge mode to permanently eliminate double-NAT friction (not just for Enshrouded, but all future inbound services). Migrated pfSense WAN to PPPoE. Deployed AX1800 AP as replacement for ISP router's dead Wi-Fi. Fixed switch VLAN port assignments (ports 7-8). Switch management IP migration deferred (Phase 26). Enshrouded UDP connectivity not yet retested post-bridging — external DNS/routing verification pending.
+**Outcomes:** Bridge mode live and stable. pfSense WAN PPPoE working. Public IP on file (202.184.101.136). AX1800 fully functional on VLAN20. All 22 infrastructure containers + VM running. Double-NAT permanently resolved. Enshrouded server live in Pelican but external connectivity unverified. Network topology simplified from double-NAT to single-NAT.
+**Errors Fixed:**
+  - Enshrouded UDP forwarding blocked (external friends couldn't connect) → investigated: ISP router port mapping table checked, pfSense rules verified, double-NAT confirmed as root cause → called TIME, activated bridge mode on HG8145B7N, eliminated double-NAT entirely
+  - pfSense WAN showed no IP post-bridge-mode → DHCP changed to PPPoE (bridge mode requires PPPoE auth) → WAN came up with new IP 202.184.101.136
+  - ISP router's Wi-Fi and LAN ports lost all internet post-bridge-mode → expected behavior of bridge mode (all local routing disabled on that device) → deployed AX1800 as replacement Wi-Fi source
+  - AX1800 unable to get DHCP/reach gateway despite being properly wired → extended troubleshooting revealed: TL-SG108E port 7 (where AP was plugged in) was on legacy VLAN 1, not VLAN20 → fixed VLAN assignment for ports 7-8 (now both PVID 20, VLAN20_MAIN)
+  - AX1800 initial Wi-Fi setup blocked by corporate laptop proxy → switched to gaming PC (no proxy restrictions) — succeeded immediately with direct wired connection + temporary static IP
+  - "No link light" on switch port 8 during friend PC test → friend's PC was powered off, not a fault
+  - Enshrouded auto-generated password (4TGU-MHE) still in config → deferred fix (low priority, server stable and in use)
+  - panel.najhin-gaming.com works via direct IP but not domain (Cloudflare Tunnel routing issue) → carried over, unrelated to today's session
+**Next:** Update Cloudflare DNS A records (enshrouded.najhin-gaming.com, mc.najhin-gaming.com, terraria.najhin-gaming.com from 202.184.35.79 → 202.184.101.136). Retest Enshrouded external UDP connectivity with packet capture. Confirm AX1800 true Operation Mode (AP vs router). Verify pfSense port forwarding rules still intact post-migration. Monitor pfSense stability 48h+ post-bridge-mode. Consider requesting static IP from TIME (202.184.101.136 may still change on reconnects with PPPoE DHCP). Phase 26 deferred.
 
 ### Session 15: May 25, 2026 — Phase 24.10 + Phase 52 + Web Search Deployment
 
@@ -1114,63 +1185,4 @@ Raw summaries → AI-CONTEXT-staging.md (rolling append)
 ### Session 14: May 25, 2026 — Documentation Audit: Knowledge Indexer Folder Reconciliation
 
 **Duration:** 1h
-**Topics:** Full reconciliation of Knowledge Indexer folder list across AI-CONTEXT, agents, and n8n workflow nodes. Found that actual n8n workflow indexes 10 folders, but AI-CONTEXT and agents.md documented only 4. Discovered Sonnet 4 set in Format Messages (not used — Route Model overrides to qwen3:14b). Clarified Da Vinci Stage 2 vs Phase 7E (RAG pipeline complete, conversation buffer already working).
-**Decisions:** Correct AI-CONTEXT and agents to reflect 10 actual indexed folders. Remove Phase 7E from ROADMAP Planned table (duplicate — already in Completed). Mark Da Vinci Stage 2 as effectively complete (Qdrant, embeddings, Knowledge Indexer all live). Conversation buffer memory (last 15 rows) already operational in Format Messages.
-**Outcomes:** Knowledge Indexer folder list corrected. 10 folders confirmed: 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/Homelab/homelab-infrastructure. Model routing clarified: Format Messages default (Sonnet 4) overridden by Route Model.
-**Errors:** None (documentation/reconciliation session only).
-**Next:** Incorporate corrections into next /update. Phase 24.10 + Web Search testing (Session 15).
-
-### Session 13: May 22, 2026 — Documentation Audit & Corrections (No Deployment)
-
-**Duration:** 1h
-**Topics:** Full audit of all 8 Da Vinci documentation files against full conversation history. Found 11 discrepancies across 4 files: ROADMAP.md had 5 archived phases (22.8C/22.8D/22.8E/22.15/22.16) still showing as active/planned; current-state.md had completely hallucinated hardware specs (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas marked Planned/0/4 but deployed April 27, 2026 as Active/2/4; Knowledge Indexer folder lists inconsistent across 3 files; AI-CONTEXT.md still listed llama3.2 as installed (removed May 21-22); Phase 7E missing from ROADMAP.md completed table.
-**Decisions:** All corrections applied directly (no deployment — corrections only). Hardware section should always be REPLACE SECTION to prevent drift. Ollama models list: remove llama3.2:latest. Knowledge Indexer folders require manual verification against n8n workflow node.
-**Outcomes:** 11 discrepancies identified and corrections provided for Da Vinci next session. ROADMAP.md archived 5 phases. current-state.md hardware corrected. agents.md MERLIN/Midas status updated. AI-CONTEXT.md models list corrected. Phase 7E added to completed table. Langfuse + Personal Knowledge stability confirmed 24h post-deployment.
-**Errors Fixed:**
-  - ROADMAP.md In Progress: 22.8C still showing — removed, empty In Progress section
-  - ROADMAP.md Planned table: 22.8D/22.8E/22.15/22.16 all archived May 10 (Homepage retired) — removed with reason
-  - current-state.md Compute: EPYC 5645/256GB listed (hallucinated from January hypothetical) — corrected to actual Ryzen 5 5600X/128GB
-  - current-state.md Storage: CT 215 referenced (doesn't exist), Nextcloud is CT 220 — corrected
-  - current-state.md GPU: RTX 4070 listed (hallucinated) — corrected to actual RX 6700 XT
-  - agents.md MERLIN: Status Planned/0/4 — corrected to Active/2/4 (deployed April 27)
-  - agents.md Midas: Status Planned/0/4 — corrected to Active/2/4 (deployed April 27)
-  - agents.md Knowledge Indexer: Multiple folder lists across files all different — flagged for manual verification
-  - AI-CONTEXT.md Ollama models: llama3.2:latest still listed — removed (hallucinated in testing)
-  - ROADMAP.md completed table: Phase 7E missing — added May 15, 2026 completion
-  - ROADMAP.md Guardian: dependency listed as Phase 22.8C (archived) — corrected to Phase 24.9
-**Next:** Apply corrections in next Da Vinci pipeline run. Manually verify Knowledge Indexer folder list against n8n workflow. Delete muzakkir-profile.md.md conflict artifact. Phase 24.10 (Triggered Qdrant Re-indexing).
-
-### Session 12: May 22, 2026 — Phase 24.9: Personal Knowledge System + Langfuse Gilgamesh Wiring
-
-**Duration:** 2h
-**Topics:** Verified Langfuse UI trace list working (1-hour analytics delay resolved overnight), wired Langfuse into Gilgamesh (traces visible with input/output), created Da Vinci Personal Knowledge gateway, built muzakkir-profile.md in Obsidian 04-personal/, updated Gilgamesh to send facts to Da Vinci via webhook, integrated Langfuse tracing into Gilgamesh Extract Response node, tested model behavior on VM 400, updated Knowledge Indexer (added 04-personal/, fixed folder names), discussed $0 AI Architecture Stack diagram
-**Decisions:** All agents write Obsidian through Da Vinci Personal Knowledge gateway (not directly), Gilgamesh reads Obsidian directly via RAG, quality filter: store durable facts (skip one-time events), SKIP detection uses startsWith not ===, date placeholder replaced in code not by Claude, use internal Langfuse URL (http://192.168.30.223:3000), qwen3:14b stays primary (honesty critical), VM 400 disk device is /dev/vda not /dev/sda
-**Outcomes:** Phase 24.9 complete. Langfuse UI working (traces visible after 1 hour, direct API immediate). Gilgamesh wired to Langfuse (gilgamesh-chat trace). Da Vinci Personal Knowledge gateway deployed (muzakkir-profile.md). Gilgamesh successfully recalling personal profile via RAG (knows "Muzakkir" name, dark mode preference). Knowledge Indexer expanded to 90 files, 1,736 Qdrant chunks. System prompt updated — Gilgamesh now knows its name + master's name.
-**Errors Fixed:**
-  - Langfuse UI trace list "No results" → resolved overnight (1-hour analytics aggregation delay by design)
-  - Gilgamesh system prompt didn't mention its name → qwen3:14b confused "Gil" as name query → fixed with explicit "Your name is Gilgamesh" in Route Model
-  - Knowledge Indexer "Document loader not initialized" → empty files in new folders → added If node filter
-  - Knowledge Indexer folder names stale (08-projects/09-meetings/10-reference) → vault restructured to 08-agents/09-people/10-projects → updated folder list
-  - Fetch Current Profile 404 → muzakkir-profile.md not yet synced → replaced HTTP Request with Code node fallback to template
-  - SKIP detection bug → Da Vinci returns "SKIP\n\nReasoning" but code checked === 'SKIP' → fixed with startsWith('SKIP')
-  - "Assignment to constant variable" → const currentProfile → changed to let
-  - VM 400 disk expansion failed with /dev/sda → device is /dev/vda on KVM → used correct device
-  - muzakkir-profile.md.md duplicate in Nextcloud → Nextcloud + Obsidian sync conflict → needs manual deletion
-**Next:** Delete conflict artifact (muzakkir-profile.md.md), build triggered Qdrant re-indexing (immediate after Da Vinci writes), wire Langfuse into MERLIN/Midas, test personal knowledge stability 24h
-
-### Session 11: May 21, 2026 — Phase 24.8 Completion + Model Testing + VM 400 Expansion + Langfuse Wiring
-
-**Duration:** 2h
-**Topics:** Updated Claude project instructions with expanded 8-file session summary template, expanded Da Vinci Update Pipeline from 3 to 8 files (ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md added), fixed 5 bugs in new pipeline nodes, bumped AI-CONTEXT max_tokens to 25000 (was hitting ceiling), tested Gemma 3:4b/3:12b/phi4-mini/llama3.2 models on VM 400, expanded VM 400 disk from 56GB to 86GB, wired Langfuse observability into Da Vinci Update Pipeline, debugged Langfuse UI trace list bug
-**Decisions:** Per-file system prompts prevent cross-file hallucination. decisions.md promoted to Phase 2. decisions.md auto-created on first run with null SHA handling. Cost per run ~$0.25-0.35. qwen3:14b stays primary (honest about limitations vs confident hallucination). Langfuse — Da Vinci uses single batch node (internal URL http://192.168.30.223:3000). AI-CONTEXT max_tokens bumped to 25000 (middle ground). Aider + local Ollama identified as better fit than Claude Code for future EMIYA code agent.
-**Outcomes:** Phase 16.4 (8-file pipeline) complete and verified. Phase 24.8 (Langfuse) wired and verified. All 8 files pushed to GitHub. 8 cost rows logged per session. Langfuse traces confirmed in ClickHouse and accessible via API, but UI trace list has known v3 self-hosted bug (traces don't appear in list view). VM 400 disk expanded to 86GB (34GB free). Gemma models removed (hallucination). qwen3:14b + llama3.2 confirmed as trustworthy.
-**Errors Fixed:**
-  - Null GitHub token in Fetch GitHub Files — hardcoded directly
-  - Null API keys in 5 new Claude nodes — hardcoded at top of each
-  - filesToPush array only had 3 files — updated to all 8 with null SHA handling
-  - sessionSummary undefined — changed to fileContent from trigger
-  - Backtick template literals in system prompts causing 400 errors — replaced with single-quoted strings + concatenation
-  - Log Cost — service-catalog had wrong command_type (copy-paste error) — corrected
-  - Langfuse ingestion returning 400 — timestamp field required in every batch event (fixed)
-  - Langfuse node ECONNREFUSED 192.168.30.223:8123 — ClickHouse port 8123 not accessible from CT 211, abandoned ClickHouse time query
-  - Gemma3:4b disk pull failed — VM 400 disk 100
+**Topics:** Full reconciliation of Knowledge Indexer folder list across AI-CONTEXT, agents, and n8n workflow nodes. Found that actual n8
