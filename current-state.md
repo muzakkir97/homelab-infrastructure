@@ -1,5 +1,5 @@
 # Current State Documentation
-**Last Updated:** 2026-05-25 (Phase 24.10 — Triggered Qdrant Re-indexing & Web Search Deployment)
+**Last Updated:** 2026-07-05 (Emergency Network Migration — Bridge Mode Deployment + Gaming Platform Setup)
 
 ## Overview
 Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs.
@@ -138,6 +138,13 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - **CT 211 (automation-n8n):** 4 vCPU, 4GB RAM, Debian 12
 - **VM 400 (ollama-gpu):** 4 vCPU, 16GB RAM, 86GB disk (expanded from 56GB 2026-05-21), Ubuntu 22.04 LTS, RX 6700 XT 12GB GPU (AMD, ROCm backend)
 
+### Network Infrastructure (Updated 2026-07-05)
+- **ISP Connection:** TIME Fiber GPON, Huawei HG8145B7N ONT (now in true **bridge mode** as of 2026-07-05, no longer performing routing/NAT/DHCP)
+- **pfSense WAN:** Interface `pppoe0` (PPPoE, changed from DHCP 2026-07-05)
+- **Public IP:** `202.184.101.136` (changed from `202.184.35.79` due to bridge mode migration 2026-07-05; may still be reassigned on PPPoE reconnects, not static)
+- **PPPoE Credentials:** Username `muzakkir655@timebb` (password stored securely, retrieved from TIME Self Care portal)
+- **Switch:** TP-Link TL-SG108E (802.1Q VLAN trunk to pfSense, port 7 and 8 VLAN membership corrected 2026-07-05)
+
 ### Storage
 - **GitHub:** Primary source of truth for all 8 documentation files
 - **Nextcloud (CT 220):** File backup and collaboration (second-brain/, 04-personal/, staging-inbox/, etc.)
@@ -162,17 +169,4 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - **Recent Changes (Phase 24.10):**
   - Gilgamesh enhanced: If (Needs Web Search?) → Web Search (Firecrawl /search) → Inject Search Results → Route Model
   - Firecrawl community node (@mendable/n8n-nodes-firecrawl v2.1.1) integrated
-  - Route Model logic updated: search queries force-route to Haiku; Ollama health check; fallback to Haiku if offline
-  - Extract Response fixed: robust detection of Ollama (string) vs Claude API (object) responses
-  - Format Messages: conversation buffer confirmed operational (last 15 rows from gilgamesh_conversations)
-  - Da Vinci — Knowledge Indexer: webhook trigger added for partial reindex (04-personal/ only, ~990ms)
-
-### CT 223 (observability-langfuse)
-- **Image:** langfuse/langfuse:3.174.1
-- **IP:** 192.168.30.223
-- **Purpose:** LLM observability and cost tracking
-- **Status:** Wired to Da Vinci Update Pipeline and Gilgamesh — traces active and visible
-- **Dependencies:** PostgreSQL (internal), ClickHouse (internal)
-- **Configuration:** LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true (set 2026-05-21)
-- **Traces:**
-  - da-
+  - Route Model logic updated: search queries force-route to Haiku;
