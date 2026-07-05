@@ -22,7 +22,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026)  
+**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026)  
 **Type:** 8 sequential Haiku API calls with immediate cost logging and Langfuse observability  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
@@ -197,6 +197,15 @@ Receives personal facts from all agents (currently Gilgamesh, future EMIYA/Midas
 - Expected monthly cost at daily frequency: ~$4.80-5.40/month (session updates + personal knowledge)
 
 ### Recent Updates
+**Emergency Network Migration (July 5, 2026 — Session Session, Ad-Hoc Phase)**
+- Called TIME ISP and activated true bridge mode on Huawei HG8145B7N, eliminating double-NAT topology permanently
+- pfSense WAN reconfigured from DHCP to PPPoE (pppoe0 interface, credentials: muzakkir655@timebb via TIME Self Care portal)
+- Public IP changed: 202.184.35.79 → 202.184.101.136 (stable IP assigned directly to pfSense WAN post-bridge)
+- ISP router's Wi-Fi and LAN ports permanently non-functional post-bridging (expected behavior, not a fault)
+- Deployed TP-Link AX1800 access point (SSID `A21-22A`, Password `Muzakkir_2110`) as replacement Wi-Fi source
+- TL-SG108E switch ports 7-8 VLAN misconfiguration identified and fixed (were on legacy default VLAN 1, now correctly on VLAN20_MAIN/PVID 20)
+- **Action Items Pending:** Update Cloudflare DNS A records (enshrouded.najhin-gaming.com, mc.najhin-gaming.com, terraria.najhin-gaming.com) from 202.184.35.79 to 202.184.101.136; Retest Enshrouded's UDP forwarding with eliminated double-NAT; Continue Phase 26 (Legacy Network Cleanup) for switch management IP migration
+
 **Phase 24.10 — Triggered Qdrant Re-indexing (Complete — Deployed May 25, 2026)**
 - Added webhook trigger (/davinci-reindex-personal) to Knowledge Indexer workflow
 - Integrated Trigger Reindex node into Da Vinci Personal Knowledge Gateway (fires after Obsidian write)
@@ -372,27 +381,4 @@ Personal conversational AI assistant. Provides real-time responses with Qdrant R
   - Injected into last user message content and searchContext field
 - Route Model detects non-empty searchContext and force-routes to Haiku (qwen3:14b cannot follow injected search context regardless of prompt instructions)
 - Search context injected into system prompt: "Here are recent search results for your query:\n\n[injected results]"
-- Cost: ~$0.001-0.002 per search query (Haiku pricing)
-
-**System Prompt (Route Model node):**
-"Your name is Gilgamesh. Users will call you Gil as a nickname. Never ask the user for their name when they greet you as Gil. Your master is Muzakkir. You are his personal AI assistant. Respond conversationally and directly."
-
-**RAG Integration:**
-- Queries Qdrant obsidian_knowledge collection with user message
-- Retrieves relevant chunks from Obsidian vault (10 folders: 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/Homelab/homelab-infrastructure)
-- Includes muzakkir-profile.md in context for profile awareness
-- Score threshold: 0.3, limit: 5 results per query
-
-**Langfuse Tracing:**
-- Branch off Extract Response node
-- Trace name: gilgamesh-chat
-- Logs: input (user message), output (response content)
-- Metadata: routedTo (model), ragUsed (boolean), commandType (chat), chatId (session)
-- Fires async after response generated
-
-**Personal Knowledge Pipeline:**
-- Branch off Extract Response node
-- Async fire-and-forget to Da Vinci — Personal Knowledge gateway
-- Sends messages >20 characters (excluding commands starting with /)
-- Uses internal VLAN 30 URL: http://192.168.30.211:5678/webhook/davinci-personal-knowledge
-- 5s timeout for
+- Cost: ~$0.001-0.002 per search
