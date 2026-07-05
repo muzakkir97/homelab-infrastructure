@@ -1,6 +1,6 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** May 25, 2026  
+> **Last Updated:** July 5, 2026  
 > **Total Phases:** 91 planned | 52 completed | 0 in progress | 39 future  
 > **Next Session Priority:** Midas v2 (Financial Intelligence) OR Smart Morning Briefing OR Guardian Agent
 
@@ -142,8 +142,8 @@ No phases currently in progress.
 
 | Phase | Title                                | Dependencies | Effort | Notes                                   |
 |-------|--------------------------------------|--------------|--------|-----------------------------------------|
-| 25    | WiFi Access Point Deployment         | Hardware     | 4h     | EAP610 configuration and VLAN setup    |
-| 26    | Legacy Network Cleanup               | Phase 25     | 3h     | Remove 192.168.1.0/24, switch IP update|
+| 25    | WiFi Access Point Deployment         | Hardware     | 4h     | EAP610 deployment COMPLETE (July 5, 2026) — AX1800 access point (SSID `A21-22A`) now live on VLAN20_MAIN via TL-SG108E port 7. Functioning correctly after VLAN misconfiguration fix. |
+| 26    | Legacy Network Cleanup               | Phase 25     | 3h     | Partially addressed (July 5): TL-SG108E ports 7-8 VLAN migration from legacy VLAN 1 to VLAN20_MAIN complete. Remaining work: migrate switch management IP from 192.168.1.20 (legacy) to proper VLAN10_MGMT address. |
 | 28    | Storage Optimization                 | —            | 6h     | Move Nextcloud data, thin pool cleanup |
 | 29    | Performance Monitoring Expansion     | Phase 5      | 5h     | Advanced metrics and alerting rules    |
 
@@ -212,7 +212,7 @@ No phases currently in progress.
 1. **Gilgamesh Enhancement Track:** Phase 24.10 → Guardian → Goal Nudges → Plan My Day
 2. **Knowledge & Tracking Track:** Smart Morning Briefing → Midas v2 → Weekly Review
 3. **Gaming Platform Track:** Mash 59-64 (can run parallel to Gilgamesh)
-4. **Infrastructure Track:** 25-29 (low priority, independent)
+4. **Infrastructure Track:** 25-29 (low priority, mostly independent; Phase 25 & 26 progressing)
 5. **Career Development Track:** 35-36 (depends on infrastructure completion)
 
 **Parallel Development Opportunities:**
@@ -223,4 +223,4 @@ No phases currently in progress.
 
 ---
 
-*Last updated: May 25, 2026 — Phase 24.10 (Triggered Qdrant Re-indexing) complete and deployed. Phase 52 (DOCP Memory Optimization) confirmed complete. Web Search (Gilgamesh) deployed with Firecrawl integration. Da Vinci Stage 2 marked complete — RAG pipeline fully operational via Phase 24.9. Phase 7E duplicate removed from Planned table (already in Completed, conversation buffer already operational). Gilgamesh feature wishlist (16 items) added to Planned phases. Next session priority: Midas v2 (financial intelligence) OR Smart Morning Briefing OR Guardian Agent.*
+*Last updated: July 5, 2026 — Major network infrastructure migration completed. Double NAT eliminated via ISP bridge mode activation; pfSense WAN reconfigured to PPPoE with new public IP 202.184.101.136. AX1800 access point deployed successfully after resolving VLAN misconfiguration on TL-SG108E ports 7-8 (legacy VLAN 1 → VLAN20_MAIN). Phase 25 (WiFi Access Point Deployment) functionally complete; Phase 26 (Legacy Network Cleanup) partially addressed (switch ports fixed, management IP migration still pending). Enshrouded server stable but UDP connectivity not yet retested post-bridge-mode; Cloudflare DNS records still pointing to old IP (action item). Next session priority: Midas v2 (financial intelligence) OR Smart Morning Briefing OR Guardian Agent.*
