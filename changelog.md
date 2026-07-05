@@ -1,5 +1,25 @@
 # Changelog
 
+### 2026-07-05 — Gaming Platform Deployment + Emergency Network Migration (unnumbered, ad-hoc)
+- Called TIME ISP and activated true bridge mode on HG8145B7N, permanently eliminating double-NAT topology
+- pfSense WAN reconfigured from DHCP to PPPoE (credentials: muzakkir655@timebb); public IP changed from 202.184.35.79 to 202.184.101.136 as direct result of bridge mode
+- ISP router's Wi-Fi and LAN ports now provide no internet access post-bridging (expected behavior of true bridge mode, not a fault)
+- Deployed TP-Link EAP610/AX1800 access point as replacement Wi-Fi source after ISP router's own Wi-Fi became unavailable
+- Root cause of AX1800 setup failure identified: TL-SG108E switch ports 7-8 were still on legacy default VLAN 1, never migrated to VLAN20_MAIN when VLAN architecture was originally built — this gap was already flagged in ROADMAP.md Phase 26 ("Legacy Network Cleanup")
+- Fixed VLAN/PVID assignment for TL-SG108E ports 7-8: both moved from VLAN 1 to VLAN 20 (untagged)
+- AX1800 access point (SSID `A21-22A`, password `Muzakkir_2110`) confirmed fully working after VLAN fix; clients receive real 192.168.20.x DHCP leases
+- Enshrouded dedicated server (CT 306) research, deployment, and configuration completed; server password auto-generated as `4TGU-MHE` (not yet corrected to blank)
+- Steam relay/friend-invite networking confirmed as actual mechanism allowing external friends to connect, masking that direct UDP port forwarding was broken (caused by double NAT)
+- Minecraft server logs used as evidence that TCP forwarding through double-NAT worked while UDP did not
+- Enshrouded external connectivity not yet retested post-bridge-mode migration — pending item to verify UDP forwarding now works with single-NAT topology
+- Cloudflare DNS records for `enshrouded.najhin-gaming.com`, `mc.najhin-gaming.com`, `terraria.najhin-gaming.com` still point to old IP 202.184.35.79 and require update to 202.184.101.136
+- Decision: Activate true bridge mode on ISP router rather than continue troubleshooting double-NAT workarounds — permanently eliminates category of networking friction, not just for Enshrouded but for any future inbound service
+- Decision: Deploy AX1800 access point immediately post-bridging rather than defer — household/friend Wi-Fi access needed immediately after ISP router's services disabled
+- Decision: Use switch's Easy Smart Configuration Utility + temporary static IP to fix VLAN assignments rather than permanently renumber switch's management IP — kept as separate Phase 26 cleanup item
+- Decision: Defer Enshrouded server password fix (carried over) — server in active/stable use, low-priority cosmetic issue
+- Errors resolved: double NAT confirmed via TCP/UDP evidence (Minecraft logs); bridge mode activation; PPPoE reconfiguration; VLAN port assignment fix; temporary static IP method for switch management access
+- Action items: Update Cloudflare DNS records to 202.184.101.136; retest Enshrouded UDP connectivity post-bridge-mode; clean up dead ISP router port forwards; verify pfSense NAT rules still correct; fix Enshrouded password; confirm AX1800 Operation Mode; finish Phase 26 switch management IP migration; consider static IP request to TIME; test Enshrouded with full friend group
+
 ### 2026-05-25 — Phase 24.10 (Triggered Qdrant Re-indexing) + Web Search (Gilgamesh)
 - Memory audit: Claude memory vs project files — identified 7 discrepancies, all corrected
 - Phase 24.10 completed: triggered Qdrant re-indexing after Da Vinci writes to muzakkir-profile.md
