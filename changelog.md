@@ -1,5 +1,35 @@
 # Changelog
 
+### 2026-07-08 — Planning & Architecture Session — Chaldea Rename, Deck Sync Design, Agent Architecture Research
+- Investigated and fixed false "hdd-backup-2 not mounted" Discord alert (Prometheus rule copy-paste bug: `MountpointMissing_hddbackup2` was checking `/mnt/hdd-backup-1` instead of `/mnt/hdd-backup-2` on CT 202); rule fully removed per decision rather than retained
+- Renamed agents ecosystem from "Kuromoon" (overloaded with hardware name) to **Chaldea** (FGO-lore fit: the organization that houses and coordinates Servants); Kuromoon now refers only to physical homelab infrastructure
+- Renamed **Gilgamesh → Jeanne Alter ("The Corrupted Ruler")** — propagation required across: bot identity, n8n system prompt node, Telegram username (@JhinGilgamesh_bot), all 8 documentation files; not yet executed
+- Career context updated: September 2026 job-transition deadline dropped; homelab/Chaldea reframed as indefinite long-term project; user still applying for Cloud/DevOps/SysAdmin roles at slower pace
+- Reviewed Nextcloud Deck (Homelab board, ID 4) directly for first time in months; confirmed real drift against GitHub docs (Phase Da Vinci S2 marked Done ~2 months ago; Phase 7E appears in two different card states simultaneously)
+- Designed Da Vinci → Nextcloud Deck sync mechanism (9th pipeline step): hidden `sync-id` tags in card description footer; match-and-update existing cards silently; create new cards only for genuinely new items; stack routing via status keywords (Complete → Done, In Progress → In Progress)
+- Deck sync scope: Homelab board only; trigger: every Da Vinci pipeline run (broadest option, chosen with explicit acknowledgment of board-noise risk); precondition: all ~30 existing cards must be manually backfilled with sync-id tags before automation goes live (human judgment required due to known conflicts)
+- Deep-dive "agent anatomy" comparison: Gilgamesh/Jeanne Alter, Da Vinci, MERLIN, Midas vs. open-source frameworks (Hermes Agent, OpenClaw); selected specific components to adopt: MCP (tool execution/"hands"), Mem0 (memory), n8n AI Agent node (orchestration/"skeleton"), personality-file pattern (persona)
+- Da Vinci confirmed as most architecturally complete agent in ecosystem: has real "hands" (GitHub push, WebDAV write, soon Deck API) and functions as ecosystem's long-term memory system; MERLIN/Midas having no LLM "brain" is intentional (deterministic threshold checks don't need one) — actual gap is no "hands" (report-only) and no memory (re-discovers same known issue daily instead of tracking prior report)
+- EMIYA status conflict identified: agents.md lists as Planned / 0/4, but documented history of partial deployment (App Management, Universal Notifications, Langfuse phases marked complete elsewhere) requires audit to reconcile before scoping further work
+- CrewAI selected as target framework for future multi-agent discussion protocol (supersedes earlier LangGraph decision); complexity-based trigger (quick topics live via Telegram, complex/research topics run in background); disagreement resolution: Jeanne Alter presents both sides, user arbitrates — explicitly not consensus-forced and not auto-decided by agent; reporting: summary-only by default, full transcript available on request; **explicitly deferred, research priority only**
+- New agent concept approved at research stage: **Solomon** (overseer/growth agent, FGO-lore fit as Chaldea's administrator); weekly cron-triggered review of all agents' activity/logs/decisions; proposes fixes for user approval; deliberately human-in-the-loop, not autonomous self-modification
+- Voice organ concept approved at research stage: **Whisper STT + local TTS** for Jeanne Alter; chosen over prioritizing vision capability first due to VRAM constraints (single RX 6700 XT 12GB cannot comfortably run vision model + main chat model concurrently)
+- Identified two new ecosystem-wide gaps: web search quality (current Firecrawl implementation fires single query; target: iterative multi-query search closer to Gemini-style behavior) and universal time/date awareness (inject current date/time into every agent's system prompt via `{{date}}` pattern, applied ecosystem-wide instead of one gateway)
+- Vision model deployment and live browser vision/control both explicitly deferred due to VRAM contention risk on current single-GPU hardware — not just priority call, a hardware-constraint call
+- Newly surfaced issues from 2026-07-05 docs upload: GitHub `docs/` folder contains stale artifacts (changelog.md, troubleshoot.md) from old pre-8-file pipeline; duplicate `muzakkir-profile.md.md` in Nextcloud `04-personal/` (WebDAV write-race artifact); Jeanne Alter assistant messages not saving to `gilgamesh_conversations` Data Table (conversation memory broken); deferred network follow-ups from July 5 emergency migration still outstanding (Enshrouded UDP retest, DNS record updates)
+- Phase 24.10 (Triggered Qdrant Re-indexing) confirmed already deployed May 25, 2026; remove from pending if cached copy still lists as upcoming
+- Da Vinci Stage 2 (RAG System) confirmed complete; remove from Planned phases if still listed there
+- Phase 7E three-way conflict identified: Deck board shows two different states across two cards, ROADMAP.md has duplicate listing from prior resolution — requires human audit to resolve, not automated fix
+- New phases planned for future scoping: Chaldea rename propagation (multi-session), ecosystem-wide credential store migration (multi-session, all agents), Jeanne Alter architecture refactor with MCP/Mem0/personality file/native AI Agent node (multi-session), Jeanne Alter web search quality improvement (one session), universal time/date awareness (quick one-sitting fix), Deck sync manual backfill (one sitting, tedious but bounded)
+- Research/deferred concepts: multi-agent discussion protocol (CrewAI-based, background complexity tier), Solomon overseer agent (weekly reviews, human-in-the-loop), shared MCP tool layer + shared Mem0 instance across all agents (consolidate duplicated architecture)
+- Decision: Jeanne Alter architecture refactor uses DIY approach (not re-platforming onto OpenClaw or Hermes Agent runtime) but scoped around proven external components (MCP, Mem0, n8n AI Agent node) for resume/portfolio value
+- Decision: Nextcloud Deck falls under Da Vinci's existing scope — same "sole writer" discipline as Obsidian (Jeanne Alter or other agents do not write to Deck directly, only report through Da Vinci)
+- Decision: Deck sync matching mechanism uses hidden `sync-id` tags in card description footer (human-visible if inspected, but structured for reliable parsing by Da Vinci) rather than relying on title/description fuzzy matching
+- Decision: Deck card stack routing is status-keyword based rather than defaulting all new cards to Backlog
+- Decision: Backfill approach for existing Deck cards is full manual tagging (user responsibility) rather than automated "adopt" pass, due to known conflicts requiring human judgment
+- Errors resolved: hdd-backup-2 Prometheus rule copy-paste bug (removed rule entirely); Nextcloud Deck drift audit completed; EMIYA status conflict surfaced; Phase 7E three-way conflict surfaced; agent anatomy audit completed with framework component selection finalized
+- Action items: Manually backfill sync-id tags on ~30 existing Homelab Deck cards; full documentation audit (ROADMAP staleness, EMIYA status, Phase 7E conflicts); MERLIN Cloudflare token expiry approaching (Jul 14); investigate Qdrant `obsidian_knowledge` degraded state; retest Enshrouded UDP and update DNS records; clean up GitHub `docs/` stale artifacts; resolve duplicate `muzakkir-profile.md.md`; fix Jeanne Alter assistant message saving; begin Jeanne Alter rename (bot, prompt, Telegram, 8 docs); begin ecosystem credential store migration; hdd-backup-1 SATA fix still blocked on physical access
+
 ### 2026-07-05 — Gaming Platform Deployment + Emergency Network Migration (unnumbered, ad-hoc)
 - Called TIME ISP and activated true bridge mode on HG8145B7N, permanently eliminating double-NAT topology
 - pfSense WAN reconfigured from DHCP to PPPoE (credentials: muzakkir655@timebb); public IP changed from 202.184.35.79 to 202.184.101.136 as direct result of bridge mode
@@ -83,50 +113,4 @@
 - Decision: Gil uses internal URL for Da Vinci gateway instead of external Cloudflare (faster, no external routing, both on VLAN 30)
 - Action items: Delete muzakkir-profile.md.md conflict artifact from Nextcloud; build triggered Qdrant re-indexing after Da Vinci writes; re-tell Gil "I work best late at night" (lost due to SKIP bug, now fixed); wire Langfuse into MERLIN and Midas
 
-### 2026-05-21 — Phase 24.8 — Langfuse Wiring (Da Vinci) + Model Testing + VM 400 Expansion
-- Bumped AI-CONTEXT max_tokens to 25000 (was 20000, hitting ceiling)
-- Tested Gemma 3:4b, Gemma 3:12b, phi4-mini, llama3.2, qwen3.5 models on VM 400
-- Expanded VM 400 disk from 56GB to 86GB (Proxmox resize + LVM extension); 34GB free post-expansion
-- Removed gemma3:4b, gemma3:12b, phi4-mini from VM 400 Ollama (all hallucinated factual data in testing); qwen3:14b remains primary
-- Wired Langfuse observability into Da Vinci Update Pipeline with single trace node (Langfuse — Da Vinci) branched off Push to GitHub
-- Da Vinci Update Pipeline now logs one trace (da-vinci-update) with 8 generations (one per file) to Langfuse per run
-- Langfuse traces confirmed in ClickHouse and accessible via direct URL and public API; UI trace list shows no results (known v3 self-hosted bug)
-- Langfuse internal URL configured: http://192.168.30.223:3000 for n8n → Langfuse calls (CT 211 and CT 223 on same VLAN 30)
-- LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES changed to true in CT 223 docker-compose (attempted fix for UI trace list bug, did not resolve)
-- Decision: Single Langfuse node after all 8 files complete rather than 8 individual nodes — cleaner pipeline, fewer nodes, batch send all generations
-- Decision: Use internal URL instead of https://langfuse.najhin-gaming.com — no need to route through Cloudflare for same-VLAN communication
-- Decision: Langfuse ingestion timestamps use n8n server UTC time (new Date().toISOString()); do not add timezone offsets
-- Decision: Model testing conclusion — qwen3:14b stays as primary; Gemma and phi4-mini hallucinated confidently; honesty over speed for personal assistant
-- Decision: AI-CONTEXT max_tokens bumped to 25000 (middle ground between 20000 hitting ceiling and 32000 budget limit); expected cost ~$0.22/run total for 8 files
-- Key Lessons: Backtick template literals in n8n Code nodes cause 400 errors on Anthropic API; use single-quoted strings with concatenation instead
-- Key Lessons: Langfuse v3 self-hosted UI trace list has known bug where traces don't appear in list view despite being in ClickHouse; accessible via direct URL and public API
-- Action items: Verify trace appears in Langfuse UI; consider upgrading Langfuse to latest version; wire Langfuse into MERLIN next
-
-### 2026-05-20 — Phase 16.4 — Documentation Pipeline Expansion
-- Expanded Da Vinci Update Pipeline from 3 files to 8 files: AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
-- Added ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md to core Update Pipeline
-- Promoted decisions.md from Phase 3 to Phase 2 priority — decisions kept getting lost between sessions
-- Updated max_tokens allocations: AI-CONTEXT 20000 (was 16000), changelog 6000 (was 4000), ROADMAP 8000, agents 8000, current-state 4000, service-catalog 4000, decisions 3000
-- Updated Claude project instructions with explicit per-file sections in session summary template to prevent hallucination
-- Fixed bug: Fetch GitHub Files had null githubToken — hardcoded token directly in node
-- Fixed bug: 5 new Claude API nodes had null API key — added hardcoded apiKey const in each node
-- Fixed bug: Push to GitHub filesToPush only had 3 files — updated array to all 8 files with null SHA handling for decisions.md (new file)
-- Fixed bug: sessionSummary was undefined — changed to read fileContent from trigger payload
-- Fixed bug: Claude API nodes returned 400 errors — replaced backtick template literals with single-quoted strings and concatenation
-- Fixed bug: Log Cost service-catalog node had wrong command_type — corrected from current-state to service-catalog
-- Cost per run estimate updated to ~$0.14 (was ~$0.11) for 8-file sequential Haiku chain
-- Runtime per run increased to ~5 minutes (was ~4 minutes) due to 8 sequential API calls
-- Documentation Pipeline architecture diagram updated to show 8 sequential Haiku API calls plus logging and Git operations
-- Decision: Include decisions.md in core pipeline rather than manual log or weekly summary — prevents decisions from being lost
-- Decision: Hardcode API keys directly in n8n nodes — trigger schema only defines fileContent and chatId; adding more fields adds unnecessary complexity
-- Decision: Use Ollama as local LLM backend instead of LM Studio — LM Studio requires display, less stable as background service
-- Decision: Aider + local Ollama identified as better fit than Claude Code for future EMIYA code agent — reduces Claude API dependency
-- Identified stale docs/ folder artifacts on GitHub (docs/changelog.md, docs/troubleshoot.md) from old pipeline — manual cleanup required
-
-### 2026-05-19 — Pipeline Test: Da Vinci Update Pipeline Rebuilt with Per-File API Calls
-- Da Vinci Update Pipeline rebuilt with 3 separate Haiku API calls (AI-CONTEXT, changelog, troubleshoot) instead of sequential 8-file chain
-- Cost logging moved to fire immediately after each Claude API call, before parse/push operations
-- Haiku pricing corrected: $0.80/1M input tokens, $4.00/1M output tokens
-- Resolved pipeline loop: staging-inbox had stuck file failing validation repeatedly every 15 minutes — deleted stuck file and restructured pipeline
-- Per-file API calls reduce error propagation; single file failure no longer blocks entire pipeline
-- Action items: Monitor gilgamesh_costs for 3 new rows per pipeline run; observe API usage for 24 hours to confirm cost under target
+### 2026-05-21 — Phase 24.8 — Langf
