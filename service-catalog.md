@@ -1,14 +1,14 @@
 # Service Catalog
 
 ## Overview
-Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-07-05.
+Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-07-08.
 
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
 **Phase:** 24.10 — Triggered Qdrant Re-indexing (Complete)
 
 ### File Coverage
-The Da Vinci Update Pipeline now handles 8 files per session update run:
+The Da Vinci Update Pipeline now handles 8 files per session update run, with a planned 9th step (Nextcloud Deck sync):
 
 | File | Update Strategy | max_tokens | Da Vinci Action |
 |------|----------------|------------|-----------------|
@@ -20,19 +20,20 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 | current-state.md | Append/update | 4000 | Container/hardware state updated |
 | service-catalog.md | Append/update | 4000 | Service list updated |
 | decisions.md | Append | 3000 | New decisions added at top |
+| **nextcloud-deck-sync** | **Planned (Phase TBD)** | **~2000** | **Create/update Deck cards from file changes** |
 
 **Previously:** 3 files (AI-CONTEXT.md, changelog.md, troubleshoot.md)
 
 ### Architecture
-- **Pipeline Type:** Sequential Haiku API chain (8 separate calls, one per file)
-- **API Calls per Run:** 8 (one per file)
+- **Pipeline Type:** Sequential Haiku API chain (8 current calls, 9th planned for Deck sync)
+- **API Calls per Run:** 8 (one per file; 9th planned)
 - **Observability:** Langfuse wiring active — single trace (da-vinci-update) with 8 child generations logged per run
 - **Langfuse Node Location:** Branched off Push to GitHub (after all 8 files complete)
 - **Langfuse Internal URL:** http://192.168.30.223:3000 (CT 223 on VLAN 30, same as n8n CT 211)
 - **Langfuse Public URL:** https://langfuse.najhin-gaming.com
 - **Cost Logging:** Fires immediately after each API call (before parse/push); generates 8 cost rows per session update
 - **Cost per Run:** ~$0.14–0.16 (previously ~$0.11 for 3-file pipeline; increased due to AI-CONTEXT max_tokens bump to 25000)
-- **Runtime:** ~5 minutes per run (previously ~4 minutes)
+- **Runtime:** ~5 minutes per run (previously ~4 minutes; 9th step will add minimal overhead with Deck API calls)
 - **Haiku Pricing:** $0.80/1M input tokens, $4.00/1M output tokens
 
 ### New Files Added (Phase 16.4)
@@ -41,6 +42,19 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - **current-state.md** — Append/update via Haiku API (4000 tokens)
 - **service-catalog.md** — Append/update via Haiku API (4000 tokens)
 - **decisions.md** — New file; appended via Haiku API (3000 tokens); promoted from Phase 3 to Phase 2 priority
+
+### Nextcloud Deck Sync (Planned Phase TBD)
+- **Status:** Designed, not yet implemented
+- **Trigger:** Every Da Vinci pipeline run (items across any 8 files get reflected as Deck cards)
+- **Target Board:** Homelab board (ID 4) only — Career and Personal boards not yet in scope
+- **Matching Mechanism:** Hidden `sync-id` tag embedded in card description footer, separated by `---` divider; human-visible but structured for parsing
+- **Update Behavior:** If matching sync-id exists, update card silently (title/description/stack); if no match, create new card with new sync-id
+- **Stack Routing:** Status-keyword based (e.g., "Complete" → Done, "In Progress" → In Progress), not fixed default stack
+- **Precondition:** All ~30 existing Homelab board cards must be manually backfilled with sync-id tags by user before automation goes live (chosen over automated adopt pass due to known conflicts — duplicate Phase 7E cards, stale RAM-upgrade cards, Da Vinci Stage 2 status conflict)
+- **Example sync-id format:** `🔖 sync-id: phase-24.10`
+- **Nextcloud Deck API Base:** http://192.168.30.220/index.php/apps/deck/api/v1.0
+- **Credential:** NextCloud-Deck (existing)
+- **Dependencies:** Nextcloud API, manual backfill completion
 
 ### GitHub Push Integration
 - All 8 files pushed to GitHub after pipeline completion
@@ -74,7 +88,8 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 11. **Da Vinci Personal Knowledge SKIP detection:** Changed from === 'SKIP' to startsWith('SKIP') — Da Vinci returns "SKIP\n\nReasoning" which was being overwritten
 12. **Da Vinci Personal Knowledge date placeholder:** Changed from Claude handling {{date}} to Code node replacing it before API call (more reliable)
 13. **VM 400 disk expansion:** Used /dev/vda not /dev/sda (KVM virtio device naming)
-14. **Gilgamesh system prompt:** Explicitly states "Your name is Gilgamesh. Users will call you Gil as a nickname. Never ask the user for their name when they greet you as Gil. Your master is Muzakkir." (qwen3:14b was confused about identity)
+14. **Gilgamesh/Jeanne Alter system prompt:** Explicitly states identity and authority (pending full rename to Jeanne Alter)
+15. **hdd-backup-2 Prometheus alert (2026-07-08):** Copy-paste bug in `alert_rules.yml` (CT 202, line 163) — `MountpointMissing_hddbackup2` rule checked `/mnt/hdd-backup-1` instead of `/mnt/hdd-backup-2`. Fixed via sed, then fully removed per user decision. hdd-backup-2 currently has zero Prometheus alert coverage (intentional tradeoff).
 
 ### Pipeline Rebuild (2026-05-19)
 - **Issue:** Pipeline looping on error due to stuck file in staging-inbox that failed validation repeatedly (every 15 minutes)
@@ -107,11 +122,12 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - VM 400 block device is /dev/vda not /dev/sda (KVM virtio); always use vda for disk operations on VM 400
 
 ### Dependencies
-- Haiku 3.5 API (8 sequential calls, one per file)
+- Haiku 3.5 API (8 sequential calls, one per file; 9th planned for Deck sync)
 - GitHub API (fetch files, push updates)
 - Langfuse API (http://192.168.30.223:3000 internal; https://langfuse.najhin-gaming.com public) for trace logging
 - Workflow trigger payload (session summary via fileContent field, chatId)
 - Telegram notification service (confirmation)
+- Nextcloud Deck API (planned 9th step)
 - n8n workflow runtime (~5 minutes per session)
 
 ## Monitoring & Verification
@@ -122,6 +138,7 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 - **Langfuse UI:** Accessible at https://langfuse.najhin-gaming.com; pipeline traces visible in trace list (UI bug resolved 2026-05-22). All 8 child generations visible in trace detail view. Internal n8n calls use http://192.168.30.223:3000.
 - **Expected Cost Range:** ~$0.14–0.16 per full pipeline run (~$4.20–4.80/month at once daily)
 - **Files Pushed:** AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
+- **Deck Sync Status:** Designed, awaiting manual backfill of sync-id tags on existing ~30 Homelab cards before activation
 
 ---
 
@@ -131,7 +148,7 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 **URL:** http://192.168.30.211:5678/webhook/davinci-personal-knowledge  
 **Method:** POST  
 **Auth Method:** None (internal VLAN 30 only)  
-**Purpose:** Receive personal facts from agents (Gil, EMIYA, Midas), assess durability via Claude Haiku, merge with existing profile, write durable facts to muzakkir-profile.md in Obsidian, skip one-time events and conversational noise  
+**Purpose:** Receive personal facts from agents (Jeanne Alter, EMIYA, Midas), assess durability via Claude Haiku, merge with existing profile, write durable facts to muzakkir-profile.md in Obsidian, skip one-time events and conversational noise  
 **Workflow Name:** Da Vinci — Personal Knowledge  
 **Container:** CT 211 (automation-n8n)  
 **Profile Location:** Obsidian/second-brain/04-personal/muzakkir-profile.md  
@@ -143,41 +160,10 @@ The Da Vinci Update Pipeline now handles 8 files per session update run:
 **Quality Filter:** Stores durable personal facts (e.g., "prefers dark mode"), SKIPs one-time events (e.g., "I slept at 12am tonight") and conversational noise  
 **Cost Logging:** Fires after Claude assessment; entries logged to gilgamesh_costs table  
 **Dependencies:** Claude Haiku API, WebDAV (Nextcloud), agents sending via POST request  
-**Consumers:** Gilgamesh (writes via async fire-and-forget after all messages >20 chars not starting with /), future agents (EMIYA, Midas all route Obsidian writes through Da Vinci)  
-**Profile Indexed:** Yes — 04-personal/ included in Qdrant obsidian_knowledge collection for RAG by Gilgamesh
+**Consumers:** Jeanne Alter (writes via async fire-and-forget after all messages >20 chars not starting with /), future agents (EMIYA, Midas all route Obsidian writes through Da Vinci)  
+**Profile Indexed:** Yes — 04-personal/ included in Qdrant obsidian_knowledge collection for RAG by Jeanne Alter
 
 ---
 
 ## Da Vinci — Knowledge Indexer (Qdrant Updates)
-**Status:** Active (updated 2026-05-25, Phase 24.10 deployed)  
-**Type:** Internal n8n Workflow  
-**Trigger Types:** Scheduled (daily 3am UTC) + Webhook (POST /davinci-reindex-partial for triggered re-index after profile writes)  
-**Purpose:** Index Obsidian vault files into Qdrant for RAG by Gilgamesh and future agents  
-**Qdrant Collection:** obsidian_knowledge  
-**Folders Indexed (Full Rebuild):**
-- 00-inbox/
-- 01-homelab/
-- 02-career/
-- 03-knowledge/
-- 04-personal/ (includes muzakkir-profile.md)
-- 07-daily/
-- 08-agents/
-- 09-people/
-- 10-projects/
-- AI-Stuff/Homelab/homelab-infrastructure/
-
-**Folders Indexed (Partial/Triggered Re-index):** 04-personal/ only (~1s completion)  
-**File Count:** ~90 files  
-**Chunk Count:** ~1,736 chunks  
-**Empty File Filter:** If node added to skip files where $json.data is empty (prevents crash)  
-**Scheduled Full Re-index:** Daily at 3am UTC (~21s completion)  
-**Triggered Partial Re-index:** Fires after Da Vinci — Personal Knowledge completes profile write via POST /davinci-reindex-personal webhook (active 2026-05-25)  
-**Model Used for Embeddings:** nomic-embed-text (Ollama)  
-**Dependencies:** Ollama (nomic-embed-text), WebDAV (Nextcloud), Qdrant API  
-**Note:** Full vault structure confirmed 2026-05-25 as: 00-inbox/, 01-homelab/, 02-career/, 03-knowledge/, 04-personal/, 05-templates/, 06-archive/, 07-daily/, 08-agents/, 09-people/, 10-projects/, 11-reference/. Knowledge Indexer workflow indexes 10 of 12 folders (excludes 05-templates/, 06-archive/, 11-reference/). Requires periodic verification against n8n workflow node "Define Folders" configuration.
-
----
-
-## Gilgamesh Chat Pipeline — Web Search Integration
-**Status:** Active (deployed 2026-05-25)  
-**Type:** n8n Workflow with Firec
+**Status:** Active (updated 2026-05-
