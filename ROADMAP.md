@@ -1,8 +1,8 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** July 5, 2026  
-> **Total Phases:** 91 planned | 52 completed | 0 in progress | 39 future  
-> **Next Session Priority:** Midas v2 (Financial Intelligence) OR Smart Morning Briefing OR Guardian Agent
+> **Last Updated:** July 8, 2026  
+> **Total Phases:** 101 planned | 52 completed | 0 in progress | 49 future  
+> **Next Session Priority:** Chaldea Rename Propagation OR Deck Sync Manual Backfill OR Jeanne Alter Web Search Quality Improvement
 
 ---
 
@@ -12,7 +12,7 @@
 |---------------------------------------|-------|----------|-------------|---------|
 | **Core Infrastructure & Security**     | 15    | 11       | 0           | 4       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
-| **AI & Automation (Gilgamesh)**       | 26    | 22       | 0           | 4       |
+| **AI & Automation (Chaldea)**         | 36    | 22       | 0           | 14      |
 | **Personal & Knowledge Management**    | 12    | 7        | 0           | 5       |
 | **Monitoring & Observability**        | 8     | 8        | 0           | 0       |
 | **Infrastructure Cleanup**            | 6     | 2        | 0           | 4       |
@@ -75,6 +75,7 @@
 | Web Search | Gilgamesh Web Search (Firecrawl Integration)  | May 25, 2026 | Phase 24.10  |
 | Midas   | Midas CFO Agent                                 | Apr 27, 2026 | Phase 7D     |
 | MERLIN  | MERLIN Reminders Agent                          | Apr 27, 2026 | Phase 7D     |
+| 24 DA Vinci S2 | Da Vinci Stage 2 (RAG System & Knowledge Retrieval) | May 25, 2026 | Phase 24.10 |
 
 ### Knowledge Management
 | Phase | Title                                      | Completed    | Dependencies |
@@ -100,11 +101,22 @@ No phases currently in progress.
 
 ## 📋 Planned Phases by Category
 
-### 🤖 Gilgamesh & Automation (Priority: High)
+### 🤖 Chaldea Agents & Automation (Priority: High)
 
+#### Architecture & Refactoring
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
 |-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
-| Da Vinci Stage 2 | RAG System & Knowledge Retrieval     | Phase 24.10       | —      | COMPLETE — RAG pipeline fully operational via Phase 24.9. Qdrant embeddings, Knowledge Indexer, and Gilgamesh RAG queries all active. No separate deployment required. |
+| 16.6  | Chaldea Rename Propagation (Gilgamesh → Jeanne Alter) | Phase 24.10 | 8h     | Rename bot identity, system prompt, Telegram username (@JhinGilgamesh_bot), and propagate through all 8 documentation files |
+| 16.7  | Da Vinci → Nextcloud Deck Sync Pipeline       | Phase 24.10       | 6h     | 9th pipeline step: sync documentation changes to Homelab board via Deck API; match-and-update via sync-id tags; status-keyword-based stack routing |
+| 16.8  | Deck Sync Manual Backfill                     | Phase 16.7        | 2h     | Manually tag all ~30 existing Homelab Deck cards with sync-id footers before automation goes live |
+| 24.11 | Ecosystem-wide Credential Store Migration     | Phase 14          | 10h    | Move all hardcoded n8n credentials (Da Vinci, MERLIN, Midas, Jeanne Alter) to n8n's built-in credential store; applies to every agent |
+| 24.12 | Jeanne Alter Architecture Refactor            | Phase 24.11       | 15h    | Adopt n8n AI Agent node (replace hand-built If/branch logic), integrate MCP for tool execution, integrate Mem0 self-hosted (Qdrant-backed) for unified memory, restructure persona into personality file |
+| 24.13 | Universal Time/Date Awareness                | Phase 24.12       | 1h     | Inject current date/time into every agent's system prompt (pattern: Da Vinci's {{date}} replacement), applied ecosystem-wide instead of single gateway |
+| 24.14 | Jeanne Alter Web Search Quality Improvement  | Phase Web Search  | 4h     | Iterative multi-query search with synthesis step, closer to Gemini-style search; replace single Firecrawl + Haiku call pattern |
+
+#### Agent Feature Development
+| Phase | Title                                           | Dependencies      | Effort | Notes                                    |
+|-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
 | Guardian | Security Monitoring Agent                   | Phase 24.10       | 6-8h   | Alert translation, threat detection, security reporting |
 | Smart Morning Briefing | Dynamic Briefing (weather, schedule, health, tasks) | Phase 24.10 | 2h | Real-time weather via Firecrawl, calendar awareness, health nudges, task integration |
 | Midas v2 | Financial Intelligence (Firefly III + Receipt Capture) | Phase Midas | 10-12h | Expense tracking, receipt/PDF import, spending insights |
@@ -117,6 +129,15 @@ No phases currently in progress.
 | News Digest | Curated tech/AI/Malaysia news on demand | Phase Web Search | 2h     | Daily news briefing |
 | Voice Notes | Whisper transcription → Obsidian   | Phase 24.10       | 4h     | Voice message processing |
 | Plan My Day | Schedule + tasks + energy = daily suggestion | Phase 24.10 | 4-5h | Daily planning assistant |
+
+#### Research & Future (No Priority Yet)
+| Phase | Title                                           | Dependencies      | Effort | Notes                                    |
+|-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
+| Multi-Agent Discussion Protocol | CrewAI-based agent-to-agent communication | Phase 24.12 | Research | Complexity-based trigger (quick topics live via Telegram, complex topics run in background). Jeanne Alter presents both sides on disagreement, user arbitrates. Summary-only reporting by default. Explicitly deferred — research/keep-in-view only. |
+| Solomon Agent | Overseer/growth agent (weekly review) | Phase 24.12 | Research | FGO-lore fit: Chaldea administrator. Weekly cron-triggered review of all agents' activity/logs/decisions; proposes fixes for user approval. Human-in-the-loop growth, not autonomous self-modification. |
+| Voice Organ (Jeanne Alter) | Whisper STT + local TTS | Phase 24.12 | Research | Chosen over vision-first investment due to VRAM constraints (single RX 6700 XT 12GB cannot run vision + main chat model concurrently). |
+| Shared MCP Tool Layer | Multi-agent tool execution framework | Phase 24.12 | Research | One shared tool layer + shared Mem0 instance across all agents instead of rebuilding per-agent. |
+| EMILIA (Vision-First Agent) | Advanced vision/perception capabilities | Phase 43 | Research | Explicitly deferred due to VRAM contention risk on current single-GPU hardware. Llama 3.2 Vision model and live browser vision/control both pending GPU upgrade. |
 
 ### 🎮 Gaming Platform Pipeline (Priority: Medium)
 
@@ -158,8 +179,8 @@ No phases currently in progress.
 
 | Phase | Title                                | Dependencies | Effort | Notes                                   |
 |-------|--------------------------------------|--------------|--------|-----------------------------------------|
-| 42    | Llama 3.2 Vision Model Deployment   | Phase 38     | 2h     | Pull and configure vision model         |
-| 43    | Vision API Integration               | Phase 42     | 4h     | Connect vision to Gilgamesh workflows  |
+| 42    | Llama 3.2 Vision Model Deployment   | Phase 38     | 2h     | Pull and configure vision model (deferred due to VRAM constraints) |
+| 43    | Vision API Integration               | Phase 42     | 4h     | Connect vision to Jeanne Alter workflows (deferred due to VRAM constraints) |
 
 ### 💼 Career Development (Priority: Medium)
 
@@ -184,43 +205,45 @@ No phases currently in progress.
 
 ## 🎯 Recommended Next Session Order
 
-### Midas v2 — Financial Intelligence (Next Session)
+### Chaldea Rename Propagation (Next Session)
+**Effort:** 8 hours  
+**Goal:** Full ecosystem rename from Gilgamesh → Jeanne Alter across bot identity, system prompt, Telegram username, and all 8 documentation files  
+**Deliverables:** Consistent agent naming across all systems, updated Telegram bot handle
+
+### Deck Sync Manual Backfill (Second Session)
+**Effort:** 2 hours  
+**Goal:** Manually tag all ~30 existing Homelab Deck cards with sync-id footers  
+**Precondition for:** Phase 16.7 (Da Vinci → Nextcloud Deck Sync Pipeline)  
+**Deliverables:** All cards ready for automated sync integration
+
+### Jeanne Alter Web Search Quality Improvement (Third Session)
+**Effort:** 4 hours  
+**Goal:** Iterative multi-query search with synthesis, closer to Gemini-style search  
+**Deliverables:** Improved search result relevance and comprehensiveness
+
+### Midas v2 — Financial Intelligence (Fourth Session)
 **Effort:** 10-12 hours  
 **Goal:** Firefly III integration with receipt and PDF statement capture  
-**Deliverables:** Expense tracking, receipt OCR, PDF import, spending insights via Gil
-
-### Smart Morning Briefing (Alternative Next Session)
-**Effort:** 2 hours  
-**Goal:** Dynamic briefing with real-time weather, schedule, health nudges, tasks  
-**Deliverables:** Morning routine automation, Firecrawl weather integration, task awareness
-
-### Guardian Agent (Third Session)
-**Effort:** 6-8 hours  
-**Goal:** Security monitoring and threat detection agent  
-**Deliverables:** Alert translation, threat detection, Telegram security reporting
-
-### Proactive Goal Nudges (Fourth Session)
-**Effort:** 3-4 hours  
-**Goal:** Condition-based alerts via ntfy integration  
-**Deliverables:** Goal tracking notifications, habit reminders
+**Deliverables:** Expense tracking, receipt OCR, PDF import, spending insights via Jeanne Alter
 
 ---
 
 ## 🔗 Phase Dependencies
 
 **Critical Path Analysis:**
-1. **Gilgamesh Enhancement Track:** Phase 24.10 → Guardian → Goal Nudges → Plan My Day
-2. **Knowledge & Tracking Track:** Smart Morning Briefing → Midas v2 → Weekly Review
-3. **Gaming Platform Track:** Mash 59-64 (can run parallel to Gilgamesh)
-4. **Infrastructure Track:** 25-29 (low priority, mostly independent; Phase 25 & 26 progressing)
-5. **Career Development Track:** 35-36 (depends on infrastructure completion)
+1. **Chaldea Architecture Track:** Phase 24.12 (Jeanne Alter Refactor) → 24.13 (Universal Time/Date) → Multi-Agent Discussion Protocol
+2. **Documentation & Integration Track:** Phase 16.6 (Rename) → 16.7 (Deck Sync) → 16.8 (Deck Backfill)
+3. **Agent Feature Development Track:** Phase 24.12 → Guardian → Goal Nudges → Plan My Day
+4. **Gaming Platform Track:** Mash 59-64 (can run parallel to Chaldea development)
+5. **Infrastructure Track:** 25-29 (low priority, mostly independent; Phase 25 & 26 progressing)
+6. **Career Development Track:** 35-36 (depends on infrastructure completion)
 
 **Parallel Development Opportunities:**
-- Gaming platform phases can run alongside AI development
+- Gaming platform phases can run alongside Chaldea development
 - Infrastructure cleanup can happen during slower development periods
-- Agent feature development can be integrated into existing workflows
-- Gilgamesh feature wishlist (16 items) can be prioritized into dedicated sessions
+- Agent feature development can be integrated into Jeanne Alter refactor
+- Deck sync backfill can occur while other sessions are in progress
 
 ---
 
-*Last updated: July 5, 2026 — Major network infrastructure migration completed. Double NAT eliminated via ISP bridge mode activation; pfSense WAN reconfigured to PPPoE with new public IP 202.184.101.136. AX1800 access point deployed successfully after resolving VLAN misconfiguration on TL-SG108E ports 7-8 (legacy VLAN 1 → VLAN20_MAIN). Phase 25 (WiFi Access Point Deployment) functionally complete; Phase 26 (Legacy Network Cleanup) partially addressed (switch ports fixed, management IP migration still pending). Enshrouded server stable but UDP connectivity not yet retested post-bridge-mode; Cloudflare DNS records still pointing to old IP (action item). Next session priority: Midas v2 (financial intelligence) OR Smart Morning Briefing OR Guardian Agent.*
+*Last updated: July 8, 2026 — Architecture planning and ecosystem documentation session completed. Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler") pending full propagation. Chaldea ecosystem formalized as the agents layer (distinct from Kuromoon physical hardware). Da Vinci scope extended to include Nextcloud Deck as 9th pipeline step with sync-id-based card matching. EMIYA status conflict identified (deployment history vs. current listed status). Jeanne Alter architecture refactoring scoped with MCP, Mem0 (Qdrant-backed), AI Agent node, and personality-file pattern selected. Multi-agent discussion protocol deferred to research/keep-in-view stage (CrewAI selected over LangGraph). Solomon overseer agent and voice organ concepts approved at research stage. Vision model deployment and browser vision both explicitly deferred due to single-GPU VRAM constraints. Career context updated: September 2026 job deadline dropped; homelab reframed as indefinite long-term project. hdd-backup-2 Prometheus alert bug fixed and rule removed (intentional zero-alert status). Nextcloud Deck board reviewed; drift discovered against GitHub docs (Phase 7E three-way conflict, Da Vinci Stage 2 status conflict). Service catalog updated to include Nextcloud Deck API and future CrewAI/Mem0/MCP components.*
