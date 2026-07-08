@@ -1,11 +1,11 @@
 # Current State Documentation
-**Last Updated:** 2026-07-05 (Emergency Network Migration — Bridge Mode Deployment + Gaming Platform Setup)
+**Last Updated:** 2026-07-08 (Planning & Architecture Session — Chaldea Rename, Deck Sync Design, Agent Architecture Research)
 
 ## Overview
-Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs.
+Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs. Agent ecosystem renamed from "Kuromoon" to "Chaldea" as of 2026-07-08.
 
 ## Core Documentation Files (Da Vinci Update Pipeline)
-Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token budget and handling logic.
+Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token budget and handling logic. Phase 24.11 planning: 9th step adds Nextcloud Deck sync (deferred pending manual backfill of existing cards).
 
 | File | Purpose | Token Budget | Status |
 |------|---------|--------------|--------|
@@ -18,10 +18,10 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 | service-catalog.md | Service/container inventory, networking | 4,000 | Active |
 | decisions.md | Decision log with alternatives considered | 3,000 | Active (Phase 2, promoted from Phase 3) |
 
-**Total Pipeline Tokens:** ~62,000 per session update run
+**Total Pipeline Tokens:** ~62,000 per session update run (before Deck sync 9th step integration)
 
 ## Da Vinci Agent Configuration
-**Role:** Documentation librarian, maintains consistency across 8-file knowledge base. Also operates Personal Knowledge gateway for ingesting agent-generated facts into Obsidian.
+**Role:** Documentation librarian, maintains consistency across 8-file knowledge base. Also operates Personal Knowledge gateway for ingesting agent-generated facts into Obsidian. Planned expansion: sole writer to Nextcloud Deck (Homelab board) via sync-id matching mechanism.
 
 **Update Pipeline Architecture:**
 - 8 sequential Haiku API calls (one per file)
@@ -34,12 +34,22 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 **Personal Knowledge Gateway (Phase 24.9, Enhanced Phase 24.10):**
 - Separate n8n workflow: Da Vinci — Personal Knowledge
 - Webhook: POST /davinci-personal-knowledge (internal CT 211 URL)
-- Receives facts from all agents (currently wired from Gilgamesh)
+- Receives facts from all agents (currently wired from Jeanne Alter)
 - Claude Haiku (max_tokens 4000) assesses and merges facts into muzakkir-profile.md
 - Quality filter: stores durable personal facts, SKIPs one-time events and conversational noise
 - Writes to Obsidian via WebDAV, costs logged to gilgamesh_costs table
 - All agents route Obsidian writes through this gateway (not direct writes)
 - Phase 24.10: Webhook trigger added for triggered re-indexing. POST /davinci-reindex-personal fires after successful muzakkir-profile.md write
+
+**Nextcloud Deck Sync (Phase 24.11, Planning Stage):**
+- Planned 9th step in Da Vinci Update Pipeline (after Push to GitHub, before Langfuse)
+- Trigger: every pipeline run — items written across any of the 8 files get reflected as Deck cards
+- Matching mechanism: hidden `sync-id` tag in card description footer (e.g. `---\n🔖 sync-id: phase-24.10`), human-visible but structured for parsing
+- Update behavior: if matching sync-id exists, update that card silently (title/description/stack); if no match, create new card with new sync-id
+- Stack routing: status-keyword based (e.g. "Complete" → Done, "In Progress" → In Progress), not fixed default stack
+- Scope: Homelab board (ID 4) only, for now — Career/Personal boards not yet in scope
+- **Precondition, not yet implemented:** all ~30 existing cards on Homelab board must be manually backfilled with sync-id tags before this automation goes live (chosen deliberately over automated adopt pass, due to known conflicts on board)
+- API base: `http://192.168.30.220/index.php/apps/deck/api/v1.0`, using existing `NextCloud-Deck` credential
 
 **File Update Patterns:**
 - AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md: Full rewrite/major sections
@@ -49,14 +59,14 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 **Known Behaviors:**
 - decisions.md created as new file on first pipeline run (null SHA handled in Push to GitHub node)
 - Cost logging pattern: 8 cost rows logged per session update run, fires immediately after each API call
-- Hardcoded API keys in all 8 Claude API nodes (consistent with existing approach)
+- Hardcoded API keys in all 8 Claude API nodes (consistent with existing approach; ecosystem-wide credential store migration planned)
 - Backtick template literals in n8n Code nodes cause 400 errors on Anthropic API; all system prompts use single-quoted strings with concatenation
 - Fetch GitHub Files must hardcode token directly; do not reference trigger payload fields that are not explicitly defined in trigger schema (trigger only defines fileContent and chatId)
 - Langfuse wiring: Single node branched off Push to GitHub sends all 8 generations in one batch with internal URL (http://192.168.30.223:3000)
 - SKIP detection in Da Vinci gateway uses startsWith('SKIP') not strict equality (Da Vinci may return "SKIP\n\nReasoning...")
 - Date placeholder ({{date}}) replaced in Code node before Claude API call with actual MYT date (YYYY-MM-DD format)
 
-## Da Vinci Update Pipeline Status (Phase 24.8-24.10)
+## Da Vinci Update Pipeline Status (Phase 24.8-24.11)
 **Pipeline Architecture:**
 - Total nodes: 36+ (8 sequential Haiku API calls + 8 Log Cost nodes + 8 Parse nodes + Update Tables + Push to GitHub + Langfuse — Da Vinci + Push to Nextcloud + Send Confirmation)
 - Runtime: ~5 minutes per session update run
@@ -64,8 +74,9 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Files covered: AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
 - Per-file API calls: 8 separate Haiku calls with immediate cost logging
 - Langfuse observability: Wired Phase 24.8 — trace name da-vinci-update with 8 child generations per run
+- Deck sync (9th step): Planned Phase 24.11, deferred pending manual backfill
 
-**Deployment Status (Phase 24.10):**
+**Deployment Status (Phase 24.8-24.11):**
 - ✅ Expanded from 3-file to 8-file sequential Haiku chain (Phase 16.4)
 - ✅ Resolved 5 critical bugs during deployment (Phase 16.4)
 - ✅ Updated Claude project instructions with explicit per-file session summary sections (Phase 16.4)
@@ -77,34 +88,13 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ AI-CONTEXT max_tokens bumped to 25,000 (was 20,000 — was hitting ceiling every run)
 - ✅ Log Cost — service-catalog command_type fixed: corrected from `/update (Da Vinci - current-state)` to `/update (Da Vinci - service-catalog)`
 - ✅ Da Vinci Personal Knowledge gateway deployed (Phase 24.9)
-- ✅ Langfuse wired to Gilgamesh agent (Phase 24.9)
+- ✅ Langfuse wired to Jeanne Alter agent (Phase 24.9)
 - ✅ Documentation audit completed (Phase 24.9) — 11 discrepancies corrected across 4 files
 - ✅ Phase 24.10 deployed (May 25, 2026): Triggered Qdrant re-indexing via webhook POST /davinci-reindex-personal
-- ✅ Gilgamesh web search feature deployed (May 25, 2026): Firecrawl API wired, keyword detection, search-to-Haiku routing, search results injected
-
-## Automation Status
-**Trigger:** Cron job (time TBD per Phase 16 work)
-
-**Known Limitations & Resolutions (Phase 24.10):**
-- ✅ decisions.md dynamically created on first run (null SHA path implemented)
-- ✅ Fetch GitHub Files: hardcoded token (not passed via trigger)
-- ✅ All 8 files now pushed to GitHub from filesToPush array
-- ✅ Per-file API calls: 8 separate Haiku calls with immediate cost logging
-- ✅ Langfuse wiring: Single node branched off Push to GitHub using internal URL (http://192.168.30.223:3000)
-- ✅ Staging-inbox stuck file issue resolved: deleted stuck file, rebuilt pipeline
-- ✅ Langfuse trace (da-vinci-update) confirmed appearing in Langfuse UI with 8 child generations (Phase 24.8 test run)
-- ✅ Log Cost — service-catalog command_type fixed (was copy-paste error)
-- ✅ Langfuse UI trace list bug resolved (1-hour analytics delay by design; traces now visible overnight)
-- ✅ Da Vinci Personal Knowledge gateway filters via startsWith('SKIP') not strict equality
-- ✅ Date placeholder replaced in Code node before Claude call (not by Claude)
-- ✅ Knowledge Indexer: added empty file filter to prevent crash on empty downloads
-- ✅ Hardware specs corrected (Phase 24.9): EPYC 5645/256GB/RTX 4070 were hallucinated; real hardware is Ryzen 5 5600X, 128GB DDR4, RX 6700 XT
-- ✅ CT 215 reference corrected to CT 220 (Nextcloud)
-- ✅ Extract Response bug fixed: Call Claude API wraps response in data.response object; fixed with typeof check for Ollama detection (Phase 24.10)
-- ✅ Web Search routing: qwen3:14b ignores injected search context; force-route search queries to Haiku (Phase 24.10)
-- ✅ If node boolean condition fixed: return value converted to .toString() and compared as string (Phase 24.10)
-- ✅ Phase 24.10 Qdrant re-indexing webhook deployed: POST /davinci-reindex-personal, partial reindex (04-personal/ only) ~990ms
-- ✅ Knowledge Indexer folder count corrected (Phase 24.10): indexes 10 folders, not 4
+- ✅ Jeanne Alter web search feature deployed (May 25, 2026): Firecrawl API wired, keyword detection, search-to-Haiku routing, search results injected
+- ✅ Ecosystem renamed: Kuromoon (hardware only) ↔ Chaldea (agents ecosystem) clarified (Phase 24.11)
+- ✅ Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler") — pending full propagation across bot identity, system prompt, Telegram username, all 8 docs
+- 🔄 Nextcloud Deck sync designed and approved for Phase 24.11, awaiting manual backfill of existing cards before automation deployment
 - ⚠️ GitHub docs/ folder contains stale changelog.md and troubleshoot.md artifacts from old pipeline — needs cleanup
 - ⚠️ muzakkir-profile.md.md duplicate file exists in Nextcloud 04-personal/ folder (conflict artifact from Obsidian sync + WebDAV write race)
 - ⚠️ Assistant messages not appearing in gilgamesh_conversations Data Table (only user messages visible) — Save Assistant Message may not be firing correctly
@@ -115,21 +105,22 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Cost logging for all 8 API calls, fires immediately after each call
 - decisions.md null SHA handling in Push to GitHub
 - Single-quoted string concatenation in system prompts (template literals rejected)
-- Hardcoded credentials in all 8 Claude API nodes
+- Hardcoded credentials in all 8 Claude API nodes (ecosystem-wide migration planned)
 - 8-file separate API call pattern with immediate cost logging
 - Langfuse observability with single trace and 8 child generations per run
 - Langfuse trace visibility in UI (da-vinci-update trace with 8 generations confirmed 2026-05-21)
 - AI-CONTEXT max_tokens at 25,000 no longer hitting ceiling
 - Da Vinci Personal Knowledge gateway (filter, assess, merge, write, log)
-- Gilgamesh sending personal facts to Da Vinci Personal Knowledge gateway
-- Langfuse wired to Gilgamesh (trace: gilgamesh-chat, contains input/output/metadata)
+- Jeanne Alter sending personal facts to Da Vinci Personal Knowledge gateway
+- Langfuse wired to Jeanne Alter (trace: gilgamesh-chat, contains input/output/metadata)
 - Knowledge Indexer indexing 10 folders (00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/Homelab/homelab-infrastructure)
-- muzakkir-profile.md creation and RAG retrieval by Gil
-- Gil successfully recalling personal facts via Qdrant RAG (name: Muzakkir, dark mode preference)
-- Web search deployed in Gilgamesh (Firecrawl /search API, keyword detection, results injection)
+- muzakkir-profile.md creation and RAG retrieval by Jeanne Alter
+- Jeanne Alter successfully recalling personal facts via Qdrant RAG (name: Muzakkir, dark mode preference)
+- Web search deployed in Jeanne Alter (Firecrawl /search API, keyword detection, results injection)
 - Search queries routing to Claude Haiku (qwen3:14b cannot follow injected context)
 - Conversation buffer memory operational (last 15 rows from gilgamesh_conversations in Format Messages)
 - Phase 24.10 triggered Qdrant re-indexing after muzakkir-profile.md writes (webhook: /davinci-reindex-personal)
+- Nextcloud Deck API credential verified functional
 
 ## Hardware Infrastructure
 
@@ -139,15 +130,16 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - **VM 400 (ollama-gpu):** 4 vCPU, 16GB RAM, 86GB disk (expanded from 56GB 2026-05-21), Ubuntu 22.04 LTS, RX 6700 XT 12GB GPU (AMD, ROCm backend)
 
 ### Network Infrastructure (Updated 2026-07-05)
-- **ISP Connection:** TIME Fiber GPON, Huawei HG8145B7N ONT (now in true **bridge mode** as of 2026-07-05, no longer performing routing/NAT/DHCP)
+- **ISP Connection:** TIME Fiber GPON, Huawei HG8145B7N ONT (switched to true **bridge mode** 2026-07-05, no longer performing routing/NAT/DHCP)
 - **pfSense WAN:** Interface `pppoe0` (PPPoE, changed from DHCP 2026-07-05)
-- **Public IP:** `202.184.101.136` (changed from `202.184.35.79` due to bridge mode migration 2026-07-05; may still be reassigned on PPPoE reconnects, not static)
+- **Public IP:** `202.184.101.136` (changed from `202.184.35.79` due to bridge mode migration 2026-07-05; dynamic — may reassign on PPPoE reconnects, not static)
 - **PPPoE Credentials:** Username `muzakkir655@timebb` (password stored securely, retrieved from TIME Self Care portal)
-- **Switch:** TP-Link TL-SG108E (802.1Q VLAN trunk to pfSense, port 7 and 8 VLAN membership corrected 2026-07-05)
+- **Access Point:** TP-Link TL-AX1800 / EAP610 (deployed 2026-07-05 as emergency measure when ISP router's local services disabled by bridge mode; roommates' Wi-Fi restored)
+- **Switch:** TP-Link TL-SG108E (802.1Q VLAN trunk to pfSense, ports 7–8 VLAN membership corrected to VLAN20_MAIN 2026-07-05, was blocking DHCP to access point)
 
 ### Storage
 - **GitHub:** Primary source of truth for all 8 documentation files
-- **Nextcloud (CT 220):** File backup and collaboration (second-brain/, 04-personal/, staging-inbox/, etc.)
+- **Nextcloud (CT 220):** File backup and collaboration (second-brain/, 04-personal/, staging-inbox/, etc.); Deck board (Homelab, ID 4) manages kanban workflow
 - **VM 400 (Ollama + Qdrant):** Local LLM inference server and vector database
 
 ## Containerized Services
@@ -155,18 +147,15 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 ### CT 211 (automation-n8n)
 - **Image:** n8n:latest
 - **IP:** 192.168.30.211
-- **Purpose:** Workflow automation, Da Vinci Update Pipeline, Da Vinci Personal Knowledge gateway, Gilgamesh, and future agents
+- **Purpose:** Workflow automation, Da Vinci Update Pipeline, Da Vinci Personal Knowledge gateway, Jeanne Alter, and future agents
 - **Workflows:** 
-  - Da Vinci Update Pipeline (8-file document sync)
+  - Da Vinci Update Pipeline (8-file document sync, Deck sync planned Phase 24.11)
   - Da Vinci — Personal Knowledge (gateway: POST /davinci-personal-knowledge, triggered reindex: POST /davinci-reindex-personal)
-  - Gilgamesh (chat + RAG + web search + memory + Langfuse) — enhanced May 25, 2026
+  - Jeanne Alter (chat + RAG + web search + memory + Langfuse) — enhanced May 25, 2026, renamed from Gilgamesh 2026-07-08
   - Knowledge Indexer (Qdrant sync, 10 folders, webhook-triggered partial reindex)
   - MERLIN (weather + alerts + Langfuse incoming) — deployed April 27, 2026
   - Midas (notifications) — deployed April 27, 2026
   - And others
 - **Databases:** PostgreSQL (internal)
-- **Connections:** Anthropic API, GitHub API, Nextcloud, ClickHouse (CT 223), Ollama (VM 400), Qdrant (VM 400), Langfuse (CT 223), Firecrawl API (external)
-- **Recent Changes (Phase 24.10):**
-  - Gilgamesh enhanced: If (Needs Web Search?) → Web Search (Firecrawl /search) → Inject Search Results → Route Model
-  - Firecrawl community node (@mendable/n8n-nodes-firecrawl v2.1.1) integrated
-  - Route Model logic updated: search queries force-route to Haiku;
+- **Connections:** Anthropic API, GitHub API, Nextcloud (including Deck API), ClickHouse (CT 223), Ollama (VM 400), Qdrant (VM 400), Langfuse (CT 223), Firecrawl API (external)
+- **Recent Changes (Phase 24
