@@ -1,7 +1,7 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** July 8, 2026  
-> **Total Phases:** 101 planned | 52 completed | 0 in progress | 49 future  
+> **Last Updated:** July 9, 2026  
+> **Total Phases:** 103 planned | 52 completed | 0 in progress | 51 future  
 > **Next Session Priority:** Chaldea Rename Propagation OR Deck Sync Manual Backfill OR Jeanne Alter Web Search Quality Improvement
 
 ---
@@ -10,12 +10,12 @@
 
 | Category                              | Total | Complete | In Progress | Planned |
 |---------------------------------------|-------|----------|-------------|---------|
-| **Core Infrastructure & Security**     | 15    | 11       | 0           | 4       |
+| **Core Infrastructure & Security**     | 16    | 11       | 0           | 5       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
 | **AI & Automation (Chaldea)**         | 36    | 22       | 0           | 14      |
 | **Personal & Knowledge Management**    | 12    | 7        | 0           | 5       |
 | **Monitoring & Observability**        | 8     | 8        | 0           | 0       |
-| **Infrastructure Cleanup**            | 6     | 2        | 0           | 4       |
+| **Infrastructure Cleanup**            | 8     | 2        | 0           | 6       |
 | **Career Development**                | 4     | 2        | 0           | 2       |
 | **Long Term Vision**                  | 7     | 0        | 0           | 7       |
 | **Hardware & Upgrades**               | 3     | 3        | 0           | 0       |
@@ -117,18 +117,20 @@ No phases currently in progress.
 #### Agent Feature Development
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
 |-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
-| Guardian | Security Monitoring Agent                   | Phase 24.10       | 6-8h   | Alert translation, threat detection, security reporting |
+| Cu Chulainn | Security Monitoring Agent                   | Phase 24.10       | 6-8h   | Renamed May 16, 2026 from "Guardian"; alert translation, threat detection, security reporting; 2nd build priority |
 | Smart Morning Briefing | Dynamic Briefing (weather, schedule, health, tasks) | Phase 24.10 | 2h | Real-time weather via Firecrawl, calendar awareness, health nudges, task integration |
 | Midas v2 | Financial Intelligence (Firefly III + Receipt Capture) | Phase Midas | 10-12h | Expense tracking, receipt/PDF import, spending insights |
 | Proactive Goal Nudges | Condition-based alerts via ntfy      | Phase 24.10       | 3-4h   | Goal tracking with Telegram notifications |
 | Weekly Automated Review | Sunday digest (health, spending, homelab) | Phase 24.10 | 2-3h | Summarized weekly activity report |
 | "What did I do?" Recall | Natural language query over life_log | Phase 24.10 | 2h     | Search personal activity history |
-| URL/Article Summarizer | Send link, Gil summarizes via Firecrawl | Phase Web Search | 1-2h | Link-based content summarization |
+| URL/Article Summarizer | Send link, Jeanne Alter summarizes via Firecrawl | Phase Web Search | 1-2h | Link-based content summarization |
 | Grocery/Task List Management | Telegram-based list sync          | Phase 24.10       | 2h     | Task and grocery list management |
 | Calendar Awareness | Google Calendar integration           | Phase 24.10       | 3-4h   | Schedule-aware responses |
 | News Digest | Curated tech/AI/Malaysia news on demand | Phase Web Search | 2h     | Daily news briefing |
 | Voice Notes | Whisper transcription → Obsidian   | Phase 24.10       | 4h     | Voice message processing |
 | Plan My Day | Schedule + tasks + energy = daily suggestion | Phase 24.10 | 4-5h | Daily planning assistant |
+| Scathach | Career Growth & Research Agent (LangGraph) | Phase 24.10       | TBD    | 1st build priority; career research and job application workflows; requires LangGraph evaluation before implementation |
+| Nightingale | Health Pipeline Agent                       | Phase 24.10       | TBD    | Extract health tracking (food/BP/medication logging) into dedicated agent; concept only, not yet scoped |
 
 #### Research & Future (No Priority Yet)
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
@@ -165,6 +167,7 @@ No phases currently in progress.
 |-------|--------------------------------------|--------------|--------|-----------------------------------------|
 | 25    | WiFi Access Point Deployment         | Hardware     | 4h     | EAP610 deployment COMPLETE (July 5, 2026) — AX1800 access point (SSID `A21-22A`) now live on VLAN20_MAIN via TL-SG108E port 7. Functioning correctly after VLAN misconfiguration fix. |
 | 26    | Legacy Network Cleanup               | Phase 25     | 3h     | Partially addressed (July 5): TL-SG108E ports 7-8 VLAN migration from legacy VLAN 1 to VLAN20_MAIN complete. Remaining work: migrate switch management IP from 192.168.1.20 (legacy) to proper VLAN10_MGMT address. |
+| 27    | Domain Migration & Infrastructure Audit | Phase 14 | 8h     | **27.1 (audit):** Cloudflare Access policies, Tunnel routes, SSL, NPM configs, DNS hygiene audit across existing setup. **27.2 (migration):** Nine homelab subdomains move from najhin-gaming.com to muzakkir.tech (grafana, n8n, vault, passwords/Vaultwarden, cloud/Nextcloud, finance/Firefly III, ntfy, langfuse, home/Pulse Dashboard). Game server subdomains (mc, terraria, enshrouded, panel) remain permanently on najhin-gaming.com. Cloudflare zone setup for muzakkir.tech directed to begin July 1, 2026 — completion status unconfirmed, verify next infrastructure session. |
 | 28    | Storage Optimization                 | —            | 6h     | Move Nextcloud data, thin pool cleanup |
 | 29    | Performance Monitoring Expansion     | Phase 5      | 5h     | Advanced metrics and alerting rules    |
 
@@ -172,8 +175,8 @@ No phases currently in progress.
 
 | Phase | Title                                | Dependencies | Effort | Notes                                   |
 |-------|--------------------------------------|--------------|--------|-----------------------------------------|
-| 27    | n8n + Vault Integration              | Phase 14     | 3h     | Direct secret fetching in workflows    |
-| 30    | Off-site Backup (Backblaze B2)       | Phase 7A     | 6h     | 3-2-1 backup strategy completion       |
+| 30    | n8n + Vault Integration              | Phase 14     | 3h     | Direct secret fetching in workflows    |
+| 31    | Off-site Backup (Backblaze B2)       | Phase 7A     | 6h     | 3-2-1 backup strategy completion       |
 
 ### 🤖 AI & Local LLM (Priority: High)
 
@@ -233,9 +236,9 @@ No phases currently in progress.
 **Critical Path Analysis:**
 1. **Chaldea Architecture Track:** Phase 24.12 (Jeanne Alter Refactor) → 24.13 (Universal Time/Date) → Multi-Agent Discussion Protocol
 2. **Documentation & Integration Track:** Phase 16.6 (Rename) → 16.7 (Deck Sync) → 16.8 (Deck Backfill)
-3. **Agent Feature Development Track:** Phase 24.12 → Guardian → Goal Nudges → Plan My Day
+3. **Agent Feature Development Track:** Phase 24.12 → Cu Chulainn → Scathach (build priority: Scathach first, Cu Chulainn second) → Goal Nudges → Plan My Day
 4. **Gaming Platform Track:** Mash 59-64 (can run parallel to Chaldea development)
-5. **Infrastructure Track:** 25-29 (low priority, mostly independent; Phase 25 & 26 progressing)
+5. **Infrastructure Track:** 25-29 (low priority, mostly independent; Phases 25 & 26 progressing; Phase 27 newly prioritized)
 6. **Career Development Track:** 35-36 (depends on infrastructure completion)
 
 **Parallel Development Opportunities:**
@@ -243,7 +246,8 @@ No phases currently in progress.
 - Infrastructure cleanup can happen during slower development periods
 - Agent feature development can be integrated into Jeanne Alter refactor
 - Deck sync backfill can occur while other sessions are in progress
+- Domain migration audit (Phase 27.1) can run independently of Scathach/Cu Chulainn builds
 
 ---
 
-*Last updated: July 8, 2026 — Architecture planning and ecosystem documentation session completed. Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler") pending full propagation. Chaldea ecosystem formalized as the agents layer (distinct from Kuromoon physical hardware). Da Vinci scope extended to include Nextcloud Deck as 9th pipeline step with sync-id-based card matching. EMIYA status conflict identified (deployment history vs. current listed status). Jeanne Alter architecture refactoring scoped with MCP, Mem0 (Qdrant-backed), AI Agent node, and personality-file pattern selected. Multi-agent discussion protocol deferred to research/keep-in-view stage (CrewAI selected over LangGraph). Solomon overseer agent and voice organ concepts approved at research stage. Vision model deployment and browser vision both explicitly deferred due to single-GPU VRAM constraints. Career context updated: September 2026 job deadline dropped; homelab reframed as indefinite long-term project. hdd-backup-2 Prometheus alert bug fixed and rule removed (intentional zero-alert status). Nextcloud Deck board reviewed; drift discovered against GitHub docs (Phase 7E three-way conflict, Da Vinci Stage 2 status conflict). Service catalog updated to include Nextcloud Deck API and future CrewAI/Mem0/MCP components.*
+*Last updated: July 9, 2026 — Documentation audit session completed. Identified missing content: Scathach (career growth agent, 1st build priority, requires LangGraph evaluation before implementation), Cu Chulainn rename propagation pending (renamed from Guardian May 16, 2026, all references still using old name), Nightingale concept (health pipeline agent extraction, deferred concept stage), Domain correction and Phase 27 addition (najhin-gaming.com vs. muzakkir.tech ownership clarified; muzakkir.tech zone setup directed July 1 2026, completion status unconfirmed). Confirmed MERLIN SSL expiry check hardcoded to July 14, 2026 remains unresolved and urgent (5 days out). Confirmed agents.md structural incompleteness (MERLIN, Midas, EMIYA, Scathach, Cu Chulainn sections missing, deferred to dedicated Da Vinci documentation audit). Four ecosystem blind spots documented in AI-CONTEXT.md: time vs. stated priorities measurement gap, docs-vs-reality drift recurrence, bus factor mitigation, skill-market fit gap (Terraform/K8s/CI-CD underexercised vs. Malaysian DevOps market). Interest-capture loop design concept documented (Path of Exile 2 example) as judgment-problem research item, not implementation scope.*
