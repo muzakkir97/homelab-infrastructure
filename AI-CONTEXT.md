@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 21 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026. **Gaming platform expanded July 5, 2026: Enshrouded server (CT 306) deployed in Pelican Panel. Network architecture migrated from double-NAT (ISP router + pfSense) to true bridge mode on Huawei HG8145B7N, eliminating all double-NAT routing conflicts permanently. pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed to 202.184.101.136 (was 202.184.35.79). TP-Link EAP610 AX1800 access point (SSID A21-22A) deployed and configured — root cause of AP failure identified and fixed: TL-SG108E switch ports 7-8 were on legacy VLAN 1, not VLAN20_MAIN. All 21 containers + 1 VM running. DNS records require update. Enshrouded external UDP connectivity not yet retested post-bridging.** **Agents ecosystem renamed from "Kuromoon" to "Chaldea" (July 8, 2026) — Kuromoon now refers to physical hardware only, Chaldea is the agents system layer.** **Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler"), pending full propagation across bot, n8n, Telegram, docs (July 8, 2026).** **Career timeline updated (July 8, 2026): September 2026 job-transition deadline dropped. Cloud/DevOps roles pursued at slower pace. Chaldea project reframed as indefinite, long-term. hdd-backup-2 Prometheus alert removed (copy-paste bug fixed, then intentionally disabled per user decision). Duplicate muzakkir-profile.md.md file exists in Nextcloud. Jeanne Alter assistant messages not saving to Data Table (silent conversation memory breakage).** **Documentation audit completed (July 9, 2026): Cross-session gap analysis identified seven previously-undocumented items from past sessions: Interest-Capture Loop concept, Four Blind Spots analysis (time vs priorities, docs drift, bus factor, skill-market fit), two domains tracked (najhin-gaming.com for gaming, muzakkir.tech for portfolio), two previously-named agents (Cu Chulainn renamed from Guardian May 16, Scathach prioritized May 16, Nightingale health concept May 17), and Phase 27 Domain Migration & Infrastructure Audit. Cu Chulainn and Scathach rename propagation pending. muzakkir.tech Cloudflare zone completion unconfirmed. agents.md is structurally incomplete (missing full sections for MERLIN, Midas, EMIYA, Scathach, Cu Chulainn) — deferred to dedicated documentation audit. MERLIN Cloudflare SSL expiry check hardcoded to July 14 remains urgent (5 days out).**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 21 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026. **Gaming platform expanded July 5, 2026: Enshrouded server (CT 306) deployed in Pelican Panel. Network architecture migrated from double-NAT (ISP router + pfSense) to true bridge mode on Huawei HG8145B7N, eliminating all double-NAT routing conflicts permanently. pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed to 202.184.101.136 (was 202.184.35.79). TP-Link EAP610 AX1800 access point (SSID A21-22A) deployed and configured — root cause of AP failure identified and fixed: TL-SG108E switch ports 7-8 were on legacy VLAN 1, not VLAN20_MAIN. All 21 containers + 1 VM running. DNS records require update. Enshrouded external UDP connectivity not yet retested post-bridging.** **Agents ecosystem renamed from "Kuromoon" to "Chaldea" (July 8, 2026) — Kuromoon now refers to physical hardware only, Chaldea is the agents system layer.** **Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler"), pending full propagation across bot, n8n, Telegram, docs (July 8, 2026).** **Career timeline updated (July 8, 2026): September 2026 job-transition deadline dropped. Cloud/DevOps roles pursued at slower pace. Chaldea project reframed as indefinite, long-term. hdd-backup-2 Prometheus alert removed (copy-paste bug fixed, then intentionally disabled per user decision). Duplicate muzakkir-profile.md.md file exists in Nextcloud. Jeanne Alter assistant messages not saving to Data Table (silent conversation memory breakage).** **Documentation audit completed (July 9, 2026): Cross-session gap analysis identified seven previously-undocumented items from past sessions: Interest-Capture Loop concept, Four Blind Spots analysis (time vs priorities, docs drift, bus factor, skill-market fit), two domains tracked (najhin-gaming.com for gaming, muzakkir.tech for portfolio), two previously-named agents (Cu Chulainn renamed from Guardian May 16, Scathach prioritized May 16, Nightingale health concept May 17), and Phase 27 Domain Migration & Infrastructure Audit. Cu Chulainn and Scathach rename propagation pending. muzakkir.tech Cloudflare zone completion unconfirmed. agents.md structural incompleteness addressed (July 9, 2026): full sections drafted for MERLIN, Midas, EMIYA, Cu Chulainn, Scathach with Agent Type classifications and Funnel Agent design principle. MERLIN Cloudflare SSL expiry check no longer hardcoded — migrated to Uptime Kuma source July 9, resolving the July 14 urgency. Midas cost tracking planned migration from duplicate Data Table to Langfuse Metrics API (low urgency). Cu Chulainn and Scathach sections added with concept-stage governance. Jeanne Alter assistant message table save bug remains critical, unresolved.**
 
 ---
 
@@ -583,24 +583,26 @@ Tracked list of ecosystem gaps distinct from existing roadmap items:
 **Rename history:** Guardian was renamed to **Cu Chulainn** ⚡ (Lancer-class servant) on May 16, 2026, intended role: security monitoring agent. **Propagation has never occurred** — all documentation still references "Guardian." 
 
 **Propagation scope (multi-session):**
-- agents.md: full section for Cu Chulainn (not yet written)
+- agents.md: full section for Cu Chulainn (drafted July 9, 2026 — see Cu Chulainn section below)
 - AI-CONTEXT.md: agent roster table (replace Guardian → Cu Chulainn)
 - decisions.md: any historical Guardian references
 - n8n workflows: system prompts if any reference Guardian
 
-**Build priority:** 4th (after Jeanne Alter, Da Vinci, Midas, MERLIN, Scathach, Cu Chulainn) — not yet scoped for implementation.
+**Build priority:** 3rd (after Scathach, Cu Chulainn — no, Scathach 1st, Cu Chulainn 3rd) — not yet scoped for implementation.
 
-#### Phase — Scathach Agent Design (Named May 16, Pending LangGraph Eval)
+#### Phase — Scathach Agent Design (Named May 16, Updated July 9 with LangGraph Sequencing)
 
 **Introduction:** Lancer-class servant (Scathach, FGO lore: Cù Chulainn's teacher, master of land/sea combat). Intended role: **Career growth and job application workflows** (1st priority after core agents).
 
 **Flagged requirement (June 5 session):** Evaluate LangGraph before starting Scathach build, since career-research workflows are expected to need autonomous multi-step reasoning loops that n8n handles poorly for this use case.
 
+**Updated sequencing (July 9, 2026):** LangGraph evaluation should happen *after* Phase 24.12 (Jeanne Alter's refactor to n8n's native AI Agent node), not standalone. 24.12 is already testing whether n8n's native AI Agent node can handle multi-step autonomous reasoning for Jeanne Alter — if it can, that same node may cover Scathach's career-research reasoning needs too, avoiding the need to introduce a second orchestration framework into the stack.
+
 **Build priority:** 1st (ahead of Cu Chulainn and EMIYA expansions)
 
-**Status:** Named and prioritized May 16, no implementation scope defined yet, **LangGraph evaluation not yet done.**
+**Status:** Named and prioritized May 16, no implementation scope defined yet, **LangGraph evaluation now sequenced behind Phase 24.12 (Jeanne Alter Architecture Refactor).**
 
-**Dependencies:** Requires decision on whether to continue pure n8n architecture or adopt external orchestration framework (LangGraph, CrewAI, etc.).
+**Dependencies:** Requires decision on whether to continue pure n8n architecture or adopt external orchestration framework (LangGraph, CrewAI, etc.); now more directly informed by Phase 24.12's outcome.
 
 #### Phase — Nightingale Agent (Health Pipeline Extraction, Concept)
 
@@ -674,33 +676,48 @@ Theme: Homelab agents named after Fate/Grand Order servants.
 |--------------|--------|-------------------------------------------------------------------------------|-------------------------------|----------------------------|----------|
 | Jeanne Alter 👑 | Ruler | Life Interface & Personal AI Assistant (Langfuse wired May 22, 2026; Web search live May 25, 2026) | Telegram (@JhinGilgamesh_bot) | ✅ Active (rename pending July 8) | she/her |
 | Da Vinci 🎨  | Caster | Sync + Goals + Review (Stage 2 RAG active; documentation pipeline active; Personal Knowledge gateway active; Deck sync pending) | n8n/Nextcloud | ✅ Active | she/her |
-| Midas 💰     | Caster | CFO — Cost Tracking & Optimization                                            | n8n                           | ✅ Active | he/him  |
-| MERLIN 🔮    | Caster | Proactive Nudges & Scheduler                                                  | n8n                           | ✅ Active | he/him  |
+| Midas 💰     | Caster | CFO — Cost Tracking & Optimization (Langfuse Metrics API migration pending, pending Uptime Kuma SSL migration) | n8n                           | ✅ Active | he/him  |
+| MERLIN 🔮    | Caster | Proactive Nudges & Scheduler (Uptime Kuma SSL source migration pending, urgent — July 14 deadline) | n8n                           | ✅ Active | he/him  |
 
-### Full 6-Agent Roster (Design Complete, Partial Deployment)
+### Full 6+ Agent Roster (Design Complete, Partial Deployment)
 
 | Servant             | Class    | Role                                          | Platform      | Build Order | Status     |
 |---------------------|----------|-----------------------------------------------|---------------|-------------|------------|
 | Jeanne Alter 👑     | Ruler    | Life Interface & Personal AI Assistant (Langfuse wired, RAG for personal profile, web search) | Telegram | —         | ✅ Active (rename pending) |
 | Da Vinci 🎨         | Caster   | Sync + Goals + Weekly Review + RAG + Deck Sync | n8n/Nextcloud | —      | ✅ Active (Deck sync design complete, needs backfill) |
-| Midas 💰            | Caster   | CFO — Cost Tracking & Optimization            | n8n           | 1st         | ✅ Active   |
-| MERLIN 🔮           | Caster   | Proactive Nudges & Health Scheduler           | n8n           | 2nd         | ✅ Active   |
-| Scathach ⚡         | Lancer   | Career Growth & Job Application Workflows     | n8n (pending LangGraph eval) | 1st (research) | 📋 Concept (LangGraph evaluation pending, build scope not defined) |
-| EMIYA 🏹            | Archer   | CTO — Infrastructure + Agent Spawning         | n8n           | 2nd (research) | 📋 Partial (App Management 24.1, ntfy 24.7, Langfuse 24.8 deployed; Alert Translation 24.2, Container Updates 24.3, Knowledge Ingestion 24.4, Proactive Monitoring 24.5, Performance 24.6 pending) |
-| Cu Chulainn ⚡      | Lancer   | Security Monitoring & Threat Detection        | n8n           | 3rd (research) | 📋 Concept (renamed from Guardian May 16, propagation pending) |
+| Midas 💰            | Caster   | CFO — Cost Tracking & Optimization            | n8n           | 2nd         | ✅ Active (Langfuse cost-source migration pending) |
+| MERLIN 🔮           | Caster   | Proactive Nudges & Health Scheduler           | n8n           | 3rd         | ✅ Active (Uptime Kuma SSL migration urgent) |
+| Scathach ⚡         | Lancer   | Career Growth & Job Application Workflows     | n8n (pending LangGraph eval after Phase 24.12) | 1st | 📋 Concept (LangGraph eval sequenced after Phase 24.12, build scope pending) |
+| EMIYA 🏹            | Archer   | CTO — Infrastructure + Agent Spawning         | n8n           | 2nd (research) | ✅ Partial (App Management 24.1, ntfy 24.7, Langfuse 24.8 deployed; Alert Translation 24.2, Container Updates 24.3, Knowledge Ingestion 24.4, Proactive Monitoring 24.5, Performance 24.6 pending) |
+| Cu Chulainn ⚡      | Lancer   | Security Monitoring & Threat Detection        | n8n           | 3rd (research) | 📋 Concept (renamed from Guardian May 16, full section drafted July 9, propagation + build pending) |
 | Nightingale 🕊      | —        | Health Pipeline Agent (Food/BP/Medication)   | n8n           | Deferred    | 📋 Concept (extraction from Jeanne Alter, not yet scoped) |
 
 **Notes:**
 
 - Roster finalized at 6+ core agents + 2 concept agents (Nightingale, Solomon overseer)
 - Jeanne Alter identity pending full propagation (rename from Gilgamesh, July 8, 2026)
-- Scathach and Cu Chulainn propagation pending (May 16 names, undocumented until July 9)
+- Scathach, Cu Chulainn, and MERLIN sections drafted July 9, 2026 with full governance + design principles
 - All agents write Obsidian data through Da Vinci Personal Knowledge gateway (not directly)
 - Da Vinci Deck sync design complete but requires manual backfill of existing cards with sync-id tags before automation goes live
 
-### Da Vinci — Sync + Goals + Weekly Review + RAG + Personal Knowledge Gateway + Nextcloud Deck
+### Agent Design Principles (July 9, 2026)
 
-**REPLACE SECTION: Da Vinci Scope**
+#### Funnel Agents
+
+An agent is a **funnel** if there is existing infrastructure — deployed or deployable — that the agent sits on top of and translates into a daily digest with a recommended action. The agent's value is aggregation and actionability, not re-implementing what the underlying tool already does. A funnel agent should always answer two questions, not one: "what happened" and "what should I do about it."
+
+**Test:** If there's infrastructure that could be deployed (or already is) and the agent's job is to sit on top of it and translate it, that agent is a funnel.
+
+**Classification (July 9, 2026):**
+- **Funnel:** MERLIN (sources from Uptime Kuma), Midas (sources from Langfuse), Cu Chulainn (sources from Alertmanager, once built)
+- **Not a funnel — Interface:** Jeanne Alter (she is the interface itself; nothing underneath to translate)
+- **Not a funnel — Knowledge System:** Da Vinci (creates and maintains state across Obsidian/GitHub/Deck; doesn't aggregate someone else's data)
+- **Not a funnel — Generative:** Scathach (career research and reasoning; nothing to funnel from)
+- **Hybrid — Funnel-Plus:** EMIYA (reads infra state like a funnel, but also executes changes on approval — propose → approve → execute, a step past reporting)
+
+**Why this matters:** Building a funnel agent that reinvents the underlying check (e.g., MERLIN's original hardcoded SSL date instead of reading Uptime Kuma) duplicates effort that's already solved elsewhere in the stack, creates a second source of truth that can drift from the first, and spends build time on plumbing instead of the actual differentiator — the daily aggregation and recommendation layer.
+
+### Da Vinci — Sync + Goals + Weekly Review + RAG + Personal Knowledge Gateway + Nextcloud Deck
 
 **Role scope:**
 
@@ -753,95 +770,249 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 **Auth:** Basic auth with app password (credential: NextCloud-Deck)
 **Sync scope:** Homelab board only, pending manual backfill of existing cards with sync-id tags
 
-### Midas — CFO (Cost Tracking & Optimization)
-
-**Status:** Active (Partial — v1 deployed April 27, 2026)
-**Ascension Stage:** 2/4
-
-**Two workflows:**
-
-1. **CFO Report** — `/midas` command shows token usage, costs by model, savings from Ollama
-2. **Daily Brief** — 9am scheduled summary to Telegram
-
-**Features:**
-
-- Tracks Jeanne Alter costs (Haiku, Ollama, Firecrawl searches)
-- USD to MYR conversion (hardcoded rate: 4.7)
-- Ollama savings calculated at Haiku equivalent rate
-- Firecrawl search cost (~$0.001-0.002/search = 2 credits)
-- $10 monthly API spend limit monitoring
-- command_type tracking for detailed cost breakdown
-
-**Active Responsibilities:**
-- /midas command: full API cost report via Telegram
-- 9am daily brief: cost summary sent to Telegram
-- Reads gilgamesh_costs Data Table for token/cost data (note: table named for historical identity; will update post-Jeanne-Alter-rename)
-- Planned v2: Firefly III API integration (budget sync, MYR currency)
-
-**Why Midas:**
-
-- Midas touch turns everything to gold → cost optimization
-- King of wealth → perfect CFO role
-
 ### MERLIN — Proactive Nudges & Health Scheduler
 
-**Status:** Active (Partial — v1 deployed April 27, 2026)
+**Servant Class:** Caster
 **Ascension Stage:** 2/4
+**True Name:** Merlin
+**Agent Type:** Funnel (sources from Uptime Kuma, Proxmox, Vault)
 
-**Why Merlin:**
+#### Overview
 
-- Clairvoyance (sees the future → knows what you'll forget)
-- Garden of Avalon (creates safe space → maintenance windows)
-- Illusion magic (reminds you gently, not annoyingly)
+Proactive infrastructure nudge and health scheduler. Deployed as v1 April 27, 2026. Runs a daily 8am check across several infrastructure signals and delivers a Telegram digest. As a funnel agent, MERLIN's job is to read state that already exists elsewhere and translate it into "what happened + what to do" — not to re-implement monitoring logic that dedicated tools already handle better.
 
-**What MERLIN Does:**
+#### Core Responsibilities
 
-- SSL certificate renewal reminders (expires in X days)
-- Backup restore test reminders (overdue by X days)
-- Loki/Prometheus memory limit warnings (OOM in X days)
-- Scheduled maintenance windows
-- Proactive infrastructure health checks
-- Health nudges: medication reminders, BP readings, exercise prompts
-
-**Active Responsibilities:**
-- SSL certificate expiry check (hardcoded date — Cloudflare API token truncated in Vault, pending re-store. **URGENT: July 14 expiry — now 5 days out as of July 9, 2026**)
-- Backup restore test reminder (tracks lastTestDate)
-- Proxmox memory check (threshold 85%)
+- **SSL certificate expiry reporting** (MIGRATION TO UPTIME KUMA — URGENT, July 14, 2026 deadline)
+- Backup restore test reminders (tracks lastTestDate, currently self-tracked — no existing tool covers this, appropriately custom)
+- Proxmox memory check (85% threshold)
 - Vault seal status check
-- 8am daily schedule via n8n Cron trigger
+- Health nudges: medication reminders, BP readings, exercise prompts
+- Daily 8am schedule via n8n Cron trigger
 
-**Current Implementation:**
+#### Active Workflows
 
-- Daily 8am checks: SSL expiry (hardcoded July 14, 2026 — **5 days out, urgent**), Backup restore test (baseline 2026-01-01), Prometheus memory usage, Vault seal status
-- Cloudflare API integration pending (token truncated issue in Vault kv/cloudflare)
+##### MERLIN — Reminders
+
+**Status:** Active (Partial) — SSL check currently broken/urgent, migration to Uptime Kuma pending
+**Nodes:** 8
+**Trigger:** Schedule (daily 8am)
+**Current checks:** 
+- SSL expiry (**BROKEN as of July 9, 2026** — hardcoded to July 14, depends on a truncated Cloudflare API token in Vault kv/cloudflare that has never been re-stored; **requires migration to Uptime Kuma immediately**)
+- Backup restore test (baseline 2026-01-01)
+- Proxmox memory usage (85% threshold)
+- Vault seal status
+
+#### Design Decision (July 9, 2026)
+
+**MERLIN's SSL check should be re-sourced from Uptime Kuma instead of a direct Cloudflare API call.** Uptime Kuma (CT 206, already deployed) natively tracks certificate expiry on any HTTPS monitor with zero extra credentials required. This removes the Cloudflare token dependency entirely and resolves the July 14 urgent issue without waiting on a Vault credential re-store.
+
+#### Known Limitations
+
+- **URGENT:** SSL check is non-functional in its current form — hardcoded date, broken credential dependency, 5 days from the July 14 expiry as of July 9, 2026
+- No "hands" — report-only, cannot execute remediation itself
+- No memory — stateless checks each run
+- Currently reports raw numbers ("X days until expiry") without a recommended action — incomplete per the Funnel Agent design principle; each check should also state what to do (e.g., "renew via Cloudflare dashboard" or "backup test overdue, run restore-verify script")
+- Langfuse not yet wired to MERLIN (planned)
+- Credentials hardcoded in n8n nodes (pending Phase 24.11 credential store migration)
+
+#### Dependencies
+
+- n8n (CT 211) — orchestration
+- Uptime Kuma (CT 206) — SSL/cert data source (replaces direct Cloudflare API dependency)
+- Proxmox API — memory check
+- HashiCorp Vault (CT 213) — seal status check
+- Telegram — delivery
+
+#### Monitoring
+
+- Daily 8am run — verify Telegram delivery
+- **SSL check must be confirmed working (via Uptime Kuma migration) before July 14, 2026**
+
+### Midas — CFO (Cost Tracking & Optimization)
+
+**Servant Class:** Caster
+**Ascension Stage:** 2/4
+**True Name:** Midas
+**Agent Type:** Funnel (sources from Langfuse for Haiku/Claude costs; retains own tracking for Ollama)
+
+#### Overview
+
+CFO agent — cost tracking and optimization reporting. Deployed v1 April 27, 2026. As a funnel agent, Midas's differentiators are Telegram delivery and MYR currency conversion, not the underlying cost calculation — Langfuse (CT 223, already self-hosted and wired to Da Vinci + Jeanne Alter) already calculates and tracks per-model LLM costs automatically.
+
+#### Core Responsibilities
+
+- `/midas` command: full API cost report via Telegram
+- 9am daily brief: cost summary sent to Telegram
+- USD to MYR conversion (hardcoded rate: 4.7)
+- Ollama savings calculation (Ollama calls cost $0; Midas estimates the Haiku-equivalent cost avoided)
+- $10 monthly API spend limit monitoring
+- Planned v2: Firefly III API integration (budget sync, MYR currency)
+
+#### Active Workflows
+
+##### Midas — CFO Report
+**Nodes:** 6 | **Trigger:** Webhook (`/midas` command)
+
+##### Midas — Daily Brief
+**Nodes:** 4 | **Trigger:** Schedule (9am daily)
+
+#### Design Decision (July 9, 2026)
+
+**Haiku/Claude cost data should be sourced from Langfuse's Metrics API instead of the separate `gilgamesh_costs` Data Table.** Both currently track the same Haiku calls independently, which risks the two numbers drifting apart with no way to tell which is correct. Ollama cost tracking (savings estimate) stays in the existing Data Table since those calls are $0 and outside Langfuse's automatic cost-inference model, which is built for paid providers.
+
+#### Known Limitations
+
+- **Pending migration:** Haiku/Claude cost tracking currently duplicated between Langfuse and gilgamesh_costs Data Table — single source of truth not yet established
+- Currently reports totals without a recommendation — incomplete per the Funnel Agent design principle; when spend trends toward the $10 monthly threshold, Midas should suggest a specific action (e.g., "route more queries to Ollama" or name the highest-cost command_type driving the trend)
+- Hardcoded USD→MYR exchange rate (4.7) — not dynamically fetched, will drift from actual rate over time
+- Reads `gilgamesh_costs` Data Table, named for historical (Gilgamesh) identity — pending rename alongside broader Jeanne Alter propagation
+- Langfuse not yet directly wired to Midas (needed for the Metrics API migration above)
+- $10 monthly spend limit is monitored, not enforced — no automatic throttling if exceeded
+
+#### Dependencies
+
+- n8n (CT 211) — orchestration
+- Langfuse (CT 223) — Haiku/Claude cost source (replaces direct Data Table calculation for paid-model costs, pending implementation)
+- `gilgamesh_costs` Data Table — retained for Ollama savings tracking only
+- Telegram — delivery
+
+#### Monitoring
+
+- `/midas` command response time and accuracy
+- 9am daily brief delivery
+- Verify Langfuse Metrics API migration doesn't break existing MYR conversion or Ollama savings math once implemented
 
 ### EMIYA — CTO + Infrastructure + Agent Spawning
 
-**8 core features (Phases 24.1-24.8):**
+**Servant Class:** Archer
+**Ascension Stage:** Partial — 3 of 8 sub-phases complete (corrects prior Planned/0/4 status conflict flagged July 8, 2026)
+**True Name:** EMIYA
+**Agent Type:** Funnel-Plus (reads infrastructure state like a funnel, but also executes changes on approval)
 
-1. **App Management** — Firefly III, ntfy, Langfuse lifecycle (24.1) ✅ COMPLETE
-2. **Alert Translation** — Alertmanager alerts → plain English via ntfy (24.2) 📋 Planned
-3. **Container Updates** — Docker image updates, apt upgrades (approval-gated) (24.3) 📋 Planned
-4. **Knowledge Ingestion** — URLs → Firecrawl → triple-write pipeline (24.4) 📋 Planned
-5. **Proactive Monitoring** — anomaly detection, trend alerts before things break (24.5) 📋 Planned
-6. **Performance + Goal Optimization** — resource reallocation, goal tracking (24.6) 📋 Planned
-7. **Universal Notifications** — ntfy hub for all agent communications (24.7) ✅ COMPLETE
-8. **Langfuse AI Observability** — LLM performance tracking and tracing (24.8) ✅ COMPLETE
+#### Overview
 
-**Design rule:** EMIYA proposes → Muzakkir approves → EMIYA executes. No autonomous destructive actions.
+CTO / infrastructure agent responsible for app lifecycle management, alerting, and (eventually) agent-spawning. Deployed incrementally across 8 sub-phases (24.1–24.8). This section corrects a status conflict identified in the July 8-9, 2026 documentation audit: agents.md previously had no entry for EMIYA at all, while AI-CONTEXT.md already showed 3 of 8 sub-phases complete.
 
-**Deployment:** 8 sub-phases (24.1–24.8), estimated 24–32 hours total. Phases 24.1, 24.7, and 24.8 are complete. Phases 24.2-24.6 pending.
+#### Design Principle
 
-**Status conflict (discovered July 8):** agents.md lists EMIYA as Planned/Ascension 0/4, but documented history shows App Management (24.1), ntfy (24.7), and Langfuse (24.8) deployed. Needs reconciliation in documentation audit.
+EMIYA proposes → Muzakkir approves → EMIYA executes. No autonomous destructive actions. (This approval-gated pattern was validated against 2026 industry practice during design review — comparable self-hosted assistant projects added similar approval-gate features specifically to address the security risk of broad-permission autonomous agents; EMIYA's design already avoids that risk.)
 
-### Design Principles
+#### Core Responsibilities (8 sub-phases, 24.1–24.8)
 
-- Jeanne Alter = Telegram-only (life interface), wired to Langfuse (traces input/output/metadata)
-- All agents communicate via ntfy (universal notification hub)
-- All agents log activity to Da Vinci
-- All agents write Obsidian data through Da Vinci Personal Knowledge gateway (Da Vinci is sole writer)
-- All agents use Fate/GO servant theming for consistency
-- Universal data flow: Input → processing → triple-write (Data Tables + Obsidian + Qdrant)
+1. **App Management** (24.1) ✅ COMPLETE — Firefly III, ntfy, Langfuse lifecycle
+2. **Alert Translation** (24.2) 📋 Planned — Alertmanager alerts → plain English via ntfy
+3. **Container Updates** (24.3) 📋 Planned — Docker/apt upgrades, approval-gated
+4. **Knowledge Ingestion** (24.4) 📋 Planned — URL → Firecrawl → triple-write pipeline
+5. **Proactive Monitoring** (24.5) 📋 Planned — anomaly detection, trend alerts
+6. **Performance + Goal Optimization** (24.6) 📋 Planned — resource reallocation, goal tracking
+7. **Universal Notifications** (24.7) ✅ COMPLETE — ntfy hub for all agent communications
+8. **Langfuse AI Observability** (24.8) ✅ COMPLETE — LLM performance tracking and tracing
+
+#### Active Workflows
+
+No dedicated "EMIYA"-branded n8n workflow currently exists as a single unified entity. The 3 completed sub-phases (24.1, 24.7, 24.8) were implemented as direct infrastructure deployments (Firefly III/ntfy/Langfuse container setup and wiring) rather than as an EMIYA-specific workflow. This is a real structural gap: EMIYA is currently a roadmap category with completed infrastructure underneath it, not yet a running agent that reads and acts on that infrastructure.
+
+#### Known Limitations
+
+- Not yet a unified running agent — completed sub-phases are infrastructure completions, not EMIYA-branded workflows that reason over them
+- Remaining 5 of 8 sub-phases (24.2–24.6) are one-line descriptions only, unscoped in detail
+- Estimated total effort: 24-32h across all 8 sub-phases; roughly 9-12h already spent on 24.1/24.7/24.8, remainder unestimated per-phase
+- Once Alert Translation (24.2) is built, EMIYA becomes a second Alertmanager-sourced funnel-plus alongside Cu Chulainn's planned security-focused translation — worth deciding at that point whether these should be one workflow with two lenses (general ops vs. security) or genuinely separate agents, to avoid two agents independently parsing the same Alertmanager feed
+
+#### Dependencies
+
+- Firefly III (CT 221), ntfy (CT 222), Langfuse (CT 223) — live, wired (24.1/24.7/24.8)
+- Alertmanager (CT 205) — planned integration (24.2)
+- Docker/apt — planned integration (24.3)
+- Firecrawl — planned integration (24.4)
+
+#### Monitoring
+
+- App Management: Firefly III/ntfy/Langfuse containers monitored via existing Prometheus/Uptime Kuma, not via a dedicated EMIYA process yet
+- No dedicated EMIYA-level monitoring exists — flagged as a gap since the reasoning/translation layer is unbuilt
+
+### Cu Chulainn — Security Monitoring & Threat Detection
+
+**Servant Class:** Lancer
+**Ascension Stage:** 0/4 (Concept — no implementation started)
+**True Name:** Cú Chulainn (renamed from Guardian May 16, 2026)
+**Agent Type:** Funnel (sources from Alertmanager, once built)
+
+#### Overview
+
+Security monitoring and threat detection agent for the Chaldea ecosystem, translating Alertmanager's alert feed into readable, prioritized security reporting. In FGO canon, Cu Chulainn is Scathach's student, reflected in build order (Scathach built first, Cu Chulainn second). No implementation work has begun as of July 9, 2026. Renamed from "Guardian" on May 16, 2026 (rename propagation to n8n workflows pending once workflows exist).
+
+#### Core Responsibilities (Planned — none implemented)
+
+- Alert translation: converting raw Prometheus/Alertmanager alerts into readable, prioritized summaries, security-focused
+- Threat detection across Chaldea/homelab infrastructure
+- Security reporting to Muzakkir, delivered via Jeanne Alter/Telegram, including a recommended action per the Funnel Agent design principle (not just "alert fired" but "here's what it likely means and what to check")
+
+#### Active Workflows
+
+None. No n8n workflow exists for this agent yet.
+
+#### Known Limitations
+
+- Build priority is 3rd, behind Scathach (1st) and after current core agents (MERLIN, Midas, EMIYA) — work is not expected to start until Scathach's build is underway or complete
+- Overlaps with EMIYA's planned Alert Translation (24.2), which also sources from Alertmanager — worth deciding whether these merge into one workflow with two lenses (general ops vs. security) once both are scoped, to avoid duplicate parsing of the same feed
+- No defined trigger mechanism or report format specified yet
+- Estimated effort: 6-8h (per ROADMAP.md), unvalidated since no scoping work has occurred
+- Rename propagation (from Guardian) pending once first n8n workflow is built
+
+#### Dependencies (Planned, not yet wired)
+
+- Prometheus / Alertmanager (CT 202 / CT 205) — intended alert source
+- Jeanne Alter — intended reporting interface to Muzakkir
+- n8n — intended orchestration platform
+
+#### Monitoring
+
+Not applicable — no active deployment to monitor.
+
+### Scathach — Career Growth & Job Application Workflows
+
+**Servant Class:** Lancer
+**Ascension Stage:** 0/4 (Concept — LangGraph evaluation sequenced behind Phase 24.12, blocking)
+**True Name:** Scathach
+**Agent Type:** Not a funnel (generative career research/reasoning — nothing existing to translate)
+
+#### Overview
+
+Career growth and job application workflows agent. Named and prioritized on May 16, 2026 as the 1st build priority in the agent roster. In FGO canon, Scathach is Cu Chulainn's teacher and a master of land/sea combat, reflected in the build order. No implementation work has begun as of July 9, 2026.
+
+#### Core Responsibilities (Planned — none implemented)
+
+- Career research: job market analysis, role matching against target positions (Cloud Infrastructure Engineer, DevOps Engineer, Systems Administrator)
+- Job application workflow automation
+- Possible integration point with ApplyPilot (C:\Users\muzak\.applypilot\) — relationship not yet defined
+
+#### Active Workflows
+
+None. No n8n or LangGraph workflow exists for this agent yet.
+
+#### Updated Sequencing (July 9, 2026)
+
+**LangGraph evaluation should happen *after* Phase 24.12 (Jeanne Alter's refactor to n8n's native AI Agent node), not standalone.** 24.12 is already testing whether n8n's native AI Agent node can handle multi-step autonomous reasoning for Jeanne Alter — if it can, that same node may cover Scathach's career-research reasoning needs too, avoiding the need to introduce a second orchestration framework into the stack. Original prerequisite (decision logged 2026-07-09, decisions.md) still holds — LangGraph must be evaluated before implementation scope is defined — but the evaluation itself is now sequenced behind 24.12 rather than done independently.
+
+#### Known Limitations
+
+- **Blocking prerequisite, sequenced after Phase 24.12:** LangGraph evaluation cannot proceed until 24.12 clarifies whether n8n's native AI Agent node handles multi-step reasoning adequately
+- No defined data sources, external tool integrations, or output format
+- Relationship to ApplyPilot not yet clarified
+- Estimated effort: TBD — cannot be scoped until the (now-sequenced) LangGraph evaluation completes
+
+#### Dependencies (Planned, not yet adopted)
+
+- Phase 24.12 (Jeanne Alter Architecture Refactor) — should complete first, may resolve the LangGraph question
+- LangGraph — framework evaluation pending (sequenced after 24.12), not yet adopted for any agent
+- Possible ApplyPilot integration (C:\Users\muzak\.applypilot\)
+- Reporting interface (likely Jeanne Alter/Telegram) — undetermined
+
+#### Monitoring
+
+Not applicable — no active deployment to monitor.
 
 ---
 
@@ -849,7 +1020,7 @@ Da Vinci integrates with Nextcloud Deck for kanban project management:
 
 > **Note:** Historical identity was "Gilgamesh" (@JhinGilgamesh_bot). Renamed to Jeanne Alter ("The Corrupted Ruler") July 8, 2026. Full propagation across bot, n8n system prompt, Telegram username, and all 8 documentation files pending.
 
-### REPLACE SECTION: Jeanne Alter Chat Pipeline — Architecture
+### Jeanne Alter Chat Pipeline — Architecture
 
 **Architecture:**
 ```
@@ -1063,168 +1234,4 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Get Conversation History
 - Web search queries always route to Haiku: qwen3:14b cannot follow injected search context regardless of instruction strength (model limitation, not prompt engineering)
 - Extract Response must detect Ollama vs Claude responses: `typeof data.response === 'string'` for Ollama branch, `claudeData = data.response || data` for Claude branch (Call Claude API wraps in object)
 - Send a text message: Parse Mode must NOT be set (leave blank). Extract Response strips all markdown before output.
-- **Assistant message data table bug (July 8-9):** Save Assistant Message node may not be wiring correctly to gilgamesh_conversations table — investigate table column schema, node configuration, and error logs
-
----
-
-## 🔧 Documentation Pipeline (Phase 16.1/16.2/16.3/16.4)
-
-### REPLACE SECTION: Architecture
-
-```
-Session Summary → /update → Da Vinci Inbox Watcher → Da Vinci Update Pipeline → 8 Separate Haiku API Calls → 8 Files (AI-CONTEXT + changelog + troubleshoot + ROADMAP + agents + current-state + service-catalog + decisions)
-                                                                                                ↓
-                                                                                    Nextcloud + GitHub + Langfuse + Deck Sync
-```
-
-#### Da Vinci Documentation Pipeline (Phase 16.4 — COMPLETE May 21, 2026, Deck Sync Design Complete July 8)
-
-**Expanded workflow from 3 files to 8 files with 8 sequential Haiku API calls, plus planned Deck sync:**
-
-```
-Raw summaries → AI-CONTEXT-staging.md (rolling append)
-                         ↓
-        Da Vinci Inbox Watcher (every 15 minutes) → Execute Workflow trigger
-                         ↓
-        Da Vinci Update Pipeline → 8 separate Haiku API calls
-                         ├─→ Call 1: AI-CONTEXT.md (max_tokens 25000)
-                         ├─→ Call 2: changelog.md (max_tokens 6000)
-                         ├─→ Call 3: troubleshoot.md (max_tokens 4000)
-                         ├─→ Call 4: ROADMAP.md (max_tokens 8000)
-                         ├─→ Call 5: agents.md (max_tokens 8000)
-                         ├─→ Call 6: current-state.md (max_tokens 4000)
-                         ├─→ Call 7: service-catalog.md (max_tokens 4000)
-                         └─→ Call 8: decisions.md (max_tokens 3000)
-                         ↓
-        Cost logging (fires immediately after EACH call, not at end)
-                         ↓
-        Parse Response → GitHub push → Nextcloud sync → Langfuse trace
-                         ↓
-        ↳ Deck Sync (9th step, pending manual backfill) — Match + update cards via sync-id tags
-                         ↓
-        Staging archival
-```
-
-### Commands
-
-| Command    | Purpose                                   | Files Updated |
-|------------|-------------------------------------------|---------------|
-| /update    | Every session — merge summary into docs   | 8 files       |
-| /sync-docs | Deployment sessions — regenerate all docs | 8 files       |
-
-### File Coverage
-
-| File | Update Strategy | max_tokens | Da Vinci Action |
-|------|----------------|------------|-----------------|
-| AI-CONTEXT.md | Full rewrite | 25000 | LLM merges session into master doc |
-| changelog.md | Append | 6000 | New entry added at top |
-| troubleshoot.md | Append | 4000 | New errors/resolutions added |
-| ROADMAP.md | Full rewrite | 8000 | Phase statuses updated |
-| agents.md | Full rewrite | 8000 | Agent roster and status updated |
-| current-state.md | Append/update | 4000 | Container/hardware state updated |
-| service-catalog.md | Append/update | 4000 | Service list updated |
-| decisions.md | Append | 3000 | New decisions added at top |
-
-### Pipeline Components
-
-| Component    | Details                                             |
-|--------------|-----------------------------------------------------|
-| Webhooks     | doc-update, doc-sync, da-vinci                      |
-| Telegram     | Routes /update and /sync-docs                       |
-| Haiku API    | claude-haiku-4-5-20251001 for documentation merging (8 calls) |
-| Nextcloud    | File storage via admin user                         |
-| GitHub       | Version control via API push                        |
-| Langfuse     | Trace logging (http://192.168.30.223:3000)          |
-| Da Vinci     | Async processing (she/her pronouns)                 |
-| Staging file | AI-CONTEXT-staging.md in Nextcloud (rolling append) |
-| Deck         | Kanban cards created/updated via hidden sync-id tags |
-
-### Da Vinci Technical Notes (Phase 16.4 + Deck Sync Design)
-
-- **Pipeline architecture:** 8 separate Haiku API calls (one per file) instead of single merged call — sequential chain to prevent hallucination across files
-- **Cost logging:** Fires immediately after each of the 8 Haiku API calls, before parse/push nodes — captures cost even if downstream nodes fail
-- **Haiku pricing:** $0.80/1M input tokens, $4.00/1M output tokens
-- **max_tokens per file:**
-  - AI-CONTEXT: 25000 (comprehensive infrastructure state) — bumped from 20000 (was hitting ceiling)
-  - changelog: 6000 (recent changes only)
-  - troubleshoot: 4000 (key lessons)
-  - ROADMAP: 8000 (phases, roadmap, decisions)
-  - agents: 8000 (agent descriptions and workflows)
-  - current-state: 4000 (snapshot of system state)
-  - service-catalog: 4000 (services deployed)
-  - decisions: 3000 (decisions made this session)
-- **Concurrency:** Check Running node at start — queries n8n API for existing Update Pipeline executions before proceeding
-- **Inbox Watcher schedule:** Every 15 minutes (was 1 minute, increased to reduce concurrent executions)
-- **Staging inbox:** AI-Stuff/Homelab/staging-inbox/ on Nextcloud. Processed files archived to AI-Stuff/Homelab/staging-archive/YYYY-MM/
-- **Staging archival:** Automatic upon successful pipeline completion
-- **Nextcloud Deck integration (Design Complete, Pending Execution):** New 9th pipeline step after Langfuse trace (not blocking the existing 8 files). Deck Sync workflow:
-  - Parse session changes into actionable items
-  - Attempt to match each item to an existing card via hidden sync-id tag in card description footer (format: `---\n🔖 sync-id: <sync-id>`)
-  - If match found: silently update card (title, description, stack) based on new status
-  - If no match: create new card with freshly-generated sync-id tag
-  - Stack routing: map status keywords to stacks (Complete/Done → Done, In Progress → In Progress, Planned/Pending → Backlog, Blocked → Blocked, etc.)
-  - Scope: Homelab board (ID 4) only
-  - **Precondition (blocking):** All ~30 existing Homelab board cards must be manually backfilled with sync-id tags by user before this automation activates. This is deliberate — avoids fuzzy matching on known conflicts (duplicate Phase 7E cards, stale RAM-upgrade cards, Da Vinci Stage 2 status conflict). Backfill effort: ~1 sitting (tedious but bounded).
-- **Deck card sync-id tag pattern:** Hidden in card description footer, separated from human-readable body by `---` divider.
-  - Example description:
-    ```
-    [Human-readable title and body here]
-    
-    ---
-    🔖 sync-id: phase-24.10
-    ```
-  - Regex for extraction: `/---\s*🔖 sync-id: ([a-z0-9-]+)/` (adjust as needed for parser robustness)
-- **Notification:** Limit node (max 1) before Notify Complete to prevent notification spam
-- **Property names:** Verify sessionSummary property name matches across nodes — use fileContent from trigger payload
-- **Validation:** Parse Response node rejects placeholder outputs before GitHub push
-- **decisions.md handling:** New file on first run (null SHA in GitHub API), automatic creation on subsequent runs
-- **Langfuse integration (May 21, 2026):** Single Langfuse node branched off Push to GitHub (after all 8 files complete). Logs one trace (da-vinci-update) with 8 child generations per run. Uses internal URL: http://192.168.30.223:3000 for VLAN 30 internal routing. Timestamp uses new Date().toISOString() (UTC, no timezone offset).
-- **Cost per run estimate:** ~$0.25-0.35 for 8 files (was ~$0.11 for 3 files)
-- **Claude project instructions:** Session summary template now has explicit per-file sections (CHANGES TO AI-CONTEXT.MD, CHANGES TO CHANGELOG.MD, CHANGES TO ROADMAP.MD, CHANGES TO AGENTS.MD, CHANGES TO CURRENT-STATE.MD, CHANGES TO SERVICE-CATALOG.MD, CHANGES TO DECISIONS.MD, ERRORS FIXED) so Da Vinci gets unambiguous per-file instructions
-- **API key handling:** Hardcode Anthropic API key and GitHub token directly in each node (consistent with existing 3 nodes). Trigger payload fields only define fileContent and chatId; adding more fields adds complexity for no benefit.
-- **Code node syntax:** Single-quoted strings with concatenation for system prompts. Backtick template literals cause 400 errors on Anthropic API when used in n8n Code nodes.
-- **Tested & Verified (May 21, 2026):** Full 8-file pipeline tested. All 8 files pushed to GitHub successfully. Cost logging verified (8 rows per session). Staging inbox archival working. Per-file system prompts resolving hallucination across files. Langfuse trace and 8 generations verified in langfuse.najhin-gaming.com UI. One trace per session confirmed.
-- **GitHub stale artifacts (July 9 discovery):** `docs/` folder contains deprecated changelog.md and troubleshoot.md from the old 3-file pipeline — needs cleanup before Deck sync goes live (minor blocking item).
-
----
-
-## 🤖 Bots & Integrations
-
-| Bot                | Platform         | Source              | Status   | Purpose                                                        |
-|--------------------|------------------|---------------------|----------|----------------------------------------------------------------|
-| @JhinGilgamesh_bot | Telegram         | n8n CT 211          | ✅ Active (rename pending) | Personal AI agent — chat, homelab control, /update, /sync-docs, personal knowledge, web search |
-| Midas              | Telegram         | n8n CT 211          | ✅ Active | CFO cost tracking — /midas reports, 9am daily briefs           |
-| MERLIN             | Telegram         | n8n CT 211          | ✅ Active | Reminders — 8am daily infrastructure checks                    |
-| Daily Note Creator | Nextcloud WebDAV | n8n CT 211          | ✅ Active | Midnight daily note creation in Obsidian vault                 |
-| Morning Briefing   | Telegram         | n8n CT 211          | ✅ Active | 7am daily summary to Telegram                                  |
-| Health Tracking    | Obsidian WebDAV  | n8n CT 211          | ✅ Active | Food/BP/medication logging via Jeanne Alter buttons            |
-| Personal Knowledge | Obsidian WebDAV  | n8n CT 211          | ✅ Active | muzakkir-profile.md managed by Da Vinci gateway (Phase 24.9)   |
-| Homelab Alerts     | Telegram         | Alertmanager CT 205 | ✅ Active | Critical alerts (host down, high CPU/memory/disk)              |
-| Homelab Alerts     | Discord webhook  | Alertmanager CT 205 | ✅ Active | Warning-level alerts to #alerts channel                        |
-| Homelab-Ntfy       | ntfy CT 222      | Uptime Kuma CT 206  | ✅ Active | Service down alerts via ntfy                                   |
-| Nextcloud Deck     | Deck CT 220      | n8n CT 211          | ✅ Active (sync automation pending backfill) | Kanban project management via Da Vinci |
-| Langfuse           | CT 223           | n8n CT 211 + Jeanne Alter | ✅ Active | LLM tracing (da-vinci-update + gilgamesh-chat traces)         |
-| Firecrawl          | Cloud API        | n8n CT 211          | ✅ Active | Web search for Jeanne Alter (keyword-based intent routing)     |
-
-**Planned:** Wire Langfuse into MERLIN and Midas. Migrate Alertmanager alerts to route through n8n first (central hub). Game server notifications to Discord via n8n. Complete Nextcloud Deck automation after manual backfill (pending).
-
-### Nextcloud Deck Integration
-
-| Component | Details |
-|-----------|---------|
-| **App** | Deck on CT 220 (cloud.najhin-gaming.com) |
-| **Boards** | 3 boards: Homelab (ID: 4), Career (ID: 5), Personal (ID: 6) |
-| **Stacks** | 5 stacks per board: Backlog, Up Next, Blocked, In Progress, Done |
-| **Labels** | 22 labels on Homelab (category, priority, agent, effort), 9 on Career/Personal |
-| **API Base** | http://192.168.30.220/index.php/apps/deck/api/v1.0 |
-| **Auth** | Basic auth with app password (credential: NextCloud-Deck) |
-| **Sync Scope** | Homelab board only (pending manual card backfill with sync-id tags) |
-
-### Firecrawl Web Search Integration
-
-| Component | Details |
-|-----------|---------|
-| **Service** | Firecrawl (@firecrawl.dev) |
-| **Type** | Cloud API for web search and content scraping |
-| **Endpoint** | POST https://api.firecrawl.dev/v1/search |
-| **Auth** | API key stored in n8n credential
+- **Assistant message data table bug (July 8-9, CRITICAL):** Save Assistant Message node may not be wiring correctly to gilgam
