@@ -160,10 +160,6 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 **Quality Filter:** Stores durable personal facts (e.g., "prefers dark mode"), SKIPs one-time events (e.g., "I slept at 12am tonight") and conversational noise  
 **Cost Logging:** Fires after Claude assessment; entries logged to gilgamesh_costs table  
 **Dependencies:** Claude Haiku API, WebDAV (Nextcloud), agents sending via POST request  
-**Consumers:** Jeanne Alter (writes via async fire-and-forget after all messages >20 chars not starting with /), future agents (EMIYA, Midas all route Obsidian writes through Da Vinci)  
-**Profile Indexed:** Yes — 04-personal/ included in Qdrant obsidian_knowledge collection for RAG by Jeanne Alter
-
----
-
-## Da Vinci — Knowledge Indexer (Qdrant Updates)
-**Status:** Active (updated 2026-05-
+**Consumers:** Jeanne Alter (writes via async fire-and-forget after all messages >20 chars not starting with /), EMIYA, Midas, future agents (all route Obsidian writes through Da Vinci)  
+**Profile Indexed:** Yes — 04-personal/ included in Qdrant obsidian_knowledge collection for RAG by Jeanne Alter  
+**Receiving Routes:** Direct webhook from Jeanne Alter; also receives permanent-category facts (bills/payments/subscriptions) extracted from
