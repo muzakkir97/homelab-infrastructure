@@ -1,5 +1,5 @@
 # Current State Documentation
-**Last Updated:** 2026-07-08 (Planning & Architecture Session — Chaldea Rename, Deck Sync Design, Agent Architecture Research)
+**Last Updated:** 2026-07-09 (Documentation Audit — Cross-Session Gap Analysis)
 
 ## Overview
 Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs. Agent ecosystem renamed from "Kuromoon" to "Chaldea" as of 2026-07-08.
@@ -94,10 +94,16 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ Jeanne Alter web search feature deployed (May 25, 2026): Firecrawl API wired, keyword detection, search-to-Haiku routing, search results injected
 - ✅ Ecosystem renamed: Kuromoon (hardware only) ↔ Chaldea (agents ecosystem) clarified (Phase 24.11)
 - ✅ Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler") — pending full propagation across bot identity, system prompt, Telegram username, all 8 docs
+- ✅ Documentation audit completed (July 9, 2026): Cross-session gap analysis identified 7 undocumented items and confirmed 3 structural gaps in agents.md; ready for Phase 27 planning
+- 🔄 Phase 27 — Domain Migration & Infrastructure Audit added to ROADMAP: 27.1 (audit) and 27.2 (migration of 9 homelab subdomains from najhin-gaming.com to muzakkir.tech), Cloudflare zone setup begun July 1 2026, status unconfirmed
+- 🔄 Interest-Capture Loop concept identified (July 7, 2026): design problem of passively detecting lasting interests (e.g., Path of Exile 2) without explicit logging, status: concept only, not scoped
+- 🔄 Gap Analysis: Four Blind Spots identified and logged (July 7, 2026): 1) Time vs. stated priorities, 2) Docs vs. reality drift, 3) Bus factor, 4) Skill-market fit (Terraform/Kubernetes/CI-CD vs. current n8n/LXC/Qdrant builds)
 - 🔄 Nextcloud Deck sync designed and approved for Phase 24.11, awaiting manual backfill of existing cards before automation deployment
 - ⚠️ GitHub docs/ folder contains stale changelog.md and troubleshoot.md artifacts from old pipeline — needs cleanup
 - ⚠️ muzakkir-profile.md.md duplicate file exists in Nextcloud 04-personal/ folder (conflict artifact from Obsidian sync + WebDAV write race)
 - ⚠️ Assistant messages not appearing in gilgamesh_conversations Data Table (only user messages visible) — Save Assistant Message may not be firing correctly
+- ⚠️ MERLIN Cloudflare SSL expiry check hardcoded to July 14, 2026 remains unresolved (5 days out as of July 9, 2026)
+- ⚠️ agents.md structural incompleteness: MERLIN, Midas, EMIYA, Scathach, and Cu Chulainn have no dedicated sections despite being listed in AI-CONTEXT.md and decisions.md — deferred to dedicated documentation audit session
 
 **Tested & Working:**
 - 8-file sequential pipeline architecture
@@ -140,22 +146,4 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 ### Storage
 - **GitHub:** Primary source of truth for all 8 documentation files
 - **Nextcloud (CT 220):** File backup and collaboration (second-brain/, 04-personal/, staging-inbox/, etc.); Deck board (Homelab, ID 4) manages kanban workflow
-- **VM 400 (Ollama + Qdrant):** Local LLM inference server and vector database
-
-## Containerized Services
-
-### CT 211 (automation-n8n)
-- **Image:** n8n:latest
-- **IP:** 192.168.30.211
-- **Purpose:** Workflow automation, Da Vinci Update Pipeline, Da Vinci Personal Knowledge gateway, Jeanne Alter, and future agents
-- **Workflows:** 
-  - Da Vinci Update Pipeline (8-file document sync, Deck sync planned Phase 24.11)
-  - Da Vinci — Personal Knowledge (gateway: POST /davinci-personal-knowledge, triggered reindex: POST /davinci-reindex-personal)
-  - Jeanne Alter (chat + RAG + web search + memory + Langfuse) — enhanced May 25, 2026, renamed from Gilgamesh 2026-07-08
-  - Knowledge Indexer (Qdrant sync, 10 folders, webhook-triggered partial reindex)
-  - MERLIN (weather + alerts + Langfuse incoming) — deployed April 27, 2026
-  - Midas (notifications) — deployed April 27, 2026
-  - And others
-- **Databases:** PostgreSQL (internal)
-- **Connections:** Anthropic API, GitHub API, Nextcloud (including Deck API), ClickHouse (CT 223), Ollama (VM 400), Qdrant (VM 400), Langfuse (CT 223), Firecrawl API (external)
-- **Recent Changes (Phase 24
+-
