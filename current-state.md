@@ -1,5 +1,5 @@
 # Current State Documentation
-**Last Updated:** 2026-07-09 (Documentation Audit — Cross-Session Gap Analysis)
+**Last Updated:** 2026-07-09 (Session 2 — agents.md Completion & Funnel Agent Pattern Established)
 
 ## Overview
 Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs. Agent ecosystem renamed from "Kuromoon" to "Chaldea" as of 2026-07-08.
@@ -95,6 +95,9 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ Ecosystem renamed: Kuromoon (hardware only) ↔ Chaldea (agents ecosystem) clarified (Phase 24.11)
 - ✅ Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler") — pending full propagation across bot identity, system prompt, Telegram username, all 8 docs
 - ✅ Documentation audit completed (July 9, 2026): Cross-session gap analysis identified 7 undocumented items and confirmed 3 structural gaps in agents.md; ready for Phase 27 planning
+- ✅ agents.md structural completeness restored (July 9, 2026): full sections now exist for Da Vinci, MERLIN, Midas, EMIYA, Cu Chulainn, and Scathach. Agent Design Principles section added at top of agents.md establishing Funnel Agent pattern classification.
+- ✅ Funnel Agent design principle established (July 9, 2026): defines when an agent should sit on top of existing infrastructure and translate it (MERLIN from Uptime Kuma, Midas from Langfuse, planned Cu Chulainn from Alertmanager) vs. when it should be generative/interface-only (Jeanne Alter, Da Vinci, Scathach) or hybrid (EMIYA). Why: prevents duplicate effort, reduces drift risk, keeps build focus on aggregation + recommendation rather than reinventing existing checks.
+- ✅ MERLIN and Midas design corrections identified (July 9, 2026): both currently reinvent infrastructure monitoring that already exists — MERLIN's SSL check should source from Uptime Kuma (CT 206) instead of broken Cloudflare API token; Midas's cost tracking should source from Langfuse Metrics API instead of duplicate Data Table. Implementation pending.
 - 🔄 Phase 27 — Domain Migration & Infrastructure Audit added to ROADMAP: 27.1 (audit) and 27.2 (migration of 9 homelab subdomains from najhin-gaming.com to muzakkir.tech), Cloudflare zone setup begun July 1 2026, status unconfirmed
 - 🔄 Interest-Capture Loop concept identified (July 7, 2026): design problem of passively detecting lasting interests (e.g., Path of Exile 2) without explicit logging, status: concept only, not scoped
 - 🔄 Gap Analysis: Four Blind Spots identified and logged (July 7, 2026): 1) Time vs. stated priorities, 2) Docs vs. reality drift, 3) Bus factor, 4) Skill-market fit (Terraform/Kubernetes/CI-CD vs. current n8n/LXC/Qdrant builds)
@@ -102,8 +105,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ⚠️ GitHub docs/ folder contains stale changelog.md and troubleshoot.md artifacts from old pipeline — needs cleanup
 - ⚠️ muzakkir-profile.md.md duplicate file exists in Nextcloud 04-personal/ folder (conflict artifact from Obsidian sync + WebDAV write race)
 - ⚠️ Assistant messages not appearing in gilgamesh_conversations Data Table (only user messages visible) — Save Assistant Message may not be firing correctly
-- ⚠️ MERLIN Cloudflare SSL expiry check hardcoded to July 14, 2026 remains unresolved (5 days out as of July 9, 2026)
-- ⚠️ agents.md structural incompleteness: MERLIN, Midas, EMIYA, Scathach, and Cu Chulainn have no dedicated sections despite being listed in AI-CONTEXT.md and decisions.md — deferred to dedicated documentation audit session
+- ⚠️ **URGENT:** MERLIN's SSL check is non-functional (hardcoded to July 14, 2026 deadline) — Uptime Kuma migration required before July 14 to resolve; no execution risk (report-only) but blind-spot risk is high. Decision made July 9: MERLIN should re-source from Uptime Kuma's native cert monitoring instead. Implementation pending.
 
 **Tested & Working:**
 - 8-file sequential pipeline architecture
@@ -127,6 +129,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Conversation buffer memory operational (last 15 rows from gilgamesh_conversations in Format Messages)
 - Phase 24.10 triggered Qdrant re-indexing after muzakkir-profile.md writes (webhook: /davinci-reindex-personal)
 - Nextcloud Deck API credential verified functional
+- Funnel Agent classification validated against existing infrastructure (Uptime Kuma cert monitoring, Langfuse cost tracking confirmed live)
 
 ## Hardware Infrastructure
 
@@ -136,14 +139,4 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - **VM 400 (ollama-gpu):** 4 vCPU, 16GB RAM, 86GB disk (expanded from 56GB 2026-05-21), Ubuntu 22.04 LTS, RX 6700 XT 12GB GPU (AMD, ROCm backend)
 
 ### Network Infrastructure (Updated 2026-07-05)
-- **ISP Connection:** TIME Fiber GPON, Huawei HG8145B7N ONT (switched to true **bridge mode** 2026-07-05, no longer performing routing/NAT/DHCP)
-- **pfSense WAN:** Interface `pppoe0` (PPPoE, changed from DHCP 2026-07-05)
-- **Public IP:** `202.184.101.136` (changed from `202.184.35.79` due to bridge mode migration 2026-07-05; dynamic — may reassign on PPPoE reconnects, not static)
-- **PPPoE Credentials:** Username `muzakkir655@timebb` (password stored securely, retrieved from TIME Self Care portal)
-- **Access Point:** TP-Link TL-AX1800 / EAP610 (deployed 2026-07-05 as emergency measure when ISP router's local services disabled by bridge mode; roommates' Wi-Fi restored)
-- **Switch:** TP-Link TL-SG108E (802.1Q VLAN trunk to pfSense, ports 7–8 VLAN membership corrected to VLAN20_MAIN 2026-07-05, was blocking DHCP to access point)
-
-### Storage
-- **GitHub:** Primary source of truth for all 8 documentation files
-- **Nextcloud (CT 220):** File backup and collaboration (second-brain/, 04-personal/, staging-inbox/, etc.); Deck board (Homelab, ID 4) manages kanban workflow
--
+- **ISP Connection:** TIME Fiber GPON, Huawei HG8145B7N ONT (switched to true **bridge mode** 2026-07-05, no longer performing routing/NA
