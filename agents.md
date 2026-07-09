@@ -215,6 +215,19 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Expected monthly cost at daily frequency: ~$4.80-5.40/month (session updates + personal knowledge)
 
 ### Recent Updates
+**Email Management Pipeline Design (July 9, 2026 — Session Email Architecture)**
+- Decided email account access belongs to Jeanne Alter (PA/user-facing interface), not Da Vinci (documentation-only writer)
+- Audited personal accounts: 4 personal accounts scoped for pipeline (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com)
+- Excluded from automation: work accounts (muzakkir.rahimi@f-secure.com, work26@gmail.com — company policy risk), NSFW account (adamlil1997@gmail.com — separate)
+- Architecture: 4× per-account trigger workflows (3× Gmail OAuth2 native, 1× IMAP for iCloud) → shared Email Classifier sub-workflow → Telegram notify + staging store → permanent-category facts (bills/payments/subscriptions) to Da Vinci Personal Knowledge gateway
+- Behavior tier: Read + Notify (proactive extraction + alert filtering, not full inbox ownership or passive-only)
+- Categorization: fixed categories + sender whitelist combined (rejects LLM-only judgment, accepts new senders from whitelist)
+- Permanent vs staged facts: bills/payments/subscriptions only become second-brain entries; all other extracted content held in staging store (~7 day auto-clear)
+- Model routing: qwen3:14b primary, Claude Haiku API fallback (consistent with Jeanne Alter's existing pattern, not stricter local-only)
+- Schedule: 3x/day (morning/afternoon/evening, exact times TBD at build)
+- Credentials: Gmail OAuth2 (n8n native) + iCloud IMAP app-specific password in n8n credential store (first concrete ecosystem-wide credential store migration step)
+- Status: Design Complete, 0/6 rollout steps implemented
+
 **Documentation Completion Session (July 9, 2026 — Session 2 agents.md Completion)**
 - Added Agent Design Principles section (establishing funnel/non-funnel/hybrid classification pattern ecosystem-wide)
 - Added full MERLIN section (Caster, 2/4, funnel agent — sources from Uptime Kuma for SSL cert tracking; urgent July 14 SSL expiry flagged; design decision made to migrate from broken Cloudflare API integration to Uptime Kuma native monitoring)
@@ -306,21 +319,4 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Corrected Haiku pricing in cost calculations: $0.80/1M input, $4.00/1M output
 - Reduced node count from 35 to 18 (improved pipeline clarity and error isolation)
 - Reduced expected cost per run from $0.14 USD to $0.06 USD
-- Reduced expected monthly cost from $4.20/month to $1.80/month
-
-### Known Limitations
-- Pipeline covers 8 core files (AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions); other files handled separately
-- File update sequence is strictly sequential (no parallelization) — maintains GitHub race condition safety
-- Token budgets are fixed per file — no dynamic reallocation between updates
-- Langfuse wiring is post-push (branches off Push to GitHub), not per-API-call
-- Personal knowledge gateway assessment uses max_tokens 4000 (Claude Haiku limit for sync response)
-- Knowledge Indexer partial reindex (webhook) runs immediately after profile write (~1s); full rebuild (schedule) runs once daily (3am UTC) — may cause split-brain between realtime updates and nightly reindex
-- All agents must route through Da Vinci gateway for Obsidian writes (no direct write access)
-- Knowledge Indexer folder list complete (10 folders verified), but future folder additions require manual n8n workflow update
-- Deck sync design complete but implementation blocked on manual backfill of ~30 existing Homelab board cards with sync-id tags
-- Qdrant obsidian_knowledge collection suspected degraded/empty state (investigation pending)
-- Duplicate muzakkir-profile.md.md file artifact in Nextcloud 04-personal/ (WebDAV sync race condition)
-- agents.md structural completeness restored July 9, 2026 — full sections now exist for Da Vinci, MERLIN, Midas, EMIYA, Cu Chulainn, and Scathach. Remaining gap: none at agent-section level; ongoing gap is that EMIYA and Cu Chulainn are documented as concepts/partial infrastructure but not yet unified running workflows.
-
-### Dependencies
-- Haiku API (Claude) — 8 calls per session update + N calls per personal
+- Reduced expected
