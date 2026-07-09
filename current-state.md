@@ -1,5 +1,5 @@
 # Current State Documentation
-**Last Updated:** 2026-07-09 (Session 2 — agents.md Completion & Funnel Agent Pattern Established)
+**Last Updated:** 2026-07-09 (Session 2 — agents.md Completion & Funnel Agent Pattern Established; Email Pipeline Design)
 
 ## Overview
 Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs. Agent ecosystem renamed from "Kuromoon" to "Chaldea" as of 2026-07-08.
@@ -98,14 +98,17 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ agents.md structural completeness restored (July 9, 2026): full sections now exist for Da Vinci, MERLIN, Midas, EMIYA, Cu Chulainn, and Scathach. Agent Design Principles section added at top of agents.md establishing Funnel Agent pattern classification.
 - ✅ Funnel Agent design principle established (July 9, 2026): defines when an agent should sit on top of existing infrastructure and translate it (MERLIN from Uptime Kuma, Midas from Langfuse, planned Cu Chulainn from Alertmanager) vs. when it should be generative/interface-only (Jeanne Alter, Da Vinci, Scathach) or hybrid (EMIYA). Why: prevents duplicate effort, reduces drift risk, keeps build focus on aggregation + recommendation rather than reinventing existing checks.
 - ✅ MERLIN and Midas design corrections identified (July 9, 2026): both currently reinvent infrastructure monitoring that already exists — MERLIN's SSL check should source from Uptime Kuma (CT 206) instead of broken Cloudflare API token; Midas's cost tracking should source from Langfuse Metrics API instead of duplicate Data Table. Implementation pending.
+- ✅ Jeanne Alter Email Management Pipeline designed (July 9, 2026): design complete, not yet implemented. Architecture: 4× per-account trigger workflows (3× Gmail OAuth2, 1× IMAP for iCloud) → shared Email Classifier sub-workflow → Telegram notify + staging store → permanent facts to Da Vinci Personal Knowledge gateway. Scope: 4 personal accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com); work and NSFW accounts excluded. Credentials will use n8n credential store (first concrete step of ecosystem-wide credential migration). Schedule: 3x/day. Status: Design Complete, 0/6 rollout steps implemented.
 - 🔄 Phase 27 — Domain Migration & Infrastructure Audit added to ROADMAP: 27.1 (audit) and 27.2 (migration of 9 homelab subdomains from najhin-gaming.com to muzakkir.tech), Cloudflare zone setup begun July 1 2026, status unconfirmed
 - 🔄 Interest-Capture Loop concept identified (July 7, 2026): design problem of passively detecting lasting interests (e.g., Path of Exile 2) without explicit logging, status: concept only, not scoped
 - 🔄 Gap Analysis: Four Blind Spots identified and logged (July 7, 2026): 1) Time vs. stated priorities, 2) Docs vs. reality drift, 3) Bus factor, 4) Skill-market fit (Terraform/Kubernetes/CI-CD vs. current n8n/LXC/Qdrant builds)
 - 🔄 Nextcloud Deck sync designed and approved for Phase 24.11, awaiting manual backfill of existing cards before automation deployment
+- 🔄 Jeanne Alter Email Management Pipeline awaiting implementation: 6 rollout steps pending (credentials setup → classifier build → account trigger workflows → staging store + auto-clear → Telegram notification → verification). Action items logged in decisions.md.
 - ⚠️ GitHub docs/ folder contains stale changelog.md and troubleshoot.md artifacts from old pipeline — needs cleanup
 - ⚠️ muzakkir-profile.md.md duplicate file exists in Nextcloud 04-personal/ folder (conflict artifact from Obsidian sync + WebDAV write race)
 - ⚠️ Assistant messages not appearing in gilgamesh_conversations Data Table (only user messages visible) — Save Assistant Message may not be firing correctly
 - ⚠️ **URGENT:** MERLIN's SSL check is non-functional (hardcoded to July 14, 2026 deadline) — Uptime Kuma migration required before July 14 to resolve; no execution risk (report-only) but blind-spot risk is high. Decision made July 9: MERLIN should re-source from Uptime Kuma's native cert monitoring instead. Implementation pending.
+- ⚠️ **SECURITY:** Real account passwords for ~15 personal accounts were pasted into chat during email account discovery (July 9). Action item: rotate all passwords and move to Vaultwarden instead of iPhone Notes.
 
 **Tested & Working:**
 - 8-file sequential pipeline architecture
@@ -129,14 +132,3 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Conversation buffer memory operational (last 15 rows from gilgamesh_conversations in Format Messages)
 - Phase 24.10 triggered Qdrant re-indexing after muzakkir-profile.md writes (webhook: /davinci-reindex-personal)
 - Nextcloud Deck API credential verified functional
-- Funnel Agent classification validated against existing infrastructure (Uptime Kuma cert monitoring, Langfuse cost tracking confirmed live)
-
-## Hardware Infrastructure
-
-### Compute
-- **Proxmox Host (Kuromoon):** Ryzen 5 5600X, 128GB DDR4-3200 (4x32GB Corsair Vengeance LPX, installed & tuned May 16, 2026), RX 6700 XT 12GB (passed through to VM 400), ASUS TUF B550M-E mATX motherboard
-- **CT 211 (automation-n8n):** 4 vCPU, 4GB RAM, Debian 12
-- **VM 400 (ollama-gpu):** 4 vCPU, 16GB RAM, 86GB disk (expanded from 56GB 2026-05-21), Ubuntu 22.04 LTS, RX 6700 XT 12GB GPU (AMD, ROCm backend)
-
-### Network Infrastructure (Updated 2026-07-05)
-- **ISP Connection:** TIME Fiber GPON, Huawei HG8145B7N ONT (switched to true **bridge mode** 2026-07-05, no longer performing routing/NA
