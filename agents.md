@@ -23,7 +23,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026)  
+**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026)  
 **Type:** 8 sequential Haiku API calls with immediate cost logging and Langfuse observability, plus planned 9th step (Nextcloud Deck sync)  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
@@ -113,6 +113,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 - Deck sync design complete (July 8, 2026); implementation blocked on manual sync-id backfill of ~30 existing Homelab board cards (deliberately chosen over automated matching due to known board conflicts)
 - Runtime: ~5 minutes per session update cycle (includes ~1s triggered reindex, Deck sync TBD)
 - Trace verification confirmed May 21, 2026: da-vinci-update traces appear in ClickHouse with 8 visible generations per trace, accessible via public API and UI list
+- agents.md now handles 6 full agent sections (Da Vinci, MERLIN, Midas, EMIYA, Cu Chulainn, Scathach) plus Agent Design Principles section (July 9, 2026); 8,000 token budget is now handling larger volume — requires close monitoring this run to confirm no truncation
 
 #### Da Vinci Personal Knowledge Gateway
 **Status:** Operational (Deployed May 22, 2026 | Verified May 22, 2026 | Integrated Phase 24.10 May 25, 2026)  
@@ -214,17 +215,25 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Expected monthly cost at daily frequency: ~$4.80-5.40/month (session updates + personal knowledge)
 
 ### Recent Updates
+**Documentation Completion Session (July 9, 2026 — Session 2 agents.md Completion)**
+- Added Agent Design Principles section (establishing funnel/non-funnel/hybrid classification pattern ecosystem-wide)
+- Added full MERLIN section (Caster, 2/4, funnel agent — sources from Uptime Kuma for SSL cert tracking; urgent July 14 SSL expiry flagged; design decision made to migrate from broken Cloudflare API integration to Uptime Kuma native monitoring)
+- Added full Midas section (Caster, 2/4, funnel agent — sources from Langfuse Metrics API for Haiku/Claude costs; design decision made to migrate from duplicate gilgamesh_costs Data Table to Langfuse as single source of truth)
+- Added full EMIYA section (Archer, partial 3/8 — corrects prior status conflict; documents 8 sub-phases (24.1–24.8), 3 complete (24.1/24.7/24.8 as infrastructure deployments, not yet unified as running agent); notes planned dependencies Firefly III, ntfy, Langfuse, Alertmanager)
+- Added full Cu Chulainn section (Lancer, 0/4, funnel agent — renamed from Guardian May 16, 2026; no implementation started; overlaps with EMIYA's Alert Translation on Alertmanager source)
+- Added full Scathach section (Lancer, 0/4, not a funnel — career research/reasoning generative work; build priority 1st; LangGraph evaluation sequenced behind Phase 24.12 Jeanne Alter refactor to n8n AI Agent node)
+- Updated Da Vinci Known Limitations: restored agents.md structural completeness note, flagged that EMIYA and Cu Chulainn are documented concepts but not yet unified running workflows
+
 **Documentation Audit — Cross-Session Gap Analysis (July 9, 2026 — Session Documentation Audit)**
 - Performed full audit of AI-CONTEXT.md, ROADMAP.md, decisions.md, changelog.md, agents.md, current-state.md, and service-catalog.md against conversation history dating back to January 2026
 - Identified seven items discussed in past sessions never made it into project documentation files
-- Confirmed agents.md structural gap: missing full sections for MERLIN, Midas, EMIYA, Scathach, and Cu Chulainn despite being listed in AI-CONTEXT.md agent table and decisions.md — flagged for dedicated Da Vinci documentation audit session
-- Confirmed Cu Chulainn rename (from Guardian, renamed May 16, 2026) has not propagated — all references still show "Guardian" in agents.md, AI-CONTEXT.md agent table, decisions.md
-- Confirmed Scathach (Lancer-class career growth/research agent, 1st build priority) documented informally but missing from agents.md proper sections
+- Confirmed agents.md structural gap: missing full sections for MERLIN, Midas, EMIYA, Scathach, and Cu Chulainn despite being listed in AI-CONTEXT.md agent table and decisions.md — now completed July 9, 2026
+- Confirmed Cu Chulainn rename (from Guardian, renamed May 16, 2026) has not propagated — all references still show "Guardian" in agents.md, AI-CONTEXT.md agent table, decisions.md — now completed July 9, 2026
+- Confirmed Scathach (Lancer-class career growth/research agent, 1st build priority) documented informally but missing from agents.md proper sections — now completed July 9, 2026
 - Confirmed Nightingale (health pipeline agent concept, noted May 17, 2026) has no documentation — deferred indefinitely, not prioritized
-- Confirmed MERLIN Cloudflare SSL expiry check hardcoded to July 14, 2026 remains unresolved (now 5 days out, carried from July 8 session)
+- Confirmed MERLIN Cloudflare SSL expiry check hardcoded to July 14, 2026 remains unresolved (now 5 days out, carried from July 8 session) — design decision made to migrate to Uptime Kuma monitoring
 - New content added to AI-CONTEXT: Interest-Capture Loop design concept (July 7 session), Four Blind Spots gap analysis (July 7 session), domain correction (two domains: najhin-gaming.com permanent for game servers; muzakkir.tech professional/portfolio domain)
 - New Phase 27 identified: Domain Migration & Infrastructure Audit (27.1 audit, 27.2 migration) — status Planned, Cloudflare zone setup for muzakkir.tech directed to begin July 1 but completion unconfirmed, requires verification next infrastructure session
-- No infrastructure changes made this session — documentation-only review
 
 **Planning & Architecture Session (July 8, 2026 — Session Planning Phase)**
 - Ecosystem renamed: "Kuromoon" (physical hardware/homelab only) vs "Chaldea" (agents ecosystem) — clarified going forward
@@ -311,34 +320,7 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Deck sync design complete but implementation blocked on manual backfill of ~30 existing Homelab board cards with sync-id tags
 - Qdrant obsidian_knowledge collection suspected degraded/empty state (investigation pending)
 - Duplicate muzakkir-profile.md.md file artifact in Nextcloud 04-personal/ (WebDAV sync race condition)
-- agents.md structural incompleteness: missing full sections for MERLIN, Midas, EMIYA, Scathach, Cu Chulainn (flagged for dedicated Da Vinci documentation audit session)
+- agents.md structural completeness restored July 9, 2026 — full sections now exist for Da Vinci, MERLIN, Midas, EMIYA, Cu Chulainn, and Scathach. Remaining gap: none at agent-section level; ongoing gap is that EMIYA and Cu Chulainn are documented as concepts/partial infrastructure but not yet unified running workflows.
 
 ### Dependencies
-- Haiku API (Claude) — 8 calls per session update + N calls per personal knowledge updates
-- GitHub API — file fetch and push operations
-- Cost logging database (gilgamesh_costs)
-- Langfuse API — observability and tracing (v3.174.1 self-hosted)
-- Nextcloud WebDAV API — Obsidian vault synchronization, profile fetch/push
-- Nextcloud Deck API — kanban board synchronization (pending implementation)
-- Qdrant API — knowledge indexing and RAG retrieval
-- Ollama (VM 400) — embedding (nomic-embed-text:latest)
-- n8n internal webhooks — triggered reindex communication
-- Session summary document (input) with explicit per-file sections
-
-### Monitoring
-**Active Observation (May 22, 2026 onwards):**
-- Monitor gilgamesh_costs for 8+ new rows per pipeline run (8 from session updates, N from personal knowledge)
-- Observe API usage to confirm cost per run stays near $0.14-0.16 USD for session updates
-- Validate immediate cost logging fires correctly before parse nodes
-- Verify Langfuse traces (da-vinci-update) appear in ClickHouse and UI trace list after each pipeline run
-- Verify Langfuse traces (gilgamesh-chat) appear after Jeanne Alter conversations
-- Confirm 8 generations visible under each da-vinci-update trace
-- Monitor personal knowledge gateway webhook for successful fact processing (5-20 updates per day)
-- Verify Qdrant obsidian_knowledge chunks remain ~1,700-1,800 after daily full rebuild; grow incrementally after triggered partial reindex
-- Watch for file conflicts (muzakkir-profile.md.md artifacts) from Obsidian local sync
-- Monitor Trigger Reindex webhook calls: should see /davinci-reindex-personal calls after personal knowledge writes and after Push to GitHub (Phase 24.10 added)
-- **Verified May 22, 2026:** da-vinci-update and gilgamesh-chat traces visible in Langfuse UI, Qdrant indexing includes 04-personal/, Jeanne Alter successfully recalling profile info via RAG
-- **Verified May 25, 2026:** Phase 24.10 triggered reindex operational, partial reindex (~1s) firing after muzakkir-profile.md writes
-- **Known Issue — July 8, 2026:** Qdrant obsidian_knowledge degraded/empty state flagged for investigation; assistant message saving failure in Jeanne Alter Data Table storage
-
-### Testing & Validation
+- Haiku API (Claude) — 8 calls per session update + N calls per personal
