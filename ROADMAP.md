@@ -117,9 +117,9 @@ No phases currently in progress.
 #### Agent Feature Development
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
 |-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
-| Cu Chulainn | Security Monitoring Agent                   | Phase 24.10       | 6-8h   | Renamed May 16, 2026 from "Guardian"; alert translation, threat detection, security reporting; 2nd build priority |
+| Cu Chulainn | Security Monitoring Agent                   | Phase 24.10       | 6-8h   | Renamed May 16, 2026 from "Guardian"; alert translation, threat detection, security reporting; 2nd build priority; funnel agent sourcing from Alertmanager once built |
 | Smart Morning Briefing | Dynamic Briefing (weather, schedule, health, tasks) | Phase 24.10 | 2h | Real-time weather via Firecrawl, calendar awareness, health nudges, task integration |
-| Midas v2 | Financial Intelligence (Firefly III + Receipt Capture) | Phase Midas | 10-12h | Expense tracking, receipt/PDF import, spending insights |
+| Midas v2 | Financial Intelligence (Firefly III + Receipt Capture) | Phase Midas | 10-12h | Expense tracking, receipt/PDF import, spending insights; cost source migration to Langfuse Metrics API pending (small follow-up task, not urgent) |
 | Proactive Goal Nudges | Condition-based alerts via ntfy      | Phase 24.10       | 3-4h   | Goal tracking with Telegram notifications |
 | Weekly Automated Review | Sunday digest (health, spending, homelab) | Phase 24.10 | 2-3h | Summarized weekly activity report |
 | "What did I do?" Recall | Natural language query over life_log | Phase 24.10 | 2h     | Search personal activity history |
@@ -129,7 +129,7 @@ No phases currently in progress.
 | News Digest | Curated tech/AI/Malaysia news on demand | Phase Web Search | 2h     | Daily news briefing |
 | Voice Notes | Whisper transcription → Obsidian   | Phase 24.10       | 4h     | Voice message processing |
 | Plan My Day | Schedule + tasks + energy = daily suggestion | Phase 24.10 | 4-5h | Daily planning assistant |
-| Scathach | Career Growth & Research Agent (LangGraph) | Phase 24.10       | TBD    | 1st build priority; career research and job application workflows; requires LangGraph evaluation before implementation |
+| Scathach | Career Growth & Research Agent (LangGraph) | Phase 24.12       | TBD    | 1st build priority; career research and job application workflows; LangGraph evaluation pending, sequenced after Phase 24.12 (Jeanne Alter refactor to n8n AI Agent node may address the same multi-step reasoning problem) |
 | Nightingale | Health Pipeline Agent                       | Phase 24.10       | TBD    | Extract health tracking (food/BP/medication logging) into dedicated agent; concept only, not yet scoped |
 
 #### Research & Future (No Priority Yet)
@@ -229,6 +229,12 @@ No phases currently in progress.
 **Goal:** Firefly III integration with receipt and PDF statement capture  
 **Deliverables:** Expense tracking, receipt OCR, PDF import, spending insights via Jeanne Alter
 
+### MERLIN SSL Check Migration to Uptime Kuma (Urgent Priority)
+**Effort:** 1-2 hours (precedes all other sessions)  
+**Goal:** Re-source SSL certificate expiry monitoring from Uptime Kuma (CT 206) instead of broken hardcoded Cloudflare API approach  
+**Deadline:** Before July 14, 2026  
+**Deliverables:** Functional SSL expiry alerts via Uptime Kuma → Telegram, eliminates broken Cloudflare token dependency
+
 ---
 
 ## 🔗 Phase Dependencies
@@ -236,7 +242,7 @@ No phases currently in progress.
 **Critical Path Analysis:**
 1. **Chaldea Architecture Track:** Phase 24.12 (Jeanne Alter Refactor) → 24.13 (Universal Time/Date) → Multi-Agent Discussion Protocol
 2. **Documentation & Integration Track:** Phase 16.6 (Rename) → 16.7 (Deck Sync) → 16.8 (Deck Backfill)
-3. **Agent Feature Development Track:** Phase 24.12 → Cu Chulainn → Scathach (build priority: Scathach first, Cu Chulainn second) → Goal Nudges → Plan My Day
+3. **Agent Feature Development Track:** Phase 24.12 → Scathach (build priority 1st, LangGraph evaluation sequenced after 24.12) → Cu Chulainn (build priority 2nd) → Goal Nudges → Plan My Day
 4. **Gaming Platform Track:** Mash 59-64 (can run parallel to Chaldea development)
 5. **Infrastructure Track:** 25-29 (low priority, mostly independent; Phases 25 & 26 progressing; Phase 27 newly prioritized)
 6. **Career Development Track:** 35-36 (depends on infrastructure completion)
@@ -247,7 +253,71 @@ No phases currently in progress.
 - Agent feature development can be integrated into Jeanne Alter refactor
 - Deck sync backfill can occur while other sessions are in progress
 - Domain migration audit (Phase 27.1) can run independently of Scathach/Cu Chulainn builds
+- MERLIN SSL check migration to Uptime Kuma (urgent) can proceed independently and immediately
 
 ---
 
-*Last updated: July 9, 2026 — Documentation audit session completed. Identified missing content: Scathach (career growth agent, 1st build priority, requires LangGraph evaluation before implementation), Cu Chulainn rename propagation pending (renamed from Guardian May 16, 2026, all references still using old name), Nightingale concept (health pipeline agent extraction, deferred concept stage), Domain correction and Phase 27 addition (najhin-gaming.com vs. muzakkir.tech ownership clarified; muzakkir.tech zone setup directed July 1 2026, completion status unconfirmed). Confirmed MERLIN SSL expiry check hardcoded to July 14, 2026 remains unresolved and urgent (5 days out). Confirmed agents.md structural incompleteness (MERLIN, Midas, EMIYA, Scathach, Cu Chulainn sections missing, deferred to dedicated Da Vinci documentation audit). Four ecosystem blind spots documented in AI-CONTEXT.md: time vs. stated priorities measurement gap, docs-vs-reality drift recurrence, bus factor mitigation, skill-market fit gap (Terraform/K8s/CI-CD underexercised vs. Malaysian DevOps market). Interest-capture loop design concept documented (Path of Exile 2 example) as judgment-problem research item, not implementation scope.*
+## 📌 July 9, 2026 Documentation Audit Session — Key Findings
+
+### Agent Design Principles
+A design principle now guides all future agent classification: **Funnel Agents**. An agent is a "funnel" if there is existing infrastructure it can sit on top of and translate into a daily digest with a recommended action, rather than re-implementing the underlying check itself. 
+
+- **Funnel agents** (July 9, 2026): MERLIN (sources from Uptime Kuma), Midas (sources from Langfuse), Cu Chulainn (sources from Alertmanager, once built)
+- **Not funnels — Interface layer:** Jeanne Alter (she is the interface itself; nothing underneath to translate)
+- **Not funnels — Knowledge system:** Da Vinci (creates and maintains state; doesn't aggregate someone else's data)
+- **Not funnels — Generative:** Scathach (career research and reasoning; nothing existing to funnel from)
+- **Hybrid — Funnel-Plus:** EMIYA (reads infra state like a funnel, but also executes changes on approval)
+
+**Why this matters:** Prevents agents from duplicating effort already solved by dedicated tools (e.g., MERLIN re-implementing SSL checks that Uptime Kuma already does, Midas re-calculating costs that Langfuse already tracks). Reduces drift risk between duplicate data sources and keeps agent build time focused on the actual differentiator — aggregation and recommendation — rather than plumbing.
+
+### MERLIN Status: Partial Deployment with Critical Urgency
+- **Deployed:** April 27, 2026, v1
+- **Status:** Partially functional — SSL check non-functional (hardcoded date, broken Cloudflare API token dependency)
+- **Urgency:** SSL certificate expiration July 14, 2026 (5 days from July 9 audit date)
+- **Resolution decided:** Re-source SSL check from Uptime Kuma (CT 206, already deployed) which has native HTTPS certificate monitoring. No extra credentials needed, removes Cloudflare token dependency entirely. Small 1-2 hour fix, much better than Vault credential re-store.
+- **Design gap:** Currently reports raw numbers ("X days until expiry") without a recommended action. Per Funnel Agent principle, MERLIN should output two things: status + action recommendation.
+
+### Midas Status: Partial Deployment with Cost Duplication Issue
+- **Deployed:** April 27, 2026, v1
+- **Status:** Functional but has a cost-tracking duplication problem
+- **Decision:** Haiku/Claude cost data should source from Langfuse Metrics API (CT 223 already deployed and wired to Da Vinci + Jeanne Alter) instead of the separate `gilgamesh_costs` Data Table. Both currently track the same Haiku calls independently, risking drift. Ollama cost/savings tracking stays in Data Table since Ollama is $0 and outside Langfuse's automatic cost-inference model.
+- **Design gap:** Currently reports totals without a recommended action. Per Funnel Agent principle, when spend trends toward the $10 monthly limit, Midas should suggest a specific action (e.g., "route more queries to Ollama" or name the highest-cost command_type).
+
+### EMIYA Status: Concept Stage with Infrastructure Underneath
+- **Status:** 3 of 8 sub-phases complete (24.1, 24.7, 24.8), but no unified running agent workflow yet
+- **Completed sub-phases:** 
+  - 24.1 (App Management) ✅ — Firefly III, ntfy, Langfuse containers deployed
+  - 24.7 (Universal Notifications) ✅ — ntfy hub for all agent communications
+  - 24.8 (Langfuse Observability) ✅ — LLM performance tracking wired
+- **Incomplete sub-phases:** 24.2-24.6 (Alert Translation, Container Updates, Knowledge Ingestion, Proactive Monitoring, Performance Optimization)
+- **Gap:** EMIYA is documented as a roadmap category with completed infrastructure underneath it, not yet a unified running workflow that reasons over that infrastructure. Once scoped, the agent translation layer can be built on top of these existing systems.
+- **Overlap flagged:** EMIYA's planned Alert Translation (24.2) and Cu Chulainn's core responsibility both source from Alertmanager. Worth deciding later whether these merge into one workflow with two lenses (general ops vs. security) or remain separate.
+
+### Cu Chulainn Status: Renamed Concept, Build Priority 2nd
+- **Renamed:** May 16, 2026 from "Guardian"
+- **Build priority:** 2nd (behind Scathach)
+- **Status:** Concept stage — no implementation work begun
+- **Role:** Security monitoring and threat detection agent; funnel pattern (translates Alertmanager alerts into readable, prioritized security reporting)
+- **Gap:** All n8n workflow references still use old "Guardian" name — name propagation pending alongside broader Jeanne Alter rename.
+- **Design note:** In FGO canon, Cu Chulainn is Scathach's student, reflected in build order.
+
+### Scathach Status: Named Concept, Build Priority 1st, LangGraph Evaluation Pending
+- **Prioritized:** May 16, 2026 as 1st build priority in entire agent roster
+- **Status:** Concept stage — no implementation work begun
+- **Role:** Career growth and job application workflows; **not** a funnel agent (generative reasoning work, nothing existing to translate)
+- **Blocking prerequisite (updated July 9):** LangGraph evaluation should happen *after* Phase 24.12 (Jeanne Alter refactor to n8n's native AI Agent node), not standalone. Phase 24.12 tests whether n8n's native AI Agent node can handle multi-step autonomous reasoning — if it can, that same node may cover Scathach's needs too, avoiding the need for a second orchestration framework. Original decision (LangGraph must be evaluated before implementation scope) still holds, but now sequenced behind 24.12.
+- **Design note:** In FGO canon, Scathach is Cu Chulainn's teacher, master of combat and strategy.
+
+### Documentation Completeness
+- **Restored July 9, 2026:** agents.md now has full sections for Da Vinci, MERLIN, Midas, EMIYA, Cu Chulainn, and Scathach
+- **Remaining gaps:** EMIYA and Cu Chulainn documented as concepts/partial infrastructure but not yet unified running workflows; no gap at the agent-section documentation level
+
+### Known Limitations & Urgent Items
+- **URGENT (do immediately):** MERLIN's SSL check must be re-sourced from Uptime Kuma before July 14, 2026 expiry. This is a 1-2 hour fix, not a blocking prerequisite issue.
+- **Confirmed:** Funnel Agent design principle now drives how all future agents get scoped and prevents duplicate infrastructure implementations
+- **Confirmed:** LangGraph evaluation for Scathach sequenced after Phase 24.12, not independent
+- **Flagged for later:** EMIYA/Cu Chulainn Alert Translation overlap — may need resolution into single workflow with multiple lenses
+
+---
+
+*Last updated: July 9, 2026 — Session 2 Documentation Audit (agents.md completion, Funnel Agent design principle established). MERLIN SSL check re-sourced from Uptime Kuma (decided), Midas cost-source migration to Langfuse Metrics API (decided). Five new agent sections drafted in agents.md (MERLIN, Midas, EMIYA, Cu Chulainn, Scathach) with funnel classification and design principle guidance. Scathach LangGraph evaluation sequenced after Phase 24.12. Confirmed MERLIN SSL expiry check remains unresolved as of audit completion — fix must happen before July 14, 2026. Four ecosystem blind spots documented in prior session (AI-CONTEXT.md): time vs. stated priorities measurement gap, docs-vs-reality drift recurrence, bus factor mitigation, skill-market
