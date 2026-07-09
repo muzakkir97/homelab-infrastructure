@@ -143,7 +143,7 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Da Vinci may return "SKIP\n\nReasoning..." — code uses content.trim().startsWith('SKIP') detection (not strict equality)
 
 **Agents Wired:**
-- Jeanne Alter (formerly Gilgamesh): sends all messages >20 chars (excluding commands starting with /) via async fire-and-forget to personal gateway
+- Jeanne Alter: sends all messages >20 chars (excluding commands starting with /) via async fire-and-forget to personal gateway
 - Future: EMIYA, Midas will route through this gateway (not write directly to Obsidian)
 
 **Technical Notes:**
@@ -214,7 +214,19 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Expected monthly cost at daily frequency: ~$4.80-5.40/month (session updates + personal knowledge)
 
 ### Recent Updates
-**Planning & Architecture Session (July 8, 2026 — Session Session, Planning Phase)**
+**Documentation Audit — Cross-Session Gap Analysis (July 9, 2026 — Session Documentation Audit)**
+- Performed full audit of AI-CONTEXT.md, ROADMAP.md, decisions.md, changelog.md, agents.md, current-state.md, and service-catalog.md against conversation history dating back to January 2026
+- Identified seven items discussed in past sessions never made it into project documentation files
+- Confirmed agents.md structural gap: missing full sections for MERLIN, Midas, EMIYA, Scathach, and Cu Chulainn despite being listed in AI-CONTEXT.md agent table and decisions.md — flagged for dedicated Da Vinci documentation audit session
+- Confirmed Cu Chulainn rename (from Guardian, renamed May 16, 2026) has not propagated — all references still show "Guardian" in agents.md, AI-CONTEXT.md agent table, decisions.md
+- Confirmed Scathach (Lancer-class career growth/research agent, 1st build priority) documented informally but missing from agents.md proper sections
+- Confirmed Nightingale (health pipeline agent concept, noted May 17, 2026) has no documentation — deferred indefinitely, not prioritized
+- Confirmed MERLIN Cloudflare SSL expiry check hardcoded to July 14, 2026 remains unresolved (now 5 days out, carried from July 8 session)
+- New content added to AI-CONTEXT: Interest-Capture Loop design concept (July 7 session), Four Blind Spots gap analysis (July 7 session), domain correction (two domains: najhin-gaming.com permanent for game servers; muzakkir.tech professional/portfolio domain)
+- New Phase 27 identified: Domain Migration & Infrastructure Audit (27.1 audit, 27.2 migration) — status Planned, Cloudflare zone setup for muzakkir.tech directed to begin July 1 but completion unconfirmed, requires verification next infrastructure session
+- No infrastructure changes made this session — documentation-only review
+
+**Planning & Architecture Session (July 8, 2026 — Session Planning Phase)**
 - Ecosystem renamed: "Kuromoon" (physical hardware/homelab only) vs "Chaldea" (agents ecosystem) — clarified going forward
 - Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler") — full propagation pending (bot identity, system prompt, Telegram username, all 8 docs)
 - Da Vinci's scope formally extended to include Nextcloud Deck — same "sole writer" discipline applies (no direct agent writes)
@@ -227,7 +239,7 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Credential store migration identified as ecosystem-wide priority (move from hardcoded n8n values to n8n credential store)
 - Known board conflicts surfaced: Phase 7E appears in two Deck states + ROADMAP.md duplicate; Phase Da Vinci S2 RAG System marked Done on Deck (~2 months ago) but stale in docs; EMIYA status conflict across agents.md (Planned) vs historical completion records (partial deployment already happened)
 
-**Emergency Network Migration (July 5, 2026 — Session Session, Ad-Hoc Phase)**
+**Emergency Network Migration (July 5, 2026 — Session Ad-Hoc Phase)**
 - Called TIME ISP and activated true bridge mode on Huawei HG8145B7N, eliminating double-NAT topology permanently
 - pfSense WAN reconfigured from DHCP to PPPoE (pppoe0 interface, credentials: muzakkir655@timebb via TIME Self Care portal)
 - Public IP changed: 202.184.35.79 → 202.184.101.136 (stable IP assigned directly to pfSense WAN post-bridge)
@@ -299,6 +311,7 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Deck sync design complete but implementation blocked on manual backfill of ~30 existing Homelab board cards with sync-id tags
 - Qdrant obsidian_knowledge collection suspected degraded/empty state (investigation pending)
 - Duplicate muzakkir-profile.md.md file artifact in Nextcloud 04-personal/ (WebDAV sync race condition)
+- agents.md structural incompleteness: missing full sections for MERLIN, Midas, EMIYA, Scathach, Cu Chulainn (flagged for dedicated Da Vinci documentation audit session)
 
 ### Dependencies
 - Haiku API (Claude) — 8 calls per session update + N calls per personal knowledge updates
@@ -329,35 +342,3 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - **Known Issue — July 8, 2026:** Qdrant obsidian_knowledge degraded/empty state flagged for investigation; assistant message saving failure in Jeanne Alter Data Table storage
 
 ### Testing & Validation
-**Phase 24.10 Validation (May 25, 2026):**
-- [x] Knowledge Indexer webhook trigger (/davinci-reindex-personal) functional
-- [x] Partial reindex path active (04-personal/ only, ~1s duration)
-- [x] Full rebuild path preserved (3am UTC schedule, all 10 folders, ~21s)
-- [x] Trigger Reindex node firing after Da Vinci Personal Knowledge writes
-- [x] Trigger Reindex node firing after Da Vinci Update Pipeline completes
-- [x] Qdrant obsidian_knowledge updated within 1-2s of profile write
-- [x] Profile updates visible to Jeanne Alter RAG queries immediately post-reindex
-
-**Phase 24.9 Validation (May 22, 2026):**
-- [x] Da Vinci Personal Knowledge gateway webhook functional
-- [x] Jeanne Alter personal facts successfully sent to gateway
-- [x] muzakkir-profile.md created and updated via WebDAV
-- [x] Profile merged correctly via Claude Haiku assessment
-- [x] SKIP detection fixed (startsWith instead of ===)
-- [x] Date placeholder correctly replaced before Claude call
-- [x] Qdrant indexing includes 04-personal/ folder
-- [x] Jeanne Alter successfully recalls profile info via RAG (name, dark mode preference)
-- [x] Jeanne Alter system prompt reflects correct naming (Gilgamesh/Gil, master Muzakkir — pending Jeanne Alter rename)
-- [x] Langfuse UI trace list operational with da-vinci-update and gilgamesh-chat visible
-- [x] All cost logs firing at expected frequency
-
----
-
-## Jeanne Alter (Gilgamesh)
-**Servant Class:** Caster  
-**Ascension Stage:** 4/4  
-**True Name:** Gilgamesh (Pending Rename → Jeanne Alter "The Corrupted Ruler")  
-**Alias:** Gil  
-
-### Overview
-Personal conversational AI assistant. Provides real-time responses with Qdrant RAG (Obsidian vault knowledge), personal profile awareness,
