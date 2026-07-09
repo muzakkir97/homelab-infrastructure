@@ -1,5 +1,34 @@
 # Changelog
 
+### 2026-07-09 — Documentation Audit — Cross-Session Gap Analysis
+- Conducted full audit of AI-CONTEXT.md, ROADMAP.md, decisions.md, changelog.md, agents.md, current-state.md, and service-catalog.md against conversation history dating back to January 2026
+- Identified seven items discussed in past sessions that never made it into any project documentation file
+- Confirmed MERLIN Cloudflare SSL expiry check hardcoded to July 14, 2026 remains an open, urgent item (not actioned this session)
+- Confirmed agents.md is missing full sections for MERLIN, Midas, EMIYA, Scathach, and Cu Chulainn — structural gap flagged for a separate Da Vinci documentation audit, not fixed this session
+- Added Interest-Capture Loop design concept (July 7 session): no passive awareness of Muzakkir's personal interests outside homelab/career (concrete example: Path of Exile 2, league 0.5.0, started May 29); hard design problem is judgment call (what counts as lasting interest), not storage; status: concept only, not scoped or built
+- Added Gap Analysis: Four Blind Spots (July 7 session):
+  1. **Time vs. stated priorities** — stated order is Health → Mental → Work → Gaming → n8n business → Homelab, but nothing measures whether actual time spent reflects that order
+  2. **Docs vs. reality drift** — May 22, 2026 documentation audit was one-off manual catch, not recurring automated check
+  3. **Bus factor** — ecosystem depends on Muzakkir alone; no graceful degradation plan exists if unavailable
+  4. **Skill-market fit** — homelab builds n8n/LXC/Qdrant skills, but target DevOps roles in Malaysian market typically require Terraform, Kubernetes, CI/CD not currently exercised by project
+- Domain correction: "About Me" table's Domain field currently lists najhin-gaming.com only (incomplete). Muzakkir owns two domains:
+  - **najhin-gaming.com** — retained permanently for game server hosting (Minecraft, Terraria, Enshrouded)
+  - **muzakkir.tech** — professional/portfolio domain (purchased July 1, 2026; earlier tentative selection of muzakkir.cloud at RM 143.80/yr was superseded)
+- New phase scoped: **Phase 27 — Domain Migration & Infrastructure Audit**
+  - **27.1 (audit first):** Cloudflare Access policies, Tunnel routes, SSL, NPM configs, DNS hygiene across existing setup
+  - **27.2 (migration):** Nine homelab subdomains move from najhin-gaming.com to muzakkir.tech — grafana, n8n, vault, passwords (Vaultwarden), cloud (Nextcloud), finance (Firefly III), ntfy, langfuse, home (Pulse Dashboard); game server subdomains (mc, terraria, enshrouded, panel) remain permanently on najhin-gaming.com
+  - Migration mechanism: Cloudflare Tunnel handles routing (not DDNS) — low-risk change requiring only new tunnel routes and DNS records, no NAT/port-forward rework
+  - Status: Cloudflare zone setup for muzakkir.tech directed to begin July 1, 2026; current completion status unconfirmed — needs verification next infrastructure session
+- Agent name correction: Guardian was renamed to **Cu Chulainn** ⚡ on May 16, 2026 (Lancer-class servant, Scathach's student in FGO canon; planned role: security monitoring agent; 2nd build priority after Scathach). This rename has never propagated — all documentation still refers to "Guardian." Cu Chulainn should replace all Guardian references across agents.md, AI-CONTEXT.md agent table, decisions.md going forward. Propagation is now a tracked action item, same category as pending Jeanne Alter rename.
+- Surfaced undocumented agent: **Scathach** (undocumented until now) — added May 16, 2026; Lancer-class servant; career growth/research agent; **1st build priority** in agent roster (ahead of Cu Chulainn); intended scope: career research and job application workflows; flagged requirement from June 5, 2026: evaluate LangGraph before starting Scathach build, since career-research workflows expected to need autonomous multi-step reasoning loops that n8n handles poorly; status: named and prioritized, no implementation scope defined yet, LangGraph evaluation not yet done
+- New agent concept: **Nightingale** (health pipeline extraction) — noted as interest on May 17, 2026: extracting existing health tracking pipeline (food/BP/medication logging, currently handled within Jeanne Alter/Gilgamesh) into dedicated agent provisionally named Nightingale; explicitly deferred at time to avoid mid-session scope creep; status: concept only, not scoped, not prioritized in build order
+- Structural note: agents.md currently contains full sections only for Da Vinci and Jeanne Alter; MERLIN, Midas, EMIYA, Scathach, Cu Chulainn have no dedicated sections despite being listed in AI-CONTEXT.md agent table and decisions.md — documentation-pipeline gap flagged, recommend dedicated Da Vinci documentation audit in future session
+- Decision: Fold all findings from documentation audit into single end-of-session summary rather than edit project files directly mid-session — keeps Da Vinci as sole writer and avoids concurrent-edit conflicts with existing pipeline
+- Decision: F-Secure coaching/disciplinary letter and related career urgency context (from May 11, 2026 session) explicitly excluded from homelab documentation — out of scope for AI-CONTEXT.md/decisions.md/ROADMAP.md; belongs in separate Career project's context file if documented, not homelab docs
+- Decision: agents.md's structural incompleteness will not be patched via this session summary — requires reconstructing full agent profiles, not appending new facts; deferred to dedicated Da Vinci documentation audit session instead
+- No infrastructure changes made this session — documentation-only review
+- Action items: Propagate Cu Chulainn rename across agents.md, AI-CONTEXT.md, decisions.md (same category as pending Jeanne Alter rename); define Scathach's build scope and evaluate LangGraph before implementation; verify muzakkir.tech Cloudflare zone setup completion status (directed July 1, completion unconfirmed); scope Phase 27.1 before starting Phase 27.2; schedule dedicated Da Vinci documentation audit for full agents.md rebuild; MERLIN Cloudflare SSL expiry check still unresolved, now 5 days out (July 14 deadline); decide whether/where to log Nightingale concept for future reference
+
 ### 2026-07-08 — Planning & Architecture Session — Chaldea Rename, Deck Sync Design, Agent Architecture Research
 - Investigated and fixed false "hdd-backup-2 not mounted" Discord alert (Prometheus rule copy-paste bug: `MountpointMissing_hddbackup2` was checking `/mnt/hdd-backup-1` instead of `/mnt/hdd-backup-2` on CT 202); rule fully removed per decision rather than retained
 - Renamed agents ecosystem from "Kuromoon" (overloaded with hardware name) to **Chaldea** (FGO-lore fit: the organization that houses and coordinates Servants); Kuromoon now refers only to physical homelab infrastructure
@@ -83,34 +112,4 @@
 - Full audit of all 8 Da Vinci documentation files against full conversation history
 - Found 11 discrepancies across 4 files: ROADMAP.md, current-state.md, agents.md, AI-CONTEXT.md
 - Root cause identified: Da Vinci hallucinated hardware specs (EPYC 5645/256GB/RTX 4070) and folder names in current-state.md and agents.md; ROADMAP.md stale since May 10 (Homepage retirement decision never propagated); MERLIN/Midas status never updated in agents.md after April 27 deployment
-- Corrected AI-CONTEXT.md: removed llama3.2:latest from installed models list (removed May 21 due to hallucination)
-- Corrected ROADMAP.md: removed phases 22.8C, 22.8D, 22.8E, 22.15, 22.16 from In Progress and Planned tables (archived May 10 when Homepage retired, replaced by Pulse Dashboard CT 208); updated Guardian dependency from Phase 22.8C to Phase 24.9; reorganized Recommended Next Session Order to prioritize Phase 24.10 (Triggered Qdrant Re-indexing), Da Vinci Stage 2, Guardian, then Phase 24.2
-- Corrected current-state.md Hardware Infrastructure: Proxmox host corrected to Ryzen 5 5600X, 128GB DDR4-3200, RX 6700 XT 12GB (NOT EPYC 5645/256GB/RTX 4070 — hallucinated specs); VM 400 corrected to 86GB disk (expanded May 21), RX 6700 XT GPU with ROCm backend; corrected Storage section (CT 220 for Nextcloud, NOT CT 215 which does not exist); corrected Knowledge Indexer indexed folders (04-personal/, 08-agents/, 09-people/, 10-projects/)
-- Corrected agents.md: MERLIN updated from Planned/0/4 to Active Partial/2/4 (deployed April 27, 2026); Midas updated from Planned/0/4 to Active Partial/2/4 (deployed April 27, 2026); corrected Knowledge Indexer indexed folders and flagged previous lists (01-05, 06-07, 11-13) as hallucinated
-- Identified Knowledge Indexer folder list inconsistency: three different lists exist across agents.md, current-state.md, service-catalog.md; none fully match actual vault structure; requires manual verification against n8n Knowledge Indexer workflow node
-- Decision: Hardware specs in documentation must use explicit REPLACE SECTION in session summaries to prevent drift from actual infrastructure
-- Decision: Any phase retirement must include explicit REPLACE SECTION in ROADMAP.md section of session summary to prevent stale entries propagating
-- Decision: Da Vinci should not extrapolate hardware from hypothetical "dream homelab" discussions without clear context marking
-- Action items: Drop corrected files into Nextcloud staging-inbox for Da Vinci processing; manually verify Knowledge Indexer node in n8n for exact folder list; re-store truncated Cloudflare API token in Vault (blocks MERLIN SSL check); next session: Phase 24.10 (Triggered Qdrant Re-indexing)
-
-### 2026-05-22 — Phase 24.9 — Personal Knowledge System (Gil → Da Vinci → Obsidian)
-- Langfuse UI trace list confirmed working (1-hour analytics delay resolved overnight); Da Vinci traces visible in list with 8 generations each; Gilgamesh traces visible with input/output populated
-- Wired Langfuse into Gilgamesh — traces fire async from Extract Response node (trace name: gilgamesh-chat); input = user message, output = response content; metadata: routedTo, ragUsed, commandType, chatId
-- Fixed Gilgamesh system prompt (qwen3:14b confused "Gil" as name query) — now explicitly states "Your name is Gilgamesh. Users will call you Gil as a nickname. Never ask the user for their name when they greet you as Gil. Your master is Muzakkir."
-- Built Da Vinci Personal Knowledge gateway (new n8n workflow) — webhook POST /davinci-personal-knowledge; flow: Filter & Assess → Fetch Current Profile (WebDAV GET with 404 fallback to template) → Claude Haiku — Assess & Merge → Worth Saving? → Push to Obsidian (WebDAV PUT) → Log Cost; max_tokens 4000
-- Wired Gil to send personal facts to Da Vinci Personal Knowledge gateway (async fire-and-forget branch off Extract Response node; fires on all messages >20 chars that don't start with /); uses internal URL http://192.168.30.211:5678/webhook/davinci-personal-knowledge
-- Da Vinci quality filter: stores durable personal facts (e.g., "prefers dark mode"), SKIPs one-time events and conversational noise (e.g., "I slept at 12am tonight"); SKIP detection uses startsWith not strict equality
-- Created muzakkir-profile.md in Obsidian (04-personal/) managed by Da Vinci — Personal Knowledge gateway; currently contains dark mode preference
-- Updated Knowledge Indexer: added 04-personal/, fixed 08-agents (was 08-projects), 09-people (was 09-meetings), 10-projects (was 10-reference); added empty file filter (If node) to prevent crash on empty downloads; now indexes 90 files (was ~70), 1,736 Qdrant chunks (was 1,567)
-- Gil successfully recalling profile info via RAG (knows name Muzakkir, dark mode preference)
-- Fixed SKIP detection bug — Da Vinci returns "SKIP\n\nReasoning" but code checked === 'SKIP'; fixed with startsWith('SKIP')
-- Fixed date placeholder — {{date}} now replaced with real MYT date (YYYY-MM-DD) in Claude API code node before sending to Claude, not relying on Claude to replace it
-- Fixed Fetch Current Profile 404 handling — replaced HTTP Request node with Code node that falls back to bootstrap template when muzakkir-profile.md not found on WebDAV
-- Fixed "Assignment to constant variable" error — changed const currentProfile to let for date replacement
-- All agents now write to Obsidian via Da Vinci — Personal Knowledge gateway (not directly); EMIYA, Midas, and future agents all route through Da Vinci; only Gil currently wired
-- 04-personal/ folder now included in Qdrant Knowledge Indexer (was excluded for privacy — decision reversed since everything is internal VLAN 30)
-- Decision: All agents route Obsidian writes through Da Vinci — Personal Knowledge gateway; Gil reads directly via RAG but only writes through Da Vinci (consistent formatting, no file conflicts, Da Vinci as quality gate)
-- Decision: Gil uses internal URL for Da Vinci gateway instead of external Cloudflare (faster, no external routing, both on VLAN 30)
-- Action items: Delete muzakkir-profile.md.md conflict artifact from Nextcloud; build triggered Qdrant re-indexing after Da Vinci writes; re-tell Gil "I work best late at night" (lost due to SKIP bug, now fixed); wire Langfuse into MERLIN and Midas
-
-### 2026-05-21 — Phase 24.8 — Langf
+- Corrected AI-CONTEXT.md: removed llama3.2:latest from installed models list (removed May 21 due to hallucination
