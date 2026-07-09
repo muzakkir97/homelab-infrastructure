@@ -1,7 +1,7 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
 > **Last Updated:** July 9, 2026  
-> **Total Phases:** 103 planned | 52 completed | 0 in progress | 51 future  
+> **Total Phases:** 104 planned | 52 completed | 0 in progress | 52 future  
 > **Next Session Priority:** Chaldea Rename Propagation OR Deck Sync Manual Backfill OR Jeanne Alter Web Search Quality Improvement
 
 ---
@@ -12,7 +12,7 @@
 |---------------------------------------|-------|----------|-------------|---------|
 | **Core Infrastructure & Security**     | 16    | 11       | 0           | 5       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
-| **AI & Automation (Chaldea)**         | 36    | 22       | 0           | 14      |
+| **AI & Automation (Chaldea)**         | 37    | 22       | 0           | 15      |
 | **Personal & Knowledge Management**    | 12    | 7        | 0           | 5       |
 | **Monitoring & Observability**        | 8     | 8        | 0           | 0       |
 | **Infrastructure Cleanup**            | 8     | 2        | 0           | 6       |
@@ -113,6 +113,7 @@ No phases currently in progress.
 | 24.12 | Jeanne Alter Architecture Refactor            | Phase 24.11       | 15h    | Adopt n8n AI Agent node (replace hand-built If/branch logic), integrate MCP for tool execution, integrate Mem0 self-hosted (Qdrant-backed) for unified memory, restructure persona into personality file |
 | 24.13 | Universal Time/Date Awareness                | Phase 24.12       | 1h     | Inject current date/time into every agent's system prompt (pattern: Da Vinci's {{date}} replacement), applied ecosystem-wide instead of single gateway |
 | 24.14 | Jeanne Alter Web Search Quality Improvement  | Phase Web Search  | 4h     | Iterative multi-query search with synthesis step, closer to Gemini-style search; replace single Firecrawl + Haiku call pattern |
+| 24.15 | Jeanne Alter Email Management Pipeline       | Phase 24.11       | 6-8h   | Design Complete (July 9, 2026). 4 personal email accounts (Gmail OAuth2 × 3, iCloud IMAP × 1) → shared Email Classifier sub-workflow → Telegram notification + permanent-category facts (bills/payments/subscriptions) to Da Vinci Personal Knowledge gateway. 3x daily schedule. Credentials in n8n store. qwen3:14b primary, Claude Haiku fallback. 6 rollout steps: credentials → classifier → account triggers → staging store → notification → verify writes. |
 
 #### Agent Feature Development
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
@@ -224,7 +225,13 @@ No phases currently in progress.
 **Goal:** Iterative multi-query search with synthesis, closer to Gemini-style search  
 **Deliverables:** Improved search result relevance and comprehensiveness
 
-### Midas v2 — Financial Intelligence (Fourth Session)
+### Jeanne Alter Email Management Pipeline (Fourth Session)
+**Effort:** 6-8 hours  
+**Goal:** Implement email read + notification pipeline for 4 personal accounts with permanent-fact routing to Da Vinci Personal Knowledge system  
+**Precondition:** Credentials in n8n store (first concrete step of Phase 24.11); initial sender whitelist supplied  
+**Deliverables:** Email classifier, 4× account triggers, staging store with auto-clear, Telegram notifications, Obsidian writes for bills/payments/subscriptions
+
+### Midas v2 — Financial Intelligence (Fifth Session)
 **Effort:** 10-12 hours  
 **Goal:** Firefly III integration with receipt and PDF statement capture  
 **Deliverables:** Expense tracking, receipt OCR, PDF import, spending insights via Jeanne Alter
@@ -243,9 +250,10 @@ No phases currently in progress.
 1. **Chaldea Architecture Track:** Phase 24.12 (Jeanne Alter Refactor) → 24.13 (Universal Time/Date) → Multi-Agent Discussion Protocol
 2. **Documentation & Integration Track:** Phase 16.6 (Rename) → 16.7 (Deck Sync) → 16.8 (Deck Backfill)
 3. **Agent Feature Development Track:** Phase 24.12 → Scathach (build priority 1st, LangGraph evaluation sequenced after 24.12) → Cu Chulainn (build priority 2nd) → Goal Nudges → Plan My Day
-4. **Gaming Platform Track:** Mash 59-64 (can run parallel to Chaldea development)
-5. **Infrastructure Track:** 25-29 (low priority, mostly independent; Phases 25 & 26 progressing; Phase 27 newly prioritized)
-6. **Career Development Track:** 35-36 (depends on infrastructure completion)
+4. **Email & Credential Track:** Phase 24.11 (Credential Store Migration) → Phase 24.15 (Email Management) → Phase 24.12 (unified memory in refactor)
+5. **Gaming Platform Track:** Mash 59-64 (can run parallel to Chaldea development)
+6. **Infrastructure Track:** 25-29 (low priority, mostly independent; Phases 25 & 26 progressing; Phase 27 newly prioritized)
+7. **Career Development Track:** 35-36 (depends on infrastructure completion)
 
 **Parallel Development Opportunities:**
 - Gaming platform phases can run alongside Chaldea development
@@ -254,6 +262,7 @@ No phases currently in progress.
 - Deck sync backfill can occur while other sessions are in progress
 - Domain migration audit (Phase 27.1) can run independently of Scathach/Cu Chulainn builds
 - MERLIN SSL check migration to Uptime Kuma (urgent) can proceed independently and immediately
+- Email Management Pipeline (24.15) can proceed in parallel with Rename Propagation (16.6) after credentials are in n8n store
 
 ---
 
@@ -308,16 +317,6 @@ A design principle now guides all future agent classification: **Funnel Agents**
 - **Blocking prerequisite (updated July 9):** LangGraph evaluation should happen *after* Phase 24.12 (Jeanne Alter refactor to n8n's native AI Agent node), not standalone. Phase 24.12 tests whether n8n's native AI Agent node can handle multi-step autonomous reasoning — if it can, that same node may cover Scathach's needs too, avoiding the need for a second orchestration framework. Original decision (LangGraph must be evaluated before implementation scope) still holds, but now sequenced behind 24.12.
 - **Design note:** In FGO canon, Scathach is Cu Chulainn's teacher, master of combat and strategy.
 
-### Documentation Completeness
-- **Restored July 9, 2026:** agents.md now has full sections for Da Vinci, MERLIN, Midas, EMIYA, Cu Chulainn, and Scathach
-- **Remaining gaps:** EMIYA and Cu Chulainn documented as concepts/partial infrastructure but not yet unified running workflows; no gap at the agent-section documentation level
-
-### Known Limitations & Urgent Items
-- **URGENT (do immediately):** MERLIN's SSL check must be re-sourced from Uptime Kuma before July 14, 2026 expiry. This is a 1-2 hour fix, not a blocking prerequisite issue.
-- **Confirmed:** Funnel Agent design principle now drives how all future agents get scoped and prevents duplicate infrastructure implementations
-- **Confirmed:** LangGraph evaluation for Scathach sequenced after Phase 24.12, not independent
-- **Flagged for later:** EMIYA/Cu Chulainn Alert Translation overlap — may need resolution into single workflow with multiple lenses
-
----
-
-*Last updated: July 9, 2026 — Session 2 Documentation Audit (agents.md completion, Funnel Agent design principle established). MERLIN SSL check re-sourced from Uptime Kuma (decided), Midas cost-source migration to Langfuse Metrics API (decided). Five new agent sections drafted in agents.md (MERLIN, Midas, EMIYA, Cu Chulainn, Scathach) with funnel classification and design principle guidance. Scathach LangGraph evaluation sequenced after Phase 24.12. Confirmed MERLIN SSL expiry check remains unresolved as of audit completion — fix must happen before July 14, 2026. Four ecosystem blind spots documented in prior session (AI-CONTEXT.md): time vs. stated priorities measurement gap, docs-vs-reality drift recurrence, bus factor mitigation, skill-market
+### Jeanne Alter Email Management Pipeline: Design Complete (July 9, 2026)
+- **Status:** Design Complete, not yet implemented; 0/6 rollout steps deployed
+- **Scope:** 4 personal email accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.naj
