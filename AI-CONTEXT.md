@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** July 9, 2026
+> **Last Updated:** July 14, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 21 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026. **Gaming platform expanded July 5, 2026: Enshrouded server (CT 306) deployed in Pelican Panel. Network architecture migrated from double-NAT (ISP router + pfSense) to true bridge mode on Huawei HG8145B7N, eliminating all double-NAT routing conflicts permanently. pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed to 202.184.101.136 (was 202.184.35.79). TP-Link EAP610 AX1800 access point (SSID A21-22A) deployed and configured — root cause of AP failure identified and fixed: TL-SG108E switch ports 7-8 were on legacy VLAN 1, not VLAN20_MAIN. All 21 containers + 1 VM running. DNS records require update. Enshrouded external UDP connectivity not yet retested post-bridging.** **Agents ecosystem renamed from "Kuromoon" to "Chaldea" (July 8, 2026) — Kuromoon now refers to physical hardware only, Chaldea is the agents system layer.** **Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler"), pending full propagation across bot, n8n, Telegram, docs (July 8, 2026).** **Career timeline updated (July 8, 2026): September 2026 job-transition deadline dropped. Cloud/DevOps roles pursued at slower pace. Chaldea project reframed as indefinite, long-term. hdd-backup-2 Prometheus alert removed (copy-paste bug fixed, then intentionally disabled per user decision). Duplicate muzakkir-profile.md.md file exists in Nextcloud. Jeanne Alter assistant messages not saving to Data Table (silent conversation memory breakage).** **Documentation audit completed (July 9, 2026): Cross-session gap analysis identified seven previously-undocumented items from past sessions: Interest-Capture Loop concept, Four Blind Spots analysis (time vs priorities, docs drift, bus factor, skill-market fit), two domains tracked (najhin-gaming.com for gaming, muzakkir.tech for portfolio), two previously-named agents (Cu Chulainn renamed from Guardian May 16, Scathach prioritized May 16, Nightingale health concept May 17), and Phase 27 Domain Migration & Infrastructure Audit. Cu Chulainn and Scathach rename propagation pending. muzakkir.tech Cloudflare zone completion unconfirmed. agents.md structural incompleteness addressed (July 9, 2026): full sections drafted for MERLIN, Midas, EMIYA, Cu Chulainn, Scathach with Agent Type classifications and Funnel Agent design principle. MERLIN Cloudflare SSL expiry check no longer hardcoded — migrated to Uptime Kuma source July 9, resolving the July 14 urgency. Midas cost tracking planned migration from duplicate Data Table to Langfuse Metrics API (low urgency). Cu Chulainn and Scathach sections added with concept-stage governance. Jeanne Alter assistant message table save bug remains critical, unresolved.** **Jeanne Alter Email Management Pipeline design complete (July 9, 2026): Read + Notify tier, 4 personal accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com), work and NSFW accounts excluded. Architecture: per-account triggers → shared Email Classifier → branches to notification and/or Da Vinci Personal Knowledge gateway for permanent categories (bills/payments/subscriptions). Staging store (~7-day retention) for transient email. 3x/day schedule. Credentials (Gmail OAuth2, iCloud IMAP app-specific password) going to n8n credential store — first concrete step of ecosystem-wide credential store migration. Build effort: ~6-8h across 6 rollout steps. Design approved, implementation not yet started.**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 21 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026. **Gaming platform expanded July 5, 2026: Enshrouded server (CT 306) deployed in Pelican Panel. Network architecture migrated from double-NAT (ISP router + pfSense) to true bridge mode on Huawei HG8145B7N, eliminating all double-NAT routing conflicts permanently. pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed to 202.184.101.136 (was 202.184.35.79). TP-Link EAP610 AX1800 access point (SSID A21-22A) deployed and configured — root cause of AP failure identified and fixed: TL-SG108E switch ports 7-8 were on legacy VLAN 1, not VLAN20_MAIN. All 21 containers + 1 VM running. DNS records require update. Enshrouded external UDP connectivity not yet retested post-bridging.** **Agents ecosystem renamed from "Kuromoon" to "Chaldea" (July 8, 2026) — Kuromoon now refers to physical hardware only, Chaldea is the agents system layer.** **Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler"), pending full propagation across bot, n8n, Telegram, docs (July 8, 2026).** **Career timeline updated (July 8, 2026): September 2026 job-transition deadline dropped. Cloud/DevOps roles pursued at slower pace. Chaldea project reframed as indefinite, long-term. hdd-backup-2 Prometheus alert removed (copy-paste bug fixed, then intentionally disabled per user decision). Duplicate muzakkir-profile.md.md file exists in Nextcloud. Jeanne Alter assistant messages not saving to Data Table (silent conversation memory breakage).** **Documentation audit completed (July 9, 2026): Cross-session gap analysis identified seven previously-undocumented items from past sessions: Interest-Capture Loop concept, Four Blind Spots analysis (time vs priorities, docs drift, bus factor, skill-market fit), two domains tracked (najhin-gaming.com for gaming, muzakkir.tech for portfolio), two previously-named agents (Cu Chulainn renamed from Guardian May 16, Scathach prioritized May 16, Nightingale health concept May 17), and Phase 27 Domain Migration & Infrastructure Audit. Cu Chulainn and Scathach rename propagation pending. muzakkir.tech Cloudflare zone completion unconfirmed. agents.md structural incompleteness addressed (July 9, 2026): full sections drafted for MERLIN, Midas, EMIYA, Cu Chulainn, Scathach with Agent Type classifications and Funnel Agent design principle. MERLIN Cloudflare SSL expiry check no longer hardcoded — migrated to Uptime Kuma source July 9, resolving the July 14 urgency. Midas cost tracking planned migration from duplicate Data Table to Langfuse Metrics API (low urgency). Cu Chulainn and Scathach sections added with concept-stage governance. Jeanne Alter assistant message table save bug remains critical, unresolved.** **Jeanne Alter Email Management Pipeline design complete (July 9, 2026): Read + Notify tier, 4 personal accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com), work and NSFW accounts excluded. Architecture: per-account triggers → shared Email Classifier → branches to notification and/or Da Vinci Personal Knowledge gateway for permanent categories (bills/payments/subscriptions). Staging store (~7-day retention) for transient email. 3x/day schedule. Credentials (Gmail OAuth2, iCloud IMAP app-specific password) going to n8n credential store — first concrete step of ecosystem-wide credential store migration. Build effort: ~6-8h across 6 rollout steps. Design approved, implementation not yet started.** **Monitoring fix complete (July 14, 2026): node_exporter `/mnt` exclusion bug root-caused and fixed. Debian package's default `--collector.filesystem.mount-points-exclude` regex included `mnt`, making all `/mnt` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, kinmoon-smb) invisible to Prometheus since ~May 16. Fixed by editing `/etc/default/prometheus-node-exporter` ARGS to remove `mnt` from exclude list and restarting service. MountpointMissing_hddbackup1 alert (stuck active for 8 days) auto-resolved. Confirmed hdd-backup-1 is primary live storage for Nextcloud (not a backup copy); Kinmoon NAS receives nightly rsync at 03:00. Physical SATA cable/port swap remains deferred (no budget). All 21 containers + 1 VM remain running and healthy.**
 
 ---
 
@@ -361,6 +361,50 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Terraria Server (CT 304):** tModLoader on port 7777 (192.168.30.216), Pelican Wings
 - **Enshrouded Server (CT 306):** Dedicated server on port 15636 (192.168.30.218), Pelican Wings
 - **Windrose (CT 302):** Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE
+
+---
+
+## 📊 Monitoring & Alerting
+
+### node_exporter (Host-Level, Proxmox bare metal)
+
+**Fixed July 14, 2026:** Default Debian package `prometheus-node-exporter.service` shipped with `--collector.filesystem.mount-points-exclude` regex containing `mnt` in the excluded path list, making ALL mountpoints under `/mnt` invisible to Prometheus since at least May 16, 2026. This caused the `MountpointMissing_hddbackup1` alert to remain stuck in "active" state for 8 days despite the drive being mounted and healthy.
+
+**Details:**
+- **Correct systemd unit name:** `prometheus-node-exporter.service` (Debian package naming — NOT `node_exporter.service`)
+- **Binary location:** `/usr/bin/prometheus-node-exporter`, runs as user `prometheus` (uid 108, gid 110)
+- **Listens on:** :9100
+- **Config file:** `/etc/default/prometheus-node-exporter`
+
+**Fix Applied:**
+- Edited `/etc/default/prometheus-node-exporter` ARGS parameter
+- **Before:** `^/(dev|proc|run|sys|mnt|media|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)`
+- **After:** `^/(dev|proc|run|sys|media|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)`
+- Removed `mnt` from the exclusion list to expose `/mnt/hdd-backup-1`, `/mnt/hdd-backup-2`, `/mnt/ssd-storage`, and `/mnt/pve/kinmoon-smb`
+- Restarted service: `systemctl restart prometheus-node-exporter.service`
+- Verified metrics returned: `curl localhost:9100/metrics | grep node_filesystem`
+- Prometheus query confirmed all three /mnt mountpoints now reporting
+- Alertmanager alert (fingerprint fc914336cd6ed15b) auto-resolved
+
+**Note on per-container exporters:** Multiple other `/usr/local/bin/node_exporter` processes visible via `ps aux` on the host (uid 100000, 101000, etc.) are per-LXC-container exporters visible through host's process namespace due to unprivileged container UID mapping — these are NOT the host-level exporter and restarting them has no effect on host-level Prometheus alerts.
+
+### Storage Status (Verified July 14, 2026)
+
+| Mount            | Device     | Size  | Used | Filesystem | UUID                             |
+|------------------|------------|-------|------|------------|----------------------------------|
+| /mnt/hdd-backup-1 | /dev/sdb1 | 5.5T  | 18%  | ext4       | 5593849e-8ee9-4d6c-b1bc-3e35650e05fb |
+| /mnt/hdd-backup-2 | /dev/sdc1 | 6.9T  | 0%   | ext4       | 5cd7f4a4-7510-42eb-9f35-be49f6a10686 |
+
+**hdd-backup-1 Storage Role (Clarified July 14):**
+- **Primary live storage** for Nextcloud data directory (bind mount at `/mnt/ncdata`)
+- **Not a backup copy** — misconception cleared
+- Nextcloud data written to this drive daily
+- Kinmoon NAS receives a **nightly rsync copy at 03:00** — one-way, time-lagged replication, not a live mirror
+
+**SATA Link Incident (July 6, Resolved):**
+- **One-time event:** `ata2: SATA link down` observed 2026-07-06 19:06-19:07, recovered same session, filesystem remounted 20:35:38
+- **Status:** Not an ongoing/recurring hardware fault as of July 14 dmesg review
+- **Physical fix status:** SATA cable/port swap remains deferred pending physical access and budget availability — not a current technical blocker, infrastructure is functional
 
 ---
 
@@ -1182,53 +1226,4 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Get Conversation History
 | /update    | Session summary   | Merges session into docs (8 files)            |
 | /sync-docs | Full regeneration | Regenerates all documentation (8 files)       |
 | /midas     | CFO report        | Cost analysis and savings summary             |
-| /daily     | Daily notes       | Creates Obsidian daily note (defaults today)  |
-
-### Technical Details
-
-| Component     | Value                                                     |
-|---------------|-----------------------------------------------------------|
-| Telegram Bot  | @JhinGilgamesh_bot (rename pending July 8)               |
-| Chat ID       | 518832696                                                 |
-| Ollama Model  | qwen3:14b (primary local model, 9.3GB, 12GB VRAM, VM 400) |
-| Embedding Model | nomic-embed-text (768 dims, VM 400)                    |
-| Haiku Model   | claude-haiku-4-5-20251001 (Ollama fallback + Da Vinci)   |
-| Web Search    | Firecrawl /search API (2 credits per search)              |
-| n8n Container | CT 211, 192.168.30.211                                    |
-| Qdrant        | VM 400, ports 6333 (REST) + 6334 (gRPC)                  |
-| Langfuse      | CT 223, http://192.168.30.223:3000 (internal VLAN 30 URL) |
-| Proxmox API   | root@pam!gilgamesh token (rename-dependent)              |
-| Proxmox node  | muzakkir (not kuromoon)                                   |
-
-### Cost Tracking Note
-
-- cost_usd calculated from token rates: Haiku $0.80/1M input, $4.00/1M output
-- Ollama tokens captured: data.input_tokens + data.output_tokens from Call Ollama node response
-- Ollama queries cost $0 (local inference)
-- Firecrawl search cost: ~$0.001-0.002 per search (2 credits at community tier)
-- command_type derived from Telegram message text directly
-- **Da Vinci:** claude-haiku-4-5-20251001 (8 separate calls), cost logged immediately after each call
-- **Da Vinci Personal Knowledge gateway:** claude-haiku-4-5-20251001 max_tokens 4000, cost logged after assessment
-
-### n8n Workflows (Count: 15+)
-
-| Workflow                           | Purpose                                  | Nodes | Trigger  |
-|------------------------------------|------------------------------------------|-------|----------|
-| Jeanne Alter — Life Interface      | Main bot, menu, commands, hybrid routing, RAG, extended memory, personal knowledge, web search, Langfuse | 25+  | Telegram |
-| Documentation Pipeline — Update    | Session summary → 8 files                | 7     | Webhook  |
-| Documentation Pipeline — Sync Docs | Full doc regeneration → 8 files          | 7     | Webhook  |
-| Da Vinci — Update Pipeline         | 8 separate Haiku API calls (AI-CONTEXT 25k, changelog 6k, troubleshoot 4k, ROADMAP 8k, agents 8k, current-state 4k, service-catalog 4k, decisions 3k) → GitHub push + Nextcloud + Langfuse + Deck | 35+ | Execute Workflow |
-| Da Vinci — Inbox Watcher           | Staging inbox → calls Update Pipeline (every 15 min) | 6     | Schedule |
-| Da Vinci — Knowledge Indexer       | Obsidian → Qdrant indexing (3am daily, 90 files); partial reindex triggered (04-personal/ only, ~1s) | 8     | Schedule + Webhook |
-| Da Vinci — Personal Knowledge      | Receives facts from agents → Claude assessment → muzakkir-profile.md → Qdrant | 7     | Webhook  |
-| Midas — CFO Report                 | /midas command cost analysis             | 6     | Webhook  |
-| Midas — Daily Brief                | 9am scheduled cost summary               | 4     | Schedule |
-| MERLIN — Reminders                 | 8am daily infrastructure checks          | 8     | Schedule |
-| Jeanne Alter — Daily Note Creator  | Midnight Obsidian daily notes            | 4     | Schedule |
-| Jeanne Alter — Morning Briefing    | 7am daily summary to Telegram            | 5     | Schedule |
-| Jeanne Alter — Email Management    | Read + Notify tier for 4 personal accounts (design complete, build pending) | TBD | Schedule + Webhook |
-| Update Nextcloud File              | Legacy (unpublished)                     | 5     | Webhook  |
-| Push to GitHub                     | Legacy (unpublished)                     | 4     | Webhook  |
-| Da Vinci — Documentation Pipeline  | INACTIVE (deactivated 2026-05-18, orphaned) | 17+ | Webhook |
-
-> Note: Hybrid routing (Phase 41), RAG retrieval (Da Vinci Stage 2), Extended Memory (Phase 7E), Personal Knowledge (Phase 24.9), Triggered Qdrant Re-indexing (Phase 24.10), Web Search, and Email Management design are
+| /daily     |
