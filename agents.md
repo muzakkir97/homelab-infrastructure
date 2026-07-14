@@ -23,7 +23,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026)  
+**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026)  
 **Type:** 8 sequential Haiku API calls with immediate cost logging and Langfuse observability, plus planned 9th step (Nextcloud Deck sync)  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
@@ -215,6 +215,14 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Expected monthly cost at daily frequency: ~$4.80-5.40/month (session updates + personal knowledge)
 
 ### Recent Updates
+**Monitoring Bug Fix (July 14, 2026 — Session Monitoring Bug Fix)**
+- Resolved 8-day stale `MountpointMissing_hddbackup1` Alertmanager alert by fixing node_exporter configuration
+- Root cause: Debian `prometheus-node-exporter` package ships with default `--collector.filesystem.mount-points-exclude` regex containing `mnt`, making all `/mnt/*` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, pve/kinmoon-smb) invisible to Prometheus since at least May 16, 2026
+- Fixed by removing `mnt` from ARGS exclude regex in `/etc/default/prometheus-node-exporter` and restarting `prometheus-node-exporter.service`
+- Confirmed fix: metrics now reporting for all three /mnt mountpoints; Alertmanager alert auto-resolved
+- Storage clarification: hdd-backup-1 is primary live Nextcloud storage (bind-mounted data directory), not a backup copy; Kinmoon NAS receives nightly rsync copy only (one-way, time-lagged at 03:00)
+- Action item: verify which storage target Proxmox vzdump jobs are actually configured against (local hdd-backup-* mount vs kinmoon-smb SMB); check Grafana dashboards for panels that may have been silently empty since ~May 16 due to same exclusion bug
+
 **Email Management Pipeline Design (July 9, 2026 — Session Email Architecture)**
 - Decided email account access belongs to Jeanne Alter (PA/user-facing interface), not Da Vinci (documentation-only writer)
 - Audited personal accounts: 4 personal accounts scoped for pipeline (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com)
@@ -304,19 +312,4 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Promoted decisions.md from Phase 3 to Phase 2 pipeline (rationale: decisions kept being lost between sessions)
 - Bumped AI-CONTEXT max_tokens from 20,000 to 25,000 (was hitting ceiling every run)
 - Updated Claude project instructions with expanded session summary template covering all 8 Da Vinci files explicitly
-- Fixed 5 bugs in new pipeline nodes: null GitHub token, null API keys, incomplete filesToPush array, undefined sessionSummary, backtick template literals
-- Fixed Log Cost — service-catalog command_type (was showing current-state due to copy-paste error)
-- Wired Langfuse observability: single Langfuse node branches off Push to GitHub, creates one trace (da-vinci-update) with 8 child generations per run
-- Test run confirmed: da-vinci-update traces visible in ClickHouse and accessible via /api/public/traces public API
-- Langfuse UI trace list now confirmed working (May 22, 2026)
-- Node count increased from 18 to 35 (expanded from 3 to 8 sequential API calls + associated parse and cost log nodes)
-- Expected cost increased from $0.06 to $0.14-0.16 USD per run
-
-**Phase 16.5 — Pipeline Rebuild and Error Resolution (Complete)**
-- Rebuilt Da Vinci Update Pipeline from 8-file sequential to 3-file separate API calls
-- Resolved looping error: deleted stuck validation file from staging-inbox
-- Implemented immediate cost logging (fires before parse, not after)
-- Corrected Haiku pricing in cost calculations: $0.80/1M input, $4.00/1M output
-- Reduced node count from 35 to 18 (improved pipeline clarity and error isolation)
-- Reduced expected cost per run from $0.14 USD to $0.06 USD
-- Reduced expected
+- Fixed 5 bugs in new pipeline nodes:
