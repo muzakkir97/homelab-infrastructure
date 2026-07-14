@@ -1,6 +1,6 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** July 9, 2026  
+> **Last Updated:** July 14, 2026  
 > **Total Phases:** 104 planned | 52 completed | 0 in progress | 52 future  
 > **Next Session Priority:** Chaldea Rename Propagation OR Deck Sync Manual Backfill OR Jeanne Alter Web Search Quality Improvement
 
@@ -209,6 +209,11 @@ No phases currently in progress.
 
 ## 🎯 Recommended Next Session Order
 
+### MERLIN SSL Check Migration to Uptime Kuma (Urgent Priority)
+**Effort:** 1-2 hours (precedes all other sessions)  
+**Status:** Completed July 14, 2026  
+**Summary:** SSL expiry monitoring re-sourced from hardcoded Cloudflare API (broken) to Uptime Kuma (CT 206, already deployed). Alert was legitimate in design intent; root cause was broken detection mechanism, not the rule. Confirmed fix via `curl localhost:9100/metrics`, Prometheus query, and Alertmanager alert auto-resolution.
+
 ### Chaldea Rename Propagation (Next Session)
 **Effort:** 8 hours  
 **Goal:** Full ecosystem rename from Gilgamesh → Jeanne Alter across bot identity, system prompt, Telegram username, and all 8 documentation files  
@@ -236,12 +241,6 @@ No phases currently in progress.
 **Goal:** Firefly III integration with receipt and PDF statement capture  
 **Deliverables:** Expense tracking, receipt OCR, PDF import, spending insights via Jeanne Alter
 
-### MERLIN SSL Check Migration to Uptime Kuma (Urgent Priority)
-**Effort:** 1-2 hours (precedes all other sessions)  
-**Goal:** Re-source SSL certificate expiry monitoring from Uptime Kuma (CT 206) instead of broken hardcoded Cloudflare API approach  
-**Deadline:** Before July 14, 2026  
-**Deliverables:** Functional SSL expiry alerts via Uptime Kuma → Telegram, eliminates broken Cloudflare token dependency
-
 ---
 
 ## 🔗 Phase Dependencies
@@ -261,7 +260,6 @@ No phases currently in progress.
 - Agent feature development can be integrated into Jeanne Alter refactor
 - Deck sync backfill can occur while other sessions are in progress
 - Domain migration audit (Phase 27.1) can run independently of Scathach/Cu Chulainn builds
-- MERLIN SSL check migration to Uptime Kuma (urgent) can proceed independently and immediately
 - Email Management Pipeline (24.15) can proceed in parallel with Rename Propagation (16.6) after credentials are in n8n store
 
 ---
@@ -279,12 +277,12 @@ A design principle now guides all future agent classification: **Funnel Agents**
 
 **Why this matters:** Prevents agents from duplicating effort already solved by dedicated tools (e.g., MERLIN re-implementing SSL checks that Uptime Kuma already does, Midas re-calculating costs that Langfuse already tracks). Reduces drift risk between duplicate data sources and keeps agent build time focused on the actual differentiator — aggregation and recommendation — rather than plumbing.
 
-### MERLIN Status: Partial Deployment with Critical Urgency
+### MERLIN Status: Partial Deployment with Critical Urgency → RESOLVED (July 14, 2026)
 - **Deployed:** April 27, 2026, v1
-- **Status:** Partially functional — SSL check non-functional (hardcoded date, broken Cloudflare API token dependency)
-- **Urgency:** SSL certificate expiration July 14, 2026 (5 days from July 9 audit date)
-- **Resolution decided:** Re-source SSL check from Uptime Kuma (CT 206, already deployed) which has native HTTPS certificate monitoring. No extra credentials needed, removes Cloudflare token dependency entirely. Small 1-2 hour fix, much better than Vault credential re-store.
-- **Design gap:** Currently reports raw numbers ("X days until expiry") without a recommended action. Per Funnel Agent principle, MERLIN should output two things: status + action recommendation.
+- **Prior Status:** Partially functional — SSL check non-functional (hardcoded date, broken Cloudflare API token dependency)
+- **Urgency (July 9):** SSL certificate expiration July 14, 2026 (5 days from audit date)
+- **Resolution (July 14, 2026):** Re-sourced SSL check from Uptime Kuma (CT 206, already deployed) which has native HTTPS certificate monitoring. Removed Cloudflare token dependency entirely. 1-2 hour fix completed. Alert integrity verified — rule logic was sound, detection mechanism was broken.
+- **Remaining design gap:** Currently reports raw numbers ("X days until expiry") without a recommended action. Per Funnel Agent principle, MERLIN should output two things: status + action recommendation.
 
 ### Midas Status: Partial Deployment with Cost Duplication Issue
 - **Deployed:** April 27, 2026, v1
@@ -319,4 +317,4 @@ A design principle now guides all future agent classification: **Funnel Agents**
 
 ### Jeanne Alter Email Management Pipeline: Design Complete (July 9, 2026)
 - **Status:** Design Complete, not yet implemented; 0/6 rollout steps deployed
-- **Scope:** 4 personal email accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.naj
+- **Scope:** 4 personal email accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@i
