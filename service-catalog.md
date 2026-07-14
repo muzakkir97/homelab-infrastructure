@@ -1,7 +1,7 @@
 # Service Catalog
 
 ## Overview
-Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-07-09.
+Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-07-14.
 
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
@@ -90,6 +90,7 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 13. **VM 400 disk expansion:** Used /dev/vda not /dev/sda (KVM virtio device naming)
 14. **Gilgamesh/Jeanne Alter system prompt:** Explicitly states identity and authority (pending full rename to Jeanne Alter)
 15. **hdd-backup-2 Prometheus alert (2026-07-08):** Copy-paste bug in `alert_rules.yml` (CT 202, line 163) — `MountpointMissing_hddbackup2` rule checked `/mnt/hdd-backup-1` instead of `/mnt/hdd-backup-2`. Fixed via sed, then fully removed per user decision. hdd-backup-2 currently has zero Prometheus alert coverage (intentional tradeoff).
+16. **node_exporter /mnt exclusion (2026-07-14):** Debian package default `--collector.filesystem.mount-points-exclude` regex included `mnt`, making all `/mnt/*` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, pve/kinmoon-smb) invisible to Prometheus since at least 2026-05-16. Fixed by editing `/etc/default/prometheus-node-exporter` to remove `mnt` from exclude regex and restarting service. All three `/mnt` mountpoints now report metrics; `MountpointMissing_hddbackup1` alert auto-resolved.
 
 ### Pipeline Rebuild (2026-05-19)
 - **Issue:** Pipeline looping on error due to stuck file in staging-inbox that failed validation repeatedly (every 15 minutes)
@@ -120,6 +121,7 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 - SKIP detection in Da Vinci nodes must use startsWith() not strict equality (===) — Da Vinci may return multiline responses like "SKIP\n\nReasoning..."
 - Date placeholders ({{date}}) must be replaced in Code nodes before Claude API call, not by Claude itself — more reliable and deterministic
 - VM 400 block device is /dev/vda not /dev/sda (KVM virtio); always use vda for disk operations on VM 400
+- node_exporter systemd unit on Proxmox host is `prometheus-node-exporter.service` (Debian package), not `node_exporter.service`; default exclude regex includes `mnt` which must be removed to expose `/mnt/*` mountpoints to Prometheus; requires restart of service after editing `/etc/default/prometheus-node-exporter`
 
 ### Dependencies
 - Haiku 3.5 API (8 sequential calls, one per file; 9th planned for Deck sync)
@@ -155,11 +157,3 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 **Profile Access:** WebDAV GET with 404 fallback to bootstrap template  
 **Profile Write:** WebDAV PUT (Nextcloud)  
 **Triggered Re-index Webhook:** http://192.168.30.211:5678/webhook/davinci-reindex-personal (POST) — triggers partial Knowledge Indexer run for 04-personal/ folder only (~1s completion time)  
-**Assessment Model:** Claude Haiku 3.5  
-**Assessment Tokens:** max_tokens 4000  
-**Quality Filter:** Stores durable personal facts (e.g., "prefers dark mode"), SKIPs one-time events (e.g., "I slept at 12am tonight") and conversational noise  
-**Cost Logging:** Fires after Claude assessment; entries logged to gilgamesh_costs table  
-**Dependencies:** Claude Haiku API, WebDAV (Nextcloud), agents sending via POST request  
-**Consumers:** Jeanne Alter (writes via async fire-and-forget after all messages >20 chars not starting with /), EMIYA, Midas, future agents (all route Obsidian writes through Da Vinci)  
-**Profile Indexed:** Yes — 04-personal/ included in Qdrant obsidian_knowledge collection for RAG by Jeanne Alter  
-**Receiving Routes:** Direct webhook from Jeanne Alter; also receives permanent-category facts (bills/payments/subscriptions) extracted from
