@@ -1,5 +1,5 @@
 # Current State Documentation
-**Last Updated:** 2026-07-09 (Session 2 — agents.md Completion & Funnel Agent Pattern Established; Email Pipeline Design)
+**Last Updated:** 2026-07-14 (Session 3 — Monitoring Bug Fix: node_exporter /mnt exclusion)
 
 ## Overview
 Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs. Agent ecosystem renamed from "Kuromoon" to "Chaldea" as of 2026-07-08.
@@ -99,6 +99,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ Funnel Agent design principle established (July 9, 2026): defines when an agent should sit on top of existing infrastructure and translate it (MERLIN from Uptime Kuma, Midas from Langfuse, planned Cu Chulainn from Alertmanager) vs. when it should be generative/interface-only (Jeanne Alter, Da Vinci, Scathach) or hybrid (EMIYA). Why: prevents duplicate effort, reduces drift risk, keeps build focus on aggregation + recommendation rather than reinventing existing checks.
 - ✅ MERLIN and Midas design corrections identified (July 9, 2026): both currently reinvent infrastructure monitoring that already exists — MERLIN's SSL check should source from Uptime Kuma (CT 206) instead of broken Cloudflare API token; Midas's cost tracking should source from Langfuse Metrics API instead of duplicate Data Table. Implementation pending.
 - ✅ Jeanne Alter Email Management Pipeline designed (July 9, 2026): design complete, not yet implemented. Architecture: 4× per-account trigger workflows (3× Gmail OAuth2, 1× IMAP for iCloud) → shared Email Classifier sub-workflow → Telegram notify + staging store → permanent facts to Da Vinci Personal Knowledge gateway. Scope: 4 personal accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com); work and NSFW accounts excluded. Credentials will use n8n credential store (first concrete step of ecosystem-wide credential migration). Schedule: 3x/day. Status: Design Complete, 0/6 rollout steps implemented.
+- ✅ node_exporter configuration audit completed (July 14, 2026): Confirmed `prometheus-node-exporter.service` (Debian package) was excluding all `/mnt` mountpoints via default `--collector.filesystem.mount-points-exclude` regex since at least 2026-05-16. Fixed by editing `/etc/default/prometheus-node-exporter` to remove `mnt` from exclude list. Restarted service 2026-07-14 17:45 +08 (PID 1307682 post-fix). Confirmed `hdd-backup-1`, `hdd-backup-2`, and `pve/kinmoon-smb` now report metrics correctly. Alert `MountpointMissing_hddbackup1` auto-resolved after fix.
 - 🔄 Phase 27 — Domain Migration & Infrastructure Audit added to ROADMAP: 27.1 (audit) and 27.2 (migration of 9 homelab subdomains from najhin-gaming.com to muzakkir.tech), Cloudflare zone setup begun July 1 2026, status unconfirmed
 - 🔄 Interest-Capture Loop concept identified (July 7, 2026): design problem of passively detecting lasting interests (e.g., Path of Exile 2) without explicit logging, status: concept only, not scoped
 - 🔄 Gap Analysis: Four Blind Spots identified and logged (July 7, 2026): 1) Time vs. stated priorities, 2) Docs vs. reality drift, 3) Bus factor, 4) Skill-market fit (Terraform/Kubernetes/CI-CD vs. current n8n/LXC/Qdrant builds)
@@ -124,11 +125,4 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Da Vinci Personal Knowledge gateway (filter, assess, merge, write, log)
 - Jeanne Alter sending personal facts to Da Vinci Personal Knowledge gateway
 - Langfuse wired to Jeanne Alter (trace: gilgamesh-chat, contains input/output/metadata)
-- Knowledge Indexer indexing 10 folders (00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/Homelab/homelab-infrastructure)
-- muzakkir-profile.md creation and RAG retrieval by Jeanne Alter
-- Jeanne Alter successfully recalling personal facts via Qdrant RAG (name: Muzakkir, dark mode preference)
-- Web search deployed in Jeanne Alter (Firecrawl /search API, keyword detection, results injection)
-- Search queries routing to Claude Haiku (qwen3:14b cannot follow injected context)
-- Conversation buffer memory operational (last 15 rows from gilgamesh_conversations in Format Messages)
-- Phase 24.10 triggered Qdrant re-indexing after muzakkir-profile.md writes (webhook: /davinci-reindex-personal)
-- Nextcloud Deck API credential verified functional
+- Knowledge Indexer indexing 10 folders (00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/
