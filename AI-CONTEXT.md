@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** July 14, 2026
+> **Last Updated:** July 17, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 21 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026. **Gaming platform expanded July 5, 2026: Enshrouded server (CT 306) deployed in Pelican Panel. Network architecture migrated from double-NAT (ISP router + pfSense) to true bridge mode on Huawei HG8145B7N, eliminating all double-NAT routing conflicts permanently. pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed to 202.184.101.136 (was 202.184.35.79). TP-Link EAP610 AX1800 access point (SSID A21-22A) deployed and configured — root cause of AP failure identified and fixed: TL-SG108E switch ports 7-8 were on legacy VLAN 1, not VLAN20_MAIN. All 21 containers + 1 VM running. DNS records require update. Enshrouded external UDP connectivity not yet retested post-bridging.** **Agents ecosystem renamed from "Kuromoon" to "Chaldea" (July 8, 2026) — Kuromoon now refers to physical hardware only, Chaldea is the agents system layer.** **Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler"), pending full propagation across bot, n8n, Telegram, docs (July 8, 2026).** **Career timeline updated (July 8, 2026): September 2026 job-transition deadline dropped. Cloud/DevOps roles pursued at slower pace. Chaldea project reframed as indefinite, long-term. hdd-backup-2 Prometheus alert removed (copy-paste bug fixed, then intentionally disabled per user decision). Duplicate muzakkir-profile.md.md file exists in Nextcloud. Jeanne Alter assistant messages not saving to Data Table (silent conversation memory breakage).** **Documentation audit completed (July 9, 2026): Cross-session gap analysis identified seven previously-undocumented items from past sessions: Interest-Capture Loop concept, Four Blind Spots analysis (time vs priorities, docs drift, bus factor, skill-market fit), two domains tracked (najhin-gaming.com for gaming, muzakkir.tech for portfolio), two previously-named agents (Cu Chulainn renamed from Guardian May 16, Scathach prioritized May 16, Nightingale health concept May 17), and Phase 27 Domain Migration & Infrastructure Audit. Cu Chulainn and Scathach rename propagation pending. muzakkir.tech Cloudflare zone completion unconfirmed. agents.md structural incompleteness addressed (July 9, 2026): full sections drafted for MERLIN, Midas, EMIYA, Cu Chulainn, Scathach with Agent Type classifications and Funnel Agent design principle. MERLIN Cloudflare SSL expiry check no longer hardcoded — migrated to Uptime Kuma source July 9, resolving the July 14 urgency. Midas cost tracking planned migration from duplicate Data Table to Langfuse Metrics API (low urgency). Cu Chulainn and Scathach sections added with concept-stage governance. Jeanne Alter assistant message table save bug remains critical, unresolved.** **Jeanne Alter Email Management Pipeline design complete (July 9, 2026): Read + Notify tier, 4 personal accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com), work and NSFW accounts excluded. Architecture: per-account triggers → shared Email Classifier → branches to notification and/or Da Vinci Personal Knowledge gateway for permanent categories (bills/payments/subscriptions). Staging store (~7-day retention) for transient email. 3x/day schedule. Credentials (Gmail OAuth2, iCloud IMAP app-specific password) going to n8n credential store — first concrete step of ecosystem-wide credential store migration. Build effort: ~6-8h across 6 rollout steps. Design approved, implementation not yet started.** **Monitoring fix complete (July 14, 2026): node_exporter `/mnt` exclusion bug root-caused and fixed. Debian package's default `--collector.filesystem.mount-points-exclude` regex included `mnt`, making all `/mnt` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, kinmoon-smb) invisible to Prometheus since ~May 16. Fixed by editing `/etc/default/prometheus-node-exporter` ARGS to remove `mnt` from exclude list and restarting service. MountpointMissing_hddbackup1 alert (stuck active for 8 days) auto-resolved. Confirmed hdd-backup-1 is primary live storage for Nextcloud (not a backup copy); Kinmoon NAS receives nightly rsync at 03:00. Physical SATA cable/port swap remains deferred (no budget). All 21 containers + 1 VM remain running and healthy.**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 21 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026. **Gaming platform expanded July 5, 2026: Enshrouded server (CT 306) deployed in Pelican Panel. Network architecture migrated from double-NAT (ISP router + pfSense) to true bridge mode on Huawei HG8145B7N, eliminating all double-NAT routing conflicts permanently. pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed to 202.184.101.136 (was 202.184.35.79). TP-Link EAP610 AX1800 access point (SSID A21-22A) deployed and configured — root cause of AP failure identified and fixed: TL-SG108E switch ports 7-8 were on legacy VLAN 1, not VLAN20_MAIN. All 21 containers + 1 VM running. DNS records require update. Enshrouded external UDP connectivity not yet retested post-bridging.** **Agents ecosystem renamed from "Kuromoon" to "Chaldea" (July 8, 2026) — Kuromoon now refers to physical hardware only, Chaldea is the agents system layer.** **Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler"), pending full propagation across bot, n8n, Telegram, docs (July 8, 2026).** **Career timeline updated (July 8, 2026): September 2026 job-transition deadline dropped. Cloud/DevOps roles pursued at slower pace. Chaldea project reframed as indefinite, long-term. hdd-backup-2 Prometheus alert removed (copy-paste bug fixed, then intentionally disabled per user decision). Duplicate muzakkir-profile.md.md file exists in Nextcloud. Jeanne Alter assistant messages not saving to Data Table (silent conversation memory breakage).** **Documentation audit completed (July 9, 2026): Cross-session gap analysis identified seven previously-undocumented items from past sessions: Interest-Capture Loop concept, Four Blind Spots analysis (time vs priorities, docs drift, bus factor, skill-market fit), two domains tracked (najhin-gaming.com for gaming, muzakkir.tech for portfolio), two previously-named agents (Cu Chulainn renamed from Guardian May 16, Scathach prioritized May 16, Nightingale health concept May 17), and Phase 27 Domain Migration & Infrastructure Audit. Cu Chulainn and Scathach rename propagation pending. muzakkir.tech Cloudflare zone completion unconfirmed. agents.md structural incompleteness addressed (July 9, 2026): full sections drafted for MERLIN, Midas, EMIYA, Cu Chulainn, Scathach with Agent Type classifications and Funnel Agent design principle. MERLIN Cloudflare SSL expiry check no longer hardcoded — migrated to Uptime Kuma source July 9, resolving the July 14 urgency. Midas cost tracking planned migration from duplicate Data Table to Langfuse Metrics API (low urgency). Cu Chulainn and Scathach sections added with concept-stage governance. Jeanne Alter assistant message table save bug remains critical, unresolved.** **Jeanne Alter Email Management Pipeline design complete (July 9, 2026): Read + Notify tier, 4 personal accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com), work and NSFW accounts excluded. Architecture: per-account triggers → shared Email Classifier → branches to notification and/or Da Vinci Personal Knowledge gateway for permanent categories (bills/payments/subscriptions). Staging store (~7-day retention) for transient email. 3x/day schedule. Credentials (Gmail OAuth2, iCloud IMAP app-specific password) going to n8n credential store — first concrete step of ecosystem-wide credential store migration. Build effort: ~6-8h across 6 rollout steps. Design approved, implementation not yet started.** **Monitoring fix complete (July 14, 2026): node_exporter `/mnt` exclusion bug root-caused and fixed. Debian package's default `--collector.filesystem.mount-points-exclude` regex included `mnt`, making all `/mnt` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, kinmoon-smb) invisible to Prometheus since ~May 16. Fixed by editing `/etc/default/prometheus-node-exporter` ARGS to remove `mnt` from exclude list and restarting service. MountpointMissing_hddbackup1 alert (stuck active for 8 days) auto-resolved. Confirmed hdd-backup-1 is primary live storage for Nextcloud (not a backup copy); Kinmoon NAS receives nightly rsync at 03:00. Physical SATA cable/port swap remains deferred (no budget). All 21 containers + 1 VM remain running and healthy.** **Palworld server added July 16, 2026 (CT 307): Deployed in Pelican Panel to test multiplayer gaming infrastructure. External connectivity initially broken due to PublicIP misconfiguration (was pointing to internal LAN IP 192.168.30.219). Root-caused and fixed: Pelican egg "Public IP" variable had User Editable + User Viewable permissions unchecked (blocking manual updates via Startup tab); enabled permissions and set PublicIP to current WAN IP (202.184.109.124). PalWorldSettings.ini found to require unbroken single-line format for OptionSettings block — Pelican's web file editor introduces line breaks, corrupting the file and causing Palworld to silently ignore ALL OptionSettings (not just edited field). Established safe editing method: use `pct exec` + sed from Proxmox host, never the Pelican web editor. Pelican's file Download function (404 error) not yet debugged. In-game stutter with 3 concurrent players traced to nightly vzdump backup job (sequential all-container) running concurrently with gameplay (~02:11 AM), causing CPU/disk I/O contention. Backup/restart consolidation and DDNS automation elevated in priority. WAN IP instability observed: 3 changes in one week (202.184.101.136 → 202.184.103.49 → 202.184.109.124); confirmed as TIME PPPoE session renegotiation behavior. All 22 containers + 1 VM running.** **Total capacity: 22 LXC containers + 1 KVM VM (CT 307 Palworld addition July 16-17).**
 
 ---
 
@@ -163,7 +163,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 ```
 Internet → TIME Fiber (GPON, bridged mode) → Huawei HG8145B7N (bridge mode, no NAT/routing/DHCP)
                                                       ↓
-                                         pfSense WAN (pppoe0, 202.184.101.136)
+                                         pfSense WAN (pppoe0, 202.184.101.136 — see WAN IP Instability)
                                                       ↓
                                             802.1Q Trunk (igc2)
                                                       ↓
@@ -176,6 +176,21 @@ Internet → TIME Fiber (GPON, bridged mode) → Huawei HG8145B7N (bridge mode, 
 
 **Major Change (July 5, 2026):** Eliminated double NAT topology by placing ISP router (Huawei HG8145B7N) into true bridge mode. pfSense now has direct PPPoE connection to the ISP. **This was the underlying root cause of the Enshrouded UDP forwarding failure** — double NAT was blocking inbound UDP traffic. Bridge mode is permanent and resolves this category of problem for all future services requiring inbound access.
 
+### WAN IP Instability (Documented July 16-17, 2026)
+
+**Observed instability:** Three public IP address changes occurred in approximately one week:
+1. 202.184.35.79 → 202.184.101.136 (July 5, 2026, bridge mode migration)
+2. 202.184.101.136 → 202.184.103.49 (July 16, 2026)
+3. 202.184.103.49 → 202.184.109.124 (July 16, 2026, second change same day)
+
+**Root cause:** TIME Fiber PPPoE session renegotiation behavior — IP reassignment occurs on PPPoE reconnect, not strictly predictable intervals. ISP-level DHCP behavior (IPs appear to be DHCP-assigned rather than static), not a bridge-mode artifact.
+
+**Impact on gaming servers:** Palworld (CT 307) PublicIP field and Cloudflare DNS records require manual updates after each WAN IP change. Impact low for established games (friend-invite/Steam relay mechanisms work regardless), but external port-forwarding-based connectivity (raw IP join) breaks until manual update.
+
+**Mitigation strategy:** DDNS automation elevated to high priority (previously queued roadmap item). Should implement automatic Cloudflare DNS update on WAN IP change (detect via pfSense/Uptime Kuma, trigger Cloudflare API update, optionally trigger Palworld PublicIP field update via Pelican API if feasible).
+
+**Current status (as of session end July 17, 2026):** WAN IP is 202.184.109.124. Palworld PublicIP field updated to this value. Cloudflare DNS records for game subdomains (Terraria, Minecraft, Enshrouded, Palworld) still require manual update verification.
+
 ### ISP Router Configuration (Huawei HG8145B7N)
 
 - **Mode:** True bridge mode (all routing, NAT, DHCP, Wi-Fi disabled on this device)
@@ -187,7 +202,7 @@ Internet → TIME Fiber (GPON, bridged mode) → Huawei HG8145B7N (bridge mode, 
 
 - **WAN interface:** Changed from DHCP to **PPPoE (pppoe0)**
 - **PPPoE credentials:** Username `muzakkir655@timebb`, password stored in Vault
-- **Public IP:** `202.184.101.136` (changed from `202.184.35.79` as a result of bridge mode migration — direct assignment via PPPoE, may change on reconnects as still DHCP-assigned by ISP)
+- **Public IP:** `202.184.109.124` (current as of July 17, 2026; subject to ISP-initiated changes on PPPoE renegotiation — see WAN IP Instability section above)
 - **Note:** ISP router's port forwarding table is now irrelevant (dead) — all port forwarding handled exclusively by pfSense
 
 ### VLAN Design (OPERATIONAL)
@@ -220,7 +235,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 
 ## 📦 Infrastructure Inventory (Proxmox)
 
-> **Note:** CTID 201–305 are LXC containers. VMID 400 is a KVM virtual machine with PCIe GPU passthrough — it is NOT an LXC container.
+> **Note:** CTID 201–307 are LXC containers. VMID 400 is a KVM virtual machine with PCIe GPU passthrough — it is NOT an LXC container.
 
 | ID  | Type | Name                    | IP             | Subdomain                     | Autostart | Status    |
 |-----|------|-------------------------|----------------|--------------------------------|-----------|-----------|
@@ -244,10 +259,11 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 | 304 | LXC  | terraria-server         | 192.168.30.216 | —                             | ✅         | ✅ Running |
 | 305 | LXC  | gaming-panel-pelican    | 192.168.30.217 | panel.najhin-gaming.com       | ✅         | ✅ Running |
 | 306 | LXC  | enshrouded-server       | 192.168.30.218 | —                             | ✅         | ✅ Running |
+| 307 | LXC  | palworld-server         | 192.168.30.219 | —                             | ✅         | ✅ Running |
 | 400 | VM   | ollama-gpu              | 192.168.30.221 | ollama.najhin-gaming.com      | ✅         | ✅ Running |
 
-**Current Total: 21 LXC containers + 1 KVM VM**
-**Planned Total: 21 LXC containers + 1 KVM VM (all on VLAN 30, all autostart enabled)**
+**Current Total: 22 LXC containers + 1 KVM VM**
+**Planned Total: 22 LXC containers + 1 KVM VM (all on VLAN 30, all autostart enabled)**
 
 ### Pulse Dashboard (CT 208)
 
@@ -308,6 +324,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Services:** Promtail (log forwarding), ddclient (DNS updates)
 - **Promtail Status:** Fixed May 20, 2026 — crash loop resolved (53,649 restarts), YAML corrupted with shell commands pasted into config file
 - **Loki URL:** http://192.168.30.204:3100/loki/api/v1/push (CT 204, VLAN 30)
+- **DDNS Scope:** Currently updates Cloudflare DNS only; Palworld PublicIP field updates remain manual (not yet automated)
 - **Note:** node_exporter in this container reads host /proc/stat, so CPU alerts are host-level metrics, not CT 207-specific
 
 ### minecraft-server (CT 303)
@@ -338,9 +355,44 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **External connectivity status (July 5, 2026):**
   - **Prior issue:** UDP forwarding blocked by double-NAT topology — root cause identified and resolved via ISP bridge mode
   - **LAN connectivity:** Confirmed working via Pelican panel (reachable from internal network)
-  - **External connectivity:** NOT YET RETESTED post-bridge-mode. Double NAT eliminated; DNS records still point to old IP (202.184.35.79) and require update to new IP (202.184.101.136). Requires manual retest with packet capture once DNS updated.
+  - **External connectivity:** NOT YET RETESTED post-bridge-mode. Double NAT eliminated; DNS records still point to old IP (202.184.35.79) and require update to new IP (202.184.109.124). Requires manual retest with packet capture once DNS updated.
   - **Friend connectivity method:** Steam relay/friend-invite mechanism confirmed working (masks that direct UDP forwarding was previously broken) — now should work directly via fixed port forwarding with bridge mode
 - **Note on Pelican stats:** Panel's CPU/Memory/Disk display cosmetically broken for this Proton-wrapped egg (shows 0%/0 bytes/Unavailable regardless of actual server activity) — use server log for ground truth
+
+### palworld-server (CT 307)
+
+- **Container:** Palworld dedicated server in Pelican Panel (Docker, Proton-wrapped)
+- **IP:** 192.168.30.219
+- **Port:** 8211 UDP (LAN: 192.168.30.219:8211)
+- **Panel:** Pelican Wings (panel.najhin-gaming.com)
+- **Deployed:** July 16, 2026 (new gaming platform expansion)
+- **Configuration:**
+  - **PalWorldSettings.ini location:** `/home/container/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
+  - **World save location:** `/home/container/Pal/Saved/SaveGames/0/6376E22F11CD4588A54E2EB0E7B1CD1F/` (note: no WorldOption.sav present — settings remain in ini file only)
+  - **PublicIP field (for external connectivity):** 202.184.109.124 (current as of July 17, 2026; subject to WAN IP changes — see Network Architecture WAN IP Instability section)
+  - **Pelican egg variable "Public IP":** Now has User Editable + User Viewable permissions enabled (fixed July 17 — previously unchecked, blocking manual IP updates via Startup tab)
+  - **PalCaptureRate:** Default (1.000000) — was tested at 100.000000 but reverted to default after testing
+
+**Critical Known Issues (July 16-17, 2026):**
+- **PalWorldSettings.ini requires unbroken single-line format for OptionSettings block:** Pelican's web file editor (Files tab) introduces line breaks into `OptionSettings=(...)`, corrupting the file and causing Palworld to silently ignore ALL OptionSettings (fallback to defaults). Root cause identified: Pelican doesn't preserve multiline field formatting.
+  - **Safe editing method established:** Use `pct exec 307 -- sed` commands from the Proxmox host to edit ini files directly, never use the Pelican web file editor.
+  - **Example (safe):** `pct exec 307 -- sed -i 's/PalCaptureRate=.*/PalCaptureRate=1.000000/g' /home/container/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
+  
+- **Pelican panel's file Download function (Files tab → Archive → Download) returns 404 "resource not found" error:** Reproducible even when accessing the panel via internal IP (192.168.30.217), ruling out Cloudflare/tunnel as the cause. Root cause not yet identified (suspected Wings/node FQDN mismatch in signed URL generation or archive path issue). Not debugged further this session (time-sensitive save backup was instead completed via `pct exec` + `pct pull` method from Proxmox host).
+  - **Reliable backup workaround:** `pct exec <CTID> -- tar -czf /tmp/backup.tar.gz -C <path> <folder>` followed by `pct pull <CTID> /tmp/backup.tar.gz <destination>` — bypasses Wings/panel entirely, works directly at Proxmox host level.
+
+- **WAN IP instability requires manual PublicIP updates:** Three IP changes observed in one week (July 16-17) due to TIME Fiber PPPoE renegotiation. Each IP change requires: (1) update PalWorldSettings.ini PublicIP field, (2) update Cloudflare DNS records, (3) potentially restart Palworld. **DDNS automation elevated to high priority** to automate PublicIP and DNS updates on IP change.
+
+- **In-game stutter with 3 concurrent players:** Traced to nightly vzdump backup job (sequential all-container, currently ~02:11 AM) running concurrently with gameplay, causing CPU/disk I/O contention. NOT a Palworld resource or hardware capacity issue.
+  - **Mitigation in planning:** Consolidate Palworld restart schedule, Terraria restart schedule, and vzdump backup job into a single off-peak maintenance block (time window not yet finalized).
+
+**Backup information:**
+- SaveGames backup created July 17, 2026 and stored at: `/mnt/hdd-backup-1/palworld-backup-20260716/palworld-save-backup.tar.gz` (22M, verified contents include Level.sav, LevelMeta.sav, Players/ data for world 6376E22F11CD4588A54E2EB0E7B1CD1F)
+- Pre-fix (corrupted, 13-line) PalWorldSettings.ini backed up as `PalWorldSettings.ini.bak` inside the container (pending cleanup/deletion once stability confirmed)
+
+**External connectivity status (as of July 17, 2026):**
+- **LAN connectivity:** Confirmed working via Pelican panel
+- **External connectivity:** NOT YET RETESTED post-bridge-mode and post-ini-fix. Friend connectivity mechanism (Steam relay/invite) presumed working. Direct port forwarding (8211 UDP) should now work with PublicIP correctly set, but not yet verified with packet capture.
 
 ### ollama-gpu (VM 400)
 
@@ -360,6 +412,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Minecraft Server (CT 303):** Paper 1.21.4 on port 25570 (192.168.30.215), Pelican Wings
 - **Terraria Server (CT 304):** tModLoader on port 7777 (192.168.30.216), Pelican Wings
 - **Enshrouded Server (CT 306):** Dedicated server on port 15636 (192.168.30.218), Pelican Wings
+- **Palworld Server (CT 307):** Dedicated server on port 8211 UDP (192.168.30.219), Pelican Wings, deployed July 16, 2026
 - **Windrose (CT 302):** Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE
 
 ---
@@ -539,11 +592,12 @@ Examples of auto-generated skills:
 - New LXC SSH access → pfSense rule template
 - Promtail YAML corruption detection → shell command filtering
 - tModLoader CPU leak diagnosis → cpulimit + cron restart pattern
+- Palworld PublicIP field automation → manual ini edit + Pelican egg variable + Cloudflare DNS pattern
 
 #### Phase 27 — Domain Migration & Infrastructure Audit (New, July 9, 2026)
 
 **Context:** Muzakkir owns two domains (tracked in About Me as of July 9):
-- **najhin-gaming.com** — Permanent for game servers (Minecraft, Terraria, Enshrouded, Pelican panel)
+- **najhin-gaming.com** — Permanent for game servers (Minecraft, Terraria, Enshrouded, Palworld, Pelican panel)
 - **muzakkir.tech** — Professional portfolio domain (purchased July 1, 2026; Cloudflare zone setup directed to begin July 1, completion status unconfirmed as of July 9)
 
 **Phase 27.1 — Infrastructure Audit (Planned)**
@@ -562,7 +616,7 @@ Examples of auto-generated skills:
   - ntfy.najhin-gaming.com → ntfy.muzakkir.tech
   - langfuse.najhin-gaming.com → langfuse.muzakkir.tech
   - home.najhin-gaming.com → home.muzakkir.tech
-- Game server subdomains remain on najhin-gaming.com (Minecraft, Terraria, Enshrouded, panel)
+- Game server subdomains remain on najhin-gaming.com (Minecraft, Terraria, Enshrouded, Palworld, panel)
 - Migration mechanism: Cloudflare Tunnel handles routing; update tunnel routes + DNS records only (no NAT/port-forward changes needed)
 - **Status:** Cloudflare zone for muzakkir.tech setup directed July 1, 2026 — completion status unconfirmed (pending verification next infrastructure session)
 - Effort: ~2-3 hours (audit + DNS update + tunnel reconfig + verification)
@@ -1113,117 +1167,4 @@ Telegram (@JhinGilgamesh_bot) → n8n Workflow → Get Conversation History
 |-----------|---------|
 | **Telegram Trigger** | POST endpoint listening for /messages and /callback_query |
 | **Format Messages** | Builds conversation history (last 15 rows from gilgamesh_conversations), performs Qdrant RAG query, sets claude-sonnet-4 as default model |
-| **If (Needs Web Search?)** | Keyword detection: search, latest, current, today, weather, news, price, who is, when is, what is, how much, find, look up, cari, semak, berapa |
-| **Web Search** | Firecrawl /search endpoint (5 results, 60s timeout) if intent detected |
-| **Inject Search Results** | Code node parses Firecrawl data.web array, injects into context with searchContext field |
-| **Route Model** | Checks Ollama health (3s timeout), routes: searchContext present → Haiku; Ollama online → qwen3:14b; else → Haiku. Overrides Format Messages default. |
-| **Call Ollama** | POST http://192.168.30.221:11434/api/generate with streaming |
-| **Call Claude API** | Anthropic API with claude-haiku-4-5-20251001 (fallback) |
-| **Extract Response** | Normalizes Ollama (string) vs Claude (object) responses, strips markdown, outputs normalized fields |
-| **Save Messages** | Appends to gilgamesh_conversations Data Table (user + assistant rows) — **BUG: assistant messages not saving** |
-| **Send Telegram** | Text message, no Parse Mode (markdown stripped) |
-| **Archive** | Async: when rows >30, archives to Qdrant gilgamesh_conversations collection |
-| **Langfuse** | Async trace (gilgamesh-chat) with input/output/metadata logged to CT 223 |
-| **Personal Knowledge** | Async webhook fire-and-forget (5s timeout) to Da Vinci gateway |
-
-**Conversation Buffer Memory:** Already operational. Format Messages Code node fetches last 15 rows from gilgamesh_conversations table and injects as history in messages array.
-
-**Search Routing Rationale:** qwen3:14b ignores injected search context (trained behavior: "I don't have real-time data"). Claude Haiku correctly follows injected Firecrawl results. Search queries always force Haiku routing.
-
-**Known Issue (July 8-9):** Assistant messages not saving to gilgamesh_conversations Data Table — only user messages visible. Breaks conversation memory persistence. Save Assistant Message step may not be firing. Investigate why step doesn't write or why data table rejects the insert.
-
-**Cost:**
-- Ollama queries: $0 (local inference)
-- Haiku fallback: ~$0.001 per query (token efficiency)
-- Web search: ~$0.001-0.002 per search (2 Firecrawl credits)
-
-**Pronouns:** she/her. Jeanne Alter knows its name + master's name (Muzakkir).
-
-### Email Management Pipeline (Design Complete, July 9, 2026)
-
-**Tier:** Read + Notify
-**Status:** Design complete, implementation not yet started (6-8h effort across 6 rollout steps)
-
-**Scope: 4 Personal Accounts**
-- muzakkir.kholil06@gmail.com (Gmail)
-- muzakkirkholil97@icloud.com (iCloud)
-- hyperjhin00@gmail.com (Gmail)
-- business.najhin@gmail.com (Gmail)
-
-**Excluded Accounts**
-- muzakkir.rahimi@f-secure.com, muzakkir.rahimi.work26@gmail.com (work, company policy risk)
-- adamlil1997@gmail.com (NSFW-labeled, kept fully separate)
-- VM sub-user accounts, device accounts, unused session-expired accounts
-
-**Architecture**
-1. Per-account trigger workflows (3× Gmail OAuth2 native node, 1× IMAP node for iCloud)
-2. Shared Email Classifier sub-workflow (categorizes email, extracts facts)
-3. Branches to:
-   - **Telegram notification** (high-priority categories)
-   - **Da Vinci Personal Knowledge gateway** (permanent categories: bills, payments, subscriptions)
-4. **Staging store** (~7-day retention, n8n Data Table or Obsidian 04-personal/email-staging/)
-5. Transient email (non-permanent) held short-term, auto-cleared after ~7 days
-
-**Model Routing**
-- Primary: qwen3:14b (local)
-- Fallback: Claude Haiku API (if Ollama down)
-- Same routing pattern as Jeanne Alter's existing behavior
-
-**Schedule**
-- 3x/day (morning/afternoon/evening, exact times TBD at build)
-
-**Credentials**
-- Gmail OAuth2 (n8n native node) — 3 accounts
-- iCloud IMAP app-specific password (new, to be generated at appleid.apple.com)
-- Both stored in n8n's credential store — **first concrete implementation of ecosystem-wide credential store migration**
-
-**Key Design Decisions (July 9, 2026)**
-1. **Email assigned to Jeanne Alter, not Da Vinci** — Jeanne Alter is the user-facing PA; Da Vinci remains sole Obsidian writer. Extracted facts routed to Da Vinci via its existing Personal Knowledge gateway webhook, preserving "Da Vinci is sole writer" boundary.
-2. **Account scope — 4 personal only** — Work accounts excluded due to F-Secure company policy risk. NSFW account excluded to keep sensitive content out of automated pipeline.
-3. **Behavior tier — Read + Notify** — Chosen over passive extraction-only (limited value) and full inbox ownership (premature automation with no human loop).
-4. **Categorization — fixed categories + sender whitelist combined** — Rejects LLM-only judgment (inconsistent), rejects whitelist-only (misses new senders). Combination gives reliability + flexibility.
-5. **Permanent vs staged facts** — Only bills/payments/subscriptions become permanent second-brain entries. Everything else in staging store (~7 days), auto-cleared.
-6. **Model routing — standard qwen3:14b/Haiku fallback** — Consistency with Jeanne Alter's existing pattern outweighs marginal privacy gain of local-only policy.
-7. **Credentials strategy — n8n credential store (no hardcoding)** — First concrete step of ecosystem-wide credential migration (Phase 24.11).
-
-**Build Steps (Pending)**
-1. Generate iCloud app-specific password (appleid.apple.com)
-2. Set up 4 credentials in n8n credential store (3× Gmail OAuth2, 1× IMAP)
-3. Build Email Classifier sub-workflow; test against muzakkir.kholil06@gmail.com only
-4. Add remaining 3 account trigger workflows once classifier validated
-5. Wire staging store + auto-clear job (~7-day retention)
-6. Wire Telegram notification template for email alerts
-7. Supply initial sender whitelist + decide 3x/day schedule times
-8. Confirm permanent-category facts reach muzakkir-profile.md via Da Vinci Personal Knowledge gateway
-
-### Features
-
-- **Conversation memory:** Last 15 messages stored in n8n Data Tables (buffer memory) — **broken: assistant messages not saving**
-- **Extended memory:** Conversations archived to Qdrant at 30+ rows (long-term recall)
-- **Smart routing:** Ollama (local, primary) → Haiku (fallback or search)
-- **RAG knowledge recall:** Queries Qdrant for relevant Obsidian content + personal profile + conversations
-- **Web search:** Real-time information via Firecrawl /search API (keyword-based intent detection)
-- **Email management:** Read + Notify tier for 4 personal accounts, design complete July 9, 2026
-- **Cost tracking:** Token usage logged to gilgamesh_costs table with command_type; cost_usd calculated from token rates (includes Firecrawl search cost)
-- **Inline keyboard menu:** Full menu system with all submenus working
-- **Context sync:** /update command pushes session summaries to 8 documentation files via GitHub
-- **Documentation pipeline:** /sync-docs triggers full documentation regeneration (8 files)
-- **Slash commands:** 11 commands for direct actions
-- **Health tracking:** Food log, BP log, medication log via interactive button prompts (Phase 22.8B)
-- **Personal knowledge:** Recalls profile facts via RAG (name, preferences, history)
-- **Langfuse observability:** Traces visible in langfuse.najhin-gaming.com with input/output/metadata
-
-### Slash Commands
-
-| Command    | Purpose           | Description                                   |
-|------------|-------------------|-----------------------------------------------|
-| /help      | Quick reference   | Shows all available commands and menu options |
-| /clear     | Memory reset      | Clears conversation memory (last 15 messages) |
-| /memory    | View history      | Shows recent conversation messages            |
-| /cost      | Usage tracking    | Displays token usage and estimated costs      |
-| /alerts    | System status     | Shows active Alertmanager alerts              |
-| /backup    | Backup status     | Last backup times for all containers          |
-| /update    | Session summary   | Merges session into docs (8 files)            |
-| /sync-docs | Full regeneration | Regenerates all documentation (8 files)       |
-| /midas     | CFO report        | Cost analysis and savings summary             |
-| /daily     |
+| **If
