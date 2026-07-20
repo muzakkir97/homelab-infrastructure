@@ -1,6 +1,6 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** July 14, 2026  
+> **Last Updated:** July 17, 2026  
 > **Total Phases:** 104 planned | 52 completed | 0 in progress | 52 future  
 > **Next Session Priority:** Chaldea Rename Propagation OR Deck Sync Manual Backfill OR Jeanne Alter Web Search Quality Improvement
 
@@ -114,13 +114,14 @@ No phases currently in progress.
 | 24.13 | Universal Time/Date Awareness                | Phase 24.12       | 1h     | Inject current date/time into every agent's system prompt (pattern: Da Vinci's {{date}} replacement), applied ecosystem-wide instead of single gateway |
 | 24.14 | Jeanne Alter Web Search Quality Improvement  | Phase Web Search  | 4h     | Iterative multi-query search with synthesis step, closer to Gemini-style search; replace single Firecrawl + Haiku call pattern |
 | 24.15 | Jeanne Alter Email Management Pipeline       | Phase 24.11       | 6-8h   | Design Complete (July 9, 2026). 4 personal email accounts (Gmail OAuth2 × 3, iCloud IMAP × 1) → shared Email Classifier sub-workflow → Telegram notification + permanent-category facts (bills/payments/subscriptions) to Da Vinci Personal Knowledge gateway. 3x daily schedule. Credentials in n8n store. qwen3:14b primary, Claude Haiku fallback. 6 rollout steps: credentials → classifier → account triggers → staging store → notification → verify writes. |
+| 32    | DDNS Automation & WAN IP Stability Monitoring | Phase 3           | 4-6h   | **Elevated Priority (July 17, 2026)** due to repeated WAN IP changes within one week (3 changes recorded: 202.184.101.136 → 202.184.103.49 → 202.184.109.124 → 202.184.109.124 during session timeframe). Extend CT 207 ddclient automation to cover Palworld egg PublicIP variable in Pelican (currently manual sync required). Add real-time WAN IP monitoring to Uptime Kuma or ntfy to alert when IP changes detected. Consider DNS failover strategy if ISP instability continues. |
 
 #### Agent Feature Development
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
 |-------|-------------------------------------------------|-------------------|--------|------------------------------------------|
-| Cu Chulainn | Security Monitoring Agent                   | Phase 24.10       | 6-8h   | Renamed May 16, 2026 from "Guardian"; alert translation, threat detection, security reporting; 2nd build priority; funnel agent sourcing from Alertmanager once built |
+| Cu Chulainn | Security Monitoring Agent                   | Phase 24.10       | 6-8h   | Renamed May 16, 2026 from "Guardian"; alert translation, threat detection, security reporting; 2nd build priority; funnel agent sourcing from Alertmanager once built. Note: n8n workflow references still use old "Guardian" name — rename propagation pending alongside Phase 16.6. |
 | Smart Morning Briefing | Dynamic Briefing (weather, schedule, health, tasks) | Phase 24.10 | 2h | Real-time weather via Firecrawl, calendar awareness, health nudges, task integration |
-| Midas v2 | Financial Intelligence (Firefly III + Receipt Capture) | Phase Midas | 10-12h | Expense tracking, receipt/PDF import, spending insights; cost source migration to Langfuse Metrics API pending (small follow-up task, not urgent) |
+| Midas v2 | Financial Intelligence (Firefly III + Receipt Capture) | Phase Midas | 10-12h | Expense tracking, receipt/PDF import, spending insights; cost source migration to Langfuse Metrics API pending (small follow-up task, not urgent). Design gap (July 9, 2026): currently reports totals without recommended actions; per Funnel Agent principle, should suggest spending optimization when approaching $10 monthly limit. |
 | Proactive Goal Nudges | Condition-based alerts via ntfy      | Phase 24.10       | 3-4h   | Goal tracking with Telegram notifications |
 | Weekly Automated Review | Sunday digest (health, spending, homelab) | Phase 24.10 | 2-3h | Summarized weekly activity report |
 | "What did I do?" Recall | Natural language query over life_log | Phase 24.10 | 2h     | Search personal activity history |
@@ -168,9 +169,10 @@ No phases currently in progress.
 |-------|--------------------------------------|--------------|--------|-----------------------------------------|
 | 25    | WiFi Access Point Deployment         | Hardware     | 4h     | EAP610 deployment COMPLETE (July 5, 2026) — AX1800 access point (SSID `A21-22A`) now live on VLAN20_MAIN via TL-SG108E port 7. Functioning correctly after VLAN misconfiguration fix. |
 | 26    | Legacy Network Cleanup               | Phase 25     | 3h     | Partially addressed (July 5): TL-SG108E ports 7-8 VLAN migration from legacy VLAN 1 to VLAN20_MAIN complete. Remaining work: migrate switch management IP from 192.168.1.20 (legacy) to proper VLAN10_MGMT address. |
-| 27    | Domain Migration & Infrastructure Audit | Phase 14 | 8h     | **27.1 (audit):** Cloudflare Access policies, Tunnel routes, SSL, NPM configs, DNS hygiene audit across existing setup. **27.2 (migration):** Nine homelab subdomains move from najhin-gaming.com to muzakkir.tech (grafana, n8n, vault, passwords/Vaultwarden, cloud/Nextcloud, finance/Firefly III, ntfy, langfuse, home/Pulse Dashboard). Game server subdomains (mc, terraria, enshrouded, panel) remain permanently on najhin-gaming.com. Cloudflare zone setup for muzakkir.tech directed to begin July 1, 2026 — completion status unconfirmed, verify next infrastructure session. |
+| 27    | Domain Migration & Infrastructure Audit | Phase 14 | 8h     | **27.1 (audit):** Cloudflare Access policies, Tunnel routes, SSL, NPM configs, DNS hygiene audit across existing setup. **27.2 (migration):** Nine homelab subdomains move from najhin-gaming.com to muzakkir.tech (grafana, n8n, vault, passwords/Vaultwarden, cloud/Nextcloud, finance/Firefly III, ntfy, langfuse, home/Pulse Dashboard). Game server subdomains (mc, terraria, enshrouded, panel) remain permanently on najhin-gaming.com. Cloudflare zone setup for muzakkir.tech directed to begin July 1, 2026 — completion status unconfirmed, verify next infrastructure session. **Action Item (July 17, 2026):** Update Cloudflare DNS records for Palworld, Terraria, Minecraft, and Enshrouded subdomains under najhin-gaming.com — currently pointing at stale IPs from before session changes. |
 | 28    | Storage Optimization                 | —            | 6h     | Move Nextcloud data, thin pool cleanup |
 | 29    | Performance Monitoring Expansion     | Phase 5      | 5h     | Advanced metrics and alerting rules    |
+| 33    | Maintenance Window Consolidation & Automation | Phase 25 | 4h | **New Phase (July 17, 2026).** Consolidate Palworld + Terraria restart schedules with nightly vzdump backup job into single off-peak maintenance block (exact timing pending confirmation of reliably dead low-usage hour, currently all events scattered). Per-server restart Schedules in Pelican to be set up once window finalized. Reschedule vzdump job (currently ~02:11 AM, conflicts with active gameplay) via Datacenter → Backup. |
 
 ### 🛡️ Core Services (Priority: Medium)
 
@@ -251,7 +253,7 @@ No phases currently in progress.
 3. **Agent Feature Development Track:** Phase 24.12 → Scathach (build priority 1st, LangGraph evaluation sequenced after 24.12) → Cu Chulainn (build priority 2nd) → Goal Nudges → Plan My Day
 4. **Email & Credential Track:** Phase 24.11 (Credential Store Migration) → Phase 24.15 (Email Management) → Phase 24.12 (unified memory in refactor)
 5. **Gaming Platform Track:** Mash 59-64 (can run parallel to Chaldea development)
-6. **Infrastructure Track:** 25-29 (low priority, mostly independent; Phases 25 & 26 progressing; Phase 27 newly prioritized)
+6. **Infrastructure Track:** 25-29, 32, 33 (low-medium priority; Phases 25 & 26 progressing; Phase 27 newly prioritized; Phase 32 DDNS elevated due to WAN instability; Phase 33 maintenance consolidation added July 17, 2026)
 7. **Career Development Track:** 35-36 (depends on infrastructure completion)
 
 **Parallel Development Opportunities:**
@@ -261,6 +263,7 @@ No phases currently in progress.
 - Deck sync backfill can occur while other sessions are in progress
 - Domain migration audit (Phase 27.1) can run independently of Scathach/Cu Chulainn builds
 - Email Management Pipeline (24.15) can proceed in parallel with Rename Propagation (16.6) after credentials are in n8n store
+- **DDNS Automation (Phase 32) should begin before next major infrastructure change**, given three WAN IP changes recorded within one week during July 17 session
 
 ---
 
@@ -298,23 +301,4 @@ A design principle now guides all future agent classification: **Funnel Agents**
   - 24.8 (Langfuse Observability) ✅ — LLM performance tracking wired
 - **Incomplete sub-phases:** 24.2-24.6 (Alert Translation, Container Updates, Knowledge Ingestion, Proactive Monitoring, Performance Optimization)
 - **Gap:** EMIYA is documented as a roadmap category with completed infrastructure underneath it, not yet a unified running workflow that reasons over that infrastructure. Once scoped, the agent translation layer can be built on top of these existing systems.
-- **Overlap flagged:** EMIYA's planned Alert Translation (24.2) and Cu Chulainn's core responsibility both source from Alertmanager. Worth deciding later whether these merge into one workflow with two lenses (general ops vs. security) or remain separate.
-
-### Cu Chulainn Status: Renamed Concept, Build Priority 2nd
-- **Renamed:** May 16, 2026 from "Guardian"
-- **Build priority:** 2nd (behind Scathach)
-- **Status:** Concept stage — no implementation work begun
-- **Role:** Security monitoring and threat detection agent; funnel pattern (translates Alertmanager alerts into readable, prioritized security reporting)
-- **Gap:** All n8n workflow references still use old "Guardian" name — name propagation pending alongside broader Jeanne Alter rename.
-- **Design note:** In FGO canon, Cu Chulainn is Scathach's student, reflected in build order.
-
-### Scathach Status: Named Concept, Build Priority 1st, LangGraph Evaluation Pending
-- **Prioritized:** May 16, 2026 as 1st build priority in entire agent roster
-- **Status:** Concept stage — no implementation work begun
-- **Role:** Career growth and job application workflows; **not** a funnel agent (generative reasoning work, nothing existing to translate)
-- **Blocking prerequisite (updated July 9):** LangGraph evaluation should happen *after* Phase 24.12 (Jeanne Alter refactor to n8n's native AI Agent node), not standalone. Phase 24.12 tests whether n8n's native AI Agent node can handle multi-step autonomous reasoning — if it can, that same node may cover Scathach's needs too, avoiding the need for a second orchestration framework. Original decision (LangGraph must be evaluated before implementation scope) still holds, but now sequenced behind 24.12.
-- **Design note:** In FGO canon, Scathach is Cu Chulainn's teacher, master of combat and strategy.
-
-### Jeanne Alter Email Management Pipeline: Design Complete (July 9, 2026)
-- **Status:** Design Complete, not yet implemented; 0/6 rollout steps deployed
-- **Scope:** 4 personal email accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@i
+- **Overlap flagged:** EMIYA's planned Alert Translation (24.2) and Cu Chulainn's core responsibility both source from Alertmanager. Worth deciding later whether these merge into
