@@ -1,7 +1,7 @@
 # Service Catalog
 
 ## Overview
-Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-07-14.
+Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-07-17.
 
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
@@ -122,6 +122,9 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 - Date placeholders ({{date}}) must be replaced in Code nodes before Claude API call, not by Claude itself — more reliable and deterministic
 - VM 400 block device is /dev/vda not /dev/sda (KVM virtio); always use vda for disk operations on VM 400
 - node_exporter systemd unit on Proxmox host is `prometheus-node-exporter.service` (Debian package), not `node_exporter.service`; default exclude regex includes `mnt` which must be removed to expose `/mnt/*` mountpoints to Prometheus; requires restart of service after editing `/etc/default/prometheus-node-exporter`
+- Pelican web-based file editor introduces hard line breaks into multi-line ini values (e.g., PalWorldSettings.ini's OptionSettings block); Palworld silently ignores entire OptionSettings block if split across lines instead of remaining a single unbroken line. Safe method: edit via `pct exec` + `sed` commands from Proxmox host, never via panel Files tab.
+- Pelican's PalworldServerConfigParser (run in PalServer.sh at container boot) auto-populates PublicIP from local allocation IP when egg's "Public IP" variable is empty; must be made User Editable + User Viewable to allow manual override via Startup tab.
+- Pelican panel file Download function (Files tab → Archive → Download) has a known bug returning 404 "resource not found" for some eggs/nodes (root cause suspected in Wings FQDN/signed URL generation); reliable workaround is `pct exec <CTID> -- tar -czf /tmp/backup.tar.gz ...` followed by `pct pull <CTID> /tmp/backup.tar.gz ...` from Proxmox host, bypassing Wings entirely.
 
 ### Dependencies
 - Haiku 3.5 API (8 sequential calls, one per file; 9th planned for Deck sync)
@@ -146,14 +149,4 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 
 ## Da Vinci — Personal Knowledge Gateway
 **Status:** Active (deployed 2026-05-22)  
-**Type:** Internal n8n Webhook Service  
-**URL:** http://192.168.30.211:5678/webhook/davinci-personal-knowledge  
-**Method:** POST  
-**Auth Method:** None (internal VLAN 30 only)  
-**Purpose:** Receive personal facts from agents (Jeanne Alter, EMIYA, Midas), assess durability via Claude Haiku, merge with existing profile, write durable facts to muzakkir-profile.md in Obsidian, skip one-time events and conversational noise  
-**Workflow Name:** Da Vinci — Personal Knowledge  
-**Container:** CT 211 (automation-n8n)  
-**Profile Location:** Obsidian/second-brain/04-personal/muzakkir-profile.md  
-**Profile Access:** WebDAV GET with 404 fallback to bootstrap template  
-**Profile Write:** WebDAV PUT (Nextcloud)  
-**Triggered Re-index Webhook:** http://192.168.30.211:5678/webhook/davinci-reindex-personal (POST) — triggers partial Knowledge Indexer run for 04-personal/ folder only (~1s completion time)  
+**Type:** Internal n
