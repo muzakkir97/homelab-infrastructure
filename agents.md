@@ -23,7 +23,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026)  
+**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026)  
 **Type:** 8 sequential Haiku API calls with immediate cost logging and Langfuse observability, plus planned 9th step (Nextcloud Deck sync)  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
@@ -215,6 +215,26 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Expected monthly cost at daily frequency: ~$4.80-5.40/month (session updates + personal knowledge)
 
 ### Recent Updates
+**Palworld Troubleshooting Session (July 17, 2026 — Session Palworld PublicIP & Settings)**
+- External friend unable to connect to Palworld server (CT 307) — root cause: PalWorldSettings.ini PublicIP was set to container's internal LAN IP (192.168.30.219) instead of public WAN IP
+- Discovered Pelican egg "Public IP" variable was not user-editable by default; enabled via Admin → Eggs → Palworld → Egg Variables (set both User Editable and User Viewable permissions)
+- Pelican's PalworldServerConfigParser auto-populates PublicIP from local container allocation (192.168.30.219) on every boot when the egg's Public IP variable is empty — confirmed source of silent ini reverts before permissions were enabled
+- PalCaptureRate setting change had no effect in-game despite correct-looking file contents; diagnosed corrupted PalWorldSettings.ini (13 lines instead of 2) caused by Pelican's web-based file editor introducing hard line breaks into OptionSettings=(…) block
+- Palworld requires OptionSettings block to remain a single unbroken line; broken line causes server to silently ignore ENTIRE OptionSettings block (not just edited field) and fall back to defaults — confirmed root cause of PalCaptureRate not applying
+- Fixed ini corruption via `pct exec` commands from Proxmox host, bypassing Pelican's web editor
+- Verified PalCaptureRate=100 change took effect in-game after line-break fix; subsequently reverted to default (1.000000)
+- Established safe editing method: PalWorldSettings.ini should be edited via `pct exec 307 -- sed` from Proxmox host, never via Pelican web file editor, to avoid line-break corruption
+- Attempted file download via Pelican panel (Files tab → Archive → Download) failed with "resource not found" 404, reproducible on internal IP (ruling out Cloudflare); root cause not identified (suspected Wings/node FQDN misconfiguration) — not investigated further due to time constraints
+- Established reliable backup method: `pct exec <CTID> -- tar -czf /tmp/backup.tar.gz -C <path> <folder>` + `pct pull <CTID> /tmp/backup.tar.gz <destination>` — bypasses Wings/panel entirely
+- Created Palworld SaveGames backup: /mnt/hdd-backup-1/palworld-backup-20260716/palworld-save-backup.tar.gz (22M, verified contents)
+- Confirmed no WorldOption.sav exists in current world save (CT 307 using Palworld version that does not lock settings into save file)
+- Diagnosed in-game stutter with 3 concurrent players: NOT a Palworld resource allocation issue; caused by nightly vzdump backup job (sequential, all-container) running concurrently with active gameplay (CPU/disk I/O contention observed during backup of CT 222/CT 223)
+- Discussed consolidating Palworld/Terraria restart schedules with nightly vzdump backup window into single off-peak maintenance block
+- WAN IP instability confirmed: 3 changes in ~1 week (202.184.35.79 → 202.184.101.136 → 202.184.103.49 → 202.184.109.124 during session); manual PublicIP update required on each change
+- Elevated DDNS automation priority on roadmap given repeated WAN IP instability
+- Updated AI-CONTEXT.md: Palworld PublicIP corrected to 202.184.109.124, new known issues for Pelican ini editing and file download documented, safe editing method established
+- Updated current-state.md: CT 307 PublicIP updated, PalCaptureRate reverted to default, SaveGames backup location recorded
+
 **Monitoring Bug Fix (July 14, 2026 — Session Monitoring Bug Fix)**
 - Resolved 8-day stale `MountpointMissing_hddbackup1` Alertmanager alert by fixing node_exporter configuration
 - Root cause: Debian `prometheus-node-exporter` package ships with default `--collector.filesystem.mount-points-exclude` regex containing `mnt`, making all `/mnt/*` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, pve/kinmoon-smb) invisible to Prometheus since at least May 16, 2026
@@ -286,30 +306,3 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Full rebuild path (3am UTC schedule) unchanged: indexes all 10 folders (~21s)
 - Profile updates now immediately reflected in Qdrant obsidian_knowledge collection
 - Node count increased from 35 to 36 (added Trigger Reindex node)
-
-**Phase 24.9 — Personal Knowledge System (Complete)**
-- Deployed Da Vinci — Personal Knowledge gateway (separate n8n workflow) to receive facts from all agents
-- Jeanne Alter (formerly Gilgamesh) wired to send personal facts via async webhook to Da Vinci gateway (branch off Extract Response node)
-- muzakkir-profile.md created at 04-personal/ (managed by Da Vinci, indexed in Qdrant)
-- Jeanne Alter wired to Langfuse (branch off Extract Response, trace name: gilgamesh-chat, logs input/output/metadata)
-- Updated Jeanne Alter system prompt: explicitly names self as Gilgamesh/Gil, names master as Muzakkir (pending rename to Jeanne Alter throughout)
-- Knowledge Indexer updated: added 04-personal/, fixed folder names (08-agents, 09-people, 10-projects), added empty file filter
-- Qdrant obsidian_knowledge: 1,736 chunks (was 1,567), now includes personal folder
-- Langfuse UI trace list fully operational (May 22, 2026 — 1-hour analytics delay confirmed by design)
-- Fixed 5 bugs in personal knowledge gateway: SKIP detection (startsWith vs ===), date placeholder replacement, profile fetch fallback, constant reassignment, VM 400 disk device naming
-- All agents (Jeanne Alter, future EMIYA/Midas) route Obsidian writes through Da Vinci, not directly
-
-**Documentation Audit (May 22, 2026 — Corrections Only)**
-- Identified and corrected 11 discrepancies across 4 files (ROADMAP.md, current-state.md, agents.md, AI-CONTEXT.md)
-- AI-CONTEXT.md: removed hallucinated llama3.2:latest from installed models list
-- ROADMAP.md: archived 5 phases (22.8C, 22.8D, 22.8E, 22.15, 22.16) retired May 10, 2026; moved In Progress section from 1 to 0; updated Critical Path; added Phase 7E to completed table; updated next session recommendation to Phase 24.10 (Triggered Qdrant Re-indexing)
-- agents.md: updated MERLIN status from Planned/0/4 to Active (Partial)/2/4 (deployed April 27, 2026); updated Midas status from Planned/0/4 to Active (Partial)/2/4 (deployed April 27, 2026); corrected Knowledge Indexer folder list to 4 confirmed folders; flagged Knowledge Indexer folder list for manual verification
-- current-state.md: replaced hallucinated hardware specs (EPYC 5645/256GB/RTX 4070) with actual hardware (Ryzen 5 5600X, 128GB DDR4, RX 6700 XT); corrected storage reference from non-existent CT 215 to CT 220 (Nextcloud); corrected Knowledge Indexer indexed folders list
-
-**Phase 24.8 — Da Vinci Update Pipeline Expansion to 8 Files + Langfuse Wiring (Complete)**
-- Expanded Da Vinci Update Pipeline from 3-file to 8-file sequential Haiku API chain May 21, 2026
-- Added 5 new files: ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
-- Promoted decisions.md from Phase 3 to Phase 2 pipeline (rationale: decisions kept being lost between sessions)
-- Bumped AI-CONTEXT max_tokens from 20,000 to 25,000 (was hitting ceiling every run)
-- Updated Claude project instructions with expanded session summary template covering all 8 Da Vinci files explicitly
-- Fixed 5 bugs in new pipeline nodes:
