@@ -1,5 +1,5 @@
 # Current State Documentation
-**Last Updated:** 2026-07-14 (Session 3 — Monitoring Bug Fix: node_exporter /mnt exclusion)
+**Last Updated:** 2026-07-17 (Session 4 — Palworld Server Troubleshooting: PublicIP, ini corruption, WAN instability)
 
 ## Overview
 Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs. Agent ecosystem renamed from "Kuromoon" to "Chaldea" as of 2026-07-08.
@@ -100,29 +100,17 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ MERLIN and Midas design corrections identified (July 9, 2026): both currently reinvent infrastructure monitoring that already exists — MERLIN's SSL check should source from Uptime Kuma (CT 206) instead of broken Cloudflare API token; Midas's cost tracking should source from Langfuse Metrics API instead of duplicate Data Table. Implementation pending.
 - ✅ Jeanne Alter Email Management Pipeline designed (July 9, 2026): design complete, not yet implemented. Architecture: 4× per-account trigger workflows (3× Gmail OAuth2, 1× IMAP for iCloud) → shared Email Classifier sub-workflow → Telegram notify + staging store → permanent facts to Da Vinci Personal Knowledge gateway. Scope: 4 personal accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com); work and NSFW accounts excluded. Credentials will use n8n credential store (first concrete step of ecosystem-wide credential migration). Schedule: 3x/day. Status: Design Complete, 0/6 rollout steps implemented.
 - ✅ node_exporter configuration audit completed (July 14, 2026): Confirmed `prometheus-node-exporter.service` (Debian package) was excluding all `/mnt` mountpoints via default `--collector.filesystem.mount-points-exclude` regex since at least 2026-05-16. Fixed by editing `/etc/default/prometheus-node-exporter` to remove `mnt` from exclude list. Restarted service 2026-07-14 17:45 +08 (PID 1307682 post-fix). Confirmed `hdd-backup-1`, `hdd-backup-2`, and `pve/kinmoon-smb` now report metrics correctly. Alert `MountpointMissing_hddbackup1` auto-resolved after fix.
+- ✅ Palworld server connectivity debugging and fixes deployed (July 17, 2026): PublicIP field corrected from internal LAN IP (192.168.30.219) to current WAN IP (202.184.109.124); Pelican egg "Public IP" variable permissions enabled (User Editable + User Viewable) to prevent future silent reverts; PalWorldSettings.ini corruption from web editor line breaks resolved via pct exec sed commands from Proxmox host; SaveGames backup created via pct exec/pct pull; consolidated maintenance schedule planning initiated to address nightly vzdump backup contention with active gameplay.
 - 🔄 Phase 27 — Domain Migration & Infrastructure Audit added to ROADMAP: 27.1 (audit) and 27.2 (migration of 9 homelab subdomains from najhin-gaming.com to muzakkir.tech), Cloudflare zone setup begun July 1 2026, status unconfirmed
 - 🔄 Interest-Capture Loop concept identified (July 7, 2026): design problem of passively detecting lasting interests (e.g., Path of Exile 2) without explicit logging, status: concept only, not scoped
 - 🔄 Gap Analysis: Four Blind Spots identified and logged (July 7, 2026): 1) Time vs. stated priorities, 2) Docs vs. reality drift, 3) Bus factor, 4) Skill-market fit (Terraform/Kubernetes/CI-CD vs. current n8n/LXC/Qdrant builds)
 - 🔄 Nextcloud Deck sync designed and approved for Phase 24.11, awaiting manual backfill of existing cards before automation deployment
 - 🔄 Jeanne Alter Email Management Pipeline awaiting implementation: 6 rollout steps pending (credentials setup → classifier build → account trigger workflows → staging store + auto-clear → Telegram notification → verification). Action items logged in decisions.md.
+- 🔄 WAN IP instability (PPPoE renegotiation): Three changes recorded in ~1 week (2026-07-10 through 2026-07-17). DDNS automation elevated as priority work item. Current IP as of session end: 202.184.109.124 (will drift on next renegotiation — known unresolved issue).
+- 🔄 Palworld/Terraria/vzdump maintenance consolidation: Determine reliable off-peak time window and reschedule all three events into single block to eliminate CPU/disk I/O contention during active gameplay hours.
+- 🔄 Pelican panel file Download function (404 "resource not found"): Root cause not identified (suspected Wings node FQDN/signed URL mismatch). Worked around via pct exec/pct pull; investigation deprioritized pending other work.
 - ⚠️ GitHub docs/ folder contains stale changelog.md and troubleshoot.md artifacts from old pipeline — needs cleanup
 - ⚠️ muzakkir-profile.md.md duplicate file exists in Nextcloud 04-personal/ folder (conflict artifact from Obsidian sync + WebDAV write race)
 - ⚠️ Assistant messages not appearing in gilgamesh_conversations Data Table (only user messages visible) — Save Assistant Message may not be firing correctly
 - ⚠️ **URGENT:** MERLIN's SSL check is non-functional (hardcoded to July 14, 2026 deadline) — Uptime Kuma migration required before July 14 to resolve; no execution risk (report-only) but blind-spot risk is high. Decision made July 9: MERLIN should re-source from Uptime Kuma's native cert monitoring instead. Implementation pending.
-- ⚠️ **SECURITY:** Real account passwords for ~15 personal accounts were pasted into chat during email account discovery (July 9). Action item: rotate all passwords and move to Vaultwarden instead of iPhone Notes.
-
-**Tested & Working:**
-- 8-file sequential pipeline architecture
-- Per-file token budgets and update patterns
-- Cost logging for all 8 API calls, fires immediately after each call
-- decisions.md null SHA handling in Push to GitHub
-- Single-quoted string concatenation in system prompts (template literals rejected)
-- Hardcoded credentials in all 8 Claude API nodes (ecosystem-wide migration planned)
-- 8-file separate API call pattern with immediate cost logging
-- Langfuse observability with single trace and 8 child generations per run
-- Langfuse trace visibility in UI (da-vinci-update trace with 8 generations confirmed 2026-05-21)
-- AI-CONTEXT max_tokens at 25,000 no longer hitting ceiling
-- Da Vinci Personal Knowledge gateway (filter, assess, merge, write, log)
-- Jeanne Alter sending personal facts to Da Vinci Personal Knowledge gateway
-- Langfuse wired to Jeanne Alter (trace: gilgamesh-chat, contains input/output/metadata)
-- Knowledge Indexer indexing 10 folders (00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/
+- ⚠️
