@@ -1,5 +1,25 @@
 # Changelog
 
+### 2026-07-23 — Maintenance Session — Alertmanager iowait Alert Investigation, Backup Infrastructure Audit, Critical Kinmoon Hardware Discovery
+- Confirmed house internet outage from 2026-07-20 (ONT PON light off, LOS blinking red — ISP-side fiber fault) RESOLVED as of 2026-07-23
+- Investigated CRITICAL "CPU usage 100%" alert on CT 205 (Alertmanager, 192.168.30.205:9100), fired 2026-07-20 03:46-03:47 AM; root-caused to Prometheus's CPU-usage alert rule summing all non-idle time including iowait; `top` confirmed 100.0% `%wa` (I/O wait) with 0.0% `us`/`sy` (zero actual compute load)
+- Correlated iowait spike to backup-daily vzdump job (runs 02:00-~03:35 nightly, ~93-96 minute runtime) writing to kinmoon-smb CIFS share at 94% capacity, causing lingering I/O pressure past nominal job completion; documented Prometheus CPU queries count iowait as non-idle, recommend checking `%wa` column in `top` before treating CPU alerts as compute issues
+- Audited backup-daily vzdump job configuration: discovered CT 306 (Enshrouded) and CT 307 (Palworld) are NOT included in VMID backup list (201,202,203,204,205,206,207,208,211,213,214,220,221,222,223,302,303,304,305,400) — both game servers have zero backup coverage
+- Confirmed kinmoon-smb (Proxmox CIFS storage backing up to Kinmoon NAS, 192.168.10.100) is Proxmox's native vzdump destination, not a separate rsync target; previous documentation describing "nightly rsync at 03:00" was inaccurate; actual mechanism is `backup-daily` job writing directly over CIFS
+- Investigated kinmoon-smb disk usage warning (93.3-94% reported, 80%+ threshold crossed); measured actual backup data: `dump` folder (vzdump archives) = 1.3TB, `nextcloud-backup` = 31GB, `#recycle` (UGOS NAS-level recycle bin) = 1.3TB; diagnosed space waste to UGOS retaining deleted files in recycle bin that Proxmox's `prune-backups` policy (keep-daily=7, keep-weekly=4) already purged — double-counting backup churn, not unbounded accumulation
+- **CRITICAL DISCOVERY — Kinmoon Hard Drive 1 Hardware Failure:** navigated UGOS Control Panel (192.168.10.100:4000) Storage app and confirmed Storage Pool 1 (RAID 1) degraded status:
+  - Hard Drive 1 SMART status: **Critical**
+  - Reallocated Sector Count (Index 5): present value **133**, below failure threshold **140**, trending 573 (March) → 609 (April) → 1,963 (May) — genuine progressive media degradation
+  - Hard Drive 2: healthy, 46°C, no reported faults
+  - RAID 1 mirror currently running on **single healthy drive with zero redundancy**
+  - Diagnosis: genuine media failure on Hard Drive 1, NOT a cable/interface issue (no UDMA_CRC errors, unlike Kuromoon's hdd-backup-1 SATA cable problem from 2026-07-14)
+  - **Current exposure:** if Hard Drive 2 fails before Hard Drive 1 is replaced, entire proxmox-backups archive (2.4TB of vzdump history, only offsite/downstream copy) would be lost; no live production data at risk (hdd-backup-1/hdd-backup-2 on Kuromoon remain healthy primary storage)
+  - Volume 1 additionally flagged at <10% available capacity (warning from UGOS)
+- Decision: Do NOT click "Repair" on Kinmoon Storage Pool 1 until Hard Drive 1 is physically replaced; Repair triggers a RAID 1 rebuild requiring a healthy second member, would either be a no-op or stress the failing drive further, risking harder failure; correct sequence is hardware replacement first, then Repair/rebuild
+- Decision: Defer Kinmoon-smb recycle bin cleanup (1.3TB low-stakes space optimization) in favor of addressing Hard Drive 1 failure (live risk to backup redundancy) first
+- Documented kinmoon-smb CIFS share structure: 2.6TB volume (ext4), 2.4TB used, 35,709 files, 8,239 subfolders, created 2026-05-09; actual useful backup data ~1.3TB (real vzdump archives), remainder is overhead + deleted-but-retained files in NAS recycle bin
+- Action items: source and budget replacement drive for Kinmoon Hard Drive 1 (RAID 1 member, 2-bay DXP2800 — verify bay size/interface compatibility); after replacement use UGOS Storage app "Repair" to rebuild mirror onto new drive; locate correct UGOS menu for per-share recycle bin settings on proxmox-backups and disable it (not found in Storage app sections checked this session); add CT 306 and CT 307 to backup-daily VMID list via Proxmox Datacenter → Backup → Edit; consider updating Prometheus CPU alert rule to exclude iowait from calculation; monitor Hard Drive 2 closely until Hard Drive 1 is replaced (interim zero-redundancy state)
+
 ### 2026-07-17 — Maintenance Session — Palworld Server Connectivity & Configuration Fixes
 - External friend unable to connect to Palworld server (CT 307); diagnosed PublicIP misconfiguration in PalWorldSettings.ini pointing to container's internal LAN IP (192.168.30.219) instead of public WAN IP
 - Fixed PublicIP field by enabling User Editable + User Viewable permissions on Pelican egg "Public IP" variable (previously both unchecked, blocking manual updates via client Startup tab)
@@ -63,28 +83,4 @@
 - Decision: EMIYA/Cu Chulainn's Alertmanager alert overlap will be decided once both are scoped in detail — likely consolidation into one workflow with two lenses, not a critical blocker
 - Action items: Verify Uptime Kuma has HTTPS monitor with SSL expiry threshold configured and Telegram notification fires (resolves July 14 urgency); verify agents.md sections landed correctly (8,000 token full-rewrite budget now handling significantly more content); implement MERLIN's Uptime Kuma-sourced SSL check in n8n; implement Midas's Langfuse Metrics API integration; add recommendation-line output to MERLIN/Midas Telegram reports; propagate Cu Chulainn rename to n8n workflows once they exist; sequence and evaluate LangGraph for Scathach build after Phase 24.12 completes
 
-### 2026-07-09 — Documentation Audit — Cross-Session Gap Analysis
-- Conducted full audit of AI-CONTEXT.md, ROADMAP.md, decisions.md, changelog.md, agents.md, current-state.md, and service-catalog.md against conversation history dating back to January 2026
-- Identified seven items discussed in past sessions that never made it into any project documentation file
-- Confirmed MERLIN Cloudflare SSL expiry check hardcoded to July 14, 2026 remains an open, urgent item (not actioned this session)
-- Confirmed agents.md is missing full sections for MERLIN, Midas, EMIYA, Scathach, and Cu Chulainn — structural gap flagged for a separate Da Vinci documentation audit, not fixed this session
-- Added Interest-Capture Loop design concept (July 7 session): no passive awareness of Muzakkir's personal interests outside homelab/career (concrete example: Path of Exile 2, league 0.5.0, started May 29); hard design problem is judgment call (what counts as lasting interest), not storage; status: concept only, not scoped or built
-- Added Gap Analysis: Four Blind Spots (July 7 session):
-  1. **Time vs. stated priorities** — stated order is Health → Mental → Work → Gaming → n8n business → Homelab, but nothing measures whether actual time spent reflects that order
-  2. **Docs vs. reality drift** — May 22, 2026 documentation audit was one-off manual catch, not recurring automated check
-  3. **Bus factor** — ecosystem depends on Muzakkir alone; no graceful degradation plan exists if unavailable
-  4. **Skill-market fit** — homelab builds n8n/LXC/Qdrant skills, but target DevOps roles in Malaysian market typically require Terraform, Kubernetes, CI/CD not currently exercised by project
-- Domain correction: "About Me" table's Domain field currently lists najhin-gaming.com only (incomplete). Muzakkir owns two domains:
-  - **najhin-gaming.com** — retained permanently for game server hosting (Minecraft, Terraria, Enshrouded)
-  - **muzakkir.tech** — professional/portfolio domain (purchased July 1, 2026; earlier tentative selection of muzakkir.cloud at RM 143.80/yr was superseded)
-- New phase scoped: **Phase 27 — Domain Migration & Infrastructure Audit**
-  - **27.1 (audit first):** Cloudflare Access policies, Tunnel routes, SSL, NPM configs, DNS hygiene across existing setup
-  - **27.2 (migration):** Nine homelab subdomains move from najhin-gaming.com to muzakkir.tech — grafana, n8n, vault, passwords (Vaultwarden), cloud (Nextcloud), finance (Firefly III), ntfy, langfuse, home (Pulse Dashboard); game server subdomains (mc, terraria, enshrouded, panel) remain permanently on najhin-gaming.com
-  - Migration mechanism: Cloudflare Tunnel handles routing (not DDNS) — low-risk change requiring only new tunnel routes and DNS records, no NAT/port-forward rework
-  - Status: Cloudflare zone setup for muzakkir.tech directed to begin July 1, 2026; current completion status unconfirmed — needs verification next infrastructure session
-- Agent name correction: Guardian was renamed to **Cu Chulainn** ⚡ on May 16, 2026 (Lancer-class servant, Scathach's student in FGO canon; planned role: security monitoring agent; 2nd build priority after Scathach). This rename has never propagated — all documentation still refers to "Guardian." Cu Chulainn should replace all Guardian references across agents.md, AI-CONTEXT.md agent table, decisions.md going forward. Propagation is now a tracked action item, same category as pending Jeanne Alter rename.
-- Surfaced undocumented agent: **Scathach** (undocumented until now) — added May 16, 2026; Lancer-class servant; career growth/research agent; **1st build priority** in agent roster (ahead of Cu Chulainn); intended scope: career research and job application workflows; flagged requirement from June 5, 2026: evaluate LangGraph before starting Scathach build, since career-research workflows expected to need autonomous multi-step reasoning loops that n8n handles poorly; status: named and prioritized, no implementation scope defined yet, LangGraph evaluation not yet done
-- New agent concept: **Nightingale** (health pipeline extraction) — noted as interest on May 17, 2026: extracting existing health tracking pipeline (food/BP/medication logging, currently handled within Jeanne Alter/Gilgamesh) into dedicated agent provisionally named Nightingale; explicitly deferred at time to avoid mid-session scope creep; status: concept only, not scoped, not prioritized in build order
-- Structural note: agents.md currently contains full sections only for Da Vinci and Jeanne Alter; MERLIN, Midas, EMIYA, Scathach, Cu Chulainn have no dedicated sections despite being listed in AI-CONTEXT.md agent table and decisions.md — documentation-pipeline gap flagged, recommend dedicated Da Vinci documentation audit in future session
-- Decision: Fold all findings from documentation audit into single end-of-session summary rather than edit project files directly mid-session — keeps Da Vinci as sole writer and avoids concurrent-edit conflicts with existing pipeline
-- Decision: F-Secure coaching/disciplinary letter and related career urgency context (from May 11, 2026 session) explicitly excluded from homelab documentation — out of scope for AI-CONTEXT.md
+### 2026-07-09 — Documentation Audit — Cross
