@@ -23,7 +23,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026)  
+**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026 | Alertmanager iowait Investigation July 23, 2026)  
 **Type:** 8 sequential Haiku API calls with immediate cost logging and Langfuse observability, plus planned 9th step (Nextcloud Deck sync)  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
@@ -214,7 +214,35 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Command types: /update (Da Vinci - [filename]) for each file; /update (Da Vinci - muzakkir-profile) for personal knowledge
 - Expected monthly cost at daily frequency: ~$4.80-5.40/month (session updates + personal knowledge)
 
+### Known Limitations
+- Nextcloud Deck 9th pipeline step: implementation blocked pending manual sync-id backfill of ~30 existing Homelab board cards
+- agents.md token budget (8,000) now handling 6 full agent sections plus Agent Design Principles — requires monitoring for truncation signals
+- Observability: alerts on CT 205 (Alertmanager) cannot currently distinguish iowait from genuine CPU load; "CPU usage" alerts may be storage/I/O symptoms rather than compute-bound issues (diagnosed July 23, 2026; rule-level fix pending)
+
 ### Recent Updates
+**Alertmanager iowait Alert Investigation (July 23, 2026 — Session Infrastructure Audit)**
+- CRITICAL "CPU usage 100%" alert on CT 205 (Alertmanager, 192.168.30.205:9100), 2026-07-20 03:46-03:47 AM, investigated and root-caused
+- Root cause: Prometheus's CPU-usage alert rule sums all non-idle CPU time, which includes iowait — `top` confirmed 100.0% `%wa` with 0.0% `us`/`sy` (zero actual compute load, pure I/O wait)
+- Correlated to backup-daily vzdump job running 02:00-~03:35 nightly, writing to kinmoon-smb CIFS network share sitting at 94% capacity, causing lingering I/O pressure past job completion (~03:46 alert vs ~03:35 job finish)
+- Confirmed backup-daily vzdump job configuration: `/etc/pve/vzdump.cron`, schedule 02:00 daily, compress zstd, mode snapshot, prune-backups keep-daily=7/keep-weekly=4, storage kinmoon-smb, VMID list includes 201,202,203,204,205,206,207,208,211,213,214,220,221,222,223,302,303,304,305,400
+- **CT 306 (Enshrouded) and CT 307 (Palworld) NOT included in backup job** — both game servers currently have zero backup coverage
+- Measured backup-daily runtime: consistently ~93-96 minutes (02:00 start, ~03:33-03:36 finish) across 3 consecutive checked nights (Jul 20, 21, 22)
+- Root-caused kinmoon-smb disk usage warning (93.3-94%): UGOS NAS-level recycle bin (`#recycle` folder) retaining 1.3TB of files already pruned by Proxmox's retention policy, effectively double-counting deleted backup churn
+- Actual useful backup data (dump folder) = ~1.3TB; recycle bin = ~1.3TB; nextcloud-backup = ~31GB; total capacity 2.7TB
+- Proxmox retention policy (keep-daily=7, keep-weekly=4) confirmed working correctly — space waste is purely NAS-side recycle bin behavior
+- Diagnosed house internet outage from 2026-07-20 (ONT PON light off, LOS blinking red — ISP fiber fault) as RESOLVED as of 2026-07-23; user confirmed active connectivity this session
+- **CRITICAL discovery: Kinmoon Hard Drive 1 SMART failure in Storage Pool 1 (RAID 1)**
+  - Storage Pool 1 status: Degraded; Hard Drive 1 SMART status: Critical
+  - Hard Drive 1 Reallocated Sector Count: present value 133 (below threshold 140) — media failure, not interface
+  - Hard Drive 1 reallocated sector trend accelerating: March 573 → April 609 → May 1,963
+  - Hard Drive 1 spin retry count: 0 (motor unaffected; this is pure media degradation)
+  - Hard Drive 1 temperature: 48°C; Hard Drive 2 (healthy): 46°C; power-on time: 47,901 hours
+  - Current exposure: Kinmoon RAID 1 mirror running on single healthy drive (Hard Drive 2) with zero redundancy — if Hard Drive 2 fails before replacement, entire proxmox-backups archive (2.4TB of vzdump history, only offsite backup copy) would be lost
+  - No live production data at risk (hdd-backup-1/hdd-backup-2 on Kuromoon remain healthy primary storage); backup history would require rebuilding from zero
+  - Status: NOT yet actioned; do NOT click "Repair" until Hard Drive 1 is physically replaced (Repair requires healthy second member to rebuild onto; attempting now would stress the failing drive)
+  - Correct sequence: replace Hard Drive 1 hardware first, then trigger Repair/rebuild onto new drive
+  - Budget impact: separate hardware cost decision from already-deferred Kuromoon hdd-backup-1 SATA cable swap; no timeline/budget decision made this session
+
 **Palworld Troubleshooting Session (July 17, 2026 — Session Palworld PublicIP & Settings)**
 - External friend unable to connect to Palworld server (CT 307) — root cause: PalWorldSettings.ini PublicIP was set to container's internal LAN IP (192.168.30.219) instead of public WAN IP
 - Discovered Pelican egg "Public IP" variable was not user-editable by default; enabled via Admin → Eggs → Palworld → Egg Variables (set both User Editable and User Viewable permissions)
@@ -240,7 +268,7 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Root cause: Debian `prometheus-node-exporter` package ships with default `--collector.filesystem.mount-points-exclude` regex containing `mnt`, making all `/mnt/*` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, pve/kinmoon-smb) invisible to Prometheus since at least May 16, 2026
 - Fixed by removing `mnt` from ARGS exclude regex in `/etc/default/prometheus-node-exporter` and restarting `prometheus-node-exporter.service`
 - Confirmed fix: metrics now reporting for all three /mnt mountpoints; Alertmanager alert auto-resolved
-- Storage clarification: hdd-backup-1 is primary live Nextcloud storage (bind-mounted data directory), not a backup copy; Kinmoon NAS receives nightly rsync copy only (one-way, time-lagged at 03:00)
+- Storage clarification: hdd-backup-1 is primary live Nextcloud storage (bind-mounted data directory), not a backup copy; Kinmoon NAS receives nightly rsync copy only (one-way, time-lagged at 03:00) — **CORRECTED 2026-07-23: actual mechanism is Proxmox's native vzdump writing directly over CIFS to Kinmoon; no separate rsync step**
 - Action item: verify which storage target Proxmox vzdump jobs are actually configured against (local hdd-backup-* mount vs kinmoon-smb SMB); check Grafana dashboards for panels that may have been silently empty since ~May 16 due to same exclusion bug
 
 **Email Management Pipeline Design (July 9, 2026 — Session Email Architecture)**
@@ -272,37 +300,4 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Confirmed Cu Chulainn rename (from Guardian, renamed May 16, 2026) has not propagated — all references still show "Guardian" in agents.md, AI-CONTEXT.md agent table, decisions.md — now completed July 9, 2026
 - Confirmed Scathach (Lancer-class career growth/research agent, 1st build priority) documented informally but missing from agents.md proper sections — now completed July 9, 2026
 - Confirmed Nightingale (health pipeline agent concept, noted May 17, 2026) has no documentation — deferred indefinitely, not prioritized
-- Confirmed MERLIN Cloudflare SSL expiry check hardcoded to July 14, 2026 remains unresolved (now 5 days out, carried from July 8 session) — design decision made to migrate to Uptime Kuma monitoring
-- New content added to AI-CONTEXT: Interest-Capture Loop design concept (July 7 session), Four Blind Spots gap analysis (July 7 session), domain correction (two domains: najhin-gaming.com permanent for game servers; muzakkir.tech professional/portfolio domain)
-- New Phase 27 identified: Domain Migration & Infrastructure Audit (27.1 audit, 27.2 migration) — status Planned, Cloudflare zone setup for muzakkir.tech directed to begin July 1 but completion unconfirmed, requires verification next infrastructure session
-
-**Planning & Architecture Session (July 8, 2026 — Session Planning Phase)**
-- Ecosystem renamed: "Kuromoon" (physical hardware/homelab only) vs "Chaldea" (agents ecosystem) — clarified going forward
-- Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler") — full propagation pending (bot identity, system prompt, Telegram username, all 8 docs)
-- Da Vinci's scope formally extended to include Nextcloud Deck — same "sole writer" discipline applies (no direct agent writes)
-- Designed Da Vinci → Nextcloud Deck sync mechanism (9th pipeline step): match-and-update cards via hidden sync-id tags, status-keyword stack routing, Homelab board only
-- Deck sync implementation blocked on manual backfill of ~30 existing Homelab board cards with sync-id tags (deliberately chosen over automated matching)
-- Full agent anatomy audit performed: Da Vinci most architecturally complete (real "hands": GitHub, WebDAV, Deck), MERLIN/Midas gap is no "hands" (report-only) and no memory, Jeanne Alter needs refactor (MCP tools, Mem0 memory, personality file, AI Agent node orchestration)
-- Career deadline dropped: September 2026 job transition no longer in scope; Chaldea reframed as indefinite long-term project
-- New research-stage concepts: Solomon (overseer/growth agent), voice organ (Whisper STT + local TTS), universal time/date awareness ecosystem-wide
-- CrewAI selected as target framework for future multi-agent discussion protocol (role-based model, human arbitration on disagreements, not consensus-forced)
-- Credential store migration identified as ecosystem-wide priority (move from hardcoded n8n values to n8n credential store)
-- Known board conflicts surfaced: Phase 7E appears in two Deck states + ROADMAP.md duplicate; Phase Da Vinci S2 RAG System marked Done on Deck (~2 months ago) but stale in docs; EMIYA status conflict across agents.md (Planned) vs historical completion records (partial deployment already happened)
-
-**Emergency Network Migration (July 5, 2026 — Session Ad-Hoc Phase)**
-- Called TIME ISP and activated true bridge mode on Huawei HG8145B7N, eliminating double-NAT topology permanently
-- pfSense WAN reconfigured from DHCP to PPPoE (pppoe0 interface, credentials: muzakkir655@timebb via TIME Self Care portal)
-- Public IP changed: 202.184.35.79 → 202.184.101.136 (stable IP assigned directly to pfSense WAN post-bridge)
-- ISP router's Wi-Fi and LAN ports permanently non-functional post-bridging (expected behavior, not a fault)
-- Deployed TP-Link AX1800 access point (SSID `A21-22A`, Password `Muzakkir_2110`) as replacement Wi-Fi source
-- TL-SG108E switch ports 7-8 VLAN misconfiguration identified and fixed (were on legacy default VLAN 1, now correctly on VLAN20_MAIN/PVID 20)
-- **Action Items Pending:** Update Cloudflare DNS A records (enshrouded.najhin-gaming.com, mc.najhin-gaming.com, terraria.najhin-gaming.com) from 202.184.35.79 to 202.184.101.136; Retest Enshrouded's UDP forwarding with eliminated double-NAT; Continue Phase 26 (Legacy Network Cleanup) for switch management IP migration
-
-**Phase 24.10 — Triggered Qdrant Re-indexing (Complete — Deployed May 25, 2026)**
-- Added webhook trigger (/davinci-reindex-personal) to Knowledge Indexer workflow
-- Integrated Trigger Reindex node into Da Vinci Personal Knowledge Gateway (fires after Obsidian write)
-- Integrated Trigger Reindex node into Da Vinci Update Pipeline (fires after Push to GitHub)
-- Partial reindex path active: When webhook body contains reindexType: 'partial', Knowledge Indexer indexes only 04-personal/ folder (~1s)
-- Full rebuild path (3am UTC schedule) unchanged: indexes all 10 folders (~21s)
-- Profile updates now immediately reflected in Qdrant obsidian_knowledge collection
-- Node count increased from 35 to 36 (added Trigger Reindex node)
+- Confirmed MERLIN Cloudflare SSL expiry check hardcoded to July 14, 2026 remains unresolved (now 5 days
