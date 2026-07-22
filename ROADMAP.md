@@ -1,7 +1,7 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** July 17, 2026  
-> **Total Phases:** 104 planned | 52 completed | 0 in progress | 52 future  
+> **Last Updated:** July 23, 2026  
+> **Total Phases:** 105 planned | 52 completed | 0 in progress | 53 future  
 > **Next Session Priority:** Chaldea Rename Propagation OR Deck Sync Manual Backfill OR Jeanne Alter Web Search Quality Improvement
 
 ---
@@ -10,12 +10,12 @@
 
 | Category                              | Total | Complete | In Progress | Planned |
 |---------------------------------------|-------|----------|-------------|---------|
-| **Core Infrastructure & Security**     | 16    | 11       | 0           | 5       |
+| **Core Infrastructure & Security**     | 17    | 11       | 0           | 6       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
 | **AI & Automation (Chaldea)**         | 37    | 22       | 0           | 15      |
 | **Personal & Knowledge Management**    | 12    | 7        | 0           | 5       |
 | **Monitoring & Observability**        | 8     | 8        | 0           | 0       |
-| **Infrastructure Cleanup**            | 8     | 2        | 0           | 6       |
+| **Infrastructure Cleanup**            | 9     | 2        | 0           | 7       |
 | **Career Development**                | 4     | 2        | 0           | 2       |
 | **Long Term Vision**                  | 7     | 0        | 0           | 7       |
 | **Hardware & Upgrades**               | 3     | 3        | 0           | 0       |
@@ -114,7 +114,7 @@ No phases currently in progress.
 | 24.13 | Universal Time/Date Awareness                | Phase 24.12       | 1h     | Inject current date/time into every agent's system prompt (pattern: Da Vinci's {{date}} replacement), applied ecosystem-wide instead of single gateway |
 | 24.14 | Jeanne Alter Web Search Quality Improvement  | Phase Web Search  | 4h     | Iterative multi-query search with synthesis step, closer to Gemini-style search; replace single Firecrawl + Haiku call pattern |
 | 24.15 | Jeanne Alter Email Management Pipeline       | Phase 24.11       | 6-8h   | Design Complete (July 9, 2026). 4 personal email accounts (Gmail OAuth2 × 3, iCloud IMAP × 1) → shared Email Classifier sub-workflow → Telegram notification + permanent-category facts (bills/payments/subscriptions) to Da Vinci Personal Knowledge gateway. 3x daily schedule. Credentials in n8n store. qwen3:14b primary, Claude Haiku fallback. 6 rollout steps: credentials → classifier → account triggers → staging store → notification → verify writes. |
-| 32    | DDNS Automation & WAN IP Stability Monitoring | Phase 3           | 4-6h   | **Elevated Priority (July 17, 2026)** due to repeated WAN IP changes within one week (3 changes recorded: 202.184.101.136 → 202.184.103.49 → 202.184.109.124 → 202.184.109.124 during session timeframe). Extend CT 207 ddclient automation to cover Palworld egg PublicIP variable in Pelican (currently manual sync required). Add real-time WAN IP monitoring to Uptime Kuma or ntfy to alert when IP changes detected. Consider DNS failover strategy if ISP instability continues. |
+| 32    | DDNS Automation & WAN IP Stability Monitoring | Phase 3           | 4-6h   | **Elevated Priority (July 17, 2026)** due to repeated WAN IP changes within one week (3 changes recorded: 202.184.101.136 → 202.184.103.49 → 202.184.109.124 during session timeframe). Extend CT 207 ddclient automation to cover Palworld egg PublicIP variable in Pelican (currently manual sync required). Add real-time WAN IP monitoring to Uptime Kuma or ntfy to alert when IP changes detected. Consider DNS failover strategy if ISP instability continues. |
 
 #### Agent Feature Development
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
@@ -173,6 +173,7 @@ No phases currently in progress.
 | 28    | Storage Optimization                 | —            | 6h     | Move Nextcloud data, thin pool cleanup |
 | 29    | Performance Monitoring Expansion     | Phase 5      | 5h     | Advanced metrics and alerting rules    |
 | 33    | Maintenance Window Consolidation & Automation | Phase 25 | 4h | **New Phase (July 17, 2026).** Consolidate Palworld + Terraria restart schedules with nightly vzdump backup job into single off-peak maintenance block (exact timing pending confirmation of reliably dead low-usage hour, currently all events scattered). Per-server restart Schedules in Pelican to be set up once window finalized. Reschedule vzdump job (currently ~02:11 AM, conflicts with active gameplay) via Datacenter → Backup. |
+| 34    | Kinmoon Hard Drive 1 Replacement    | Phase 9      | 4h     | **CRITICAL (discovered July 23, 2026).** Kinmoon NAS (UGREEN DXP2800, 192.168.10.100) Storage Pool 1 RAID 1 mirror degraded due to Hard Drive 1 SMART failure. Reallocated sector count trending 573→609→1,963 (March-May), present value 133 below threshold 140 (Critical verdict). Hard Drive 1 power-on time 47,901 hours. Hard Drive 2 healthy (46°C). Current exposure: running on single healthy drive with zero redundancy. If Hard Drive 2 fails before Hard Drive 1 is replaced, entire proxmox-backups archive (2.4TB of vzdump history) will be lost. No live production data affected (Kuromoon hdd-backup-1/2 remain healthy primary storage). **Action sequence:** source and budget replacement drive, physically install it, use UGOS "Repair" function to rebuild mirror onto new drive. STATUS: awaiting budget decision, not yet actioned. Kinmoon hard drive bay size/interface compatibility must be verified before purchase. Monitor Hard Drive 2 closely during interim period. |
 
 ### 🛡️ Core Services (Priority: Medium)
 
@@ -210,6 +211,16 @@ No phases currently in progress.
 ---
 
 ## 🎯 Recommended Next Session Order
+
+### Kinmoon Hard Drive 1 Replacement (CRITICAL — Hardware Decision)
+**Effort:** 4 hours (hardware sourcing + installation)  
+**Status:** Discovered July 23, 2026  
+**Summary:** Kinmoon NAS (UGREEN DXP2800, 192.168.10.100) Storage Pool 1 degraded due to Hard Drive 1 SMART Critical failure. Reallocated sector count trending 573→609→1,963 over March-May. Currently running on single healthy drive (Hard Drive 2) with zero redundancy. If Hard Drive 2 fails, entire proxmox-backups archive (2.4TB of vzdump history) lost. Live production data unaffected (Kuromoon hdd-backup-1/2 remain healthy). **Action items:** budget and source compatible replacement drive, physically install, use UGOS "Repair" to rebuild mirror. Monitor Hard Drive 2 closely during interim. **Note:** This is a new hardware cost decision separate from the existing Kuromoon hdd-backup-1 SATA cable swap (also deferred). No timeline or budget decision made this session.
+
+### Backup Coverage Gap (Medium Priority — Configuration)
+**Effort:** 0.5 hours  
+**Status:** Discovered July 23, 2026  
+**Summary:** CT 306 (Enshrouded) and CT 307 (Palworld) game servers are NOT included in the `backup-daily` vzdump job (VMID list: 201,202,203,204,205,206,207,208,211,213,214,220,221,222,223,302,303,304,305,400). Both game servers currently have zero backup coverage. Add both to the backup VMID list via Datacenter → Backup → Edit in Proxmox UI.
 
 ### MERLIN SSL Check Migration to Uptime Kuma (Urgent Priority)
 **Effort:** 1-2 hours (precedes all other sessions)  
@@ -253,8 +264,9 @@ No phases currently in progress.
 3. **Agent Feature Development Track:** Phase 24.12 → Scathach (build priority 1st, LangGraph evaluation sequenced after 24.12) → Cu Chulainn (build priority 2nd) → Goal Nudges → Plan My Day
 4. **Email & Credential Track:** Phase 24.11 (Credential Store Migration) → Phase 24.15 (Email Management) → Phase 24.12 (unified memory in refactor)
 5. **Gaming Platform Track:** Mash 59-64 (can run parallel to Chaldea development)
-6. **Infrastructure Track:** 25-29, 32, 33 (low-medium priority; Phases 25 & 26 progressing; Phase 27 newly prioritized; Phase 32 DDNS elevated due to WAN instability; Phase 33 maintenance consolidation added July 17, 2026)
-7. **Career Development Track:** 35-36 (depends on infrastructure completion)
+6. **Backup & Storage Track:** Phase 34 (Kinmoon Hard Drive 1 replacement) must precede Phase 31 (Backblaze B2 offsite backup expansion); backup coverage gap (CT 306/307) separate quick fix
+7. **Infrastructure Track:** 25-29, 32, 33 (low-medium priority; Phases 25 & 26 progressing; Phase 27 newly prioritized; Phase 32 DDNS elevated due to WAN instability; Phase 33 maintenance consolidation added July 17, 2026)
+8. **Career Development Track:** 35-36 (depends on infrastructure completion)
 
 **Parallel Development Opportunities:**
 - Gaming platform phases can run alongside Chaldea development
@@ -264,6 +276,7 @@ No phases currently in progress.
 - Domain migration audit (Phase 27.1) can run independently of Scathach/Cu Chulainn builds
 - Email Management Pipeline (24.15) can proceed in parallel with Rename Propagation (16.6) after credentials are in n8n store
 - **DDNS Automation (Phase 32) should begin before next major infrastructure change**, given three WAN IP changes recorded within one week during July 17 session
+- **Backup coverage gap fix (CT 306/307) can proceed immediately, independent of Phase 34 hardware work**
 
 ---
 
@@ -278,27 +291,4 @@ A design principle now guides all future agent classification: **Funnel Agents**
 - **Not funnels — Generative:** Scathach (career research and reasoning; nothing existing to funnel from)
 - **Hybrid — Funnel-Plus:** EMIYA (reads infra state like a funnel, but also executes changes on approval)
 
-**Why this matters:** Prevents agents from duplicating effort already solved by dedicated tools (e.g., MERLIN re-implementing SSL checks that Uptime Kuma already does, Midas re-calculating costs that Langfuse already tracks). Reduces drift risk between duplicate data sources and keeps agent build time focused on the actual differentiator — aggregation and recommendation — rather than plumbing.
-
-### MERLIN Status: Partial Deployment with Critical Urgency → RESOLVED (July 14, 2026)
-- **Deployed:** April 27, 2026, v1
-- **Prior Status:** Partially functional — SSL check non-functional (hardcoded date, broken Cloudflare API token dependency)
-- **Urgency (July 9):** SSL certificate expiration July 14, 2026 (5 days from audit date)
-- **Resolution (July 14, 2026):** Re-sourced SSL check from Uptime Kuma (CT 206, already deployed) which has native HTTPS certificate monitoring. Removed Cloudflare token dependency entirely. 1-2 hour fix completed. Alert integrity verified — rule logic was sound, detection mechanism was broken.
-- **Remaining design gap:** Currently reports raw numbers ("X days until expiry") without a recommended action. Per Funnel Agent principle, MERLIN should output two things: status + action recommendation.
-
-### Midas Status: Partial Deployment with Cost Duplication Issue
-- **Deployed:** April 27, 2026, v1
-- **Status:** Functional but has a cost-tracking duplication problem
-- **Decision:** Haiku/Claude cost data should source from Langfuse Metrics API (CT 223 already deployed and wired to Da Vinci + Jeanne Alter) instead of the separate `gilgamesh_costs` Data Table. Both currently track the same Haiku calls independently, risking drift. Ollama cost/savings tracking stays in Data Table since Ollama is $0 and outside Langfuse's automatic cost-inference model.
-- **Design gap:** Currently reports totals without a recommended action. Per Funnel Agent principle, when spend trends toward the $10 monthly limit, Midas should suggest a specific action (e.g., "route more queries to Ollama" or name the highest-cost command_type).
-
-### EMIYA Status: Concept Stage with Infrastructure Underneath
-- **Status:** 3 of 8 sub-phases complete (24.1, 24.7, 24.8), but no unified running agent workflow yet
-- **Completed sub-phases:** 
-  - 24.1 (App Management) ✅ — Firefly III, ntfy, Langfuse containers deployed
-  - 24.7 (Universal Notifications) ✅ — ntfy hub for all agent communications
-  - 24.8 (Langfuse Observability) ✅ — LLM performance tracking wired
-- **Incomplete sub-phases:** 24.2-24.6 (Alert Translation, Container Updates, Knowledge Ingestion, Proactive Monitoring, Performance Optimization)
-- **Gap:** EMIYA is documented as a roadmap category with completed infrastructure underneath it, not yet a unified running workflow that reasons over that infrastructure. Once scoped, the agent translation layer can be built on top of these existing systems.
-- **Overlap flagged:** EMIYA's planned Alert Translation (24.2) and Cu Chulainn's core responsibility both source from Alertmanager. Worth deciding later whether these merge into
+**Why this matters:** Prevents agents from duplicating effort
