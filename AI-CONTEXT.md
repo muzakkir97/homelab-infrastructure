@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** July 17, 2026
+> **Last Updated:** July 23, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 21 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026. **Gaming platform expanded July 5, 2026: Enshrouded server (CT 306) deployed in Pelican Panel. Network architecture migrated from double-NAT (ISP router + pfSense) to true bridge mode on Huawei HG8145B7N, eliminating all double-NAT routing conflicts permanently. pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed to 202.184.101.136 (was 202.184.35.79). TP-Link EAP610 AX1800 access point (SSID A21-22A) deployed and configured — root cause of AP failure identified and fixed: TL-SG108E switch ports 7-8 were on legacy VLAN 1, not VLAN20_MAIN. All 21 containers + 1 VM running. DNS records require update. Enshrouded external UDP connectivity not yet retested post-bridging.** **Agents ecosystem renamed from "Kuromoon" to "Chaldea" (July 8, 2026) — Kuromoon now refers to physical hardware only, Chaldea is the agents system layer.** **Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler"), pending full propagation across bot, n8n, Telegram, docs (July 8, 2026).** **Career timeline updated (July 8, 2026): September 2026 job-transition deadline dropped. Cloud/DevOps roles pursued at slower pace. Chaldea project reframed as indefinite, long-term. hdd-backup-2 Prometheus alert removed (copy-paste bug fixed, then intentionally disabled per user decision). Duplicate muzakkir-profile.md.md file exists in Nextcloud. Jeanne Alter assistant messages not saving to Data Table (silent conversation memory breakage).** **Documentation audit completed (July 9, 2026): Cross-session gap analysis identified seven previously-undocumented items from past sessions: Interest-Capture Loop concept, Four Blind Spots analysis (time vs priorities, docs drift, bus factor, skill-market fit), two domains tracked (najhin-gaming.com for gaming, muzakkir.tech for portfolio), two previously-named agents (Cu Chulainn renamed from Guardian May 16, Scathach prioritized May 16, Nightingale health concept May 17), and Phase 27 Domain Migration & Infrastructure Audit. Cu Chulainn and Scathach rename propagation pending. muzakkir.tech Cloudflare zone completion unconfirmed. agents.md structural incompleteness addressed (July 9, 2026): full sections drafted for MERLIN, Midas, EMIYA, Cu Chulainn, Scathach with Agent Type classifications and Funnel Agent design principle. MERLIN Cloudflare SSL expiry check no longer hardcoded — migrated to Uptime Kuma source July 9, resolving the July 14 urgency. Midas cost tracking planned migration from duplicate Data Table to Langfuse Metrics API (low urgency). Cu Chulainn and Scathach sections added with concept-stage governance. Jeanne Alter assistant message table save bug remains critical, unresolved.** **Jeanne Alter Email Management Pipeline design complete (July 9, 2026): Read + Notify tier, 4 personal accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com), work and NSFW accounts excluded. Architecture: per-account triggers → shared Email Classifier → branches to notification and/or Da Vinci Personal Knowledge gateway for permanent categories (bills/payments/subscriptions). Staging store (~7-day retention) for transient email. 3x/day schedule. Credentials (Gmail OAuth2, iCloud IMAP app-specific password) going to n8n credential store — first concrete step of ecosystem-wide credential store migration. Build effort: ~6-8h across 6 rollout steps. Design approved, implementation not yet started.** **Monitoring fix complete (July 14, 2026): node_exporter `/mnt` exclusion bug root-caused and fixed. Debian package's default `--collector.filesystem.mount-points-exclude` regex included `mnt`, making all `/mnt` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, kinmoon-smb) invisible to Prometheus since ~May 16. Fixed by editing `/etc/default/prometheus-node-exporter` ARGS to remove `mnt` from exclude list and restarting service. MountpointMissing_hddbackup1 alert (stuck active for 8 days) auto-resolved. Confirmed hdd-backup-1 is primary live storage for Nextcloud (not a backup copy); Kinmoon NAS receives nightly rsync at 03:00. Physical SATA cable/port swap remains deferred (no budget). All 21 containers + 1 VM remain running and healthy.** **Palworld server added July 16, 2026 (CT 307): Deployed in Pelican Panel to test multiplayer gaming infrastructure. External connectivity initially broken due to PublicIP misconfiguration (was pointing to internal LAN IP 192.168.30.219). Root-caused and fixed: Pelican egg "Public IP" variable had User Editable + User Viewable permissions unchecked (blocking manual updates via Startup tab); enabled permissions and set PublicIP to current WAN IP (202.184.109.124). PalWorldSettings.ini found to require unbroken single-line format for OptionSettings block — Pelican's web file editor introduces line breaks, corrupting the file and causing Palworld to silently ignore ALL OptionSettings (not just edited field). Established safe editing method: use `pct exec` + sed from Proxmox host, never the Pelican web editor. Pelican's file Download function (404 error) not yet debugged. In-game stutter with 3 concurrent players traced to nightly vzdump backup job (sequential all-container) running concurrently with gameplay (~02:11 AM), causing CPU/disk I/O contention. Backup/restart consolidation and DDNS automation elevated in priority. WAN IP instability observed: 3 changes in one week (202.184.101.136 → 202.184.103.49 → 202.184.109.124); confirmed as TIME PPPoE session renegotiation behavior. All 22 containers + 1 VM running.** **Total capacity: 22 LXC containers + 1 KVM VM (CT 307 Palworld addition July 16-17).**
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 22 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026. **Gaming platform expanded July 5, 2026: Enshrouded server (CT 306) deployed in Pelican Panel. Network architecture migrated from double-NAT (ISP router + pfSense) to true bridge mode on Huawei HG8145B7N, eliminating all double-NAT routing conflicts permanently. pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed to 202.184.101.136 (was 202.184.35.79). TP-Link EAP610 AX1800 access point (SSID A21-22A) deployed and configured — root cause of AP failure identified and fixed: TL-SG108E switch ports 7-8 were on legacy VLAN 1, not VLAN20_MAIN. All 22 containers + 1 VM running. DNS records require update. Enshrouded external UDP connectivity not yet retested post-bridging.** **Agents ecosystem renamed from "Kuromoon" to "Chaldea" (July 8, 2026) — Kuromoon now refers to physical hardware only, Chaldea is the agents system layer.** **Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler"), pending full propagation across bot, n8n, Telegram, docs (July 8, 2026).** **Career timeline updated (July 8, 2026): September 2026 job-transition deadline dropped. Cloud/DevOps roles pursued at slower pace. Chaldea project reframed as indefinite, long-term. hdd-backup-2 Prometheus alert removed (copy-paste bug fixed, then intentionally disabled per user decision). Duplicate muzakkir-profile.md.md file exists in Nextcloud. Jeanne Alter assistant messages not saving to Data Table (silent conversation memory breakage).** **Documentation audit completed (July 9, 2026): Cross-session gap analysis identified seven previously-undocumented items from past sessions: Interest-Capture Loop concept, Four Blind Spots analysis (time vs priorities, docs drift, bus factor, skill-market fit), two domains tracked (najhin-gaming.com for gaming, muzakkir.tech for portfolio), two previously-named agents (Cu Chulainn renamed from Guardian May 16, Scathach prioritized May 16, Nightingale health concept May 17), and Phase 27 Domain Migration & Infrastructure Audit. Cu Chulainn and Scathach rename propagation pending. muzakkir.tech Cloudflare zone completion unconfirmed. agents.md structural incompleteness addressed (July 9, 2026): full sections drafted for MERLIN, Midas, EMIYA, Cu Chulainn, Scathach with Agent Type classifications and Funnel Agent design principle. MERLIN Cloudflare SSL expiry check no longer hardcoded — migrated to Uptime Kuma source July 9, resolving the July 14 urgency. Midas cost tracking planned migration from duplicate Data Table to Langfuse Metrics API (low urgency). Cu Chulainn and Scathach sections added with concept-stage governance. Jeanne Alter assistant message table save bug remains critical, unresolved.** **Jeanne Alter Email Management Pipeline design complete (July 9, 2026): Read + Notify tier, 4 personal accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com), work and NSFW accounts excluded. Architecture: per-account triggers → shared Email Classifier → branches to notification and/or Da Vinci Personal Knowledge gateway for permanent categories (bills/payments/subscriptions). Staging store (~7-day retention) for transient email. 3x/day schedule. Credentials (Gmail OAuth2, iCloud IMAP app-specific password) going to n8n credential store — first concrete step of ecosystem-wide credential store migration. Build effort: ~6-8h across 6 rollout steps. Design approved, implementation not yet started.** **Monitoring fix complete (July 14, 2026): node_exporter `/mnt` exclusion bug root-caused and fixed. Debian package's default `--collector.filesystem.mount-points-exclude` regex included `mnt`, making all `/mnt` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, kinmoon-smb) invisible to Prometheus since ~May 16. Fixed by editing `/etc/default/prometheus-node-exporter` ARGS to remove `mnt` from exclude list and restarting service. MountpointMissing_hddbackup1 alert (stuck active for 8 days) auto-resolved. Confirmed hdd-backup-1 is primary live storage for Nextcloud (not a backup copy); Kinmoon NAS receives nightly rsync at 03:00. Physical SATA cable/port swap remains deferred (no budget). All 22 containers + 1 VM remain running and healthy.** **Palworld server added July 16, 2026 (CT 307): Deployed in Pelican Panel to test multiplayer gaming infrastructure. External connectivity initially broken due to PublicIP misconfiguration (was pointing to internal LAN IP 192.168.30.219). Root-caused and fixed: Pelican egg "Public IP" variable had User Editable + User Viewable permissions unchecked (blocking manual updates via Startup tab); enabled permissions and set PublicIP to current WAN IP (202.184.109.124). PalWorldSettings.ini found to require unbroken single-line format for OptionSettings block — Pelican's web file editor introduces line breaks, corrupting the file and causing Palworld to silently ignore ALL OptionSettings (not just edited field). Established safe editing method: use `pct exec` + sed from Proxmox host, never the Pelican web editor. Pelican's file Download function (404 error) not yet debugged. In-game stutter with 3 concurrent players traced to nightly vzdump backup job (sequential all-container) running concurrently with gameplay (~02:11 AM), causing CPU/disk I/O contention. Backup/restart consolidation and DDNS automation elevated in priority. WAN IP instability observed: 3 changes in one week (202.184.101.136 → 202.184.103.49 → 202.184.109.124); confirmed as TIME PPPoE session renegotiation behavior. All 22 containers + 1 VM running.** **Total capacity: 22 LXC containers + 1 KVM VM (CT 307 Palworld addition July 16-17).** **House internet outage resolved (July 20-23, 2026): ONT PON light offline / LOS blinking red (ISP-side fiber fault) confirmed recovered by July 23. No homelab-side action required; ISP-level issue. Backup infrastructure audit July 23, 2026 completed: `backup-daily` vzdump job verified running 02:00 daily (~93-96 min runtime to ~03:35), storing to kinmoon-smb CIFS share (NOT a separate nightly rsync), compressing zstd, pruning keep-daily=7/keep-weekly=4. CT 306 (Enshrouded) and CT 307 (Palworld) discovered with NO backup coverage — not included in VMID list. CRITICAL: Kinmoon NAS Storage Pool 1 degraded due to Hard Drive 1 SMART failure (reallocated sector count: 573→609→1,963 trend over March-May, present 133 below failure threshold 140). RAID 1 mirror running on single healthy drive (Hard Drive 2) with zero redundancy. Do NOT click Repair until Hard Drive 1 is physically replaced. kinmoon-smb disk usage (93.3%) root-caused to UGOS-level recycle bin (`#recycle`, 1.3TB) double-counting logically-freed backup churn — NAS cleanup deferred, Hard Drive 1 replacement prioritized. CT 205 (Alertmanager) "CPU 100%" alert July 20-22: root-caused to Prometheus's CPU query including iowait (`%wa`), not genuine compute load; correlated to backup job's lingering I/O pressure on network share at 94% capacity. Alert rule not yet modified (diagnosis only).** 
 
 ---
 
@@ -282,7 +282,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Storage:** Data on Tier 3 HDD, app on NVMe (1.3GB after migration)
 - **WebDAV base URL:** https://cloud.najhin-gaming.com/remote.php/dav/files/admin/
 - **Enabled apps:** Deck (project management), Tasks, Calendar
-- **Backup:** rsync to Kinmoon NAS nightly at 03:00
+- **Backup:** Now backed up via Proxmox's native vzdump job (backup-daily, 02:00 daily) to kinmoon-smb CIFS share
 - **Known issue:** Duplicate `muzakkir-profile.md.md` file exists in 04-personal/ (WebDAV write-race artifact between Obsidian sync and the Da Vinci Personal Knowledge gateway) — pending cleanup
 
 ### Firefly III (CT 221)
@@ -292,6 +292,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Purpose:** Personal finance tracking (MYR currency)
 - **Access:** finance.najhin-gaming.com (Cloudflare Access + Email OTP)
 - **API:** Token stored in Vaultwarden (name: gilgamesh)
+- **Backup:** Included in backup-daily vzdump job (CT 221 in VMID list)
 
 ### ntfy (CT 222)
 
@@ -300,6 +301,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Auth:** Built-in username/password (not Cloudflare Access for phone app compatibility)
 - **Access:** ntfy.najhin-gaming.com (Cloudflare Tunnel without Access)
 - **Integration:** Uptime Kuma → ntfy alerts configured
+- **Backup:** Included in backup-daily vzdump job (CT 222 in VMID list)
 
 ### Langfuse (CT 223)
 
@@ -316,6 +318,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
   - **gilgamesh-chat:** One trace per Jeanne Alter message with input/output/metadata (routedTo, ragUsed, commandType, chatId) — NOTE: assistant messages currently not saving to Data Table, breaking memory persistence (known issue)
 - **UI Status:** Working — trace list now displays traces with 1-hour analytics aggregation delay (traces appear after 1 hour, not immediately). Direct API (/api/public/traces) returns results immediately. Direct URL access works immediately.
 - **Environment variable:** LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=true
+- **Backup:** Included in backup-daily vzdump job (CT 223 in VMID list)
 
 ### network-ddns (CT 207)
 
@@ -326,6 +329,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Loki URL:** http://192.168.30.204:3100/loki/api/v1/push (CT 204, VLAN 30)
 - **DDNS Scope:** Currently updates Cloudflare DNS only; Palworld PublicIP field updates remain manual (not yet automated)
 - **Note:** node_exporter in this container reads host /proc/stat, so CPU alerts are host-level metrics, not CT 207-specific
+- **Backup:** Included in backup-daily vzdump job (CT 207 in VMID list)
 
 ### minecraft-server (CT 303)
 
@@ -333,6 +337,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Panel:** Pelican Wings
 - **CPU limit:** Set via Pelican panel
 - **Note:** Watch for CPU ramp-up issues; set cpulimit in Proxmox if needed
+- **Backup:** Included in backup-daily vzdump job (CT 303 in VMID list)
 
 ### terraria-server (CT 304)
 
@@ -342,6 +347,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Daily Cron:** `0 4 * * * pct exec 304 -- bash -c "kill $(pgrep -f tModLoader)" 2>/dev/null` — restart process daily at 4am to clear CPU leak
 - **Issue Fixed (May 20, 2026):** tModLoader idles high (70%+) and ramps to 97%+ CPU over hours with heavy mods. cpulimit + daily cron restart resolves the issue.
 - **Panel CPU Limit:** Set to 150% (= 1.5 cores, matching Proxmox cpulimit) in Pelican panel
+- **Backup:** Included in backup-daily vzdump job (CT 304 in VMID list)
 
 ### enshrouded-server (CT 306)
 
@@ -358,6 +364,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
   - **External connectivity:** NOT YET RETESTED post-bridge-mode. Double NAT eliminated; DNS records still point to old IP (202.184.35.79) and require update to new IP (202.184.109.124). Requires manual retest with packet capture once DNS updated.
   - **Friend connectivity method:** Steam relay/friend-invite mechanism confirmed working (masks that direct UDP forwarding was previously broken) — now should work directly via fixed port forwarding with bridge mode
 - **Note on Pelican stats:** Panel's CPU/Memory/Disk display cosmetically broken for this Proton-wrapped egg (shows 0%/0 bytes/Unavailable regardless of actual server activity) — use server log for ground truth
+- **Backup:** NOT currently included in backup-daily vzdump job (CT 306 not in VMID list) — no backup coverage for this game server
 
 ### palworld-server (CT 307)
 
@@ -389,6 +396,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 **Backup information:**
 - SaveGames backup created July 17, 2026 and stored at: `/mnt/hdd-backup-1/palworld-backup-20260716/palworld-save-backup.tar.gz` (22M, verified contents include Level.sav, LevelMeta.sav, Players/ data for world 6376E22F11CD4588A54E2EB0E7B1CD1F)
 - Pre-fix (corrupted, 13-line) PalWorldSettings.ini backed up as `PalWorldSettings.ini.bak` inside the container (pending cleanup/deletion once stability confirmed)
+- **Backup:** NOT currently included in backup-daily vzdump job (CT 307 not in VMID list) — no backup coverage for this game server
 
 **External connectivity status (as of July 17, 2026):**
 - **LAN connectivity:** Confirmed working via Pelican panel
@@ -405,14 +413,15 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Ollama models:** qwen3:14b (primary, 9.3GB), qwen3.5:latest (secondary), nomic-embed-text (768 dims). Removed (May 21-22): gemma3:4b, gemma3:12b, phi4-mini, llama3.2:latest (all hallucinated factual data in testing).
 - **Open WebUI:** Docker container, connects via 172.17.0.1:11434
 - **Qdrant:** Port 6333 (REST), 6334 (gRPC), storage at /opt/qdrant/storage
+- **Backup:** Included in backup-daily vzdump job (VMID 400 in VMID list)
 
 ### Gaming Servers
 
 - **Pelican Panel (CT 305):** Next-gen game server panel (192.168.30.217), SQLite + Redis + PHP 8.3, access: panel.najhin-gaming.com
 - **Minecraft Server (CT 303):** Paper 1.21.4 on port 25570 (192.168.30.215), Pelican Wings
 - **Terraria Server (CT 304):** tModLoader on port 7777 (192.168.30.216), Pelican Wings
-- **Enshrouded Server (CT 306):** Dedicated server on port 15636 (192.168.30.218), Pelican Wings
-- **Palworld Server (CT 307):** Dedicated server on port 8211 UDP (192.168.30.219), Pelican Wings, deployed July 16, 2026
+- **Enshrouded Server (CT 306):** Dedicated server on port 15636 (192.168.30.218), Pelican Wings (NOT backed up — not in backup-daily VMID list)
+- **Palworld Server (CT 307):** Dedicated server on port 8211 UDP (192.168.30.219), Pelican Wings, deployed July 16, 2026 (NOT backed up — not in backup-daily VMID list)
 - **Windrose (CT 302):** Deployed at /opt/windrose, 4 max players, Medium difficulty, invite code NAJHINWINDROSE
 
 ---
@@ -441,6 +450,28 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 
 **Note on per-container exporters:** Multiple other `/usr/local/bin/node_exporter` processes visible via `ps aux` on the host (uid 100000, 101000, etc.) are per-LXC-container exporters visible through host's process namespace due to unprivileged container UID mapping — these are NOT the host-level exporter and restarting them has no effect on host-level Prometheus alerts.
 
+### CPU Usage Alerts — iowait Misreporting (July 23, 2026)
+
+**Discovered:** CT 205 (Alertmanager, 192.168.30.205:9100) fired a CRITICAL "CPU usage 100%" alert at ~03:46-03:47 on July 20, 2026, and re-triggered on July 21-22. Root cause is **NOT genuinely high compute load.**
+
+**Root Cause (Verified):**
+- Prometheus's CPU-usage alert rule queries the sum of all non-idle CPU time: `100 - (idle % + steal %)`
+- This calculation includes **iowait** (`%wa` in `top`) as non-idle time, conflating I/O wait with actual compute load
+- Actual investigation via `top` showed **100.0% `%wa` (I/O wait) and 0.0% `us`/`sy` (user/system compute time)**
+- **Diagnosis:** Pure I/O bound, zero compute load — alert fired due to an incorrect classification in the query logic
+
+**Correlation to Backup Job:**
+- `backup-daily` vzdump job runs 02:00 daily, typically completes by ~03:33-03:36
+- CT 205 alert fired ~03:46 (after job completion), indicating lingering I/O pressure
+- Backup destination: kinmoon-smb CIFS share at 93-94% capacity
+- **Conclusion:** Prolonged I/O wait from backup process writing to near-full network share, persisting ~10+ minutes past nominal job completion time
+
+**Alert Rule Status:**
+- Not yet modified this session — documented as diagnosis only
+- Future fix should exclude `%wa` from CPU-usage alert calculation or create separate "I/O pressure" alert
+
+**Action for future sessions:** Consider updating the Prometheus CPU-usage alert rule to exclude iowait, or create a separate `node_load_high` or `disk_io_wait` alert for I/O-bound conditions.
+
 ### Storage Status (Verified July 14, 2026)
 
 | Mount            | Device     | Size  | Used | Filesystem | UUID                             |
@@ -452,12 +483,98 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Primary live storage** for Nextcloud data directory (bind mount at `/mnt/ncdata`)
 - **Not a backup copy** — misconception cleared
 - Nextcloud data written to this drive daily
-- Kinmoon NAS receives a **nightly rsync copy at 03:00** — one-way, time-lagged replication, not a live mirror
+- Kinmoon NAS does NOT receive a nightly rsync copy (previous documentation was inaccurate) — the actual mechanism is Proxmox's native `backup-daily` vzdump job writing directly to kinmoon-smb CIFS share
 
 **SATA Link Incident (July 6, Resolved):**
 - **One-time event:** `ata2: SATA link down` observed 2026-07-06 19:06-19:07, recovered same session, filesystem remounted 20:35:38
 - **Status:** Not an ongoing/recurring hardware fault as of July 14 dmesg review
 - **Physical fix status:** SATA cable/port swap remains deferred pending physical access and budget availability — not a current technical blocker, infrastructure is functional
+
+---
+
+## Kinmoon NAS (UGREEN DXP2800)
+
+### Storage Architecture
+
+- **Model:** UGREEN DXP2800 (2-bay NAS, UGOS 4.3.0 operating system)
+- **IP Address:** 192.168.10.100
+- **Hostname:** KinMoon (per SMB "How to use" reference in UGOS Control Panel)
+
+### Storage Pool 1 (RAID 1)
+
+- **Configuration:** RAID 1 mirror across Hard Drive 1 and Hard Drive 2
+- **Total capacity:** 2.7TB
+- **Status:** **DEGRADED** (Hard Drive 1 failure detected July 23, 2026) — UGOS explicitly states: "The storage pool has been degraded due to Hard Drive 1 failure. It is recommended to Repair the storage pool with normal hard drives immediately to prevent data loss and further corruption to the storage pool"
+
+### Volume 1 (ext4)
+
+- **Capacity:** 2.6TB total
+- **Used space:** 2.4TB (92.3%)
+- **Available:** ~200GB
+- **Status:** **DEGRADED** + **WARNING: <10% available capacity**
+- **File count:** 35,709 files, 8,239 subfolders, 84 hidden items
+
+### proxmox-backups CIFS Share
+
+- **Location on NAS:** `/volume1/proxmox-backups`
+- **Mount on Proxmox:** `/mnt/pve/kinmoon-smb` (type: cifs, content: backup)
+- **Purpose:** Native Proxmox `backup-daily` vzdump job destination (NOT a separate rsync copy)
+- **Capacity:** 2.5TB total (same as Volume 1), showing 94% usage on `df -h`
+- **Space breakdown (confirmed via `du -sh` on Proxmox host, 2026-07-23):**
+  - **#recycle folder:** 1.3TB (UGOS NAS-level recycle bin retaining deleted files)
+  - **dump folder:** 1.3TB (actual vzdump archives, Proxmox's effective backup storage)
+  - **nextcloud-backup:** 31GB (older backup, appears to be pre-migration data)
+- **Properties:** Created 2026-05-09, last modified 2026-07-06 (modification date reflects top-level folder mtime, not most recent nightly write)
+
+### Hard Drive 1 Failure (CRITICAL — Discovered July 23, 2026)
+
+**SMART Status: CRITICAL**
+- **Reallocated Sector Count (Attribute 5):** Present value **133**, reference/failure threshold **140**
+- **Trend (accelerating):** March 573 → April 609 → May 1,963 reallocated sectors
+- **Raw value:** Clear progression toward threshold breach
+- **Spin retry count:** 0 (motor/mechanical spin-up unaffected — NOT a spin-up fault)
+- **Temperature:** 48°C (Hard Drive 2 healthy: 46°C for comparison)
+- **Power-on time:** 47,901 hours
+
+**Diagnosis: Genuine progressive media failure** on Hard Drive 1 itself — NOT a cable/interface issue. This failure signature (climbing reallocated sector count, low/zero CRC errors) is distinct from the July 14 Kuromoon hdd-backup-1 SATA cable issue (which showed climbing UDMA_CRC_Error_Count). **This is a disk media degradation problem, not an interface problem.**
+
+**Current Risk Exposure:**
+- Kinmoon's RAID 1 mirror is running on a single healthy drive (Hard Drive 2) with **zero redundancy**
+- If Hard Drive 2 fails before Hard Drive 1 is replaced, the entire proxmox-backups archive (2.4TB of vzdump history) would be lost
+- **This is an offsite backup copy only** — hdd-backup-1/hdd-backup-2 on Kuromoon remain healthy and hold live production data; no live production data is at risk
+- All backup history would need to be rebuilt from zero if both drives fail
+
+**Status: NOT yet actioned (July 23, 2026)**
+- Do **NOT** click "Repair" on the storage pool until Hard Drive 1 is physically replaced
+- **Why:** Repair triggers a RAID 1 rebuild, which requires a healthy second member to rebuild onto; attempting Repair now against the already-failing Hard Drive 1 would either do nothing or further stress the degrading drive, risking a harder failure
+- **Correct sequence:** Replace Hard Drive 1 hardware first, then trigger Repair/rebuild onto the new drive
+
+**Decision made:** Deferred in favor of addressing the Hard Drive 1 failure first (higher risk to offsite backup redundancy).
+
+### Hard Drive 2 Status
+
+- **SMART Status:** Healthy
+- **Temperature:** 46°C
+- **All attributes:** Within normal range
+- **Current role:** Sole functioning member of RAID 1 mirror (running at full capacity without redundancy)
+
+### kinmoon-smb Disk Space Issue (July 23, 2026)
+
+**Immediate Issue:** proxmox-backups share showing 93-94% capacity, with only ~200GB available
+
+**Root Cause (Analyzed):**
+- **#recycle folder:** 1.3TB of files already logically freed by Proxmox's own `prune-backups` retention policy
+- **This is NOT unbounded backup accumulation** — Proxmox's retention (keep-daily=7, keep-weekly=4) is working correctly
+- **The NAS-level recycle bin is the actual space waster** — UGOS retains deleted files in its own recycle bin, causing double-counting of the same backup churn
+- Only ~1.3TB of actual useful backup data present
+
+**UGOS Recycle Bin Investigation:**
+- Partially mapped navigation path: Storage app → (sections checked: Overview, Storage pool & Volume, Hard Drive, External Storage — recycle bin settings not found in these sections)
+- Exact location of per-share Recycle Bin settings in UGOS Control Panel **not yet confirmed**
+
+**Status: NOT yet fixed (July 23)**
+- Deferred in favor of Hard Drive 1 replacement (higher priority)
+- Cleanup would involve: locating UGOS recycle bin settings, disabling it, manually clearing the existing `#recycle` folder (1.3TB)
 
 ---
 
@@ -994,177 +1111,4 @@ CFO agent — cost tracking and optimization reporting. Deployed v1 April 27, 20
 
 #### Overview
 
-CTO / infrastructure agent responsible for app lifecycle management, alerting, and (eventually) agent-spawning. Deployed incrementally across 8 sub-phases (24.1–24.8). This section corrects a status conflict identified in the July 8-9, 2026 documentation audit: agents.md previously had no entry for EMIYA at all, while AI-CONTEXT.md already showed 3 of 8 sub-phases complete.
-
-#### Design Principle
-
-EMIYA proposes → Muzakkir approves → EMIYA executes. No autonomous destructive actions. (This approval-gated pattern was validated against 2026 industry practice during design review — comparable self-hosted assistant projects added similar approval-gate features specifically to address the security risk of broad-permission autonomous agents; EMIYA's design already avoids that risk.)
-
-#### Core Responsibilities (8 sub-phases, 24.1–24.8)
-
-1. **App Management** (24.1) ✅ COMPLETE — Firefly III, ntfy, Langfuse lifecycle
-2. **Alert Translation** (24.2) 📋 Planned — Alertmanager alerts → plain English via ntfy
-3. **Container Updates** (24.3) 📋 Planned — Docker/apt upgrades, approval-gated
-4. **Knowledge Ingestion** (24.4) 📋 Planned — URL → Firecrawl → triple-write pipeline
-5. **Proactive Monitoring** (24.5) 📋 Planned — anomaly detection, trend alerts
-6. **Performance + Goal Optimization** (24.6) 📋 Planned — resource reallocation, goal tracking
-7. **Universal Notifications** (24.7) ✅ COMPLETE — ntfy hub for all agent communications
-8. **Langfuse AI Observability** (24.8) ✅ COMPLETE — LLM performance tracking and tracing
-
-#### Active Workflows
-
-No dedicated "EMIYA"-branded n8n workflow currently exists as a single unified entity. The 3 completed sub-phases (24.1, 24.7, 24.8) were implemented as direct infrastructure deployments (Firefly III/ntfy/Langfuse container setup and wiring) rather than as an EMIYA-specific workflow. This is a real structural gap: EMIYA is currently a roadmap category with completed infrastructure underneath it, not yet a running agent that reads and acts on that infrastructure.
-
-#### Known Limitations
-
-- Not yet a unified running agent — completed sub-phases are infrastructure completions, not EMIYA-branded workflows that reason over them
-- Remaining 5 of 8 sub-phases (24.2–24.6) are one-line descriptions only, unscoped in detail
-- Estimated total effort: 24-32h across all 8 sub-phases; roughly 9-12h already spent on 24.1/24.7/24.8, remainder unestimated per-phase
-- Once Alert Translation (24.2) is built, EMIYA becomes a second Alertmanager-sourced funnel-plus alongside Cu Chulainn's planned security-focused translation — worth deciding at that point whether these should be one workflow with two lenses (general ops vs. security) or genuinely separate agents, to avoid two agents independently parsing the same Alertmanager feed
-
-#### Dependencies
-
-- Firefly III (CT 221), ntfy (CT 222), Langfuse (CT 223) — live, wired (24.1/24.7/24.8)
-- Alertmanager (CT 205) — planned integration (24.2)
-- Docker/apt — planned integration (24.3)
-- Firecrawl — planned integration (24.4)
-
-#### Monitoring
-
-- App Management: Firefly III/ntfy/Langfuse containers monitored via existing Prometheus/Uptime Kuma, not via a dedicated EMIYA process yet
-- No dedicated EMIYA-level monitoring exists — flagged as a gap since the reasoning/translation layer is unbuilt
-
-### Cu Chulainn — Security Monitoring & Threat Detection
-
-**Servant Class:** Lancer
-**Ascension Stage:** 0/4 (Concept — no implementation started)
-**True Name:** Cú Chulainn (renamed from Guardian May 16, 2026)
-**Agent Type:** Funnel (sources from Alertmanager, once built)
-
-#### Overview
-
-Security monitoring and threat detection agent for the Chaldea ecosystem, translating Alertmanager's alert feed into readable, prioritized security reporting. In FGO canon, Cu Chulainn is Scathach's student, reflected in build order (Scathach built first, Cu Chulainn second). No implementation work has begun as of July 9, 2026. Renamed from "Guardian" on May 16, 2026 (rename propagation to n8n workflows pending once workflows exist).
-
-#### Core Responsibilities (Planned — none implemented)
-
-- Alert translation: converting raw Prometheus/Alertmanager alerts into readable, prioritized summaries, security-focused
-- Threat detection across Chaldea/homelab infrastructure
-- Security reporting to Muzakkir, delivered via Jeanne Alter/Telegram, including a recommended action per the Funnel Agent design principle (not just "alert fired" but "here's what it likely means and what to check")
-
-#### Active Workflows
-
-None. No n8n workflow exists for this agent yet.
-
-#### Known Limitations
-
-- Build priority is 3rd, behind Scathach (1st) and after current core agents (MERLIN, Midas, EMIYA) — work is not expected to start until Scathach's build is underway or complete
-- Overlaps with EMIYA's planned Alert Translation (24.2), which also sources from Alertmanager — worth deciding whether these merge into one workflow with two lenses (general ops vs. security) once both are scoped, to avoid duplicate parsing of the same feed
-- No defined trigger mechanism or report format specified yet
-- Estimated effort: 6-8h (per ROADMAP.md), unvalidated since no scoping work has occurred
-- Rename propagation (from Guardian) pending once first n8n workflow is built
-
-#### Dependencies (Planned, not yet wired)
-
-- Prometheus / Alertmanager (CT 202 / CT 205) — intended alert source
-- Jeanne Alter — intended reporting interface to Muzakkir
-- n8n — intended orchestration platform
-
-#### Monitoring
-
-Not applicable — no active deployment to monitor.
-
-### Scathach — Career Growth & Job Application Workflows
-
-**Servant Class:** Lancer
-**Ascension Stage:** 0/4 (Concept — LangGraph evaluation sequenced behind Phase 24.12, blocking)
-**True Name:** Scathach
-**Agent Type:** Not a funnel (generative career research/reasoning — nothing existing to translate)
-
-#### Overview
-
-Career growth and job application workflows agent. Named and prioritized on May 16, 2026 as the 1st build priority in the agent roster. In FGO canon, Scathach is Cu Chulainn's teacher and a master of land/sea combat, reflected in the build order. No implementation work has begun as of July 9, 2026.
-
-#### Core Responsibilities (Planned — none implemented)
-
-- Career research: job market analysis, role matching against target positions (Cloud Infrastructure Engineer, DevOps Engineer, Systems Administrator)
-- Job application workflow automation
-- Possible integration point with ApplyPilot (C:\Users\muzak\.applypilot\) — relationship not yet defined
-
-#### Active Workflows
-
-None. No n8n or LangGraph workflow exists for this agent yet.
-
-#### Updated Sequencing (July 9, 2026)
-
-**LangGraph evaluation should happen *after* Phase 24.12 (Jeanne Alter's refactor to n8n's native AI Agent node), not standalone.** 24.12 is already testing whether n8n's native AI Agent node can handle multi-step autonomous reasoning for Jeanne Alter — if it can, that same node may cover Scathach's career-research reasoning needs too, avoiding the need to introduce a second orchestration framework into the stack. Original prerequisite (decision logged 2026-07-09, decisions.md) still holds — LangGraph must be evaluated before implementation scope is defined — but the evaluation itself is now sequenced behind 24.12 rather than done independently.
-
-#### Known Limitations
-
-- **Blocking prerequisite, sequenced after Phase 24.12:** LangGraph evaluation cannot proceed until 24.12 clarifies whether n8n's native AI Agent node handles multi-step reasoning adequately
-- No defined data sources, external tool integrations, or output format
-- Relationship to ApplyPilot not yet clarified
-- Estimated effort: TBD — cannot be scoped until the (now-sequenced) LangGraph evaluation completes
-
-#### Dependencies (Planned, not yet adopted)
-
-- Phase 24.12 (Jeanne Alter Architecture Refactor) — should complete first, may resolve the LangGraph question
-- LangGraph — framework evaluation pending (sequenced after 24.12), not yet adopted for any agent
-- Possible ApplyPilot integration (C:\Users\muzak\.applypilot\)
-- Reporting interface (likely Jeanne Alter/Telegram) — undetermined
-
-#### Monitoring
-
-Not applicable — no active deployment to monitor.
-
----
-
-## 🤖 Jeanne Alter AI Agent (Phase 7C/7D/7D-Menu/15/41/Da Vinci Stage 2/Phase 7E/Phase 24.9/Phase 24.10/Web Search/Email Management Design)
-
-> **Note:** Historical identity was "Gilgamesh" (@JhinGilgamesh_bot). Renamed to Jeanne Alter ("The Corrupted Ruler") July 8, 2026. Full propagation across bot, n8n system prompt, Telegram username, and all 8 documentation files pending.
-
-### Jeanne Alter Chat Pipeline — Architecture
-
-**Architecture:**
-```
-Telegram (@JhinGilgamesh_bot) → n8n Workflow → Get Conversation History
-                                                    ↓
-                                          Format Messages (RAG + history)
-                                                    ↓
-                                    If (Needs Web Search?)
-                                      ↙              ↖
-                               (true)               (false)
-                                 ↓                    ↓
-                        Web Search (Firecrawl)   Route Model
-                                 ↓                    ↓
-                         Inject Search Results    Call Ollama or
-                                 ↓                 Call Claude API
-                               Route Model            ↓
-                                 ↓               Merge Response
-                        Call Claude API              ↓
-                                 ↓             Extract Response
-                        Merge Response              ↓
-                                 ↓          Save User Message
-                        Extract Response      Save Assistant Message
-                                 ↓          → gilgamesh_conversations
-                        Save User Message         ↓
-                        Save Assistant Message  Send Telegram
-                        → gilgamesh_conversations ↓
-                                 ↓          Count Conversations
-                        Send Telegram             ↓
-                                 ↓          Archive to Qdrant (async)
-                        Count Conversations      ↓
-                                 ↓          Langfuse Trace (async)
-                        Archive to Qdrant (async) ↓
-                                 ↓         Send to Personal Knowledge (async)
-                        Langfuse Trace (async)
-                                 ↓
-                   Send to Personal Knowledge (async)
-```
-
-**Key Components:**
-
-| Component | Details |
-|-----------|---------|
-| **Telegram Trigger** | POST endpoint listening for /messages and /callback_query |
-| **Format Messages** | Builds conversation history (last 15 rows from gilgamesh_conversations), performs Qdrant RAG query, sets claude-sonnet-4 as default model |
-| **If
+CTO / infrastructure agent responsible for app lifecycle management, alerting, and (eventually) agent-spawning. Deployed incrementally across 8 sub-phases (24.1–24.8). This section corrects a status conflict identified in the July 8-9, 2026 documentation audit: agents.md previously had no entry for EMIYA at all, while AI-CONTEXT.md already showed 3 of 8 sub-
