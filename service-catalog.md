@@ -1,7 +1,7 @@
 # Service Catalog
 
 ## Overview
-Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-07-17.
+Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-07-23.
 
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
