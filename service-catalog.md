@@ -1,7 +1,7 @@
 # Service Catalog
 
 ## Overview
-Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-07-23.
+Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-07-24.
 
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
@@ -125,6 +125,7 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 - Pelican web-based file editor introduces hard line breaks into multi-line ini values (e.g., PalWorldSettings.ini's OptionSettings block); Palworld silently ignores entire OptionSettings block if split across lines instead of remaining a single unbroken line. Safe method: edit via `pct exec` + `sed` commands from Proxmox host, never via panel Files tab.
 - Pelican's PalworldServerConfigParser (run in PalServer.sh at container boot) auto-populates PublicIP from local allocation IP when egg's "Public IP" variable is empty; must be made User Editable + User Viewable to allow manual override via Startup tab.
 - Pelican panel file Download function (Files tab → Archive → Download) has a known bug returning 404 "resource not found" for some eggs/nodes (root cause suspected in Wings FQDN/signed URL generation); reliable workaround is `pct exec <CTID> -- tar -czf /tmp/backup.tar.gz ...` followed by `pct pull <CTID> /tmp/backup.tar.gz ...` from Proxmox host, bypassing Wings entirely.
+- UGREEN DXP2800 NAS (Kinmoon) has a documented SATA link-speed compatibility issue where some drives show narrow signal timing tolerance at 6.0Gbps, causing deterministic "failed command: WRITE FPDMA QUEUED" errors ~18-19 seconds after boot/reboot. This is NOT a drive health issue (confirmed via healthy SMART data). Fix: force SATA to 3.0Gbps via `libata.force=3.0Gbps` kernel boot parameter in `/boot/EFI/debian/grub.cfg` and `/boot/EFI/debian/grub.am`. Setting may be overwritten by future firmware/system updates and requires rechecking after any UGOS update.
 
 ### Dependencies
 - Haiku 3.5 API (8 sequential calls, one per file; 9th planned for Deck sync)
@@ -140,13 +141,4 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 - **Observability Tracking:** 1 trace (da-vinci-update) with 8 child generations per run in Langfuse; accessible at https://langfuse.najhin-gaming.com via direct URL, list view, and public API
 - **File Updates:** All 8 files updated on GitHub after each session update
 - **Telegram Alerts:** Confirmation message sent on completion
-- **Langfuse UI:** Accessible at https://langfuse.najhin-gaming.com; pipeline traces visible in trace list (UI bug resolved 2026-05-22). All 8 child generations visible in trace detail view. Internal n8n calls use http://192.168.30.223:3000.
-- **Expected Cost Range:** ~$0.14–0.16 per full pipeline run (~$4.20–4.80/month at once daily)
-- **Files Pushed:** AI-CONTEXT.md, changelog.md, troubleshoot.md, ROADMAP.md, agents.md, current-state.md, service-catalog.md, decisions.md
-- **Deck Sync Status:** Designed, awaiting manual backfill of sync-id tags on existing ~30 Homelab cards before activation
-
----
-
-## Da Vinci — Personal Knowledge Gateway
-**Status:** Active (deployed 2026-05-22)  
-**Type:** Internal n
+- **Langfuse UI:** Accessible at https://langfuse.najhin-gaming.com; pipeline traces visible in trace list (UI bug resolved 2026-05-22). All 8 child generations visible in
