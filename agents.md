@@ -23,7 +23,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026 | Alertmanager iowait Investigation July 23, 2026)  
+**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026 | Alertmanager iowait Investigation July 23, 2026 | Kinmoon RAID Incident Response July 24, 2026)  
 **Type:** 8 sequential Haiku API calls with immediate cost logging and Langfuse observability, plus planned 9th step (Nextcloud Deck sync)  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
@@ -220,6 +220,18 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Observability: alerts on CT 205 (Alertmanager) cannot currently distinguish iowait from genuine CPU load; "CPU usage" alerts may be storage/I/O symptoms rather than compute-bound issues (diagnosed July 23, 2026; rule-level fix pending)
 
 ### Recent Updates
+**Kinmoon NAS RAID Degradation & Recovery (July 24, 2026 — Session Kinmoon Storage Pool 1 Rebuild)**
+- Storage Pool 1 physical recovery: Hard Drive 1 replaced with 3TB Seagate IronWolf (NAS-rated, CMR); confirmed detected by UGOS as "Normal," healthy SMART on install
+- Two consecutive RAID 1 rebuild attempts failed (2026-07-24 01:32:29 and auto-resumed ~07:06). Pattern analysis revealed Hard Drive 2 throws "failed command: WRITE FPDMA QUEUED" (Serious level) deterministically ~18-19 seconds after every boot cycle, not a drive health issue — Hard Drive 2 SMART data confirmed healthy (Reallocated Sector Count present value 99 vs. threshold 10)
+- **Root cause identified:** Known, documented UGREEN DXP2800 SATA link-speed compatibility issue (confirmed via UGREEN's DACH community forum 30+ page thread and independent troubleshooting writeup; some drives have narrow signal timing tolerance at SATA's full 6.0Gbps, causing intermittent WRITE FPDMA QUEUED failures misidentified as drive failure)
+- **Fix identified but NOT yet applied:** force SATA link speed down to 3.0Gbps via kernel boot parameter `libata.force=3.0Gbps` added to `/boot/EFI/debian/grub.cfg` and `/boot/EFI/debian/grub.am`. Deferred pending completion of emergency backup
+- This WRITE FPDMA QUEUED signature present intermittently in Kinmoon logs since March 2026 (2026-03-02, 03-12, 05-08 x2, 05-13/14, 07-23, 07-24), raises possibility original Hard Drive 1's "failure" may have been accelerated by same SATA instability rather than pure old-age media wear
+- Emergency backup of Kinmoon's vzdump archive (1.3TB) initiated to Kuromoon hdd-backup-2 (`/mnt/hdd-backup-2/kinmoon-emergency-backup/`) via `nohup rsync` (PID 3211563, started 2026-07-24 21:05, log at `/root/kinmoon-copy.log`) — eliminates single-point-of-failure risk while Kinmoon unstable
+- backup-daily Proxmox job disabled (`enabled 0` in `/etc/pve/jobs.cfg` at 2026-07-24 ~01:30) to prevent 02:00 scheduled run from adding write load during RAID rebuild — must be re-enabled once Kinmoon confirmed stable
+- Also discovered: silent UGOS auto-update occurred mid-incident (2026-07-24 01:23:14, upgraded to v1.17.0.0095, self-triggered reboot) immediately preceded first Hard Drive 2 fault
+- **Decision made:** defer libata fix until after emergency backup completes, prioritizing data safety given Kinmoon backups are sole copy of Proxmox VM/container backup data (not mirrored elsewhere, unlike Nextcloud data primarily on Kuromoon's hdd-backup-1/2)
+- **Decision made:** defer recycle bin cleanup on Kinmoon Volume 1 (~1.3TB #recycle bloat) — lower priority than rebuild fix
+
 **Alertmanager iowait Alert Investigation (July 23, 2026 — Session Infrastructure Audit)**
 - CRITICAL "CPU usage 100%" alert on CT 205 (Alertmanager, 192.168.30.205:9100), 2026-07-20 03:46-03:47 AM, investigated and root-caused
 - Root cause: Prometheus's CPU-usage alert rule sums all non-idle CPU time, which includes iowait — `top` confirmed 100.0% `%wa` with 0.0% `us`/`sy` (zero actual compute load, pure I/O wait)
@@ -281,23 +293,3 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Permanent vs staged facts: bills/payments/subscriptions only become second-brain entries; all other extracted content held in staging store (~7 day auto-clear)
 - Model routing: qwen3:14b primary, Claude Haiku API fallback (consistent with Jeanne Alter's existing pattern, not stricter local-only)
 - Schedule: 3x/day (morning/afternoon/evening, exact times TBD at build)
-- Credentials: Gmail OAuth2 (n8n native) + iCloud IMAP app-specific password in n8n credential store (first concrete ecosystem-wide credential store migration step)
-- Status: Design Complete, 0/6 rollout steps implemented
-
-**Documentation Completion Session (July 9, 2026 — Session 2 agents.md Completion)**
-- Added Agent Design Principles section (establishing funnel/non-funnel/hybrid classification pattern ecosystem-wide)
-- Added full MERLIN section (Caster, 2/4, funnel agent — sources from Uptime Kuma for SSL cert tracking; urgent July 14 SSL expiry flagged; design decision made to migrate from broken Cloudflare API integration to Uptime Kuma native monitoring)
-- Added full Midas section (Caster, 2/4, funnel agent — sources from Langfuse Metrics API for Haiku/Claude costs; design decision made to migrate from duplicate gilgamesh_costs Data Table to Langfuse as single source of truth)
-- Added full EMIYA section (Archer, partial 3/8 — corrects prior status conflict; documents 8 sub-phases (24.1–24.8), 3 complete (24.1/24.7/24.8 as infrastructure deployments, not yet unified as running agent); notes planned dependencies Firefly III, ntfy, Langfuse, Alertmanager)
-- Added full Cu Chulainn section (Lancer, 0/4, funnel agent — renamed from Guardian May 16, 2026; no implementation started; overlaps with EMIYA's Alert Translation on Alertmanager source)
-- Added full Scathach section (Lancer, 0/4, not a funnel — career research/reasoning generative work; build priority 1st; LangGraph evaluation sequenced behind Phase 24.12 Jeanne Alter refactor to n8n AI Agent node)
-- Updated Da Vinci Known Limitations: restored agents.md structural completeness note, flagged that EMIYA and Cu Chulainn are documented concepts but not yet unified running workflows
-
-**Documentation Audit — Cross-Session Gap Analysis (July 9, 2026 — Session Documentation Audit)**
-- Performed full audit of AI-CONTEXT.md, ROADMAP.md, decisions.md, changelog.md, agents.md, current-state.md, and service-catalog.md against conversation history dating back to January 2026
-- Identified seven items discussed in past sessions never made it into project documentation files
-- Confirmed agents.md structural gap: missing full sections for MERLIN, Midas, EMIYA, Scathach, and Cu Chulainn despite being listed in AI-CONTEXT.md agent table and decisions.md — now completed July 9, 2026
-- Confirmed Cu Chulainn rename (from Guardian, renamed May 16, 2026) has not propagated — all references still show "Guardian" in agents.md, AI-CONTEXT.md agent table, decisions.md — now completed July 9, 2026
-- Confirmed Scathach (Lancer-class career growth/research agent, 1st build priority) documented informally but missing from agents.md proper sections — now completed July 9, 2026
-- Confirmed Nightingale (health pipeline agent concept, noted May 17, 2026) has no documentation — deferred indefinitely, not prioritized
-- Confirmed MERLIN Cloudflare SSL expiry check hardcoded to July 14, 2026 remains unresolved (now 5 days
