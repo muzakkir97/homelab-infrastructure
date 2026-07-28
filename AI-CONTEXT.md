@@ -1,6 +1,6 @@
 # 🤖 AI Context Document — Homelab Infrastructure Project
 
-> **Last Updated:** July 23, 2026
+> **Last Updated:** July 24, 2026
 > **Purpose:** Upload this file to any AI (Claude, ChatGPT, Copilot, etc.) to provide full project context
 > **Owner:** Muzakkir Kholil
 > **GitHub:** github.com/muzakkir97/homelab-infrastructure
@@ -11,7 +11,7 @@
 
 I'm building an **enterprise-grade homelab** for career transition from Customer Service Engineer (F-Secure, cybersecurity) to **Cloud Engineering / DevOps**. The project serves as both a learning environment and professional portfolio documented on GitHub and LinkedIn.
 
-**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 22 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026. **Gaming platform expanded July 5, 2026: Enshrouded server (CT 306) deployed in Pelican Panel. Network architecture migrated from double-NAT (ISP router + pfSense) to true bridge mode on Huawei HG8145B7N, eliminating all double-NAT routing conflicts permanently. pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed to 202.184.101.136 (was 202.184.35.79). TP-Link EAP610 AX1800 access point (SSID A21-22A) deployed and configured — root cause of AP failure identified and fixed: TL-SG108E switch ports 7-8 were on legacy VLAN 1, not VLAN20_MAIN. All 22 containers + 1 VM running. DNS records require update. Enshrouded external UDP connectivity not yet retested post-bridging.** **Agents ecosystem renamed from "Kuromoon" to "Chaldea" (July 8, 2026) — Kuromoon now refers to physical hardware only, Chaldea is the agents system layer.** **Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler"), pending full propagation across bot, n8n, Telegram, docs (July 8, 2026).** **Career timeline updated (July 8, 2026): September 2026 job-transition deadline dropped. Cloud/DevOps roles pursued at slower pace. Chaldea project reframed as indefinite, long-term. hdd-backup-2 Prometheus alert removed (copy-paste bug fixed, then intentionally disabled per user decision). Duplicate muzakkir-profile.md.md file exists in Nextcloud. Jeanne Alter assistant messages not saving to Data Table (silent conversation memory breakage).** **Documentation audit completed (July 9, 2026): Cross-session gap analysis identified seven previously-undocumented items from past sessions: Interest-Capture Loop concept, Four Blind Spots analysis (time vs priorities, docs drift, bus factor, skill-market fit), two domains tracked (najhin-gaming.com for gaming, muzakkir.tech for portfolio), two previously-named agents (Cu Chulainn renamed from Guardian May 16, Scathach prioritized May 16, Nightingale health concept May 17), and Phase 27 Domain Migration & Infrastructure Audit. Cu Chulainn and Scathach rename propagation pending. muzakkir.tech Cloudflare zone completion unconfirmed. agents.md structural incompleteness addressed (July 9, 2026): full sections drafted for MERLIN, Midas, EMIYA, Cu Chulainn, Scathach with Agent Type classifications and Funnel Agent design principle. MERLIN Cloudflare SSL expiry check no longer hardcoded — migrated to Uptime Kuma source July 9, resolving the July 14 urgency. Midas cost tracking planned migration from duplicate Data Table to Langfuse Metrics API (low urgency). Cu Chulainn and Scathach sections added with concept-stage governance. Jeanne Alter assistant message table save bug remains critical, unresolved.** **Jeanne Alter Email Management Pipeline design complete (July 9, 2026): Read + Notify tier, 4 personal accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com), work and NSFW accounts excluded. Architecture: per-account triggers → shared Email Classifier → branches to notification and/or Da Vinci Personal Knowledge gateway for permanent categories (bills/payments/subscriptions). Staging store (~7-day retention) for transient email. 3x/day schedule. Credentials (Gmail OAuth2, iCloud IMAP app-specific password) going to n8n credential store — first concrete step of ecosystem-wide credential store migration. Build effort: ~6-8h across 6 rollout steps. Design approved, implementation not yet started.** **Monitoring fix complete (July 14, 2026): node_exporter `/mnt` exclusion bug root-caused and fixed. Debian package's default `--collector.filesystem.mount-points-exclude` regex included `mnt`, making all `/mnt` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, kinmoon-smb) invisible to Prometheus since ~May 16. Fixed by editing `/etc/default/prometheus-node-exporter` ARGS to remove `mnt` from exclude list and restarting service. MountpointMissing_hddbackup1 alert (stuck active for 8 days) auto-resolved. Confirmed hdd-backup-1 is primary live storage for Nextcloud (not a backup copy); Kinmoon NAS receives nightly rsync at 03:00. Physical SATA cable/port swap remains deferred (no budget). All 22 containers + 1 VM remain running and healthy.** **Palworld server added July 16, 2026 (CT 307): Deployed in Pelican Panel to test multiplayer gaming infrastructure. External connectivity initially broken due to PublicIP misconfiguration (was pointing to internal LAN IP 192.168.30.219). Root-caused and fixed: Pelican egg "Public IP" variable had User Editable + User Viewable permissions unchecked (blocking manual updates via Startup tab); enabled permissions and set PublicIP to current WAN IP (202.184.109.124). PalWorldSettings.ini found to require unbroken single-line format for OptionSettings block — Pelican's web file editor introduces line breaks, corrupting the file and causing Palworld to silently ignore ALL OptionSettings (not just edited field). Established safe editing method: use `pct exec` + sed from Proxmox host, never the Pelican web editor. Pelican's file Download function (404 error) not yet debugged. In-game stutter with 3 concurrent players traced to nightly vzdump backup job (sequential all-container) running concurrently with gameplay (~02:11 AM), causing CPU/disk I/O contention. Backup/restart consolidation and DDNS automation elevated in priority. WAN IP instability observed: 3 changes in one week (202.184.101.136 → 202.184.103.49 → 202.184.109.124); confirmed as TIME PPPoE session renegotiation behavior. All 22 containers + 1 VM running.** **Total capacity: 22 LXC containers + 1 KVM VM (CT 307 Palworld addition July 16-17).** **House internet outage resolved (July 20-23, 2026): ONT PON light offline / LOS blinking red (ISP-side fiber fault) confirmed recovered by July 23. No homelab-side action required; ISP-level issue. Backup infrastructure audit July 23, 2026 completed: `backup-daily` vzdump job verified running 02:00 daily (~93-96 min runtime to ~03:35), storing to kinmoon-smb CIFS share (NOT a separate nightly rsync), compressing zstd, pruning keep-daily=7/keep-weekly=4. CT 306 (Enshrouded) and CT 307 (Palworld) discovered with NO backup coverage — not included in VMID list. CRITICAL: Kinmoon NAS Storage Pool 1 degraded due to Hard Drive 1 SMART failure (reallocated sector count: 573→609→1,963 trend over March-May, present 133 below failure threshold 140). RAID 1 mirror running on single healthy drive (Hard Drive 2) with zero redundancy. Do NOT click Repair until Hard Drive 1 is physically replaced. kinmoon-smb disk usage (93.3%) root-caused to UGOS-level recycle bin (`#recycle`, 1.3TB) double-counting logically-freed backup churn — NAS cleanup deferred, Hard Drive 1 replacement prioritized. CT 205 (Alertmanager) "CPU 100%" alert July 20-22: root-caused to Prometheus's CPU query including iowait (`%wa`), not genuine compute load; correlated to backup job's lingering I/O pressure on network share at 94% capacity. Alert rule not yet modified (diagnosis only).** 
+**Current Status:** Architecture redesign complete. 7-layer model finalized. Midas CFO Agent, MERLIN Reminders, Daily Note Creator, Morning Briefing, Health Tracking all active. Obsidian Phases 22.1, 22.2, and 22.8B complete. Phase 24.7 (ntfy), 24.1 (Firefly III), and 24.8 (Langfuse) complete. Nextcloud Deck integration complete with Da Vinci project management. Hardware upgraded to 128GB DDR4 with 3-tier storage architecture. 22 LXC containers + 1 KVM VM deployed. Da Vinci Stage 2 (RAG) complete with Qdrant + nomic embeddings. Phase 7E (Extended Memory) complete with conversation archival. Pelican panel migration complete with Minecraft/Terraria split. Da Vinci Documentation Pipeline rebuilt May 19, 2026 with 3 separate Haiku API calls and immediate cost logging. Concurrency protection and inbox watcher schedule finalized May 18-19, 2026. Infrastructure troubleshooting complete May 20, 2026: CT 207 Promtail crash loop resolved (53,649 restarts), CT 304 tModLoader CPU leak fixed with cpulimit + daily cron. Phase 16.4 (Documentation Pipeline Expansion — 8 files) complete May 21, 2026: expanded from 3-file to 8-file sequential Haiku chain. decisions.md promoted to Phase 2 priority. Pipeline tested and verified May 21, 2026: 3 separate API calls, immediate cost logging, per-file system prompts, all 8 files successfully pushed to GitHub. Phase 24.8 (Langfuse) wired to Da Vinci Update Pipeline May 21, 2026: single trace (da-vinci-update) with 8 child generations logged per run. Traces confirmed in ClickHouse and accessible via API; UI trace list has known v3 self-hosted bug where traces don't appear in list view (1-hour aggregation delay). VM 400 disk expanded from 56GB to 86GB (LVM thin resize, 34GB free). Model testing complete: qwen3:14b confirmed as primary (honest about limitations), gemma3 + phi4-mini removed (confident hallucination). AI-CONTEXT max_tokens bumped to 25000 (was hitting ceiling). Langfuse CT 223 LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES set to true. Phase 24.9 (Personal Knowledge System) complete May 22, 2026: Langfuse UI trace list working (1-hour analytics delay resolved), Gilgamesh wired to Langfuse, Da Vinci Personal Knowledge gateway deployed, muzakkir-profile.md created and indexed in Qdrant (1,736 chunks), Gilgamesh successfully recalling personal facts via RAG, Knowledge Indexer updated to include 04-personal/ and expanded folder set (90 files indexed). Documentation audit (May 22, 2026) — corrections only: ROADMAP.md had 5 archived phases still showing as active; current-state.md had hallucinated hardware (EPYC 5645/256GB/RTX 4070 vs actual Ryzen 5 5600X/128GB/RX 6700 XT); agents.md MERLIN/Midas status incorrect; Knowledge Indexer folder list inconsistent across files. All corrections applied. Phase 24.10 (Triggered Qdrant Re-indexing) complete May 25, 2026: Post-write webhook added to Da Vinci Personal Knowledge gateway. Partial reindex (/davinci-reindex-personal, ~1s) triggers after muzakkir-profile.md writes. Full daily reindex (3am, ~21s) still operational. Phase 52 (DOCP Memory Optimization) complete May 2026. Web Search (Gilgamesh) deployed May 25, 2026: Firecrawl API integrated. Keyword-based intent detection, search results injected into context, search queries force-routed to Haiku (local models cannot follow injected context). Firecrawl credits per search: 2. All changes verified May 25, 2026. **Gaming platform expanded July 5, 2026: Enshrouded server (CT 306) deployed in Pelican Panel. Network architecture migrated from double-NAT (ISP router + pfSense) to true bridge mode on Huawei HG8145B7N, eliminating all double-NAT routing conflicts permanently. pfSense WAN reconfigured from DHCP to PPPoE. Public IP changed to 202.184.101.136 (was 202.184.35.79). TP-Link EAP610 AX1800 access point (SSID A21-22A) deployed and configured — root cause of AP failure identified and fixed: TL-SG108E switch ports 7-8 were on legacy VLAN 1, not VLAN20_MAIN. All 22 containers + 1 VM running. DNS records require update. Enshrouded external UDP connectivity not yet retested post-bridging.** **Agents ecosystem renamed from "Kuromoon" to "Chaldea" (July 8, 2026) — Kuromoon now refers to physical hardware only, Chaldea is the agents system layer.** **Gilgamesh renamed to Jeanne Alter ("The Corrupted Ruler"), pending full propagation across bot, n8n, Telegram, docs (July 8, 2026).** **Career timeline updated (July 8, 2026): September 2026 job-transition deadline dropped. Cloud/DevOps roles pursued at slower pace. Chaldea project reframed as indefinite, long-term. hdd-backup-2 Prometheus alert removed (copy-paste bug fixed, then intentionally disabled per user decision). Duplicate muzakkir-profile.md.md file exists in Nextcloud. Jeanne Alter assistant messages not saving to Data Table (silent conversation memory breakage).** **Documentation audit completed (July 9, 2026): Cross-session gap analysis identified seven previously-undocumented items from past sessions: Interest-Capture Loop concept, Four Blind Spots analysis (time vs priorities, docs drift, bus factor, skill-market fit), two domains tracked (najhin-gaming.com for gaming, muzakkir.tech for portfolio), two previously-named agents (Cu Chulainn renamed from Guardian May 16, Scathach prioritized May 16, Nightingale health concept May 17), and Phase 27 Domain Migration & Infrastructure Audit. Cu Chulainn and Scathach rename propagation pending. muzakkir.tech Cloudflare zone completion unconfirmed. agents.md structural incompleteness addressed (July 9, 2026): full sections drafted for MERLIN, Midas, EMIYA, Cu Chulainn, Scathach with Agent Type classifications and Funnel Agent design principle. MERLIN Cloudflare SSL expiry check no longer hardcoded — migrated to Uptime Kuma source July 9, resolving the July 14 urgency. Midas cost tracking planned migration from duplicate Data Table to Langfuse Metrics API (low urgency). Cu Chulainn and Scathach sections added with concept-stage governance. Jeanne Alter assistant message table save bug remains critical, unresolved.** **Jeanne Alter Email Management Pipeline design complete (July 9, 2026): Read + Notify tier, 4 personal accounts (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com), work and NSFW accounts excluded. Architecture: per-account triggers → shared Email Classifier → branches to notification and/or Da Vinci Personal Knowledge gateway for permanent categories (bills/payments/subscriptions). Staging store (~7-day retention) for transient email. 3x/day schedule. Credentials (Gmail OAuth2, iCloud IMAP app-specific password) going to n8n credential store — first concrete step of ecosystem-wide credential store migration. Build effort: ~6-8h across 6 rollout steps. Design approved, implementation not yet started.** **Monitoring fix complete (July 14, 2026): node_exporter `/mnt` exclusion bug root-caused and fixed. Debian package's default `--collector.filesystem.mount-points-exclude` regex included `mnt`, making all `/mnt` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, kinmoon-smb) invisible to Prometheus since ~May 16. Fixed by editing `/etc/default/prometheus-node-exporter` ARGS to remove `mnt` from exclude list and restarting service. MountpointMissing_hddbackup1 alert (stuck active for 8 days) auto-resolved. Confirmed hdd-backup-1 is primary live storage for Nextcloud (not a backup copy); Kinmoon NAS receives nightly rsync at 03:00. Physical SATA cable/port swap remains deferred (no budget). All 22 containers + 1 VM remain running and healthy.** **Palworld server added July 16, 2026 (CT 307): Deployed in Pelican Panel to test multiplayer gaming infrastructure. External connectivity initially broken due to PublicIP misconfiguration (was pointing to internal LAN IP 192.168.30.219). Root-caused and fixed: Pelican egg "Public IP" variable had User Editable + User Viewable permissions unchecked (blocking manual updates via Startup tab); enabled permissions and set PublicIP to current WAN IP (202.184.109.124). PalWorldSettings.ini found to require unbroken single-line format for OptionSettings block — Pelican's web file editor introduces line breaks, corrupting the file and causing Palworld to silently ignore ALL OptionSettings (not just edited field). Established safe editing method: use `pct exec` + sed from Proxmox host, never the Pelican web editor. Pelican's file Download function (404 error) not yet debugged. In-game stutter with 3 concurrent players traced to nightly vzdump backup job (sequential all-container) running concurrently with gameplay (~02:11 AM), causing CPU/disk I/O contention. Backup/restart consolidation and DDNS automation elevated in priority. WAN IP instability observed: 3 changes in one week (202.184.101.136 → 202.184.103.49 → 202.184.109.124); confirmed as TIME PPPoE session renegotiation behavior. All 22 containers + 1 VM running.** **Total capacity: 22 LXC containers + 1 KVM VM (CT 307 Palworld addition July 16-17).** **House internet outage resolved (July 20-23, 2026): ONT PON light offline / LOS blinking red (ISP-side fiber fault) confirmed recovered by July 23. No homelab-side action required; ISP-level issue. Backup infrastructure audit July 23, 2026 completed: `backup-daily` vzdump job verified running 02:00 daily (~93-96 min runtime to ~03:35), storing to kinmoon-smb CIFS share (NOT a separate nightly rsync), compressing zstd, pruning keep-daily=7/keep-weekly=4. CT 306 (Enshrouded) and CT 307 (Palworld) discovered with NO backup coverage — not included in VMID list. CRITICAL: Kinmoon NAS Storage Pool 1 degraded due to Hard Drive 1 SMART failure (reallocated sector count: 573→609→1,963 trend over March-May, present 133 below failure threshold 140). RAID 1 mirror running on single healthy drive (Hard Drive 2) with zero redundancy. Do NOT click Repair until Hard Drive 1 is physically replaced. kinmoon-smb disk usage (93.3%) root-caused to UGOS-level recycle bin (`#recycle`, 1.3TB) double-counting logically-freed backup churn — NAS cleanup deferred, Hard Drive 1 replacement prioritized. CT 205 (Alertmanager) "CPU 100%" alert July 20-22: root-caused to Prometheus's CPU query including iowait (`%wa`), not genuine compute load; correlated to backup job's lingering I/O pressure on network share at 94% capacity. Alert rule not yet modified (diagnosis only).** **MAJOR INCIDENT — Kinmoon NAS Storage Pool 1 RAID 1 Rebuild Failure & Root Cause Analysis (July 24, 2026): Hard Drive 1 physically replaced with 3TB Seagate IronWolf (was original SMART-failed drive). Two consecutive RAID 1 rebuild attempts failed (01:32:29 and ~07:06). Root cause identified via UGOS event log export: Hard Drive 2 throws deterministic "failed command: WRITE FPDMA QUEUED" (Serious level) ~18-19 seconds after every boot, NOT a drive health issue (SMART shows healthy Reallocated Sector Count 99/10 threshold). This is a known, documented UGREEN DXP2800 SATA link-speed compatibility issue (confirmed via UGREEN DACH forum + external sources). Fix identified: force SATA to 3.0Gbps via kernel boot parameter `libata.force=3.0Gbps` in `/boot/EFI/debian/grub.cfg` and `/boot/EFI/debian/grub.am`. Fix NOT YET APPLIED pending emergency data backup completion (1.3TB vzdump archive copy to Kuromoon hdd-backup-2 via rsync started 2026-07-24 21:05, PID 3211563). Historical analysis: this WRITE FPDMA QUEUED signature detected intermittently since March 2026 on both drives at different times, suggesting original Hard Drive 1 "failure" may have been accelerated by this same SATA link instability rather than pure media wear. backup-daily job disabled (enabled 0) during rebuild attempts to reduce write load on Hard Drive 2. Storage Pool 1 currently DEGRADED; rebuild NOT reattempted pending fix application. When applied and verified, retry Repair; then re-enable backup-daily and add CT 306/307 to VMID backup list.** 
 
 ---
 
@@ -163,7 +163,7 @@ I'm building an **enterprise-grade homelab** for career transition from Customer
 ```
 Internet → TIME Fiber (GPON, bridged mode) → Huawei HG8145B7N (bridge mode, no NAT/routing/DHCP)
                                                       ↓
-                                         pfSense WAN (pppoe0, 202.184.101.136 — see WAN IP Instability)
+                                         pfSense WAN (pppoe0, 202.184.109.124 — see WAN IP Instability)
                                                       ↓
                                             802.1Q Trunk (igc2)
                                                       ↓
@@ -183,13 +183,13 @@ Internet → TIME Fiber (GPON, bridged mode) → Huawei HG8145B7N (bridge mode, 
 2. 202.184.101.136 → 202.184.103.49 (July 16, 2026)
 3. 202.184.103.49 → 202.184.109.124 (July 16, 2026, second change same day)
 
+**Current WAN IP (as of July 24, 2026):** 202.184.109.124
+
 **Root cause:** TIME Fiber PPPoE session renegotiation behavior — IP reassignment occurs on PPPoE reconnect, not strictly predictable intervals. ISP-level DHCP behavior (IPs appear to be DHCP-assigned rather than static), not a bridge-mode artifact.
 
 **Impact on gaming servers:** Palworld (CT 307) PublicIP field and Cloudflare DNS records require manual updates after each WAN IP change. Impact low for established games (friend-invite/Steam relay mechanisms work regardless), but external port-forwarding-based connectivity (raw IP join) breaks until manual update.
 
 **Mitigation strategy:** DDNS automation elevated to high priority (previously queued roadmap item). Should implement automatic Cloudflare DNS update on WAN IP change (detect via pfSense/Uptime Kuma, trigger Cloudflare API update, optionally trigger Palworld PublicIP field update via Pelican API if feasible).
-
-**Current status (as of session end July 17, 2026):** WAN IP is 202.184.109.124. Palworld PublicIP field updated to this value. Cloudflare DNS records for game subdomains (Terraria, Minecraft, Enshrouded, Palworld) still require manual update verification.
 
 ### ISP Router Configuration (Huawei HG8145B7N)
 
@@ -202,7 +202,7 @@ Internet → TIME Fiber (GPON, bridged mode) → Huawei HG8145B7N (bridge mode, 
 
 - **WAN interface:** Changed from DHCP to **PPPoE (pppoe0)**
 - **PPPoE credentials:** Username `muzakkir655@timebb`, password stored in Vault
-- **Public IP:** `202.184.109.124` (current as of July 17, 2026; subject to ISP-initiated changes on PPPoE renegotiation — see WAN IP Instability section above)
+- **Public IP:** `202.184.109.124` (current as of July 24, 2026; subject to ISP-initiated changes on PPPoE renegotiation — see WAN IP Instability section above)
 - **Note:** ISP router's port forwarding table is now irrelevant (dead) — all port forwarding handled exclusively by pfSense
 
 ### VLAN Design (OPERATIONAL)
@@ -376,7 +376,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **Configuration:**
   - **PalWorldSettings.ini location:** `/home/container/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
   - **World save location:** `/home/container/Pal/Saved/SaveGames/0/6376E22F11CD4588A54E2EB0E7B1CD1F/` (note: no WorldOption.sav present — settings remain in ini file only)
-  - **PublicIP field (for external connectivity):** 202.184.109.124 (current as of July 17, 2026; subject to WAN IP changes — see Network Architecture WAN IP Instability section)
+  - **PublicIP field (for external connectivity):** 202.184.109.124 (current as of July 24, 2026; subject to WAN IP changes — see Network Architecture WAN IP Instability section)
   - **Pelican egg variable "Public IP":** Now has User Editable + User Viewable permissions enabled (fixed July 17 — previously unchecked, blocking manual IP updates via Startup tab)
   - **PalCaptureRate:** Default (1.000000) — was tested at 100.000000 but reverted to default after testing
 
@@ -492,7 +492,7 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 
 ---
 
-## Kinmoon NAS (UGREEN DXP2800)
+## Kinmoon NAS (UGREEN DXP2800) — RAID 1 Incident & Resolution
 
 ### Storage Architecture
 
@@ -500,81 +500,124 @@ Fixed ports 7-8 which were on legacy VLAN 1 (blocking AX1800 access point traffi
 - **IP Address:** 192.168.10.100
 - **Hostname:** KinMoon (per SMB "How to use" reference in UGOS Control Panel)
 
-### Storage Pool 1 (RAID 1)
+### Storage Pool 1 (RAID 1) — INCIDENT (July 24, 2026)
 
-- **Configuration:** RAID 1 mirror across Hard Drive 1 and Hard Drive 2
-- **Total capacity:** 2.7TB
-- **Status:** **DEGRADED** (Hard Drive 1 failure detected July 23, 2026) — UGOS explicitly states: "The storage pool has been degraded due to Hard Drive 1 failure. It is recommended to Repair the storage pool with normal hard drives immediately to prevent data loss and further corruption to the storage pool"
+**Current Status (as of July 24, 2026):** DEGRADED — RAID 1 rebuild NOT YET SUCCESSFUL
+
+**Timeline:**
+- **July 23, 2026:** Hard Drive 1 detected with SMART failure (Reallocated Sector Count 133/140 threshold, accelerating trend from March 573→May 1,963). RAID 1 mirror running on single healthy drive (Hard Drive 2) with zero redundancy.
+- **July 24, 2026 01:32:29:** Attempted RAID 1 rebuild after physically installing 3TB Seagate IronWolf (NAS-rated, CMR) into Bay 1. Rebuild failed ~04:33 after 3 hours.
+- **July 24, 2026 ~07:06:** Rebuild auto-resumed after troubleshooting and drive bay reseat; failed again by ~10:30.
+
+**Root Cause (Identified via UGOS Event Log Export):**
+
+**Not a drive health issue.** Hard Drive 2 (original, healthy SMART data: Reallocated Sector Count 99/10 threshold) throws a deterministic error: "failed command: WRITE FPDMA QUEUED" (Serious level) occurring **18-19 seconds after every boot** of Kinmoon, across both rebuild attempts:
+- Boot #1 at 2026-07-24 01:28:52 → fault at 01:28:52 + ~18-19s
+- Boot #2 at 2026-07-24 07:06:03 → fault at 07:06:03 + ~18-19s
+
+**This is a known, documented UGREEN DXP2800 issue** (NOT unique to this unit):
+- Confirmed via UGREEN's own DACH community forum (30+ page thread with multiple user reports and UGREEN support responses)
+- Independently documented on rack2reality.com (May 2026 UGREEN troubleshooting guide)
+- **Root cause:** Some SATA drives have narrow signal timing tolerance at full 6.0Gbps link speed, causing intermittent WRITE FPDMA QUEUED failures that are misidentified as drive failures
+- **UGREEN support confirmed fix:** Force SATA link speed down to 3.0Gbps via kernel boot parameter
+
+**Implication for Historical Hard Drive 1 "Failure":** 
+Kinmoon's event logs show this WRITE FPDMA QUEUED signature appearing intermittently since March 2026 on both Hard Drive 1 and Hard Drive 2 at different times (2026-03-02, 03-12, 05-08 x2, 05-13/14, 07-23, 07-24), plus a July 14 fault "Failed to detect the hard drive in slot ata1." It's possible that Hard Drive 1's original "SMART failure" (which triggered this incident) was accelerated or partially caused by this same SATA link instability rather than pure old-age media wear.
+
+### Hard Drive 1 (Replacement)
+
+- **Original:** Failed with Reallocated Sector Count 133/140 (was trending 573→609→1,963 in March-May)
+- **Replacement:** 3TB Seagate IronWolf (NAS-rated, CMR)
+- **Installation date:** July 24, 2026 ~01:00
+- **Initial SMART:** Healthy on install (2.7TB, "Normal" status, healthy SMART data)
+- **Current status:** Detected by UGOS, ready for rebuild once Hard Drive 2 fix is applied
+
+### Hard Drive 2 (Original)
+
+- **Status:** Healthy SMART (Reallocated Sector Count present value 99, threshold 10 — healthy margin)
+- **Temperature:** 46°C
+- **Issue:** Throws "failed command: WRITE FPDMA QUEUED" ~18-19 seconds post-boot (kernel-level SATA link error, not a drive failure)
+- **Role:** Currently sole functioning member of RAID 1 mirror (running at full capacity without redundancy)
+- **Fix required:** Force SATA to 3.0Gbps via kernel boot parameter (documented below)
 
 ### Volume 1 (ext4)
 
 - **Capacity:** 2.6TB total
-- **Used space:** 2.4TB (92.3%)
+- **Used space:** 2.4TB (92.3% — improved slightly after emergency backup)
 - **Available:** ~200GB
-- **Status:** **DEGRADED** + **WARNING: <10% available capacity**
+- **Status:** DEGRADED (due to Storage Pool 1 DEGRADED state)
 - **File count:** 35,709 files, 8,239 subfolders, 84 hidden items
 
 ### proxmox-backups CIFS Share
 
 - **Location on NAS:** `/volume1/proxmox-backups`
 - **Mount on Proxmox:** `/mnt/pve/kinmoon-smb` (type: cifs, content: backup)
-- **Purpose:** Native Proxmox `backup-daily` vzdump job destination (NOT a separate rsync copy)
+- **Purpose:** Native Proxmox `backup-daily` vzdump job destination
 - **Capacity:** 2.5TB total (same as Volume 1), showing 94% usage on `df -h`
-- **Space breakdown (confirmed via `du -sh` on Proxmox host, 2026-07-23):**
-  - **#recycle folder:** 1.3TB (UGOS NAS-level recycle bin retaining deleted files)
+- **Space breakdown (confirmed via `du -sh` on Proxmox host, 2026-07-24):**
+  - **#recycle folder:** 1.3TB (UGOS NAS-level recycle bin retaining deleted files — logically freed by Proxmox's prune-backups retention, but retained in OS-level recycle)
   - **dump folder:** 1.3TB (actual vzdump archives, Proxmox's effective backup storage)
   - **nextcloud-backup:** 31GB (older backup, appears to be pre-migration data)
-- **Properties:** Created 2026-05-09, last modified 2026-07-06 (modification date reflects top-level folder mtime, not most recent nightly write)
+  - **(NEW) kinmoon-emergency-backup:** ~400GB+ (emergency copy of vzdump archive, in progress as of session end)
+- **Properties:** Created 2026-05-09
 
-### Hard Drive 1 Failure (CRITICAL — Discovered July 23, 2026)
+### Fix (Identified, Not Yet Applied)
 
-**SMART Status: CRITICAL**
-- **Reallocated Sector Count (Attribute 5):** Present value **133**, reference/failure threshold **140**
-- **Trend (accelerating):** March 573 → April 609 → May 1,963 reallocated sectors
-- **Raw value:** Clear progression toward threshold breach
-- **Spin retry count:** 0 (motor/mechanical spin-up unaffected — NOT a spin-up fault)
-- **Temperature:** 48°C (Hard Drive 2 healthy: 46°C for comparison)
-- **Power-on time:** 47,901 hours
+**Procedure: Force SATA Link Speed to 3.0Gbps**
 
-**Diagnosis: Genuine progressive media failure** on Hard Drive 1 itself — NOT a cable/interface issue. This failure signature (climbing reallocated sector count, low/zero CRC errors) is distinct from the July 14 Kuromoon hdd-backup-1 SATA cable issue (which showed climbing UDMA_CRC_Error_Count). **This is a disk media degradation problem, not an interface problem.**
+Add kernel boot parameter `libata.force=3.0Gbps` to GRUB configuration files via SSH root access on Kinmoon:
 
-**Current Risk Exposure:**
-- Kinmoon's RAID 1 mirror is running on a single healthy drive (Hard Drive 2) with **zero redundancy**
-- If Hard Drive 2 fails before Hard Drive 1 is replaced, the entire proxmox-backups archive (2.4TB of vzdump history) would be lost
-- **This is an offsite backup copy only** — hdd-backup-1/hdd-backup-2 on Kuromoon remain healthy and hold live production data; no live production data is at risk
-- All backup history would need to be rebuilt from zero if both drives fail
+```bash
+# SSH to Kinmoon as root
+ssh root@192.168.10.100
 
-**Status: NOT yet actioned (July 23, 2026)**
-- Do **NOT** click "Repair" on the storage pool until Hard Drive 1 is physically replaced
-- **Why:** Repair triggers a RAID 1 rebuild, which requires a healthy second member to rebuild onto; attempting Repair now against the already-failing Hard Drive 1 would either do nothing or further stress the degrading drive, risking a harder failure
-- **Correct sequence:** Replace Hard Drive 1 hardware first, then trigger Repair/rebuild onto the new drive
+# Back up both GRUB config files first
+cp /boot/EFI/debian/grub.cfg /boot/EFI/debian/grub.cfg.bk
+cp /boot/EFI/debian/grub.am /boot/EFI/debian/grub.am.bk
 
-**Decision made:** Deferred in favor of addressing the Hard Drive 1 failure first (higher risk to offsite backup redundancy).
+# Edit /boot/EFI/debian/grub.cfg
+# Find the line starting with "linux /boot/vmlinuz" and append "libata.force=3.0Gbps" before the closing quote
+# Example before:  linux /boot/vmlinuz-6.8.12-1-pve root=UUID=... ro quiet
+# Example after:   linux /boot/vmlinuz-6.8.12-1-pve root=UUID=... ro quiet libata.force=3.0Gbps
 
-### Hard Drive 2 Status
+# Edit /boot/EFI/debian/grub.am (if it has similar structure)
+# Find the line starting with "linux /boot/@VMLINUXZ@" and append "libata.force=3.0Gbps"
 
-- **SMART Status:** Healthy
-- **Temperature:** 46°C
-- **All attributes:** Within normal range
-- **Current role:** Sole functioning member of RAID 1 mirror (running at full capacity without redundancy)
+# Reboot to apply
+reboot
 
-### kinmoon-smb Disk Space Issue (July 23, 2026)
+# After reboot, verify the parameter is active
+cat /proc/cmdline | grep libata
+# Should show: libata.force=3.0Gbps
+```
 
-**Immediate Issue:** proxmox-backups share showing 93-94% capacity, with only ~200GB available
+**Why deferred:** Backup data safety prioritized. Hard Drive 2 is currently holding the only copy of the 1.3TB vzdump backup archive (Kinmoon is not mirrored elsewhere, unlike Nextcloud data on hdd-backup-1/2). Applied this fix only after emergency backup to Kuromoon is verified complete.
 
-**Root Cause (Analyzed):**
-- **#recycle folder:** 1.3TB of files already logically freed by Proxmox's own `prune-backups` retention policy
-- **This is NOT unbounded backup accumulation** — Proxmox's retention (keep-daily=7, keep-weekly=4) is working correctly
-- **The NAS-level recycle bin is the actual space waster** — UGOS retains deleted files in its own recycle bin, causing double-counting of the same backup churn
-- Only ~1.3TB of actual useful backup data present
+**Important:** This boot parameter setting can be overwritten by future UGOS firmware or system updates — needs verification after any Kinmoon OS/firmware updates.
 
-**UGOS Recycle Bin Investigation:**
-- Partially mapped navigation path: Storage app → (sections checked: Overview, Storage pool & Volume, Hard Drive, External Storage — recycle bin settings not found in these sections)
-- Exact location of per-share Recycle Bin settings in UGOS Control Panel **not yet confirmed**
+### Emergency Backup (In Progress)
 
-**Status: NOT yet fixed (July 23)**
-- Deferred in favor of Hard Drive 1 replacement (higher priority)
-- Cleanup would involve: locating UGOS recycle bin settings, disabling it, manually clearing the existing `#recycle` folder (1.3TB)
+**Initiated:** July 24, 2026 21:05
+**Source:** `/mnt/pve/kinmoon-smb/` (CIFS share `proxmox-backups` mounted on Kuromoon)
+**Destination:** `/mnt/hdd-backup-2/kinmoon-emergency-backup/` on Kuromoon
+**Command:** `nohup rsync -avz /mnt/pve/kinmoon-smb/ /mnt/hdd-backup-2/kinmoon-emergency-backup/ > /root/kinmoon-copy.log 2>&1 &`
+**PID:** 3211563
+**Purpose:** Eliminate single-point-of-failure risk (the only copy of 1.3TB vzdump archive currently exists on failing Kinmoon). Once complete and verified, provides offsite copy until Kinmoon RAID 1 is fully healed.
+**Status (session end):** In progress, not yet verified complete.
+
+### Backup Job Status
+
+**backup-daily job:** `enabled 0` set in `/etc/pve/jobs.cfg` at 2026-07-24 ~01:30 to prevent the 02:00 scheduled run from adding write load during Kinmoon's rebuild attempts (Hard Drive 2 already under stress).
+
+**Status (session end):** Still DISABLED — must be re-enabled once Kinmoon is confirmed stable.
+
+**Action when re-enabling:** Also add CT 306 (Enshrouded) and CT 307 (Palworld) to the VMID backup list in the same edit pass (currently both have zero backup coverage).
+
+### Recycle Bin Cleanup (Deferred)
+
+**Previous:** ~1.3TB `#recycle` bloat on Kinmoon Volume 1 (identified July 23)
+**Action status:** Deferred in favor of completing SATA fix and rebuild
+**When to revisit:** After Kinmoon Storage Pool 1 reaches Healthy status and backup-daily is re-enabled
 
 ---
 
@@ -1025,90 +1068,4 @@ Proactive infrastructure nudge and health scheduler. Deployed as v1 April 27, 20
 
 #### Design Decision (July 9, 2026)
 
-**MERLIN's SSL check was re-sourced from Uptime Kuma instead of a direct Cloudflare API call.** Uptime Kuma (CT 206, already deployed) natively tracks certificate expiry on any HTTPS monitor with zero extra credentials required. This removed the Cloudflare token dependency entirely and resolved the July 14 urgent issue without waiting on a Vault credential re-store.
-
-#### Known Limitations
-
-- No "hands" — report-only, cannot execute remediation itself
-- No memory — stateless checks each run
-- Currently reports raw numbers ("X days until expiry") without a recommended action — incomplete per the Funnel Agent design principle; each check should also state what to do (e.g., "renew via Cloudflare dashboard" or "backup test overdue, run restore-verify script")
-- Langfuse not yet wired to MERLIN (planned)
-- Credentials hardcoded in n8n nodes (pending Phase 24.11 credential store migration)
-
-#### Dependencies
-
-- n8n (CT 211) — orchestration
-- Uptime Kuma (CT 206) — SSL/cert data source (fully integrated July 9, 2026, resolves prior Cloudflare API dependency)
-- Proxmox API — memory check
-- HashiCorp Vault (CT 213) — seal status check
-- Telegram — delivery
-
-#### Monitoring
-
-- Daily 8am run — verify Telegram delivery
-- **SSL check migrated to Uptime Kuma source (July 9, 2026) — July 14 urgency resolved**
-
-### Midas — CFO (Cost Tracking & Optimization)
-
-**Servant Class:** Caster
-**Ascension Stage:** 2/4
-**True Name:** Midas
-**Agent Type:** Funnel (sources from Langfuse for Haiku/Claude costs; retains own tracking for Ollama)
-
-#### Overview
-
-CFO agent — cost tracking and optimization reporting. Deployed v1 April 27, 2026. As a funnel agent, Midas's differentiators are Telegram delivery and MYR currency conversion, not the underlying cost calculation — Langfuse (CT 223, already self-hosted and wired to Da Vinci + Jeanne Alter) already calculates and tracks per-model LLM costs automatically.
-
-#### Core Responsibilities
-
-- `/midas` command: full API cost report via Telegram
-- 9am daily brief: cost summary sent to Telegram
-- USD to MYR conversion (hardcoded rate: 4.7)
-- Ollama savings calculation (Ollama calls cost $0; Midas estimates the Haiku-equivalent cost avoided)
-- $10 monthly API spend limit monitoring
-- Planned v2: Firefly III API integration (budget sync, MYR currency)
-
-#### Active Workflows
-
-##### Midas — CFO Report
-**Nodes:** 6 | **Trigger:** Webhook (`/midas` command)
-
-##### Midas — Daily Brief
-**Nodes:** 4 | **Trigger:** Schedule (9am daily)
-
-#### Design Decision (July 9, 2026)
-
-**Haiku/Claude cost data should be sourced from Langfuse's Metrics API instead of the separate `gilgamesh_costs` Data Table.** Both currently track the same Haiku calls independently, which risks the two numbers drifting apart with no way to tell which is correct. Ollama cost tracking (savings estimate) stays in the existing Data Table since those calls are $0 and outside Langfuse's automatic cost-inference model, which is built for paid providers.
-
-#### Known Limitations
-
-- **Pending migration:** Haiku/Claude cost tracking currently duplicated between Langfuse and gilgamesh_costs Data Table — single source of truth not yet established
-- Currently reports totals without a recommendation — incomplete per the Funnel Agent design principle; when spend trends toward the $10 monthly threshold, Midas should suggest a specific action (e.g., "route more queries to Ollama" or name the highest-cost command_type driving the trend)
-- Hardcoded USD→MYR exchange rate (4.7) — not dynamically fetched, will drift from actual rate over time
-- Reads `gilgamesh_costs` Data Table, named for historical (Gilgamesh) identity — pending rename alongside broader Jeanne Alter propagation
-- Langfuse not yet directly wired to Midas (needed for the Metrics API migration above)
-- $10 monthly spend limit is monitored, not enforced — no automatic throttling if exceeded
-
-#### Dependencies
-
-- n8n (CT 211) — orchestration
-- Langfuse (CT 223) — Haiku/Claude cost source (replaces direct Data Table calculation for paid-model costs, pending implementation)
-- `gilgamesh_costs` Data Table — retained for Ollama savings tracking only
-- Telegram — delivery
-
-#### Monitoring
-
-- `/midas` command response time and accuracy
-- 9am daily brief delivery
-- Verify Langfuse Metrics API migration doesn't break existing MYR conversion or Ollama savings math once implemented
-
-### EMIYA — CTO + Infrastructure + Agent Spawning
-
-**Servant Class:** Archer
-**Ascension Stage:** Partial — 3 of 8 sub-phases complete (corrects prior Planned/0/4 status conflict flagged July 8, 2026)
-**True Name:** EMIYA
-**Agent Type:** Funnel-Plus (reads infrastructure state like a funnel, but also executes changes on approval)
-
-#### Overview
-
-CTO / infrastructure agent responsible for app lifecycle management, alerting, and (eventually) agent-spawning. Deployed incrementally across 8 sub-phases (24.1–24.8). This section corrects a status conflict identified in the July 8-9, 2026 documentation audit: agents.md previously had no entry for EMIYA at all, while AI-CONTEXT.md already showed 3 of 8 sub-
+**MERLIN's SSL check was re
