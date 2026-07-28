@@ -1,8 +1,8 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** July 23, 2026  
-> **Total Phases:** 105 planned | 52 completed | 0 in progress | 53 future  
-> **Next Session Priority:** Chaldea Rename Propagation OR Deck Sync Manual Backfill OR Jeanne Alter Web Search Quality Improvement
+> **Last Updated:** July 24, 2026  
+> **Total Phases:** 105 planned | 53 completed | 0 in progress | 52 future  
+> **Next Session Priority:** Kinmoon Hard Drive 1 Replacement (Critical) OR Backup Coverage Gap (Quick Fix) OR Chaldea Rename Propagation
 
 ---
 
@@ -10,7 +10,7 @@
 
 | Category                              | Total | Complete | In Progress | Planned |
 |---------------------------------------|-------|----------|-------------|---------|
-| **Core Infrastructure & Security**     | 17    | 11       | 0           | 6       |
+| **Core Infrastructure & Security**     | 17    | 12       | 0           | 5       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
 | **AI & Automation (Chaldea)**         | 37    | 22       | 0           | 15      |
 | **Personal & Knowledge Management**    | 12    | 7        | 0           | 5       |
@@ -22,7 +22,7 @@
 
 ---
 
-## ✅ Completed Phases (52)
+## ✅ Completed Phases (53)
 
 ### Core Infrastructure Foundation
 | Phase | Title                                         | Completed    | Dependencies |
@@ -38,6 +38,7 @@
 | 13    | HashiCorp Vault — Secrets Manager             | Apr 18, 2026 | Phase 5      |
 | 14    | Secrets Management & Integration              | Apr 24, 2026 | Phase 13     |
 | 23    | Vaultwarden + Secrets Audit & Cleanup         | Apr 18, 2026 | Phase 13     |
+| MERLIN SSL Check | MERLIN SSL Check Migration to Uptime Kuma | Jul 14, 2026 | Phase 5 |
 
 ### Gaming Platform
 | Phase | Title                                    | Completed   | Dependencies |
@@ -173,14 +174,14 @@ No phases currently in progress.
 | 28    | Storage Optimization                 | —            | 6h     | Move Nextcloud data, thin pool cleanup |
 | 29    | Performance Monitoring Expansion     | Phase 5      | 5h     | Advanced metrics and alerting rules    |
 | 33    | Maintenance Window Consolidation & Automation | Phase 25 | 4h | **New Phase (July 17, 2026).** Consolidate Palworld + Terraria restart schedules with nightly vzdump backup job into single off-peak maintenance block (exact timing pending confirmation of reliably dead low-usage hour, currently all events scattered). Per-server restart Schedules in Pelican to be set up once window finalized. Reschedule vzdump job (currently ~02:11 AM, conflicts with active gameplay) via Datacenter → Backup. |
-| 34    | Kinmoon Hard Drive 1 Replacement    | Phase 9      | 4h     | **CRITICAL (discovered July 23, 2026).** Kinmoon NAS (UGREEN DXP2800, 192.168.10.100) Storage Pool 1 RAID 1 mirror degraded due to Hard Drive 1 SMART failure. Reallocated sector count trending 573→609→1,963 (March-May), present value 133 below threshold 140 (Critical verdict). Hard Drive 1 power-on time 47,901 hours. Hard Drive 2 healthy (46°C). Current exposure: running on single healthy drive with zero redundancy. If Hard Drive 2 fails before Hard Drive 1 is replaced, entire proxmox-backups archive (2.4TB of vzdump history) will be lost. No live production data affected (Kuromoon hdd-backup-1/2 remain healthy primary storage). **Action sequence:** source and budget replacement drive, physically install it, use UGOS "Repair" function to rebuild mirror onto new drive. STATUS: awaiting budget decision, not yet actioned. Kinmoon hard drive bay size/interface compatibility must be verified before purchase. Monitor Hard Drive 2 closely during interim period. |
+| 34    | Kinmoon Hard Drive 1 Replacement    | Phase 9      | 4h     | **CRITICAL (discovered July 23, 2026; status updated July 24, 2026).** Kinmoon NAS (UGREEN DXP2800, 192.168.10.100) Storage Pool 1 RAID 1 was degraded due to Hard Drive 1 SMART failure. Hard Drive 1 has been physically replaced with spare 3TB Seagate IronWolf (installed 2026-07-24, healthy SMART on install). However, two consecutive RAID 1 rebuild attempts failed (2026-07-24 01:32:29 and auto-resumed ~07:06). **Root cause identified:** Hard Drive 2 throws deterministic "failed command: WRITE FPDMA QUEUED" (Serious level) errors ~18-19 seconds after every boot cycle. This is NOT a drive health issue — Hard Drive 2 SMART data confirmed healthy (Reallocated Sector Count 99 vs threshold 10). **Root cause is a known, documented UGREEN DXP2800 hardware/firmware issue** (confirmed via UGREEN DACH community forum and rack2reality.com May 2026 writeup). Some drives have narrow signal timing tolerance at SATA's full 6.0Gbps link speed, causing intermittent WRITE FPDMA QUEUED failures misidentified as drive failure. **Fix identified but NOT YET APPLIED:** force SATA link speed to 3.0Gbps via kernel boot parameter `libata.force=3.0Gbps`, appended to `/boot/EFI/debian/grub.cfg` and `/boot/EFI/debian/grub.am` via SSH root. Deferred until emergency backup data is safe (see below). **Emergency mitigation taken:** 1.3TB of Kinmoon's vzdump backup archive copied to Kuromoon's hdd-backup-2 as backup (rsync started 2026-07-24 21:05, status in progress at session end). **Action sequence for next session:** verify emergency copy complete, apply libata.force fix with grub.cfg/grub.am backup first, reboot to apply, verify via /proc/cmdline, retry Storage Pool 1 Repair on UGOS. Also discovered: silent UGOS auto-update occurred mid-incident (v1.17.0.0095, 2026-07-24 01:23:14). Also discovered: this WRITE FPDMA QUEUED signature appeared intermittently in logs since March 2026 (03-02, 03-12, 05-08×2, 05-13/14, 07-23, 07-24), suggesting hard drive 1's original "failure" may have been accelerated by this same underlying SATA instability rather than pure old-age wear. Deferred: recycle bin cleanup (~1.3TB #recycle bloat on Volume 1, <10% free) — lower priority than rebuild fix. **Note:** backup-daily vzdump job currently disabled (`enabled 0` in /etc/pve/jobs.cfg, set 2026-07-24 ~01:30) to prevent added write load during RAID instability. Must be re-enabled once Kinmoon is confirmed stable. Also identified: CT 306 (Enshrouded) and CT 307 (Palworld) are NOT currently included in backup-daily VMID list — add both during re-enable pass. |
 
 ### 🛡️ Core Services (Priority: Medium)
 
 | Phase | Title                                | Dependencies | Effort | Notes                                   |
 |-------|--------------------------------------|--------------|--------|-----------------------------------------|
 | 30    | n8n + Vault Integration              | Phase 14     | 3h     | Direct secret fetching in workflows    |
-| 31    | Off-site Backup (Backblaze B2)       | Phase 7A     | 6h     | 3-2-1 backup strategy completion       |
+| 31    | Off-site Backup (Backblaze B2)       | Phase 7A     | 6h     | **Blocked by Phase 34** — Kinmoon must be stable and confirmed healthy before attempting offsite backup expansion. 3-2-1 backup strategy completion |
 
 ### 🤖 AI & Local LLM (Priority: High)
 
@@ -212,44 +213,49 @@ No phases currently in progress.
 
 ## 🎯 Recommended Next Session Order
 
-### Kinmoon Hard Drive 1 Replacement (CRITICAL — Hardware Decision)
-**Effort:** 4 hours (hardware sourcing + installation)  
-**Status:** Discovered July 23, 2026  
-**Summary:** Kinmoon NAS (UGREEN DXP2800, 192.168.10.100) Storage Pool 1 degraded due to Hard Drive 1 SMART Critical failure. Reallocated sector count trending 573→609→1,963 over March-May. Currently running on single healthy drive (Hard Drive 2) with zero redundancy. If Hard Drive 2 fails, entire proxmox-backups archive (2.4TB of vzdump history) lost. Live production data unaffected (Kuromoon hdd-backup-1/2 remain healthy). **Action items:** budget and source compatible replacement drive, physically install, use UGOS "Repair" to rebuild mirror. Monitor Hard Drive 2 closely during interim. **Note:** This is a new hardware cost decision separate from the existing Kuromoon hdd-backup-1 SATA cable swap (also deferred). No timeline or budget decision made this session.
+### Phase 34: Kinmoon Hard Drive 1 Replacement (CRITICAL — Hardware + Incident Response)
+**Effort:** 4 hours (apply fix, verify rebuild, re-enable backups)  
+**Status:** In-progress incident from July 24, 2026  
+**Deliverables:** 
+- Verify emergency rsync copy of vzdump archive to Kuromoon hdd-backup-2 completes successfully
+- Apply `libata.force=3.0Gbps` kernel boot parameter to grub.cfg and grub.am on Kinmoon
+- Reboot and verify via `/proc/cmdline`
+- Retry Storage Pool 1 Repair on UGOS
+- Confirm Storage Pool 1 reaches Healthy status
+- Re-enable backup-daily job (`enabled 1` in `/etc/pve/jobs.cfg`)
+- Add CT 306 (Enshrouded) and CT 307 (Palworld) to backup-daily VMID list in same pass
+- Monitor for any recurrence of WRITE FPDMA QUEUED post-fix
+**Summary:** Kinmoon NAS Storage Pool 1 is degraded after Hard Drive 1 replacement. Two consecutive RAID rebuild attempts failed due to deterministic WRITE FPDMA QUEUED errors on Hard Drive 2 (known DXP2800 SATA-speed issue). Root cause identified; fix requires kernel parameter change. Emergency backup copy of vzdump archive in progress to Kuromoon hdd-backup-2 to eliminate single-point-of-failure risk during instability.
 
-### Backup Coverage Gap (Medium Priority — Configuration)
+### Backup Coverage Gap (CRITICAL — Quick Configuration Fix)
 **Effort:** 0.5 hours  
-**Status:** Discovered July 23, 2026  
-**Summary:** CT 306 (Enshrouded) and CT 307 (Palworld) game servers are NOT included in the `backup-daily` vzdump job (VMID list: 201,202,203,204,205,206,207,208,211,213,214,220,221,222,223,302,303,304,305,400). Both game servers currently have zero backup coverage. Add both to the backup VMID list via Datacenter → Backup → Edit in Proxmox UI.
+**Status:** Discovered July 24, 2026  
+**Deliverable:** Add CT 306 (Enshrouded) and CT 307 (Palworld) to backup-daily VMID list
+**Summary:** CT 306 (Enshrouded) and CT 307 (Palworld) game servers currently have zero backup coverage. Both missing from `backup-daily` vzdump job VMID list (current: 201,202,203,204,205,206,207,208,211,213,214,220,221,222,223,302,303,304,305,400). Add both via Proxmox UI (Datacenter → Backup → Edit) or can be combined with Phase 34 re-enable pass. **Can be completed immediately, independent of Phase 34 hardware work.**
 
-### MERLIN SSL Check Migration to Uptime Kuma (Urgent Priority)
-**Effort:** 1-2 hours (precedes all other sessions)  
-**Status:** Completed July 14, 2026  
-**Summary:** SSL expiry monitoring re-sourced from hardcoded Cloudflare API (broken) to Uptime Kuma (CT 206, already deployed). Alert was legitimate in design intent; root cause was broken detection mechanism, not the rule. Confirmed fix via `curl localhost:9100/metrics`, Prometheus query, and Alertmanager alert auto-resolution.
-
-### Chaldea Rename Propagation (Next Session)
+### Chaldea Rename Propagation (Next Major Session)
 **Effort:** 8 hours  
 **Goal:** Full ecosystem rename from Gilgamesh → Jeanne Alter across bot identity, system prompt, Telegram username, and all 8 documentation files  
 **Deliverables:** Consistent agent naming across all systems, updated Telegram bot handle
 
-### Deck Sync Manual Backfill (Second Session)
+### Deck Sync Manual Backfill (Second Major Session)
 **Effort:** 2 hours  
 **Goal:** Manually tag all ~30 existing Homelab Deck cards with sync-id footers  
 **Precondition for:** Phase 16.7 (Da Vinci → Nextcloud Deck Sync Pipeline)  
 **Deliverables:** All cards ready for automated sync integration
 
-### Jeanne Alter Web Search Quality Improvement (Third Session)
+### Jeanne Alter Web Search Quality Improvement (Third Major Session)
 **Effort:** 4 hours  
 **Goal:** Iterative multi-query search with synthesis, closer to Gemini-style search  
 **Deliverables:** Improved search result relevance and comprehensiveness
 
-### Jeanne Alter Email Management Pipeline (Fourth Session)
+### Jeanne Alter Email Management Pipeline (Fourth Major Session)
 **Effort:** 6-8 hours  
 **Goal:** Implement email read + notification pipeline for 4 personal accounts with permanent-fact routing to Da Vinci Personal Knowledge system  
 **Precondition:** Credentials in n8n store (first concrete step of Phase 24.11); initial sender whitelist supplied  
 **Deliverables:** Email classifier, 4× account triggers, staging store with auto-clear, Telegram notifications, Obsidian writes for bills/payments/subscriptions
 
-### Midas v2 — Financial Intelligence (Fifth Session)
+### Midas v2 — Financial Intelligence (Fifth Major Session)
 **Effort:** 10-12 hours  
 **Goal:** Firefly III integration with receipt and PDF statement capture  
 **Deliverables:** Expense tracking, receipt OCR, PDF import, spending insights via Jeanne Alter
@@ -259,36 +265,8 @@ No phases currently in progress.
 ## 🔗 Phase Dependencies
 
 **Critical Path Analysis:**
-1. **Chaldea Architecture Track:** Phase 24.12 (Jeanne Alter Refactor) → 24.13 (Universal Time/Date) → Multi-Agent Discussion Protocol
-2. **Documentation & Integration Track:** Phase 16.6 (Rename) → 16.7 (Deck Sync) → 16.8 (Deck Backfill)
-3. **Agent Feature Development Track:** Phase 24.12 → Scathach (build priority 1st, LangGraph evaluation sequenced after 24.12) → Cu Chulainn (build priority 2nd) → Goal Nudges → Plan My Day
-4. **Email & Credential Track:** Phase 24.11 (Credential Store Migration) → Phase 24.15 (Email Management) → Phase 24.12 (unified memory in refactor)
-5. **Gaming Platform Track:** Mash 59-64 (can run parallel to Chaldea development)
-6. **Backup & Storage Track:** Phase 34 (Kinmoon Hard Drive 1 replacement) must precede Phase 31 (Backblaze B2 offsite backup expansion); backup coverage gap (CT 306/307) separate quick fix
-7. **Infrastructure Track:** 25-29, 32, 33 (low-medium priority; Phases 25 & 26 progressing; Phase 27 newly prioritized; Phase 32 DDNS elevated due to WAN instability; Phase 33 maintenance consolidation added July 17, 2026)
-8. **Career Development Track:** 35-36 (depends on infrastructure completion)
-
-**Parallel Development Opportunities:**
-- Gaming platform phases can run alongside Chaldea development
-- Infrastructure cleanup can happen during slower development periods
-- Agent feature development can be integrated into Jeanne Alter refactor
-- Deck sync backfill can occur while other sessions are in progress
-- Domain migration audit (Phase 27.1) can run independently of Scathach/Cu Chulainn builds
-- Email Management Pipeline (24.15) can proceed in parallel with Rename Propagation (16.6) after credentials are in n8n store
-- **DDNS Automation (Phase 32) should begin before next major infrastructure change**, given three WAN IP changes recorded within one week during July 17 session
-- **Backup coverage gap fix (CT 306/307) can proceed immediately, independent of Phase 34 hardware work**
-
----
-
-## 📌 July 9, 2026 Documentation Audit Session — Key Findings
-
-### Agent Design Principles
-A design principle now guides all future agent classification: **Funnel Agents**. An agent is a "funnel" if there is existing infrastructure it can sit on top of and translate into a daily digest with a recommended action, rather than re-implementing the underlying check itself. 
-
-- **Funnel agents** (July 9, 2026): MERLIN (sources from Uptime Kuma), Midas (sources from Langfuse), Cu Chulainn (sources from Alertmanager, once built)
-- **Not funnels — Interface layer:** Jeanne Alter (she is the interface itself; nothing underneath to translate)
-- **Not funnels — Knowledge system:** Da Vinci (creates and maintains state; doesn't aggregate someone else's data)
-- **Not funnels — Generative:** Scathach (career research and reasoning; nothing existing to funnel from)
-- **Hybrid — Funnel-Plus:** EMIYA (reads infra state like a funnel, but also executes changes on approval)
-
-**Why this matters:** Prevents agents from duplicating effort
+1. **Phase 34 (Kinmoon Incident) → Phase 31 (Offsite Backup):** Kinmoon must be stable before expanding backup infrastructure
+2. **Chaldea Architecture Track:** Phase 24.12 (Jeanne Alter Refactor) → 24.13 (Universal Time/Date) → Multi-Agent Discussion Protocol
+3. **Documentation & Integration Track:** Phase 16.6 (Rename) → 16.7 (Deck Sync) → 16.8 (Deck Backfill)
+4. **Agent Feature Development Track:** Phase 24.12 → Scathach (build priority 1st, LangGraph evaluation sequenced after 24.12) → Cu Chulainn (build priority 2nd, rename propagation pending) → Goal Nudges → Plan My Day
+5. **Email & Credential Track:** Phase 24.11 (Credential Store Migration) → Phase 24.15 (Email
