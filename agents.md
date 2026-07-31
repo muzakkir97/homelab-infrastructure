@@ -23,7 +23,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026 | Alertmanager iowait Investigation July 23, 2026 | Kinmoon RAID Incident Response July 24, 2026)  
+**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026 | Alertmanager iowait Investigation July 23, 2026 | Kinmoon RAID Incident Response July 24, 2026 | Kinmoon NAS Recovery & Storage Pool 1 Rebuild July 30-Aug 1, 2026)  
 **Type:** 8 sequential Haiku API calls with immediate cost logging and Langfuse observability, plus planned 9th step (Nextcloud Deck sync)  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
@@ -220,76 +220,104 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Observability: alerts on CT 205 (Alertmanager) cannot currently distinguish iowait from genuine CPU load; "CPU usage" alerts may be storage/I/O symptoms rather than compute-bound issues (diagnosed July 23, 2026; rule-level fix pending)
 
 ### Recent Updates
-**Kinmoon NAS RAID Degradation & Recovery (July 24, 2026 — Session Kinmoon Storage Pool 1 Rebuild)**
-- Storage Pool 1 physical recovery: Hard Drive 1 replaced with 3TB Seagate IronWolf (NAS-rated, CMR); confirmed detected by UGOS as "Normal," healthy SMART on install
-- Two consecutive RAID 1 rebuild attempts failed (2026-07-24 01:32:29 and auto-resumed ~07:06). Pattern analysis revealed Hard Drive 2 throws "failed command: WRITE FPDMA QUEUED" (Serious level) deterministically ~18-19 seconds after every boot cycle, not a drive health issue — Hard Drive 2 SMART data confirmed healthy (Reallocated Sector Count present value 99 vs. threshold 10)
-- **Root cause identified:** Known, documented UGREEN DXP2800 SATA link-speed compatibility issue (confirmed via UGREEN's DACH community forum 30+ page thread and independent troubleshooting writeup; some drives have narrow signal timing tolerance at SATA's full 6.0Gbps, causing intermittent WRITE FPDMA QUEUED failures misidentified as drive failure)
-- **Fix identified but NOT yet applied:** force SATA link speed down to 3.0Gbps via kernel boot parameter `libata.force=3.0Gbps` added to `/boot/EFI/debian/grub.cfg` and `/boot/EFI/debian/grub.am`. Deferred pending completion of emergency backup
-- This WRITE FPDMA QUEUED signature present intermittently in Kinmoon logs since March 2026 (2026-03-02, 03-12, 05-08 x2, 05-13/14, 07-23, 07-24), raises possibility original Hard Drive 1's "failure" may have been accelerated by same SATA instability rather than pure old-age media wear
-- Emergency backup of Kinmoon's vzdump archive (1.3TB) initiated to Kuromoon hdd-backup-2 (`/mnt/hdd-backup-2/kinmoon-emergency-backup/`) via `nohup rsync` (PID 3211563, started 2026-07-24 21:05, log at `/root/kinmoon-copy.log`) — eliminates single-point-of-failure risk while Kinmoon unstable
-- backup-daily Proxmox job disabled (`enabled 0` in `/etc/pve/jobs.cfg` at 2026-07-24 ~01:30) to prevent 02:00 scheduled run from adding write load during RAID rebuild — must be re-enabled once Kinmoon confirmed stable
-- Also discovered: silent UGOS auto-update occurred mid-incident (2026-07-24 01:23:14, upgraded to v1.17.0.0095, self-triggered reboot) immediately preceded first Hard Drive 2 fault
-- **Decision made:** defer libata fix until after emergency backup completes, prioritizing data safety given Kinmoon backups are sole copy of Proxmox VM/container backup data (not mirrored elsewhere, unlike Nextcloud data primarily on Kuromoon's hdd-backup-1/2)
-- **Decision made:** defer recycle bin cleanup on Kinmoon Volume 1 (~1.3TB #recycle bloat) — lower priority than rebuild fix
+**Kinmoon NAS Storage Pool 1 Rebuild & Emergency Recovery (July 24, 2026 → July 30-Aug 1, 2026 — Multi-session Incident)**
+
+**Session 1 Context (July 24, 2026):**
+- Storage Pool 1 physical recovery: Hard Drive 1 replaced with 3TB Seagate IronWolf; confirmed detected by UGOS as healthy
+- Two consecutive RAID 1 rebuild attempts failed (2026-07-24 01:32:29 and auto-resumed ~07:06)
+- Root cause identified: UGREEN DXP2800 SATA link-speed compatibility issue — Hard Drive 2 (ST3000DM008) throws "failed command: WRITE FPDMA QUEUED" deterministically ~18-19 seconds after every boot cycle, misidentified as drive failure but actually a SATA 6.0Gbps timing issue
+- Fix identified: force SATA link speed down to 3.0Gbps via kernel boot parameter `libata.force=3.0Gbps` in GRUB config (deferred pending emergency backup completion)
+
+**Session 2 Context (July 30-Aug 1, 2026 — Current Session):**
+- Emergency rsync backup launched July 24 (Kinmoon's proxmox-backups share → Kuromoon's `/mnt/hdd-backup-2/kinmoon-emergency-backup/`, 1.3TB) had died from signal interruption, verified incomplete on July 30
+- Relaunched backup copy in tmux for session-disconnect resilience; multiple bad-sector read stalls on Hard Drive 2 during transfer required file-by-file exclusion strategy
+- SSH access to Kinmoon resolved: original password stale, reset via UGOS web UI; correct casing is `Muzakkir` (capital M)
+- Applied `libata.force=3.0Gbps` GRUB fix to both `/boot/EFI/debian/grub.cfg` (live config) and `/boot/EFI/debian/grub.am` (template for future regen); zero `WRITE FPDMA QUEUED` errors observed after applying
+- Three consecutive failed RAID 1 rebuild/recovery attempts on July 30-31 (each interrupted at different points); fourth attempt also failed even with `storage_serv` stopped, root cause never definitively identified
+- **Discovery of UGOS firmware bug:** `storage_serv`'s RAID monitor throws `strconv.Atoi: parsing "-": invalid syntax` during `RebuildFinished` event mishandling, causes kernel-level `md: recover interrupted` — mitigated (not fixed) by stopping `storage_serv` during rebuild attempts (known issue, worth reporting upstream to UGREEN)
+- **Abandoned incremental rebuild troubleshooting** and instead destroyed Storage Pool 1 entirely and recreated from scratch (accepted permanent loss of July 12 LXC backup files for containers 202, 203, etc., already unreadable due to bad sectors)
+- **Full pool/volume deletion, fresh RAID 1 creation, shared folder recreation, and full data restore from Kuromoon emergency backup copy** completed and verified matching (1.2TB both sides)
+
+**Current state (as of 2026-07-31 01:10 UTC):**
+- Storage Pool 1: RAID 1, both drives (Hard Drive 1 = Seagate IronWolf 3TB SN:W3FXXXZY, Hard Drive 2 = Seagate ST3000DM008 SN:Z505511Z), fresh array UUID `5bb187d0:b14f67a3:9f4d8ab9:16d079f8`, status **Normal/clean**, both drives `active sync`, zero spares
+- Volume 1: ext4, 2.6TB, status Normal
+- Shared folder `proxmox-backups` recreated with Read/Write permission for user Muzakkir, Recycle Bin enabled (Admin only)
+- **libata.force=3.0Gbps GRUB fix confirmed working** — zero `WRITE FPDMA QUEUED` errors observed since applying, across fresh boot and full data restore
+- `storage_serv` restarted and stable post-rebuild, 1+ day uptime, no errors in recent logs
+- `backup-daily` vzdump job re-enabled (was disabled since July 24 during rebuild attempts); targets `kinmoon-smb` storage, schedule 02:00 daily, retention `keep-daily=7,keep-weekly=4`
+- CIFS storage `kinmoon-smb` credential (Muzakkir password) updated in Proxmox after underlying account password was changed
+- Emergency backup copy still present at `/mnt/hdd-backup-2/kinmoon-emergency-backup/` (1.2TB, pending deletion once array is trusted long-term)
+
+**Errors & Root Causes (Session 2):**
+- rsync backup copy died from SIGINT/SIGTERM/SIGHUP despite nohup — resolved by relaunching in tmux
+- Repeated rsync stalls (D-state I/O wait) on specific files during backup — confirmed via UGOS event log as bad-sector critical medium error on Hard Drive 2 during READ operations; resolved by excluding affected files and continuing
+- SSH login rejected for both `root` and `muzakkir` — root cause was stale password; resolved via UGOS web UI password reset; discovered correct username casing is `Muzakkir` (capital M)
+- `NT_STATUS_LOGON_FAILURE` on Proxmox's `kinmoon-smb` CIFS storage after password reset — resolved via `pvesm set kinmoon-smb --username Muzakkir --password`
+- UGOS `storage_serv` daemon bug: `mdadm --monitor` mishandles `RebuildFinished` event, throws `strconv.Atoi: parsing "-": invalid syntax`, causes kernel-level recovery interrupt (mitigated by stopping service during rebuilds)
+- Cloudflare Error 522 on passwords.najhin-gaming.com — caused by broken CNAME DNS record with no tunnel binding; fixed by deleting and recreating route via tunnel's Published Application Routes UI
+- Cloudflare Error 502 on passwords.najhin-gaming.com (after 522 fix) — caused by Service Type incorrectly saved as HTTPS instead of HTTP; fixed by correcting to HTTP
+- Vaultwarden browser extension login failure (404 on `/identity/accounts/prelogin/password`) — known incompatibility between newer Bitwarden extension and older Vaultwarden server; fixed by updating Docker image to `vaultwarden/server:latest` and redeploying CT 214
+
+**Decision Made:** Abandon RAID rebuild troubleshooting after four failed attempts and perform full destroy-and-recreate of Storage Pool 1, restoring from secured emergency backup, rather than continue diagnosing intermittent cause resistant to multiple mitigation attempts
+
+**Decision Made:** Accept permanent loss of July 12 LXC backup files (containers 202, 203, others) and one CT211 file; rationale: already unreadable before pool wipe, newer backups exist for same containers, low-impact
+
+**Decision Made:** Retain Kuromoon emergency backup copy (`/mnt/hdd-backup-2/kinmoon-emergency-backup/`, 1.2TB) as safety net until Kinmoon array is trusted long-term
+
+**Decision Made:** Disable both HDD sleep settings in UGOS Hardware & Power (precaution, though did not resolve interruption issue; UGOS UI reported "Operation failed" when setting applied, likely due to `storage_serv` being stopped)
+
+**Decision Made:** Abandon further root-cause investigation of fourth rebuild failure (occurred with `storage_serv` confirmed stopped throughout, ruling out software bug for that specific attempt)
+
+**Cloudflare Tunnel & Vaultwarden Access:**
+
+**Tunnel Configuration (newly documented detail):**
+- Tunnel name: `homelab-tunnel`, connector runs as systemd service (`cloudflared`) **inside CT 220 (Nextcloud container)**, not on Proxmox host or in NPM
+- Installed 2026-03-07 during Nextcloud initial external-access setup; additional service routes added to same tunnel/connector rather than deploying separate connectors
+
+**Published Application Routes:**
+| Hostname | Service |
+|---|---|
+| cloud.najhin-gaming.com | http://localhost:80 (same container as connector) |
+| ntfy.najhin-gaming.com | http://192.168.30.222:2586 |
+| finance.najhin-gaming.com | http://192.168.30.224:8080 |
+| langfuse.najhin-gaming.com | http://192.168.30.223:3000 |
+| passwords.najhin-gaming.com | http://192.168.30.214:8080 (**newly added this session, now operational**) |
+
+**passwords.najhin-gaming.com Issue Resolution:**
+- Root cause: stray broken CNAME DNS record pointing to bare root domain (`najhin-gaming.com`) instead of tunnel CNAME, causing Cloudflare Error 522 (connection timed out)
+- Likely artifact from abandoned earlier setup attempt, unrelated to Kinmoon work
+- Fixed by: deleting broken CNAME and re-adding route through tunnel's Published Application Routes UI (auto-created correct CNAME pointing to `.cfargotunnel.com` target)
+- Secondary issue: route initially saved with Service Type HTTPS instead of HTTP, causing Error 502 (`tls: first record does not look like a TLS handshake`) since Vaultwarden serves plain HTTP internally on port 8080
+- Fixed by: correcting Service Type to HTTP
+- Domain-vs-protocol clarification: tunnel's internal "Service Type" setting governs how `cloudflared` talks to backend service on LAN (Vaultwarden = HTTP, no TLS) — unrelated to and does not need to match external URL scheme (always HTTPS via Cloudflare edge termination)
+
+**CT 214 (password-vaultwarden) Update:**
+- Docker image updated from stale version to `vaultwarden/server:latest` (pulled and redeployed 2026-08-01) to resolve login-flow incompatibility with current Bitwarden browser extension (extension calls `POST /identity/accounts/prelogin/password`, which old server returned 404 for)
+- Container recreated via existing compose file at `/opt/vaultwarden/docker-compose.yml`; data volume untouched
+- CT 220 (nextcloud) confirmed as host of `cloudflared` tunnel connector service
+
+**Kingmoon Hard Drive 2 SMART Profile (Additional Detail):**
+- Model: Seagate ST3000DM008 SN:Z505511Z (Barracuda 3TB, CMR)
+- WRITE FPDMA QUEUED failure signature: deterministic ~18-19s after boot (not drive health issue per se — SMART data healthy, Reallocated Sector Count present value 99 vs threshold 10)
+- Root cause attribution: known UGREEN DXP2800 SATA link-speed compatibility issue with certain drives (confirmed via UGREEN DACH community forum 30+ page thread; narrow signal timing tolerance at SATA 6.0Gbps); mitigated by `libata.force=3.0Gbps` kernel parameter
+- This signature present intermittently in Kinmoon logs since March 2026 (multiple entries); raises possibility original Hard Drive 1's "failure" may have been accelerated by SATA instability rather than pure old-age wear
+- Bad-sector READ errors also observed on Hard Drive 2 during emergency rsync backup (critical medium error per UGOS event log); likely pre-existing media degradation compounded by SATA stress
+
+**Kinmoon Recycle Bin & Data Loss:**
+- Old array #recycle folder: 1.3TB of deleted-backup churn (double-counting, already pruned by Proxmox retention policy)
+- Action item: set sane recycle-bin retention policy on fresh `proxmox-backups` share to avoid repeating bloat
+- Files permanently lost from old array: July 12 LXC backup files (containers 202, 203, others) and one CT211 file; previously unreadable due to bad sectors before pool wipe; newer backups exist for same containers; assessed as low-impact
+
+**Action Items:**
+- [ ] Delete `/mnt/hdd-backup-2/kinmoon-emergency-backup/` on Kuromoon once Kinmoon array is trusted long-term (not urgent)
+- [ ] Report UGOS `storage_serv` `RebuildFinished`/`strconv.Atoi` bug to UGREEN
+- [ ] Decide whether to pursue further recovery of July 12 LXC backups / CT211 file, or formally write off (currently informally accepted as lost)
+- [ ] Set sane recycle-bin retention policy on fresh `proxmox-backups` share
+- [ ] Verify `backup-daily` job's first scheduled run (2026-08-02 02:00) completes successfully against rebuilt array
 
 **Alertmanager iowait Alert Investigation (July 23, 2026 — Session Infrastructure Audit)**
 - CRITICAL "CPU usage 100%" alert on CT 205 (Alertmanager, 192.168.30.205:9100), 2026-07-20 03:46-03:47 AM, investigated and root-caused
 - Root cause: Prometheus's CPU-usage alert rule sums all non-idle CPU time, which includes iowait — `top` confirmed 100.0% `%wa` with 0.0% `us`/`sy` (zero actual compute load, pure I/O wait)
 - Correlated to backup-daily vzdump job running 02:00-~03:35 nightly, writing to kinmoon-smb CIFS network share sitting at 94% capacity, causing lingering I/O pressure past job completion (~03:46 alert vs ~03:35 job finish)
 - Confirmed backup-daily vzdump job configuration: `/etc/pve/vzdump.cron`, schedule 02:00 daily, compress zstd, mode snapshot, prune-backups keep-daily=7/keep-weekly=4, storage kinmoon-smb, VMID list includes 201,202,203,204,205,206,207,208,211,213,214,220,221,222,223,302,303,304,305,400
-- **CT 306 (Enshrouded) and CT 307 (Palworld) NOT included in backup job** — both game servers currently have zero backup coverage
-- Measured backup-daily runtime: consistently ~93-96 minutes (02:00 start, ~03:33-03:36 finish) across 3 consecutive checked nights (Jul 20, 21, 22)
-- Root-caused kinmoon-smb disk usage warning (93.3-94%): UGOS NAS-level recycle bin (`#recycle` folder) retaining 1.3TB of files already pruned by Proxmox's retention policy, effectively double-counting deleted backup churn
-- Actual useful backup data (dump folder) = ~1.3TB; recycle bin = ~1.3TB; nextcloud-backup = ~31GB; total capacity 2.7TB
-- Proxmox retention policy (keep-daily=7, keep-weekly=4) confirmed working correctly — space waste is purely NAS-side recycle bin behavior
-- Diagnosed house internet outage from 2026-07-20 (ONT PON light off, LOS blinking red — ISP fiber fault) as RESOLVED as of 2026-07-23; user confirmed active connectivity this session
-- **CRITICAL discovery: Kinmoon Hard Drive 1 SMART failure in Storage Pool 1 (RAID 1)**
-  - Storage Pool 1 status: Degraded; Hard Drive 1 SMART status: Critical
-  - Hard Drive 1 Reallocated Sector Count: present value 133 (below threshold 140) — media failure, not interface
-  - Hard Drive 1 reallocated sector trend accelerating: March 573 → April 609 → May 1,963
-  - Hard Drive 1 spin retry count: 0 (motor unaffected; this is pure media degradation)
-  - Hard Drive 1 temperature: 48°C; Hard Drive 2 (healthy): 46°C; power-on time: 47,901 hours
-  - Current exposure: Kinmoon RAID 1 mirror running on single healthy drive (Hard Drive 2) with zero redundancy — if Hard Drive 2 fails before replacement, entire proxmox-backups archive (2.4TB of vzdump history, only offsite backup copy) would be lost
-  - No live production data at risk (hdd-backup-1/hdd-backup-2 on Kuromoon remain healthy primary storage); backup history would require rebuilding from zero
-  - Status: NOT yet actioned; do NOT click "Repair" until Hard Drive 1 is physically replaced (Repair requires healthy second member to rebuild onto; attempting now would stress the failing drive)
-  - Correct sequence: replace Hard Drive 1 hardware first, then trigger Repair/rebuild onto new drive
-  - Budget impact: separate hardware cost decision from already-deferred Kuromoon hdd-backup-1 SATA cable swap; no timeline/budget decision made this session
-
-**Palworld Troubleshooting Session (July 17, 2026 — Session Palworld PublicIP & Settings)**
-- External friend unable to connect to Palworld server (CT 307) — root cause: PalWorldSettings.ini PublicIP was set to container's internal LAN IP (192.168.30.219) instead of public WAN IP
-- Discovered Pelican egg "Public IP" variable was not user-editable by default; enabled via Admin → Eggs → Palworld → Egg Variables (set both User Editable and User Viewable permissions)
-- Pelican's PalworldServerConfigParser auto-populates PublicIP from local container allocation (192.168.30.219) on every boot when the egg's Public IP variable is empty — confirmed source of silent ini reverts before permissions were enabled
-- PalCaptureRate setting change had no effect in-game despite correct-looking file contents; diagnosed corrupted PalWorldSettings.ini (13 lines instead of 2) caused by Pelican's web-based file editor introducing hard line breaks into OptionSettings=(…) block
-- Palworld requires OptionSettings block to remain a single unbroken line; broken line causes server to silently ignore ENTIRE OptionSettings block (not just edited field) and fall back to defaults — confirmed root cause of PalCaptureRate not applying
-- Fixed ini corruption via `pct exec` commands from Proxmox host, bypassing Pelican's web editor
-- Verified PalCaptureRate=100 change took effect in-game after line-break fix; subsequently reverted to default (1.000000)
-- Established safe editing method: PalWorldSettings.ini should be edited via `pct exec 307 -- sed` from Proxmox host, never via Pelican web file editor, to avoid line-break corruption
-- Attempted file download via Pelican panel (Files tab → Archive → Download) failed with "resource not found" 404, reproducible on internal IP (ruling out Cloudflare); root cause not identified (suspected Wings/node FQDN misconfiguration) — not investigated further due to time constraints
-- Established reliable backup method: `pct exec <CTID> -- tar -czf /tmp/backup.tar.gz -C <path> <folder>` + `pct pull <CTID> /tmp/backup.tar.gz <destination>` — bypasses Wings/panel entirely
-- Created Palworld SaveGames backup: /mnt/hdd-backup-1/palworld-backup-20260716/palworld-save-backup.tar.gz (22M, verified contents)
-- Confirmed no WorldOption.sav exists in current world save (CT 307 using Palworld version that does not lock settings into save file)
-- Diagnosed in-game stutter with 3 concurrent players: NOT a Palworld resource allocation issue; caused by nightly vzdump backup job (sequential, all-container) running concurrently with active gameplay (CPU/disk I/O contention observed during backup of CT 222/CT 223)
-- Discussed consolidating Palworld/Terraria restart schedules with nightly vzdump backup window into single off-peak maintenance block
-- WAN IP instability confirmed: 3 changes in ~1 week (202.184.35.79 → 202.184.101.136 → 202.184.103.49 → 202.184.109.124 during session); manual PublicIP update required on each change
-- Elevated DDNS automation priority on roadmap given repeated WAN IP instability
-- Updated AI-CONTEXT.md: Palworld PublicIP corrected to 202.184.109.124, new known issues for Pelican ini editing and file download documented, safe editing method established
-- Updated current-state.md: CT 307 PublicIP updated, PalCaptureRate reverted to default, SaveGames backup location recorded
-
-**Monitoring Bug Fix (July 14, 2026 — Session Monitoring Bug Fix)**
-- Resolved 8-day stale `MountpointMissing_hddbackup1` Alertmanager alert by fixing node_exporter configuration
-- Root cause: Debian `prometheus-node-exporter` package ships with default `--collector.filesystem.mount-points-exclude` regex containing `mnt`, making all `/mnt/*` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, pve/kinmoon-smb) invisible to Prometheus since at least May 16, 2026
-- Fixed by removing `mnt` from ARGS exclude regex in `/etc/default/prometheus-node-exporter` and restarting `prometheus-node-exporter.service`
-- Confirmed fix: metrics now reporting for all three /mnt mountpoints; Alertmanager alert auto-resolved
-- Storage clarification: hdd-backup-1 is primary live Nextcloud storage (bind-mounted data directory), not a backup copy; Kinmoon NAS receives nightly rsync copy only (one-way, time-lagged at 03:00) — **CORRECTED 2026-07-23: actual mechanism is Proxmox's native vzdump writing directly over CIFS to Kinmoon; no separate rsync step**
-- Action item: verify which storage target Proxmox vzdump jobs are actually configured against (local hdd-backup-* mount vs kinmoon-smb SMB); check Grafana dashboards for panels that may have been silently empty since ~May 16 due to same exclusion bug
-
-**Email Management Pipeline Design (July 9, 2026 — Session Email Architecture)**
-- Decided email account access belongs to Jeanne Alter (PA/user-facing interface), not Da Vinci (documentation-only writer)
-- Audited personal accounts: 4 personal accounts scoped for pipeline (muzakkir.kholil06@gmail.com, muzakkirkholil97@icloud.com, hyperjhin00@gmail.com, business.najhin@gmail.com)
-- Excluded from automation: work accounts (muzakkir.rahimi@f-secure.com, work26@gmail.com — company policy risk), NSFW account (adamlil1997@gmail.com — separate)
-- Architecture: 4× per-account trigger workflows (3× Gmail OAuth2 native, 1× IMAP for iCloud) → shared Email Classifier sub-workflow → Telegram notify + staging store → permanent-category facts (bills/payments/subscriptions) to Da Vinci Personal Knowledge gateway
-- Behavior tier: Read + Notify (proactive extraction + alert filtering, not full inbox ownership or passive-only)
-- Categorization: fixed categories + sender whitelist combined (rejects LLM-only judgment, accepts new senders from whitelist)
-- Permanent vs staged facts: bills/payments/subscriptions only become second-brain entries; all other extracted content held in staging store (~7 day auto-clear)
-- Model routing: qwen3:14b primary, Claude Haiku API fallback (consistent with Jeanne Alter's existing pattern, not stricter local-only)
-- Schedule: 3x/day (morning/afternoon/evening, exact times TBD at build)
+- **CT 306 (Enshrouded) and CT 307 (Palworld) NOT included in
