@@ -1,5 +1,5 @@
 # Current State Documentation
-**Last Updated:** 2026-07-24 (Session 6 — Kinmoon RAID 1 rebuild failure root cause identified, emergency backup initiated, SATA link speed fix pending)
+**Last Updated:** 2026-08-01 (Session 7 — Kinmoon Storage Pool 1 destroyed and rebuilt from scratch, emergency backup restored, libata.force=3.0Gbps GRUB fix verified working, Vaultwarden external access restored, backup-daily job re-enabled)
 
 ## Overview
 Homelab infrastructure documentation and automation project. Core system uses Claude AI agents to maintain living documentation across 8 coordinated files through automated pipelines triggered by cron jobs. Agent ecosystem renamed from "Kuromoon" to "Chaldea" as of 2026-07-08.
@@ -76,7 +76,7 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - Langfuse observability: Wired Phase 24.8 — trace name da-vinci-update with 8 child generations per run
 - Deck sync (9th step): Planned Phase 24.11, deferred pending manual backfill
 
-**Deployment Status (Phase 24.8-24.11):**
+**Deployment Status (Phase 24.8-24.11, updated through Session 7):**
 - ✅ Expanded from 3-file to 8-file sequential Haiku chain (Phase 16.4)
 - ✅ Resolved 5 critical bugs during deployment (Phase 16.4)
 - ✅ Updated Claude project instructions with explicit per-file session summary sections (Phase 16.4)
@@ -104,4 +104,4 @@ Pipeline expanded Phase 16.4 from 3 files to 8 files, each with dedicated token 
 - ✅ Alertmanager "CPU usage" alert root-caused (July 23, 2026): Prometheus's CPU-usage query sums all non-idle time including iowait (`%wa`); CT 205 "100% CPU" alert on 2026-07-20 03:46-03:47 AM was pure I/O wait (0% user + system, 100% wa) from backup-daily vzdump job writing to kinmoon-smb CIFS share at 94% capacity. No compute load issue; lingering I/O pressure past job completion (~03:35-03:46). Documented in AI-CONTEXT: CPU alerts require `top` verification before assuming compute-bound. Alert rule not yet updated; diagnosis-only this session.
 - ✅ backup-daily vzdump job inventory completed (July 23, 2026): schedule 02:00 daily, compress zstd, mode snapshot, prune-backups keep-daily=7/keep-weekly=4, storage kinmoon-smb. Runtime ~93-96 minutes (02:00 start, ~03:33-03:36 finish). VMID list: 201,202,203,204,205,206,207,208,211,213,214,220,221,222,223,302,303,304,305,400. **CT 306 (Enshrouded) and CT 307 (Palworld) NOT included** — zero backup coverage for both game servers. Documented that kinmoon-smb is Proxmox's native vzdump CIFS target, NOT a separate rsync step (previous documentation was inaccurate).
 - ✅ kinmoon-smb disk usage investigation completed (July 23, 2026): root cause is UGOS NAS-level recycle bin (`#recycle` folder, 1.3TB) double-counting space already logically freed by Proxmox's `prune-backups` retention policy. Actual backup archive (`dump` folder) is only 1.3TB; nextcloud-backup 31GB. Retention policy (keep-daily=7, keep-weekly=4) is working correctly; space bloat is from NAS-side recycle bin mechanics. Decision made to defer recycle bin cleanup in favor of Hard Drive 1 failure investigation.
-- ✅ Kinmoon Hard Drive 1 SMART failure diagnosed (July 23, 2026): Storage Pool 1 (RAID 1) degraded, Storage Pool 1 status shows explicit failure notice; Hard Drive 1 SMART status Critical; Reallocated Sector Count (Index 5) present value 133, below reference threshold 140; sector count trend March 573 → April 609 → May 1,963 (accelerating media failure signature); spin retry 0 (not a motor issue); temperature 48°C (normal); power-on 47,901 hours. Diagnosis confirmed as genuine progressive media degradation (different failure mode than hdd-backup-1 2026-07-14 SATA cable issue). RAID 1 mirror currently running on single healthy drive (Hard Drive 2) with zero redundancy. Decision made
+- ✅ Kinmoon Hard Drive 1 SMART failure diagnosed (July 23, 2026): Storage Pool 1 (RAID 1) degraded, Storage Pool 1 status shows explicit failure notice; Hard Drive 1 SMART status Critical; Reallocated Sector Count (Index 5) present value 133, below reference threshold 140; sector count trend March 573 → April 609 → May 1,963 (accelerating media failure signature); spin retry 0 (not a motor issue); temperature 48°C (normal); power-on 47,901 hours. Diagnosis confirmed as genuine progressive media degradation (different failure mode than hdd-backup-1 2026-07-
