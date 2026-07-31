@@ -1,7 +1,7 @@
 # Service Catalog
 
 ## Overview
-Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-07-24.
+Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-08-01.
 
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
@@ -125,7 +125,8 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 - Pelican web-based file editor introduces hard line breaks into multi-line ini values (e.g., PalWorldSettings.ini's OptionSettings block); Palworld silently ignores entire OptionSettings block if split across lines instead of remaining a single unbroken line. Safe method: edit via `pct exec` + `sed` commands from Proxmox host, never via panel Files tab.
 - Pelican's PalworldServerConfigParser (run in PalServer.sh at container boot) auto-populates PublicIP from local allocation IP when egg's "Public IP" variable is empty; must be made User Editable + User Viewable to allow manual override via Startup tab.
 - Pelican panel file Download function (Files tab → Archive → Download) has a known bug returning 404 "resource not found" for some eggs/nodes (root cause suspected in Wings FQDN/signed URL generation); reliable workaround is `pct exec <CTID> -- tar -czf /tmp/backup.tar.gz ...` followed by `pct pull <CTID> /tmp/backup.tar.gz ...` from Proxmox host, bypassing Wings entirely.
-- UGREEN DXP2800 NAS (Kinmoon) has a documented SATA link-speed compatibility issue where some drives show narrow signal timing tolerance at 6.0Gbps, causing deterministic "failed command: WRITE FPDMA QUEUED" errors ~18-19 seconds after boot/reboot. This is NOT a drive health issue (confirmed via healthy SMART data). Fix: force SATA to 3.0Gbps via `libata.force=3.0Gbps` kernel boot parameter in `/boot/EFI/debian/grub.cfg` and `/boot/EFI/debian/grub.am`. Setting may be overwritten by future firmware/system updates and requires rechecking after any UGOS update.
+- UGREEN DXP2800 NAS (Kinmoon) has a documented SATA link-speed compatibility issue where some drives show narrow signal timing tolerance at 6.0Gbps, causing deterministic "failed command: WRITE FPDMA QUEUED" errors ~18-19 seconds after boot/reboot. This is NOT a drive health issue (confirmed via healthy SMART data). Fix: force SATA to 3.0Gbps via `libata.force=3.0Gbps` kernel boot parameter in `/boot/EFI/debian/grub.cfg` and `/boot/EFI/debian/grub.am`. Setting may be overwritten by future firmware/system updates and requires rechecking after any UGOS update. **This fix was confirmed working on 2026-07-31 after full Storage Pool 1 rebuild — zero WRITE FPDMA QUEUED errors observed since applying.**
+- UGOS `storage_serv` daemon has a documented bug where its internal `mdadm --monitor` process mishandles the `RebuildFinished` event during active RAID resync, throwing `strconv.Atoi: parsing "-": invalid syntax` at kernel level and causing `md: recover interrupted`. Reproduced twice during 2026-07-30/31 session. Mitigated (not fixed) by stopping `storage_serv` during rebuild attempts. Worth reporting upstream to UGREEN.
 
 ### Dependencies
 - Haiku 3.5 API (8 sequential calls, one per file; 9th planned for Deck sync)
@@ -136,9 +137,8 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 - Nextcloud Deck API (planned 9th step)
 - n8n workflow runtime (~5 minutes per session)
 
-## Monitoring & Verification
-- **Cost Tracking:** 8 rows logged per run in gilgamesh_costs table (~$0.14–0.16 per run)
-- **Observability Tracking:** 1 trace (da-vinci-update) with 8 child generations per run in Langfuse; accessible at https://langfuse.najhin-gaming.com via direct URL, list view, and public API
-- **File Updates:** All 8 files updated on GitHub after each session update
-- **Telegram Alerts:** Confirmation message sent on completion
-- **Langfuse UI:** Accessible at https://langfuse.najhin-gaming.com; pipeline traces visible in trace list (UI bug resolved 2026-05-22). All 8 child generations visible in
+## Active Services
+
+### Nextcloud
+**Status:** Active  
+**URL:** https://cloud.najhin-gaming.
