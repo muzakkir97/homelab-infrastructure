@@ -1,7 +1,7 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** August 1, 2026  
-> **Total Phases:** 105 planned | 54 completed | 0 in progress | 51 future  
+> **Last Updated:** September 21, 2026  
+> **Total Phases:** 106 planned | 54 completed | 0 in progress | 52 future  
 > **Next Session Priority:** Chaldea Rename Propagation (Gilgamesh → Jeanne Alter) OR Jeanne Alter Email Management Pipeline OR Midas v2 — Financial Intelligence
 
 ---
@@ -10,12 +10,12 @@
 
 | Category                              | Total | Complete | In Progress | Planned |
 |---------------------------------------|-------|----------|-------------|---------|
-| **Core Infrastructure & Security**     | 17    | 12       | 0           | 5       |
+| **Core Infrastructure & Security**     | 18    | 12       | 0           | 6       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
 | **AI & Automation (Chaldea)**         | 37    | 23       | 0           | 14      |
 | **Personal & Knowledge Management**    | 12    | 7        | 0           | 5       |
 | **Monitoring & Observability**        | 8     | 8        | 0           | 0       |
-| **Infrastructure Cleanup**            | 9     | 3        | 0           | 6       |
+| **Infrastructure Cleanup**            | 10    | 3        | 0           | 7       |
 | **Career Development**                | 4     | 2        | 0           | 2       |
 | **Long Term Vision**                  | 7     | 0        | 0           | 7       |
 | **Hardware & Upgrades**               | 3     | 3        | 0           | 0       |
@@ -116,7 +116,7 @@ No phases currently in progress.
 | 24.13 | Universal Time/Date Awareness                | Phase 24.12       | 1h     | Inject current date/time into every agent's system prompt (pattern: Da Vinci's {{date}} replacement), applied ecosystem-wide instead of single gateway |
 | 24.14 | Jeanne Alter Web Search Quality Improvement  | Phase Web Search  | 4h     | Iterative multi-query search with synthesis step, closer to Gemini-style search; replace single Firecrawl + Haiku call pattern |
 | 24.15 | Jeanne Alter Email Management Pipeline       | Phase 24.11       | 6-8h   | Design Complete (July 9, 2026). 4 personal email accounts (Gmail OAuth2 × 3, iCloud IMAP × 1) → shared Email Classifier sub-workflow → Telegram notification + permanent-category facts (bills/payments/subscriptions) to Da Vinci Personal Knowledge gateway. 3x daily schedule. Credentials in n8n store. qwen3:14b primary, Claude Haiku fallback. 6 rollout steps: credentials → classifier → account triggers → staging store → notification → verify writes. |
-| 32    | DDNS Automation & WAN IP Stability Monitoring | Phase 3           | 4-6h   | **Elevated Priority (July 17, 2026)** due to repeated WAN IP changes within one week (3 changes recorded: 202.184.101.136 → 202.184.103.49 → 202.184.109.124 during session timeframe). Extend CT 207 ddclient automation to cover Palworld egg PublicIP variable in Pelican (currently manual sync required). Add real-time WAN IP monitoring to Uptime Kuma or ntfy to alert when IP changes detected. Consider DNS failover strategy if ISP instability continues. |
+| 32    | DDNS Automation & WAN IP Stability Monitoring | Phase 3           | 4-6h   | **Elevated Priority (July 17, 2026)** due to repeated WAN IP changes within one week (3 changes recorded: 202.184.101.136 → 202.184.103.49 → 202.184.109.124 during session timeframe). Extend CT 207 ddclient automation to cover Palworld egg PublicIP variable in Pelican (currently manual sync required). Add real-time WAN IP monitoring to Uptime Kuma or ntfy to alert when IP changes detected. Consider DNS failover strategy if ISP instability continues. **Update (Sept 21, 2026):** WAN IP now observed as 202.184.116.231 — another change since last documented value of 202.184.109.124 (July 17). Action Item: re-verify Cloudflare DNS records for game subdomains (Palworld, Terraria, Minecraft, Enshrouded) against current WAN IP. |
 
 #### Agent Feature Development
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
@@ -171,10 +171,11 @@ No phases currently in progress.
 |-------|--------------------------------------|--------------|--------|-----------------------------------------|
 | 25    | WiFi Access Point Deployment         | Hardware     | 4h     | EAP610 deployment COMPLETE (July 5, 2026) — AX1800 access point (SSID `A21-22A`) now live on VLAN20_MAIN via TL-SG108E port 7. Functioning correctly after VLAN misconfiguration fix. |
 | 26    | Legacy Network Cleanup               | Phase 25     | 3h     | Partially addressed (July 5): TL-SG108E ports 7-8 VLAN migration from legacy VLAN 1 to VLAN20_MAIN complete. Remaining work: migrate switch management IP from 192.168.1.20 (legacy) to proper VLAN10_MGMT address. |
-| 27    | Domain Migration & Infrastructure Audit | Phase 14 | 8h     | **27.1 (audit):** Cloudflare Access policies, Tunnel routes, SSL, NPM configs, DNS hygiene audit across existing setup. **27.2 (migration):** Nine homelab subdomains move from najhin-gaming.com to muzakkir.tech (grafana, n8n, vault, passwords/Vaultwarden, cloud/Nextcloud, finance/Firefly III, ntfy, langfuse, home/Pulse Dashboard). Game server subdomains (mc, terraria, enshrouded, panel) remain permanently on najhin-gaming.com. Cloudflare zone setup for muzakkir.tech directed to begin July 1, 2026 — completion status unconfirmed, verify next infrastructure session. **Action Item (July 17, 2026):** Update Cloudflare DNS records for Palworld, Terraria, Minecraft, and Enshrouded subdomains under najhin-gaming.com — currently pointing at stale IPs from before session changes. **Status (Aug 1, 2026):** Vaultwarden (passwords.najhin-gaming.com) tunnel route fixed during Kinmoon recovery session. Game server DNS records still need verification/update. |
+| 27    | Domain Migration & Infrastructure Audit | Phase 14 | 8h     | **27.1 (audit):** Cloudflare Access policies, Tunnel routes, SSL, NPM configs, DNS hygiene audit across existing setup. **27.2 (migration):** Nine homelab subdomains move from najhin-gaming.com to muzakkir.tech (grafana, n8n, vault, passwords/Vaultwarden, cloud/Nextcloud, finance/Firefly III, ntfy, langfuse, home/Pulse Dashboard). Game server subdomains (mc, terraria, enshrouded, panel) remain permanently on najhin-gaming.com. Cloudflare zone setup for muzakkir.tech directed to begin July 1, 2026 — completion status unconfirmed, verify next infrastructure session. **Action Item (July 17, 2026):** Update Cloudflare DNS records for Palworld, Terraria, Minecraft, and Enshrouded subdomains under najhin-gaming.com — currently pointing at stale IPs from before session changes. **Status (Aug 1, 2026):** Vaultwarden (passwords.najhin-gaming.com) tunnel route fixed during Kinmoon recovery session. Game server DNS records still need verification/update. **Status (Sept 21, 2026):** Vaultwarden external access confirmed working after Docker image update to `latest` and HTTP service type correction in Tunnel route. Game server DNS records still pending re-verification against current WAN IP (202.184.116.231). |
 | 28    | Storage Optimization                 | —            | 6h     | Move Nextcloud data, thin pool cleanup |
 | 29    | Performance Monitoring Expansion     | Phase 5      | 5h     | Advanced metrics and alerting rules    |
 | 33    | Maintenance Window Consolidation & Automation | Phase 25 | 4h | **New Phase (July 17, 2026).** Consolidate Palworld + Terraria restart schedules with nightly vzdump backup job into single off-peak maintenance block (exact timing pending confirmation of reliably dead low-usage hour, currently all events scattered). Per-server restart Schedules in Pelican to be set up once window finalized. Reschedule vzdump job (currently ~02:11 AM, conflicts with active gameplay) via Datacenter → Backup. |
+| 37    | Kuromoon Host Stability & Monitoring | Phase 5      | TBD    | **New Phase (Sept 21, 2026).** Kuromoon experienced full host-wide unresponsiveness incident (Sept 21, 2026) with pveproxy, sshd, and CT 203 (Grafana) all accepting TCP connections but never completing responses, while host still replied to ICMP. Resolved via hard power cycle. Root cause not conclusively identified; plausible (unproven) link to kinmoon-smb CIFS mount at 95% capacity combined with Kinmoon NAS's failing Hard Drive 1. Requires: (1) elevated priority on Kinmoon drive replacement to free capacity; (2) external/independent alerting for host-level unresponsiveness (current Prometheus/Grafana stack is blind during host freezes); (3) investigation of CT 220 (nextcloud) autostart race condition (recurring pattern on reboots since May 2026); (4) investigation of journald silent logging gap on Kuromoon (halted Sept 3, remained silent for 18 days until reboot Sept 21). |
 
 ### 🛡️ Core Services (Priority: Medium)
 
@@ -277,26 +278,18 @@ No phases currently in progress.
 **Critical Path Analysis:**
 1. **Phase 34 (Kinmoon Recovery) → COMPLETE (Aug 1, 2026)** — Storage Pool 1 fully rebuilt, data restored, libata fix applied, backup-daily re-enabled
 2. **Phase 34 COMPLETION → Phase 31 (Offsite Backup) UNBLOCKED** — Proceed with Backblaze B2 integration
-3. **Chaldea Architecture Track:** Phase 24.11 (Credential Store) → Phase 24.12 (Jeanne Alter Refactor) → Phase 24.13 (Universal Time/Date) → Multi-Agent Discussion Protocol
-4. **Chaldea Agent Feature Track:** Phase 24.11 → Phase 24.15 (Email Management) → remaining agent features
-5. **Documentation & Integration Track:** Phase 16.6 (Rename) → 16.7 (Deck Sync) → 16.8 (Deck Backfill)
-6. **Agent Feature Development Track:** Phase 24.12 → Scathach (build priority 1st, LangGraph evaluation) → Cu Chulainn (build priority 2nd, rename propagation pending) → Goal Nudges → Plan My Day
+3. **Phase 37 (Kuromoon Stability) ELEVATED PRIORITY** — Kinmoon drive replacement (Phase 34 follow-up) and external host monitoring now tied to Kuromoon's stability; CT 220 autostart race condition and journald gap investigation pending
+4. **Chaldea Architecture Track:** Phase 24.11 (Credential Store) → Phase 24.12 (Jeanne Alter Refactor) → Phase 24.13 (Universal Time/Date) → Multi-Agent Discussion Protocol
+5. **Chaldea Agent Feature Track:** Phase 24.11 → Phase 24.15 (Email Management) → remaining agent features
+6. **Documentation & Integration Track:** Phase 16.6 (Rename) → 16.7 (Deck Sync) → 16.8 (Deck Backfill)
+7. **Agent Feature Development Track:** Phase 24.12 → Scathach (build priority 1st, LangGraph evaluation) → Cu Chulainn (build priority 2nd, rename propagation pending) → Goal Nudges → Plan My Day
 
 ---
 
-## 📝 Session Summary (Aug 1, 2026)
+## 📝 Session Summary (Sept 21, 2026)
 
-**Kinmoon NAS Recovery — Multi-day Hardware & Software Incident Resolution**
+**Infrastructure Troubleshooting: Kuromoon Host Unresponsiveness & Network Diagnostics**
 
 ### Major Accomplishments
-- **Storage Pool 1 Rebuild:** Completely rebuilt RAID 1 array from scratch (old array UUID `c4e2dde2:...` → new UUID `5bb187d0:b14f67a3:9f4d8ab9:16d079f8`). Full data restore from Kuromoon emergency backup copy (1.2TB, verified matching on both sides).
-- **libata.force=3.0Gbps Fix Applied & Verified:** Kernel boot parameter appended to both `/boot/EFI/debian/grub.cfg` (live) and `/boot/EFI/debian/grub.am` (template). Zero `WRITE FPDMA QUEUED` errors observed post-fix across fresh boot and full data restore.
-- **Emergency Backup Resync:** Relaunched rsync backup copy in `tmux` (original died from signal interruption). Handled multiple bad-sector read stalls on Hard Drive 2 (ST3000DM008) via file-by-file exclusion. Final backup count: 1.2TB on Kuromoon at `/mnt/hdd-backup-2/kinmoon-emergency-backup/`.
-- **Vaultwarden External Access Fixed:** Diagnosed and resolved broken `passwords.najhin-gaming.com` Cloudflare Tunnel route (stray broken CNAME → deleted and recreated via Published Application Routes UI). Corrected Service Type from HTTPS to HTTP. Updated Vaultwarden Docker image from stale version to `latest` to resolve extension login flow incompatibility.
-- **Proxmox Storage Credential Sync:** Updated `kinmoon-smb` CIFS credentials in Proxmox after Kinmoon account password reset.
-- **Backup Job Re-enabled:** `backup-daily` vzdump job re-enabled with confirmed targets (CT 306 Enshrouded, CT 307 Palworld already included). Scheduled first run 2026-08-02 02:00.
-
-### Issues Discovered & Resolved
-- **rsync Backup Copy Died:** Original nohup session died from SIGINT/SIGTERM/SIGHUP. Relaunched in tmux for session-independence.
-- **Multiple Bad Sectors on Hard Drive 2:** Drive reported `critical medium error` (failed READ on specific sectors). SMART data healthy. Resolved via file-by-file exclusion in rsync.
-- **SSH Login Failure to Kinmoon:** Stale/incorrect password. Resolved via UGOS web UI password reset. Discovered username is case-sensitive
+- **Full Kuromoon Host Freeze Incident Diagnosis:** Traced complete network path from PC (VLAN20_MAIN) through pfSense to Kuromoon (VLAN10_MGMT). Discovered VLAN20_MAIN had no explicit firewall pass rules to VLAN10_MGMT — network isolation was intentional but prevented routine management access.
+- **Network Path Debugging via pfSense Console:** Used local console access (interface
