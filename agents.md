@@ -23,7 +23,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026 | Alertmanager iowait Investigation July 23, 2026 | Kinmoon RAID Incident Response July 24, 2026 | Kinmoon NAS Recovery & Storage Pool 1 Rebuild July 30-Aug 1, 2026 | Kuromoon Host Freeze & Firewall Audit Sept 21, 2026)  
+**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026 | Alertmanager iowait Investigation July 23, 2026 | Kinmoon RAID Incident Response July 24, 2026 | Kinmoon NAS Recovery & Storage Pool 1 Rebuild July 30-Aug 1, 2026 | Kuromoon Host Freeze & Firewall Audit Sept 21, 2026 | Kuromoon Host Stability & Monitoring Sept 22, 2026)  
 **Type:** 8 sequential Haiku API calls with immediate cost logging and Langfuse observability, plus planned 9th step (Nextcloud Deck sync)  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
@@ -308,10 +308,10 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Action item: set sane recycle-bin retention policy on fresh `proxmox-backups` share to avoid repeating bloat
 - Files permanently lost from old array: July 12 LXC backup files (containers 202, 203, others) and one CT211 file; previously unreadable due to bad sectors before pool wipe; newer backups exist for same containers; assessed as low-impact
 
-**Kuromoon Host Freeze & Firewall Management Access (Sept 21, 2026 — Current Session)**
+**Kuromoon Host Freeze & Firewall Management Access (Sept 21, 2026 — Prior Session)**
 
 **Incident Summary:**
-- Kuromoon (192.168.10.5, VLAN 10 hypervisor host) became completely unresponsive to SSH, Proxmox web UI, and application layer 2026-09-21 afternoon-evening
+- Kuromoon (192.168.10.5, VLAN 10 hypervisor host) became completely unresponsive to SSH, Proxmox web UI, and application layer afternoon-evening of Sept 21, 2026
 - Proxmox pveproxy, sshd, and CT 203 (Grafana) all accepted TCP connections but never responded with application-level data
 - ICMP ping (layer 3) continued responding with normal latency (~1-2ms), indicating kernel and network stack were functional but user-space processes hung
 - Resolved via hard power-cycle at 20:37 local time (2026-09-21T12:37Z)
@@ -324,6 +324,4 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
   - **"USER_RULE: Minimoon to Proxmox GUI"** — Pass, TCP, source 192.168.20.101, dest 192.168.10.5, port 8006
   - **"USER_RULE: Minimoon to Kuromoon SSH (temp)"** — Pass, TCP, source 192.168.20.101, dest 192.168.10.5, port 22
   - Both placed above the existing "Block all private networks" rule for proper evaluation order
-  - Intended as temporary/provisional pending decision on network's permanent management-access model
-
-**Root Cause Investigation (Post-Reboot Forensics):**
+  - Intended as temporary/provisional pending decision on network's permanent management-access
