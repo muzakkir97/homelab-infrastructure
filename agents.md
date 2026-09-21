@@ -23,7 +23,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026 | Alertmanager iowait Investigation July 23, 2026 | Kinmoon RAID Incident Response July 24, 2026 | Kinmoon NAS Recovery & Storage Pool 1 Rebuild July 30-Aug 1, 2026)  
+**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026 | Alertmanager iowait Investigation July 23, 2026 | Kinmoon RAID Incident Response July 24, 2026 | Kinmoon NAS Recovery & Storage Pool 1 Rebuild July 30-Aug 1, 2026 | Kuromoon Host Freeze & Firewall Audit Sept 21, 2026)  
 **Type:** 8 sequential Haiku API calls with immediate cost logging and Langfuse observability, plus planned 9th step (Nextcloud Deck sync)  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
@@ -228,7 +228,7 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Root cause identified: UGREEN DXP2800 SATA link-speed compatibility issue — Hard Drive 2 (ST3000DM008) throws "failed command: WRITE FPDMA QUEUED" deterministically ~18-19 seconds after every boot cycle, misidentified as drive failure but actually a SATA 6.0Gbps timing issue
 - Fix identified: force SATA link speed down to 3.0Gbps via kernel boot parameter `libata.force=3.0Gbps` in GRUB config (deferred pending emergency backup completion)
 
-**Session 2 Context (July 30-Aug 1, 2026 — Current Session):**
+**Session 2 Context (July 30-Aug 1, 2026):**
 - Emergency rsync backup launched July 24 (Kinmoon's proxmox-backups share → Kuromoon's `/mnt/hdd-backup-2/kinmoon-emergency-backup/`, 1.3TB) had died from signal interruption, verified incomplete on July 30
 - Relaunched backup copy in tmux for session-disconnect resilience; multiple bad-sector read stalls on Hard Drive 2 during transfer required file-by-file exclusion strategy
 - SSH access to Kinmoon resolved: original password stale, reset via UGOS web UI; correct casing is `Muzakkir` (capital M)
@@ -281,7 +281,7 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 | ntfy.najhin-gaming.com | http://192.168.30.222:2586 |
 | finance.najhin-gaming.com | http://192.168.30.224:8080 |
 | langfuse.najhin-gaming.com | http://192.168.30.223:3000 |
-| passwords.najhin-gaming.com | http://192.168.30.214:8080 (**newly added this session, now operational**) |
+| passwords.najhin-gaming.com | http://192.168.30.214:8080 (**newly added July 2026, operational**) |
 
 **passwords.najhin-gaming.com Issue Resolution:**
 - Root cause: stray broken CNAME DNS record pointing to bare root domain (`najhin-gaming.com`) instead of tunnel CNAME, causing Cloudflare Error 522 (connection timed out)
@@ -292,7 +292,7 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Domain-vs-protocol clarification: tunnel's internal "Service Type" setting governs how `cloudflared` talks to backend service on LAN (Vaultwarden = HTTP, no TLS) — unrelated to and does not need to match external URL scheme (always HTTPS via Cloudflare edge termination)
 
 **CT 214 (password-vaultwarden) Update:**
-- Docker image updated from stale version to `vaultwarden/server:latest` (pulled and redeployed 2026-08-01) to resolve login-flow incompatibility with current Bitwarden browser extension (extension calls `POST /identity/accounts/prelogin/password`, which old server returned 404 for)
+- Docker image updated from stale version to `vaultwarden/server:latest` (pulled and redeployed Aug 2026) to resolve login-flow incompatibility with current Bitwarden browser extension (extension calls `POST /identity/accounts/prelogin/password`, which old server returned 404 for)
 - Container recreated via existing compose file at `/opt/vaultwarden/docker-compose.yml`; data volume untouched
 - CT 220 (nextcloud) confirmed as host of `cloudflared` tunnel connector service
 
@@ -308,16 +308,22 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Action item: set sane recycle-bin retention policy on fresh `proxmox-backups` share to avoid repeating bloat
 - Files permanently lost from old array: July 12 LXC backup files (containers 202, 203, others) and one CT211 file; previously unreadable due to bad sectors before pool wipe; newer backups exist for same containers; assessed as low-impact
 
-**Action Items:**
-- [ ] Delete `/mnt/hdd-backup-2/kinmoon-emergency-backup/` on Kuromoon once Kinmoon array is trusted long-term (not urgent)
-- [ ] Report UGOS `storage_serv` `RebuildFinished`/`strconv.Atoi` bug to UGREEN
-- [ ] Decide whether to pursue further recovery of July 12 LXC backups / CT211 file, or formally write off (currently informally accepted as lost)
-- [ ] Set sane recycle-bin retention policy on fresh `proxmox-backups` share
-- [ ] Verify `backup-daily` job's first scheduled run (2026-08-02 02:00) completes successfully against rebuilt array
+**Kuromoon Host Freeze & Firewall Management Access (Sept 21, 2026 — Current Session)**
 
-**Alertmanager iowait Alert Investigation (July 23, 2026 — Session Infrastructure Audit)**
-- CRITICAL "CPU usage 100%" alert on CT 205 (Alertmanager, 192.168.30.205:9100), 2026-07-20 03:46-03:47 AM, investigated and root-caused
-- Root cause: Prometheus's CPU-usage alert rule sums all non-idle CPU time, which includes iowait — `top` confirmed 100.0% `%wa` with 0.0% `us`/`sy` (zero actual compute load, pure I/O wait)
-- Correlated to backup-daily vzdump job running 02:00-~03:35 nightly, writing to kinmoon-smb CIFS network share sitting at 94% capacity, causing lingering I/O pressure past job completion (~03:46 alert vs ~03:35 job finish)
-- Confirmed backup-daily vzdump job configuration: `/etc/pve/vzdump.cron`, schedule 02:00 daily, compress zstd, mode snapshot, prune-backups keep-daily=7/keep-weekly=4, storage kinmoon-smb, VMID list includes 201,202,203,204,205,206,207,208,211,213,214,220,221,222,223,302,303,304,305,400
-- **CT 306 (Enshrouded) and CT 307 (Palworld) NOT included in
+**Incident Summary:**
+- Kuromoon (192.168.10.5, VLAN 10 hypervisor host) became completely unresponsive to SSH, Proxmox web UI, and application layer 2026-09-21 afternoon-evening
+- Proxmox pveproxy, sshd, and CT 203 (Grafana) all accepted TCP connections but never responded with application-level data
+- ICMP ping (layer 3) continued responding with normal latency (~1-2ms), indicating kernel and network stack were functional but user-space processes hung
+- Resolved via hard power-cycle at 20:37 local time (2026-09-21T12:37Z)
+
+**Network Diagnosis Process:**
+- Initial troubleshooting from Minimoon (VLAN 20, 192.168.20.101) unable to reach Kuromoon on 192.168.10.5:8006
+- Root cause traced to pfSense firewall: VLAN20_MAIN had no explicit allow rule to VLAN10_MGMT — by design, management VLANs are isolated from guest/workstation VLANs
+- Verified through pfSense local console: checked interface status, pinged hosts on VLAN 10, inspected firewall rule order with `/sbin/pfctl -sr`
+- Solution: added two temporary `USER_RULE` entries to VLAN20_MAIN interface:
+  - **"USER_RULE: Minimoon to Proxmox GUI"** — Pass, TCP, source 192.168.20.101, dest 192.168.10.5, port 8006
+  - **"USER_RULE: Minimoon to Kuromoon SSH (temp)"** — Pass, TCP, source 192.168.20.101, dest 192.168.10.5, port 22
+  - Both placed above the existing "Block all private networks" rule for proper evaluation order
+  - Intended as temporary/provisional pending decision on network's permanent management-access model
+
+**Root Cause Investigation (Post-Reboot Forensics):**
