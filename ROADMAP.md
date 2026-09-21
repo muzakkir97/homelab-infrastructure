@@ -1,8 +1,8 @@
 # 🗺️ Homelab Infrastructure Roadmap
 
-> **Last Updated:** September 21, 2026  
+> **Last Updated:** September 22, 2026  
 > **Total Phases:** 106 planned | 54 completed | 0 in progress | 52 future  
-> **Next Session Priority:** Chaldea Rename Propagation (Gilgamesh → Jeanne Alter) OR Jeanne Alter Email Management Pipeline OR Midas v2 — Financial Intelligence
+> **Next Session Priority:** Phase 16.6 (Chaldea Rename Propagation) OR remaining Phase 37 sub-items (CT 220 autostart race, journald gap investigation, Kinmoon capacity cleanup)
 
 ---
 
@@ -112,11 +112,11 @@ No phases currently in progress.
 | 16.7  | Da Vinci → Nextcloud Deck Sync Pipeline       | Phase 24.10       | 6h     | 9th pipeline step: sync documentation changes to Homelab board via Deck API; match-and-update via sync-id tags; status-keyword-based stack routing |
 | 16.8  | Deck Sync Manual Backfill                     | Phase 16.7        | 2h     | Manually tag all ~30 existing Homelab Deck cards with sync-id footers before automation goes live |
 | 24.11 | Ecosystem-wide Credential Store Migration     | Phase 14          | 10h    | Move all hardcoded n8n credentials (Da Vinci, MERLIN, Midas, Jeanne Alter) to n8n's built-in credential store; applies to every agent |
-| 24.12 | Jeanne Alter Architecture Refactor            | Phase 24.11       | 15h    | Adopt n8n AI Agent node (replace hand-built If/branch logic), integrate MCP for tool execution, integrate Mem0 self-hosted (Qdrant-backed) for unified memory, restructure persona into personality file |
+| 24.12 | Jeanne Alter Architecture Refactor            | Phase 24.11       | 15h    | Adopt n8n AI Agent node (replace hand-built If/branch logic), integrate MCP for tool execution, integrate Mem0 self-hosted (Qdrant-backed) for unified memory, restructure persona into personality file; adopt MCP "Bridge" skill-registration pattern and `soul` personality-table pattern from n8n-claw design reference |
 | 24.13 | Universal Time/Date Awareness                | Phase 24.12       | 1h     | Inject current date/time into every agent's system prompt (pattern: Da Vinci's {{date}} replacement), applied ecosystem-wide instead of single gateway |
 | 24.14 | Jeanne Alter Web Search Quality Improvement  | Phase Web Search  | 4h     | Iterative multi-query search with synthesis step, closer to Gemini-style search; replace single Firecrawl + Haiku call pattern |
 | 24.15 | Jeanne Alter Email Management Pipeline       | Phase 24.11       | 6-8h   | Design Complete (July 9, 2026). 4 personal email accounts (Gmail OAuth2 × 3, iCloud IMAP × 1) → shared Email Classifier sub-workflow → Telegram notification + permanent-category facts (bills/payments/subscriptions) to Da Vinci Personal Knowledge gateway. 3x daily schedule. Credentials in n8n store. qwen3:14b primary, Claude Haiku fallback. 6 rollout steps: credentials → classifier → account triggers → staging store → notification → verify writes. |
-| 32    | DDNS Automation & WAN IP Stability Monitoring | Phase 3           | 4-6h   | **Elevated Priority (July 17, 2026)** due to repeated WAN IP changes within one week (3 changes recorded: 202.184.101.136 → 202.184.103.49 → 202.184.109.124 during session timeframe). Extend CT 207 ddclient automation to cover Palworld egg PublicIP variable in Pelican (currently manual sync required). Add real-time WAN IP monitoring to Uptime Kuma or ntfy to alert when IP changes detected. Consider DNS failover strategy if ISP instability continues. **Update (Sept 21, 2026):** WAN IP now observed as 202.184.116.231 — another change since last documented value of 202.184.109.124 (July 17). Action Item: re-verify Cloudflare DNS records for game subdomains (Palworld, Terraria, Minecraft, Enshrouded) against current WAN IP. |
+| 32    | DDNS Automation & WAN IP Stability Monitoring | Phase 3           | 4-6h   | **Elevated Priority (July 17, 2026)** due to repeated WAN IP changes within one week (3 changes recorded: 202.184.101.136 → 202.184.103.49 → 202.184.109.124 during session timeframe). Extend CT 207 ddclient automation to cover Palworld egg PublicIP variable in Pelican (currently manual sync required). Add real-time WAN IP monitoring to Uptime Kuma or ntfy to alert when IP changes detected. Consider DNS failover strategy if ISP instability continues. **Update (Sept 21, 2026):** WAN IP now observed as 202.184.116.231 — another change since last documented value of 202.184.109.124 (July 17). Action Item: re-verify Cloudflare DNS records for game subdomains (Palworld, Terraria, Minecraft, Enshrouded) against current WAN IP. **Update (Sept 22, 2026):** Game server DNS records still pending re-verification and update against current WAN IP (202.184.116.231). |
 
 #### Agent Feature Development
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
@@ -135,6 +135,7 @@ No phases currently in progress.
 | Plan My Day | Schedule + tasks + energy = daily suggestion | Phase 24.10 | 4-5h | Daily planning assistant |
 | Scathach | Career Growth & Research Agent (LangGraph) | Phase 24.12       | TBD    | 1st build priority; career research and job application workflows; LangGraph evaluation pending, sequenced after Phase 24.12 (Jeanne Alter refactor to n8n AI Agent node may address the same multi-step reasoning problem) |
 | Nightingale | Health Pipeline Agent                       | Phase 24.10       | TBD    | Extract health tracking (food/BP/medication logging) into dedicated agent; concept only, not yet scoped |
+| EMIYA | Execution Engine (MCP + Local Coding LLM) | Phase 24.12 | TBD | Hands capability: MCP-based tool execution (shared with Jeanne Alter per Phase 24.12 shared MCP layer design), local coding models (Qwen2.5-Coder-14B-Instruct or DeepSeek-Coder-V2-Lite-16B shortlisted for RX 6700 XT 12GB VRAM). Explicitly deferred until Phase 24.11/24.12 establish shared credential/tool/memory architecture; prevents rebuilding once Phase 24.12 formalizes shared version. |
 
 #### Research & Future (No Priority Yet)
 | Phase | Title                                           | Dependencies      | Effort | Notes                                    |
@@ -142,7 +143,7 @@ No phases currently in progress.
 | Multi-Agent Discussion Protocol | CrewAI-based agent-to-agent communication | Phase 24.12 | Research | Complexity-based trigger (quick topics live via Telegram, complex topics run in background). Jeanne Alter presents both sides on disagreement, user arbitrates. Summary-only reporting by default. Explicitly deferred — research/keep-in-view only. |
 | Solomon Agent | Overseer/growth agent (weekly review) | Phase 24.12 | Research | FGO-lore fit: Chaldea administrator. Weekly cron-triggered review of all agents' activity/logs/decisions; proposes fixes for user approval. Human-in-the-loop growth, not autonomous self-modification. |
 | Voice Organ (Jeanne Alter) | Whisper STT + local TTS | Phase 24.12 | Research | Chosen over vision-first investment due to VRAM constraints (single RX 6700 XT 12GB cannot run vision + main chat model concurrently). |
-| Shared MCP Tool Layer | Multi-agent tool execution framework | Phase 24.12 | Research | One shared tool layer + shared Mem0 instance across all agents instead of rebuilding per-agent. |
+| Shared MCP Tool Layer | Multi-agent tool execution framework | Phase 24.12 | Research | One shared tool layer + shared Mem0 instance across all agents instead of rebuilding per-agent. Design pattern adopted from n8n-claw reference project (MCP "Bridge" skill-registration pattern). |
 | EMILIA (Vision-First Agent) | Advanced vision/perception capabilities | Phase 43 | Research | Explicitly deferred due to VRAM contention risk on current single-GPU hardware. Llama 3.2 Vision model and live browser vision/control both pending GPU upgrade. |
 
 ### 🎮 Gaming Platform Pipeline (Priority: Medium)
@@ -171,11 +172,11 @@ No phases currently in progress.
 |-------|--------------------------------------|--------------|--------|-----------------------------------------|
 | 25    | WiFi Access Point Deployment         | Hardware     | 4h     | EAP610 deployment COMPLETE (July 5, 2026) — AX1800 access point (SSID `A21-22A`) now live on VLAN20_MAIN via TL-SG108E port 7. Functioning correctly after VLAN misconfiguration fix. |
 | 26    | Legacy Network Cleanup               | Phase 25     | 3h     | Partially addressed (July 5): TL-SG108E ports 7-8 VLAN migration from legacy VLAN 1 to VLAN20_MAIN complete. Remaining work: migrate switch management IP from 192.168.1.20 (legacy) to proper VLAN10_MGMT address. |
-| 27    | Domain Migration & Infrastructure Audit | Phase 14 | 8h     | **27.1 (audit):** Cloudflare Access policies, Tunnel routes, SSL, NPM configs, DNS hygiene audit across existing setup. **27.2 (migration):** Nine homelab subdomains move from najhin-gaming.com to muzakkir.tech (grafana, n8n, vault, passwords/Vaultwarden, cloud/Nextcloud, finance/Firefly III, ntfy, langfuse, home/Pulse Dashboard). Game server subdomains (mc, terraria, enshrouded, panel) remain permanently on najhin-gaming.com. Cloudflare zone setup for muzakkir.tech directed to begin July 1, 2026 — completion status unconfirmed, verify next infrastructure session. **Action Item (July 17, 2026):** Update Cloudflare DNS records for Palworld, Terraria, Minecraft, and Enshrouded subdomains under najhin-gaming.com — currently pointing at stale IPs from before session changes. **Status (Aug 1, 2026):** Vaultwarden (passwords.najhin-gaming.com) tunnel route fixed during Kinmoon recovery session. Game server DNS records still need verification/update. **Status (Sept 21, 2026):** Vaultwarden external access confirmed working after Docker image update to `latest` and HTTP service type correction in Tunnel route. Game server DNS records still pending re-verification against current WAN IP (202.184.116.231). |
+| 27    | Domain Migration & Infrastructure Audit | Phase 14 | 8h     | **27.1 (audit):** Cloudflare Access policies, Tunnel routes, SSL, NPM configs, DNS hygiene audit across existing setup. **27.2 (migration):** Nine homelab subdomains move from najhin-gaming.com to muzakkir.tech (grafana, n8n, vault, passwords/Vaultwarden, cloud/Nextcloud, finance/Firefly III, ntfy, langfuse, home/Pulse Dashboard). Game server subdomains (mc, terraria, enshrouded, panel) remain permanently on najhin-gaming.com. Cloudflare zone setup for muzakkir.tech directed to begin July 1, 2026 — completion status unconfirmed, verify next infrastructure session. **Action Item (July 17, 2026):** Update Cloudflare DNS records for Palworld, Terraria, Minecraft, and Enshrouded subdomains under najhin-gaming.com — currently pointing at stale IPs from before session changes. **Status (Aug 1, 2026):** Vaultwarden (passwords.najhin-gaming.com) tunnel route fixed during Kinmoon recovery session. Game server DNS records still need verification/update. **Status (Sept 21, 2026):** Vaultwarden external access confirmed working after Docker image update to `latest` and HTTP service type correction in Tunnel route. Game server DNS records still pending re-verification against current WAN IP (202.184.116.231). **Update (Sept 22, 2026):** Game server DNS records still pending re-verification and update against current WAN IP. |
 | 28    | Storage Optimization                 | —            | 6h     | Move Nextcloud data, thin pool cleanup |
 | 29    | Performance Monitoring Expansion     | Phase 5      | 5h     | Advanced metrics and alerting rules    |
-| 33    | Maintenance Window Consolidation & Automation | Phase 25 | 4h | **New Phase (July 17, 2026).** Consolidate Palworld + Terraria restart schedules with nightly vzdump backup job into single off-peak maintenance block (exact timing pending confirmation of reliably dead low-usage hour, currently all events scattered). Per-server restart Schedules in Pelican to be set up once window finalized. Reschedule vzdump job (currently ~02:11 AM, conflicts with active gameplay) via Datacenter → Backup. |
-| 37    | Kuromoon Host Stability & Monitoring | Phase 5      | TBD    | **New Phase (Sept 21, 2026).** Kuromoon experienced full host-wide unresponsiveness incident (Sept 21, 2026) with pveproxy, sshd, and CT 203 (Grafana) all accepting TCP connections but never completing responses, while host still replied to ICMP. Resolved via hard power cycle. Root cause not conclusively identified; plausible (unproven) link to kinmoon-smb CIFS mount at 95% capacity combined with Kinmoon NAS's failing Hard Drive 1. Requires: (1) elevated priority on Kinmoon drive replacement to free capacity; (2) external/independent alerting for host-level unresponsiveness (current Prometheus/Grafana stack is blind during host freezes); (3) investigation of CT 220 (nextcloud) autostart race condition (recurring pattern on reboots since May 2026); (4) investigation of journald silent logging gap on Kuromoon (halted Sept 3, remained silent for 18 days until reboot Sept 21). |
+| 33    | Maintenance Window Consolidation & Automation | Phase 25 | 4h | **New Phase (July 17, 2026).** Consolidate Palworld + Terraria restart schedules with nightly vzdump backup job into single off-peak maintenance block (exact timing pending confirmation of reliably dead low-usage hour, currently all events scattered). Per-server restart Schedules in Pelican to be set up once window finalized. |
+| 37    | Kuromoon Host Stability & Monitoring | Phase 5      | TBD    | **Status (Sept 21, 2026):** Kuromoon experienced full host-wide unresponsiveness incident (Sept 21, 2026) with pveproxy, sshd, and CT 203 (Grafana) all accepting TCP connections but never completing responses, while host still replied to ICMP. Resolved via hard power cycle. Root cause not conclusively identified; plausible (unproven) link to kinmoon-smb CIFS mount at 95% capacity combined with Kinmoon NAS's failing Hard Drive 1. **Update (Sept 22, 2026):** **(2) external/independent alerting for host-level unresponsiveness — COMPLETE.** Kuromoon host-freeze watchdog deployed on Pi-hole (192.168.30.10) at `/usr/local/bin/kuromoon-watchdog.sh`, running via cron every 2 minutes: checks HTTPS response from Proxmox GUI (port 8006) on both LAN IP (192.168.10.5) and Tailscale IP (100.89.254.28); alerts via direct Telegram Bot API (not ntfy, which runs on Kuromoon and would be unavailable during freeze); fires after 3 consecutive failures (~6 min); distinguishes genuine host freeze ("both LAN and Tailscale down") from routing-only issue ("LAN down, Tailscale up"); sends recovery message when back online; fully tested end-to-end (stopped pveproxy, confirmed alert fired; restarted, confirmed recovery fired). State tracked in `/var/tmp/kuromoon-watchdog-state` and `/var/tmp/kuromoon-watchdog-failcount`. Sub-items remaining: **(1) Kinmoon drive replacement to free capacity** (now at 96% used, "Warning" state in UGOS) — elevated urgency; **(3) CT 220 (Nextcloud) autostart race condition** (recurring pattern on reboots since May 2026); **(4) journald silent-logging gap on Kuromoon** (halted Sept 3, remained silent for 18 days until reboot Sept 21). |
 
 ### 🛡️ Core Services (Priority: Medium)
 
@@ -225,6 +226,15 @@ No phases currently in progress.
 - Consistent agent naming across all systems
 **Summary:** Rename bot identity to Jeanne Alter across n8n workflows, Telegram bot handle, and documentation. Requires updates to: Da Vinci, MERLIN, Midas, Cu Chulainn (currently still named "Guardian" in some workflow references), and documentation files.
 
+### Phase 37 Sub-Items (Parallel/High Priority)
+**Effort:** Variable  
+**Priority:** Elevated (following Sept 21-22 host freeze incident)  
+**Focus Areas:**
+1. **Kinmoon capacity cleanup** (now 96% used, "Warning" state) — critical for Kuromoon stability
+2. **CT 220 (Nextcloud) autostart race condition** — recurring on reboots since May 2026
+3. **journald silent-logging gap investigation** — Kuromoon's journald halted Sept 3, remained silent 18 days
+**Summary:** Resolve outstanding Phase 37 stability items to prevent recurrence of Sept 21 host freeze incident.
+
 ### Phase 24.15: Jeanne Alter Email Management Pipeline (Second Major Session)
 **Effort:** 6-8 hours  
 **Priority:** High  
@@ -261,35 +271,4 @@ No phases currently in progress.
 **Priority:** High  
 **Status:** NOW UNBLOCKED (Aug 1, 2026) — Kinmoon Storage Pool 1 rebuild complete and verified healthy. Emergency backup copy safe on Kuromoon. backup-daily job re-enabled.  
 **Deliverables:** Offsite backup expansion, completing 3-2-1 backup strategy
-**Summary:** With Kinmoon stable and verified, proceed with Backblaze B2 integration for offsite redundancy.
-
-### Phase 16.8: Deck Sync Manual Backfill (Quick Session)
-**Effort:** 2 hours  
-**Priority:** Medium  
-**Goal:** Manually tag all ~30 existing Homelab Deck cards with sync-id footers  
-**Precondition for:** Phase 16.7 (Da Vinci → Nextcloud Deck Sync Pipeline)  
-**Deliverables:** All cards ready for automated sync integration
-**Summary:** One-time manual tagging of existing Nextcloud Deck cards to prepare for Phase 16.7 automation.
-
----
-
-## 🔗 Phase Dependencies
-
-**Critical Path Analysis:**
-1. **Phase 34 (Kinmoon Recovery) → COMPLETE (Aug 1, 2026)** — Storage Pool 1 fully rebuilt, data restored, libata fix applied, backup-daily re-enabled
-2. **Phase 34 COMPLETION → Phase 31 (Offsite Backup) UNBLOCKED** — Proceed with Backblaze B2 integration
-3. **Phase 37 (Kuromoon Stability) ELEVATED PRIORITY** — Kinmoon drive replacement (Phase 34 follow-up) and external host monitoring now tied to Kuromoon's stability; CT 220 autostart race condition and journald gap investigation pending
-4. **Chaldea Architecture Track:** Phase 24.11 (Credential Store) → Phase 24.12 (Jeanne Alter Refactor) → Phase 24.13 (Universal Time/Date) → Multi-Agent Discussion Protocol
-5. **Chaldea Agent Feature Track:** Phase 24.11 → Phase 24.15 (Email Management) → remaining agent features
-6. **Documentation & Integration Track:** Phase 16.6 (Rename) → 16.7 (Deck Sync) → 16.8 (Deck Backfill)
-7. **Agent Feature Development Track:** Phase 24.12 → Scathach (build priority 1st, LangGraph evaluation) → Cu Chulainn (build priority 2nd, rename propagation pending) → Goal Nudges → Plan My Day
-
----
-
-## 📝 Session Summary (Sept 21, 2026)
-
-**Infrastructure Troubleshooting: Kuromoon Host Unresponsiveness & Network Diagnostics**
-
-### Major Accomplishments
-- **Full Kuromoon Host Freeze Incident Diagnosis:** Traced complete network path from PC (VLAN20_MAIN) through pfSense to Kuromoon (VLAN10_MGMT). Discovered VLAN20_MAIN had no explicit firewall pass rules to VLAN10_MGMT — network isolation was intentional but prevented routine management access.
-- **Network Path Debugging via pfSense Console:** Used local console access (interface
+**Summary:** With Kinmoon stable and
