@@ -1,7 +1,7 @@
 # Service Catalog
 
 ## Overview
-Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-08-01.
+Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-09-21.
 
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
@@ -127,18 +127,4 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 - Pelican panel file Download function (Files tab → Archive → Download) has a known bug returning 404 "resource not found" for some eggs/nodes (root cause suspected in Wings FQDN/signed URL generation); reliable workaround is `pct exec <CTID> -- tar -czf /tmp/backup.tar.gz ...` followed by `pct pull <CTID> /tmp/backup.tar.gz ...` from Proxmox host, bypassing Wings entirely.
 - UGREEN DXP2800 NAS (Kinmoon) has a documented SATA link-speed compatibility issue where some drives show narrow signal timing tolerance at 6.0Gbps, causing deterministic "failed command: WRITE FPDMA QUEUED" errors ~18-19 seconds after boot/reboot. This is NOT a drive health issue (confirmed via healthy SMART data). Fix: force SATA to 3.0Gbps via `libata.force=3.0Gbps` kernel boot parameter in `/boot/EFI/debian/grub.cfg` and `/boot/EFI/debian/grub.am`. Setting may be overwritten by future firmware/system updates and requires rechecking after any UGOS update. **This fix was confirmed working on 2026-07-31 after full Storage Pool 1 rebuild — zero WRITE FPDMA QUEUED errors observed since applying.**
 - UGOS `storage_serv` daemon has a documented bug where its internal `mdadm --monitor` process mishandles the `RebuildFinished` event during active RAID resync, throwing `strconv.Atoi: parsing "-": invalid syntax` at kernel level and causing `md: recover interrupted`. Reproduced twice during 2026-07-30/31 session. Mitigated (not fixed) by stopping `storage_serv` during rebuild attempts. Worth reporting upstream to UGREEN.
-
-### Dependencies
-- Haiku 3.5 API (8 sequential calls, one per file; 9th planned for Deck sync)
-- GitHub API (fetch files, push updates)
-- Langfuse API (http://192.168.30.223:3000 internal; https://langfuse.najhin-gaming.com public) for trace logging
-- Workflow trigger payload (session summary via fileContent field, chatId)
-- Telegram notification service (confirmation)
-- Nextcloud Deck API (planned 9th step)
-- n8n workflow runtime (~5 minutes per session)
-
-## Active Services
-
-### Nextcloud
-**Status:** Active  
-**URL:** https://cloud.najhin-gaming.
+- **Kuromoon host freeze (2026-09-21):** Full host-wide unresponsiveness affecting pveproxy, sshd, and CT 203 (Grafana) simultaneously — all TCP connections accepted but never completed protocol/application responses, despite normal ICMP ping replies. Resolved via hard power cycle; root trigger unconfirmed. Leading (unproven) theory: I/O stall related to kinmoon-smb CIFS mount at 95% capacity (2.6TB/2.7TB) backed by Kinmoon NAS with documented failing Hard Drive 1 (July 23, 2026). Forensic evidence sparse — Prometheus/Grafana were down during freeze, journald
