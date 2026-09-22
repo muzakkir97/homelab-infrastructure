@@ -23,7 +23,7 @@ Documentation librarian and infrastructure chronicler. Maintains the homelab's l
 ### Active Workflows
 
 #### Da Vinci Update Pipeline
-**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026 | Alertmanager iowait Investigation July 23, 2026 | Kinmoon RAID Incident Response July 24, 2026 | Kinmoon NAS Recovery & Storage Pool 1 Rebuild July 30-Aug 1, 2026 | Kuromoon Host Freeze & Firewall Audit Sept 21, 2026 | Kuromoon Host Stability & Monitoring Sept 22, 2026 | Kinmoon Capacity Crisis & Backup Verification Sept 22, 2026 | Cloudflare Security Audit & Access Policy Remediation Sept 22, 2026)  
+**Status:** Operational (Rebuilt May 19, 2026 | Expanded to 8 Files May 21, 2026 | Langfuse Wired May 21, 2026 | Verified May 21, 2026 | Emergency Network Migration July 5, 2026 | Deck Sync Design July 8, 2026 | Documentation Audit July 9, 2026 | Monitoring Bug Fix July 14, 2026 | Palworld Troubleshooting July 17, 2026 | Alertmanager iowait Investigation July 23, 2026 | Kinmoon RAID Incident Response July 24, 2026 | Kinmoon NAS Recovery & Storage Pool 1 Rebuild July 30-Aug 1, 2026 | Kuromoon Host Freeze & Firewall Audit Sept 21, 2026 | Kuromoon Host Stability & Monitoring Sept 22, 2026 | Kinmoon Capacity Crisis & Backup Verification Sept 22, 2026 | Cloudflare Security Audit & Access Policy Remediation Sept 22, 2026 | Kuromoon Host Stability & n8n Webhook Security Review Sept 22, 2026)  
 **Type:** 8 sequential Haiku API calls with immediate cost logging and Langfuse observability, plus planned 9th step (Nextcloud Deck sync)  
 **Trigger:** Workflow execution via TriggerRun or manual invoke  
 
@@ -322,4 +322,4 @@ Receives personal facts from all agents (currently Jeanne Alter, future EMIYA/Mi
 - Verified through pfSense local console: checked interface status, pinged hosts on VLAN 10, inspected firewall rule order with `/sbin/pfctl -sr`
 - Solution: added two temporary `USER_RULE` entries to VLAN20_MAIN interface:
   - **"USER_RULE: Minimoon to Proxmox GUI"** — Pass, TCP, source 192.168.20.101, dest 192.168.10.5, port 8006
-  - **"USER_RULE: Minimoon to Kuromoon SSH (temp)"** — Pass, TCP, source 192.168.20.101, dest 192.168.10
+  - **"USER_RULE: Minimoon to Kuromoon SSH (temp
