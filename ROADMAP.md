@@ -10,9 +10,9 @@
 
 | Category                              | Total | Complete | In Progress | Planned |
 |---------------------------------------|-------|----------|-------------|---------|
-| **Core Infrastructure & Security**     | 18    | 13       | 0           | 5       |
+| **Core Infrastructure & Security**     | 18    | 14       | 0           | 4       |
 | **Gaming Platform Pipeline**          | 12    | 6        | 0           | 6       |
-| **AI & Automation (Chaldea)**         | 37    | 23       | 0           | 14      |
+| **AI & Automation (Chaldea)**         | 37    | 25       | 0           | 12      |
 | **Personal & Knowledge Management**    | 12    | 7        | 0           | 5       |
 | **Monitoring & Observability**        | 8     | 8        | 0           | 0       |
 | **Infrastructure Cleanup**            | 10    | 3        | 0           | 7       |
@@ -41,6 +41,8 @@
 | 27.1  | Infrastructure Audit & Security Hardening    | Sep 22, 2026 | Phase 5      |
 | 34    | Kinmoon Hard Drive 1 Replacement              | Aug 1, 2026  | Phase 9      |
 | MERLIN SSL Check | MERLIN SSL Check Migration to Uptime Kuma | Jul 14, 2026 | Phase 5 |
+| Alertmanager Telegram Token Fix | Alertmanager critical-alerts Telegram bot token remediation | Sep 22, 2026 | Phase 5 |
+| n8n Webhook Cleanup | Archived 3 unused/undocumented n8n workflows (Da Vinci Sync Docs, Midas CFO Report, Emiya Service Down Alert) | Sep 22, 2026 | Phase 27.1 |
 
 ### Gaming Platform
 | Phase | Title                                    | Completed   | Dependencies |
@@ -183,6 +185,7 @@ No phases currently in progress.
 
 | Phase | Title                                | Dependencies | Effort | Notes                                   |
 |-------|--------------------------------------|--------------|--------|-----------------------------------------|
+| 27.1F | n8n Webhook Security Validation      | Phase 27.1   | 1h     | **Status (Sept 22, 2026):** Final validation step — manually verified 5 webhook-triggered n8n workflows flagged by Cloudflare audit. Results: Da Vinci — Update Pipeline and Da Vinci — Inbox Watcher not internet-reachable (Execute-Workflow and Schedule triggers, not Webhooks — no action needed). Emiya — Service Down Alert archived (zero confirmed live Alertmanager dependency after grepping `/etc/alertmanager/alertmanager.yml` — config has never contained webhook_configs referencing n8n since last modification 2026-02-04; docs inaccuracy corrected). Da Vinci — Sync Docs Pipeline and Midas — CFO Report both had zero execution history ever (dead webhooks) and were archived rather than validated since an unused public webhook is pure attack surface with no offsetting functional value. **Deliverable:** All 5 webhooks now validated or archived; none remain in unsecured public state. |
 | 30    | n8n + Vault Integration              | Phase 14     | 3h     | Direct secret fetching in workflows    |
 | 31    | Off-site Backup (Backblaze B2)       | Phase 34     | 6h     | **Status (Aug 1, 2026):** Now unblocked — Kinmoon Storage Pool 1 rebuild completed successfully (Aug 1, 2026 01:10 UTC). All drives healthy, RAID 1 status Normal, array UUID 5bb187d0:b14f67a3:9f4d8ab9:16d079f8. Emergency backup copy on Kuromoon (1.2TB at /mnt/hdd-backup-2/kinmoon-emergency-backup/) still present as safety net, pending deletion once Kinmoon is trusted long-term. backup-daily vzdump job re-enabled and configured to run 2026-08-02 02:00. Ready to proceed with offsite expansion. |
 
@@ -222,20 +225,4 @@ No phases currently in progress.
 **Focus Areas:**
 1. **Kinmoon auto-purge retention policy** — PARTIALLY RESOLVED this session; manual backlog cleared (96% → 73.76%), but UGOS control-panel auto-purge on `#recycle` folder still NOT configured. Without this, capacity crisis will recur as `backup-daily` runs going forward. Action: set UGOS recycle-bin retention to 7-14 days.
 2. **Root cause of 34-day `backup-daily` scheduler silence (Aug 18 - Sep 21)** — job mysteriously stopped firing for entire month (verified via `journalctl -u pvescheduler` empty window), only recovered Sept 22 02:00. Immediate symptom resolved (job running again), but root cause unconfirmed. Theory: same host instability behind Sept 21 freeze, but no forensic proof for full 34-day span.
-3. **CT 220 (Nextcloud) autostart race condition** — reconfirmed recurring on Sept 21 post-incident reboot. `/var/log/pve/tasks/active` shows `vzstart:220 ... startup for container '220' failed`. Pattern recurs on nearly every reboot (May 16, July 6, Aug 11, Sept 21).
-4. **journald silent-logging gap investigation** — Kuromoon's journald halted Sept 3, remained silent for 18 days until Sept 21 reboot. Unknown if this was one extended stall or intermittent outages; no root cause identified.
-5. **Lightweight backup freshness watchdog** — add alert if no new file lands in kinmoon-smb `dump` folder within ~26 hours. Current `mailnotification failure` config only catches job errors, not silent job skips (exactly what happened this month).
-
-**Summary:** Resolve outstanding Phase 37 stability items to prevent recurrence of Sept 21 host freeze incident and prevent Kinmoon capacity crisis return.
-
-### Phase 27.1 Final: n8n Webhook Validation (Second Priority)
-**Effort:** 1 hour (manual inspection)  
-**Priority:** Medium  
-**Goal:** Manually verify the 5 non-Telegram n8n webhook endpoints actually validate a secret header/token before trusting Cloudflare-bypassed access  
-**Deliverables:**
-- Confirm `doc-update`, `doc-sync`, `da-vinci`, `midas-report`, Alertmanager routing webhooks all have validation nodes after Webhook trigger
-- Verify no credentials are exposed through bypassed webhook endpoints
-**Summary:** Final validation step for Phase 27.1 — verify n8n webhooks are properly secured before considering the audit complete.
-
-### Phase 16.6: Chaldea Rename Propagation (Third Priority)
-**Effort:**
+3. **CT 220 (Nextcloud) autostart race condition** — reconfirmed recurring on Sept 21 post-incident reboot. `/var/log/pve/tasks/active` shows `vzstart:220 ... startup for container '220' failed`. Pattern recurs on nearly every reboot (May 16, July 6, Aug 11, Sept 
