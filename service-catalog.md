@@ -77,6 +77,67 @@ The following applications are protected by Cloudflare Zero Trust Access on najh
 
 ---
 
+## Alertmanager (CT 205)
+
+**Status:** Active  
+**Version:** 0.27.0  
+**Configuration File:** /etc/alertmanager/alertmanager.yml  
+**Last Modified:** 2026-02-04  
+**Last Reload:** 2026-09-22 (Phase 37 — Telegram bot token migration)  
+
+### Alert Routing & Receivers
+
+#### Critical Alerts Receiver
+- **Name:** critical-alerts  
+- **Channels:** Telegram (dedicated bot), Discord  
+- **Telegram Integration:**
+  - **Bot:** Dedicated Alertmanager bot (created Phase 37, separate from Jeanne Alter's bot)
+  - **Token Storage:** `/etc/alertmanager/secrets/telegram_bot_token` (permissions 600, owner alertmanager:alertmanager)
+  - **Config Reference:** `bot_token_file` (supported as of Alertmanager 0.27.0)
+  - **Chat ID:** 518832696  
+  - **Status:** Verified working (Phase 37 — end-to-end delivery tested with synthetic alerts)
+  - **Previous Issue:** Token invalid since at least 2026-09-21 (critical-alerts Telegram delivery silently failed during Sept 21 host-freeze incident; only Discord received that alert). Root cause: token expiry unknown, no monitoring on credential itself. Fixed by generating dedicated bot and migrating to `bot_token_file` storage.
+- **Discord Integration:** Active, no changes Phase 37
+
+#### Warning Alerts Receiver
+- **Name:** warning-alerts  
+- **Channels:** Discord only  
+- **Telegram:** Not currently routed (by design; see Action Items below)  
+
+#### Default Receiver
+- **Name:** default  
+- **Channels:** Discord only  
+- **Telegram:** Not currently routed (by design; see Action Items below)  
+
+**Note (Phase 37):** Existing documentation previously described an "Alertmanager → n8n webhook → Telegram/Discord" integration via Emiya — Service Down Alert workflow. This was inaccurate. Alertmanager's live config (unchanged since 2026-02-04) has never contained a `webhook_configs` block referencing n8n; it has always routed directly to Telegram (critical-alerts only) and Discord (all 3 receivers) via native Alertmanager integrations. The Emiya workflow was archived (Phase 37) after confirming zero live dependency.
+
+---
+
+## n8n Workflows (Updated Phase 37)
+
+**Total Active Workflows:** 9 (reduced from 12; 3 archived Phase 37)  
+**Archived Workflows:** Da Vinci — Sync Docs Pipeline, Midas — CFO Report, Emiya — Service Down Alert  
+
+### Archived Workflows (Phase 37)
+
+#### Da Vinci — Sync Docs Pipeline
+- **Status:** Archived  
+- **Reason:** Zero execution history ever detected; unused public webhook is pure attack surface  
+- **Archive Date:** 2026-09-22  
+
+#### Midas — CFO Report
+- **Status:** Archived  
+- **Reason:** Zero execution history ever detected; unused public webhook is pure attack surface  
+- **Archive Date:** 2026-09-22  
+
+#### Emiya — Service Down Alert
+- **Status:** Archived  
+- **Reason:** Confirmed zero live dependency from Alertmanager. Existing documentation described an Alertmanager webhook integration that never existed in the live config (last modified 2026-02-04).  
+- **Archive Date:** 2026-09-22  
+- **Note:** If Emiya agent has other responsibilities beyond this workflow, those were not identified in Phase 37 investigation.
+
+---
+
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
 **Phase:** 24.10 — Triggered Qdrant Re-indexing (Complete)
@@ -141,27 +202,4 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 - **Trace Structure:** 1 parent trace with 8 child generations (one per file: AI-CONTEXT, changelog, troubleshoot, ROADMAP, agents, current-state, service-catalog, decisions)
 - **Node Architecture:** Single Langfuse node branched off Push to GitHub, executing after all 8 files complete and are pushed
 - **Node Name:** Langfuse — Da Vinci (in agents.md workflow diagram)
-- **Internal URL:** http://192.168.30.223:3000 (n8n CT 211 → Langfuse CT 223 on VLAN 30)
-- **Public URL:** https://langfuse.najhin-gaming.com (for verification and UI access)
-- **Batch Delivery:** All 8 generations sent in single request to Langfuse
-- **Design Rationale:** Cleaner pipeline, fewer nodes, all generations grouped in single trace for better observability
-- **Alternatives Rejected:** 8 individual Langfuse nodes after each Claude API call (too many nodes, marginal benefit)
-- **UI Trace List Bug:** Resolved (2026-05-22) — 1-hour analytics delay by design for aggregation stability. Traces now visible in Langfuse UI trace list with all 8 child generations. Direct URL and public API access worked immediately after fix.
-
-### Recent Bug Fixes (Phase 24.8–24.9)
-1. **Fetch GitHub Files:** Null githubToken → hardcoded token directly in node
-2. **5 new Claude API nodes:** Null apiKey from trigger → hardcoded apiKey const at top of each node
-3. **Push to GitHub:** Only 3 files in array → updated to all 8 files with null SHA handling
-4. **sessionSummary reference:** Changed to read fileContent from trigger payload
-5. **Claude API nodes:** Backtick template literals → replaced with single-quoted strings using concatenation
-6. **Log Cost — service-catalog node:** Fixed command_type from `/update (Da Vinci - current-state)` to `/update (Da Vinci - service-catalog)`
-7. **AI-CONTEXT max_tokens:** Bumped from 20000 to 25000 (was hitting ceiling on every run)
-8. **Langfuse ingestion timestamp:** Now uses n8n server UTC time (new Date().toISOString()); do not add timezone offsets
-9. **Knowledge Indexer empty file filter:** Added If node to skip files where $json.data is empty (prevents crash on new empty folders)
-10. **Knowledge Indexer folder list:** Updated to 00-inbox, 01-homelab, 02-career, 03-knowledge, 04-personal, 07-daily, 08-agents, 09-people, 10-projects, AI-Stuff/Homelab/homelab-infrastructure (confirmed 2026-05-25; requires periodic verification against n8n workflow node configuration)
-11. **Da Vinci Personal Knowledge SKIP detection:** Changed from === 'SKIP' to startsWith('SKIP') — Da Vinci returns "SKIP\n\nReasoning" which was being overwritten
-12. **Da Vinci Personal Knowledge date placeholder:** Changed from Claude handling {{date}} to Code node replacing it before API call (more reliable)
-13. **VM 400 disk expansion:** Used /dev/vda not /dev/sda (KVM virtio device naming)
-14. **Gilgamesh/Jeanne Alter system prompt:** Explicitly states identity and authority (pending full rename to Jeanne Alter)
-15. **hdd-backup-2 Prometheus alert (2026-07-08):** Copy-paste bug in `alert_rules.yml` (CT 202, line 163) — `MountpointMissing_hddbackup2` rule checked `/mnt/hdd-backup-1` instead of `/mnt/hdd-backup-2`. Fixed via sed, then fully removed per user decision. hdd-backup-2 currently has zero Prometheus alert coverage (intentional tradeoff).
-16. **node_exporter /mnt exclusion (2026-07-14):** Debian package default `--collector.filesystem.mount
+- **Internal URL:** http://192.168.30
