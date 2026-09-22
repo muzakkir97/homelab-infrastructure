@@ -3,6 +3,80 @@
 ## Overview
 Central registry of all homelab services, APIs, and infrastructure components. Last updated: 2026-09-22.
 
+## Cloudflare-Protected Services (najhin-gaming.com)
+
+### Access Applications: 17 Total
+The following applications are protected by Cloudflare Zero Trust Access on najhin-gaming.com (updated Phase 27.1):
+
+| Application | Domain | Auth Policy | Purpose |
+|-------------|--------|-------------|---------|
+| panel | panel.najhin-gaming.com | Email OTP (hyperjhin00@gmail.com) | Proxmox management dashboard |
+| langfuse | langfuse.najhin-gaming.com | Email OTP (hyperjhin00@gmail.com) | Observability and tracing pipeline |
+| finance | finance.najhin-gaming.com | Email OTP (hyperjhin00@gmail.com) | Financial tracking (details TBD) |
+| NextCloud | cloud.najhin-gaming.com | Email OTP (hyperjhin00@gmail.com) | File storage and sync |
+| Nextcloud Web | cloud.najhin-gaming.com/web | Bypass (path-scoped) | WebUI access without OTP (Phase 27.1) |
+| Nextcloud WebDAV | cloud.najhin-gaming.com/remote.php | Bypass (path-scoped) | Obsidian sync and client access (Phase 27.1) |
+| Nextcloud OCS | cloud.najhin-gaming.com/ocs | Bypass (path-scoped) | API access for clients (Phase 27.1) |
+| Nextcloud Status | cloud.najhin-gaming.com/status.php | Bypass (path-scoped) | Server status endpoint (Phase 27.1) |
+| Nextcloud Public Share | cloud.najhin-gaming.com/public.php | Bypass (path-scoped) | Public share links (Phase 27.1) |
+| n8n | n8n.najhin-gaming.com | Email OTP (hyperjhin00@gmail.com) | Workflow automation |
+| n8n Webhooks | n8n.najhin-gaming.com/webhook | Bypass (Email OTP validated server-side; requires manual verification per Phase 27.1 action items) | External trigger endpoints |
+| vault | vault.najhin-gaming.com | Email OTP (hyperjhin00@gmail.com) | HashiCorp Vault secret management |
+| Vaultwarden | passwords.najhin-gaming.com | Email OTP (hyperjhin00@gmail.com) | Password manager (Bitwarden-compatible) |
+| Vaultwarden API | passwords.najhin-gaming.com/api | Bypass (scoped, for native clients) | Native client API access |
+| Vaultwarden Identity | passwords.najhin-gaming.com/identity | Bypass (scoped, for native clients) | OAuth/SSO for native clients |
+| ollama webui | ollama.najhin-gaming.com | Email OTP (hyperjhin00@gmail.com) | LLM model management UI |
+| Grafana | grafana.najhin-gaming.com | Email OTP (hyperjhin00@gmail.com) | Metrics visualization and alerting |
+| Pulse | home.najhin-gaming.com | Email OTP (muzakkir.kholil06@gmail.com) | Home automation dashboard (new Phase 27.1) |
+
+**Note:** Vaultwarden parent app Bypass/Everyone policy was removed in Phase 27.1; only Email OTP now enforces on login. `/api` and `/identity` sub-apps retain their correctly-scoped bypass policies for native client access.
+
+**Note:** Nextcloud parent app Bypass/Everyone policy was removed in Phase 27.1; only 4 path-scoped bypass apps remain for WebDAV, OCS, status, and public shares. Everything else (settings, admin, file browser UI) now requires Email OTP.
+
+---
+
+## DNS & TLS Configuration (najhin-gaming.com)
+
+**Zone:** najhin-gaming.com  
+**Status:** Active  
+**Activated:** 2026-07-01  
+**Current WAN IP:** 202.184.116.231 (updated Phase 27.1)  
+**Nameservers:** Cloudflare  
+**SSL/TLS Mode:** Full  
+**Minimum TLS Version:** 1.2 (updated Phase 27.1; was 1.0)  
+**Always Use HTTPS:** On (updated Phase 27.1; was off)  
+
+### A Records (All Proxied via Cloudflare)
+| Subdomain | IP Address | Last Updated | Status |
+|-----------|-----------|--------------|--------|
+| @ (root) | 202.184.116.231 | 2026-09-22 | Current WAN IP |
+| * (wildcard) | 202.184.116.231 | 2026-09-22 | Current WAN IP |
+| grafana | 202.184.116.231 | 2026-09-22 | Current WAN IP |
+| home | 202.184.116.231 | 2026-09-22 | Current WAN IP |
+| n8n | 202.184.116.231 | 2026-09-22 | Current WAN IP |
+| panel | 202.184.116.231 | 2026-09-22 | Current WAN IP |
+| mc | 202.184.35.79 | Pre-2026-09-22 | **STALE — unproxied game server, out of scope Phase 27.1** |
+| terraria | 202.184.35.79 | Pre-2026-09-22 | **STALE — unproxied game server, out of scope Phase 27.1** |
+
+**DNS Hygiene Issue (Fixed Phase 27.1):** 6 A-records (root, wildcard, grafana, home, n8n, panel) were stuck on dead IP 202.184.35.79 (pre-July 5 bridge-mode migration); corrected to current WAN 202.184.116.231. Root cause: CT 207 (network-ddns) had invalid DDNS API token since 2026-07-04 21:10 UTC.
+
+---
+
+## DDNS Service (CT 207 / network-ddns)
+
+**Status:** Active  
+**Service:** favonia/cloudflare-ddns Docker container  
+**Location:** /opt/cloudflare-ddns/docker-compose.yml  
+**Domains Tracked:** `najhin-gaming.com,*.najhin-gaming.com`  
+**API Token Scope:** Zone:DNS:Edit (najhin-gaming.com only)  
+**API Token Status:** Valid (renewed Phase 27.1 after expiry on 2026-07-04)  
+**Last Restart:** 2026-09-22 (Phase 27.1)  
+**Last Successful Update:** 2026-09-22  
+
+**Note:** Previously documented as ddclient but is actually favonia/cloudflare-ddns container. Token expiry at 2026-07-04 21:10 UTC was the root cause of DNS drift (6 stale A-records).
+
+---
+
 ## Da Vinci Documentation Pipeline
 **Status:** Active  
 **Phase:** 24.10 — Triggered Qdrant Re-indexing (Complete)
@@ -90,41 +164,4 @@ The Da Vinci Update Pipeline now handles 8 files per session update run, with a 
 13. **VM 400 disk expansion:** Used /dev/vda not /dev/sda (KVM virtio device naming)
 14. **Gilgamesh/Jeanne Alter system prompt:** Explicitly states identity and authority (pending full rename to Jeanne Alter)
 15. **hdd-backup-2 Prometheus alert (2026-07-08):** Copy-paste bug in `alert_rules.yml` (CT 202, line 163) — `MountpointMissing_hddbackup2` rule checked `/mnt/hdd-backup-1` instead of `/mnt/hdd-backup-2`. Fixed via sed, then fully removed per user decision. hdd-backup-2 currently has zero Prometheus alert coverage (intentional tradeoff).
-16. **node_exporter /mnt exclusion (2026-07-14):** Debian package default `--collector.filesystem.mount-points-exclude` regex included `mnt`, making all `/mnt/*` mountpoints (hdd-backup-1, hdd-backup-2, ssd-storage, pve/kinmoon-smb) invisible to Prometheus since at least 2026-05-16. Fixed by editing `/etc/default/prometheus-node-exporter` to remove `mnt` from exclude regex and restarting service. All three `/mnt` mountpoints now report metrics; `MountpointMissing_hddbackup1` alert auto-resolved.
-
-### Pipeline Rebuild (2026-05-19)
-- **Issue:** Pipeline looping on error due to stuck file in staging-inbox that failed validation repeatedly (every 15 minutes)
-- **Resolution:** Deleted stuck file; rebuilt pipeline with per-file API calls and immediate cost logging
-- **Testing:** Verified cost logging fires immediately after each Claude API call, before parse/push operations
-- **Verification:** Monitor gilgamesh_costs for 8 new rows per pipeline run; observe API usage for 24 hours to confirm cost is under target
-
-### Langfuse Wiring Test (2026-05-21)
-- **Status:** Completed successfully
-- **Test Date:** 2026-05-21
-- **Result:** Single trace (da-vinci-update) with 8 child generations confirmed visible in Langfuse UI via direct URL and public API; confirmed in ClickHouse analytics data
-- **Verification Steps:**
-  - [x] Verify Langfuse trace appears at https://langfuse.najhin-gaming.com after test run
-  - [x] Confirm 8 generations visible under da-vinci-update trace (via API and direct URL)
-  - [x] Investigate and fix UI trace list display bug (resolved 2026-05-22 — 1-hour analytics delay)
-  - [ ] Wire Langfuse into MERLIN and Midas next
-
-### Key Technical Notes
-- Backtick template literals in n8n Code nodes cause 400 errors on Anthropic API; use single-quoted strings with concatenation instead
-- Fetch GitHub Files must hardcode token directly; do not reference trigger payload fields that are not explicitly defined in trigger schema
-- decisions.md on first creation uses null SHA path in GitHub push to create file fresh; subsequent runs use fetched SHA
-- Cost logging must fire immediately after each API call, not after parse or push operations
-- Langfuse integration uses internal VLAN URL (http://192.168.30.223:3000) for n8n calls to avoid unnecessary external routing; trace batching consolidates all 8 file generations into single observability record
-- Langfuse public URL (https://langfuse.najhin-gaming.com) used for UI verification and external access
-- Langfuse v3 self-hosted UI trace list bug (2026-05-21) resolved overnight due to 1-hour analytics aggregation delay; traces now visible in list with all generations
-- Langfuse ingestion timestamps must use n8n server UTC time (new Date().toISOString()); do not add timezone offsets
-- Log Cost command_type strings must match file names exactly; copy-paste errors are silent bugs
-- SKIP detection in Da Vinci nodes must use startsWith() not strict equality (===) — Da Vinci may return multiline responses like "SKIP\n\nReasoning..."
-- Date placeholders ({{date}}) must be replaced in Code nodes before Claude API call, not by Claude itself — more reliable and deterministic
-- VM 400 block device is /dev/vda not /dev/sda (KVM virtio); always use vda for disk operations on VM 400
-- node_exporter systemd unit on Proxmox host is `prometheus-node-exporter.service` (Debian package), not `node_exporter.service`; default exclude regex includes `mnt` which must be removed to expose `/mnt/*` mountpoints to Prometheus; requires restart of service after editing `/etc/default/prometheus-node-exporter`
-- Pelican web-based file editor introduces hard line breaks into multi-line ini values (e.g., PalWorldSettings.ini's OptionSettings block); Palworld silently ignores entire OptionSettings block if split across lines instead of remaining a single unbroken line. Safe method: edit via `pct exec` + `sed` commands from Proxmox host, never via panel Files tab.
-- Pelican's PalworldServerConfigParser (run in PalServer.sh at container boot) auto-populates PublicIP from local allocation IP when egg's "Public IP" variable is empty; must be made User Editable + User Viewable to allow manual override via Startup tab.
-- Pelican panel file Download function (Files tab → Archive → Download) has a known bug returning 404 "resource not found" for some eggs/nodes (root cause suspected in Wings FQDN/signed URL generation); reliable workaround is `pct exec <CTID> -- tar -czf /tmp/backup.tar.gz ...` followed by `pct pull <CTID> /tmp/backup.tar.gz ...` from Proxmox host, bypassing Wings entirely.
-- UGREEN DXP2800 NAS (Kinmoon) has a documented SATA link-speed compatibility issue where some drives show narrow signal timing tolerance at 6.0Gbps, causing deterministic "failed command: WRITE FPDMA QUEUED" errors ~18-19 seconds after boot/reboot. This is NOT a drive health issue (confirmed via healthy SMART data). Fix: force SATA to 3.0Gbps via `libata.force=3.0Gbps` kernel boot parameter in `/boot/EFI/debian/grub.cfg` and `/boot/EFI/debian/grub.am`. Setting may be overwritten by future firmware/system updates and requires rechecking after any UGOS update. **This fix was confirmed working on 2026-07-31 after full Storage Pool 1 rebuild — zero WRITE FPDMA QUEUED errors observed since applying.**
-- UGOS `storage_serv` daemon has a documented bug where its internal `mdadm --monitor` process mishandles the `RebuildFinished` event during active RAID resync, throwing `strconv.Atoi: parsing "-": invalid syntax` at kernel level and causing `md: recover interrupted`. Reproduced twice during 2026-07-30/31 session. Mitigated (not fixed) by stopping `storage_serv` during rebuild attempts. Worth reporting upstream to UGREEN.
-- **Kuromoon host freeze (2026-09-21):** Full host-wide unresponsiveness affecting pveproxy, sshd, and CT 203 (Grafana) simultaneously — all TCP connections accepted but never completed protocol/application responses, despite normal ICMP ping replies. Resolved via hard power cycle; root trigger unconfirmed. Leading (unproven) theory: I/O stall related to kinmoon-smb CIFS mount at 95% capacity (2.6TB/2.7TB) backed by Kinmoon NAS with documented failing Hard Drive 1 (July 23, 2026). Forensic evidence sparse — Prometheus/Grafana were down during freeze, journald
+16. **node_exporter /mnt exclusion (2026-07-14):** Debian package default `--collector.filesystem.mount
