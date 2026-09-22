@@ -2,7 +2,7 @@
 
 > **Last Updated:** September 22, 2026  
 > **Total Phases:** 106 planned | 54 completed | 0 in progress | 52 future  
-> **Next Session Priority:** Phase 16.6 (Chaldea Rename Propagation) OR remaining Phase 37 sub-items (CT 220 autostart race, journald gap investigation, Kinmoon capacity cleanup)
+> **Next Session Priority:** Phase 16.6 (Chaldea Rename Propagation) OR remaining Phase 37 sub-items (Kinmoon auto-purge retention, backup-daily scheduler root cause, CT 220 autostart race, journald gap investigation)
 
 ---
 
@@ -176,7 +176,7 @@ No phases currently in progress.
 | 28    | Storage Optimization                 | —            | 6h     | Move Nextcloud data, thin pool cleanup |
 | 29    | Performance Monitoring Expansion     | Phase 5      | 5h     | Advanced metrics and alerting rules    |
 | 33    | Maintenance Window Consolidation & Automation | Phase 25 | 4h | **New Phase (July 17, 2026).** Consolidate Palworld + Terraria restart schedules with nightly vzdump backup job into single off-peak maintenance block (exact timing pending confirmation of reliably dead low-usage hour, currently all events scattered). Per-server restart Schedules in Pelican to be set up once window finalized. |
-| 37    | Kuromoon Host Stability & Monitoring | Phase 5      | TBD    | **Status (Sept 21, 2026):** Kuromoon experienced full host-wide unresponsiveness incident (Sept 21, 2026) with pveproxy, sshd, and CT 203 (Grafana) all accepting TCP connections but never completing responses, while host still replied to ICMP. Resolved via hard power cycle. Root cause not conclusively identified; plausible (unproven) link to kinmoon-smb CIFS mount at 95% capacity combined with Kinmoon NAS's failing Hard Drive 1. **Update (Sept 22, 2026):** **(2) external/independent alerting for host-level unresponsiveness — COMPLETE.** Kuromoon host-freeze watchdog deployed on Pi-hole (192.168.30.10) at `/usr/local/bin/kuromoon-watchdog.sh`, running via cron every 2 minutes: checks HTTPS response from Proxmox GUI (port 8006) on both LAN IP (192.168.10.5) and Tailscale IP (100.89.254.28); alerts via direct Telegram Bot API (not ntfy, which runs on Kuromoon and would be unavailable during freeze); fires after 3 consecutive failures (~6 min); distinguishes genuine host freeze ("both LAN and Tailscale down") from routing-only issue ("LAN down, Tailscale up"); sends recovery message when back online; fully tested end-to-end (stopped pveproxy, confirmed alert fired; restarted, confirmed recovery fired). State tracked in `/var/tmp/kuromoon-watchdog-state` and `/var/tmp/kuromoon-watchdog-failcount`. Sub-items remaining: **(1) Kinmoon drive replacement to free capacity** (now at 96% used, "Warning" state in UGOS) — elevated urgency; **(3) CT 220 (Nextcloud) autostart race condition** (recurring pattern on reboots since May 2026); **(4) journald silent-logging gap on Kuromoon** (halted Sept 3, remained silent for 18 days until reboot Sept 21). |
+| 37    | Kuromoon Host Stability & Monitoring | Phase 5      | TBD    | **Status (Sept 21, 2026):** Kuromoon experienced full host-wide unresponsiveness incident (Sept 21, 2026) with pveproxy, sshd, and CT 203 (Grafana) all accepting TCP connections but never completing responses, while host still replied to ICMP. Resolved via hard power cycle. Root cause not conclusively identified; plausible (unproven) link to kinmoon-smb CIFS mount at 95% capacity combined with Kinmoon NAS's failing Hard Drive 1. **Update (Sept 22, 2026):** **(2) external/independent alerting for host-level unresponsiveness — COMPLETE.** Kuromoon host-freeze watchdog deployed on Pi-hole (192.168.30.10) at `/usr/local/bin/kuromoon-watchdog.sh`, running via cron every 2 minutes: checks HTTPS response from Proxmox GUI (port 8006) on both LAN IP (192.168.10.5) and Tailscale IP (100.89.254.28); alerts via direct Telegram Bot API (not ntfy, which runs on Kuromoon and would be unavailable during freeze); fires after 3 consecutive failures (~6 min); distinguishes genuine host freeze ("both LAN and Tailscale down") from routing-only issue ("LAN down, Tailscale up"); sends recovery message when back online; fully tested end-to-end (stopped pveproxy, confirmed alert fired; restarted, confirmed recovery fired). State tracked in `/var/tmp/kuromoon-watchdog-state` and `/var/tmp/kuromoon-watchdog-failcount`. Sub-items remaining: **(1) Kinmoon auto-purge retention policy** (PARTIALLY RESOLVED this session: manual backlog purge reduced capacity from 96% to 73.76%, but UGOS control-panel auto-purge policy on `#recycle` folder still NOT set — without it, recurrence is inevitable as `backup-daily` runs); **(3) CT 220 (Nextcloud) autostart race condition** (reconfirmed recurring on Sept 21 post-reboot, unfixed); **(4) journald silent-logging gap on Kuromoon** (halted Sept 3, remained silent for 18 days until reboot Sept 21, root cause unresolved). **NEW ITEM DISCOVERED:** **(5) 34-day `backup-daily` vzdump scheduler silence (Aug 18 - Sep 21)** — job never invoked for entire month (verified via empty `journalctl -u pvescheduler` window), only fired again as of Sept 22 02:00 run (completed successfully for all 22 VMIDs). Immediate symptom resolved, but root cause unknown — working theory ties to same host instability as Sept 21 freeze, but unconfirmed for full 34-day span (Sept 3-21 overlap with journald gap, but Aug 18-Sep 3 is separate undocumented gap). |
 
 ### 🛡️ Core Services (Priority: Medium)
 
@@ -215,60 +215,26 @@ No phases currently in progress.
 
 ## 🎯 Recommended Next Session Order
 
-### Phase 16.6: Chaldea Rename Propagation (Next Major Session)
+### Phase 37 Sub-Items: Kuromoon Stability (URGENT NEXT SESSION)
+**Effort:** Variable  
+**Priority:** Elevated (following Sept 21-22 investigations)  
+**Focus Areas:**
+1. **Kinmoon auto-purge retention policy** — PARTIALLY RESOLVED this session; manual backlog cleared (96% → 73.76%), but UGOS control-panel auto-purge on `#recycle` folder still NOT configured. Without this, capacity crisis will recur as `backup-daily` runs going forward. Action: set UGOS recycle-bin retention to 7-14 days.
+2. **Root cause of 34-day `backup-daily` scheduler silence (Aug 18 - Sep 21)** — job mysteriously stopped firing for entire month (verified via `journalctl -u pvescheduler` empty window), only recovered Sept 22 02:00. Immediate symptom resolved (job running again), but root cause unconfirmed. Theory: same host instability behind Sept 21 freeze, but no forensic proof for full 34-day span.
+3. **CT 220 (Nextcloud) autostart race condition** — reconfirmed recurring on Sept 21 post-incident reboot. `/var/log/pve/tasks/active` shows `vzstart:220 ... startup for container '220' failed`. Pattern recurs on nearly every reboot (May 16, July 6, Aug 11, Sept 21).
+4. **journald silent-logging gap investigation** — Kuromoon's journald halted Sept 3, remained silent for 18 days until Sept 21 reboot. Unknown if this was one extended stall or intermittent outages; no root cause identified.
+5. **Lightweight backup freshness watchdog** — add alert if no new file lands in kinmoon-smb `dump` folder within ~26 hours. Current `mailnotification failure` config only catches job errors, not silent job skips (exactly what happened this month).
+
+**Summary:** Resolve outstanding Phase 37 stability items to prevent recurrence of Sept 21 host freeze incident and prevent Kinmoon capacity crisis return.
+
+### Phase 16.6: Chaldea Rename Propagation (Second Major Session)
 **Effort:** 8 hours  
 **Priority:** High  
 **Goal:** Full ecosystem rename from Gilgamesh → Jeanne Alter across bot identity, system prompt, Telegram username, and all 8 documentation files  
 **Deliverables:** 
-- Update n8n workflow system prompts across all Chaldea agents
+- Update n8n workflow system prompts across all Chaldea agents (rename "Gilgamesh" → "Jeanne Alter", update personality)
 - Rename Telegram bot from @JhinGilgamesh_bot to new handle
 - Update all 8 documentation files with new agent names
+- Rename Cu Chulainn workflow references from old "Guardian" name
 - Consistent agent naming across all systems
-**Summary:** Rename bot identity to Jeanne Alter across n8n workflows, Telegram bot handle, and documentation. Requires updates to: Da Vinci, MERLIN, Midas, Cu Chulainn (currently still named "Guardian" in some workflow references), and documentation files.
-
-### Phase 37 Sub-Items (Parallel/High Priority)
-**Effort:** Variable  
-**Priority:** Elevated (following Sept 21-22 host freeze incident)  
-**Focus Areas:**
-1. **Kinmoon capacity cleanup** (now 96% used, "Warning" state) — critical for Kuromoon stability
-2. **CT 220 (Nextcloud) autostart race condition** — recurring on reboots since May 2026
-3. **journald silent-logging gap investigation** — Kuromoon's journald halted Sept 3, remained silent 18 days
-**Summary:** Resolve outstanding Phase 37 stability items to prevent recurrence of Sept 21 host freeze incident.
-
-### Phase 24.15: Jeanne Alter Email Management Pipeline (Second Major Session)
-**Effort:** 6-8 hours  
-**Priority:** High  
-**Status:** Design complete (July 9, 2026)  
-**Precondition:** Phase 24.11 (Credential Store Migration) — n8n credentials need to be in the built-in store first  
-**Deliverables:** 
-- Email classifier sub-workflow for 4 accounts
-- 3× daily schedule triggers
-- Telegram notifications
-- Permanent-fact routing to Da Vinci Personal Knowledge gateway for bills/payments/subscriptions
-- Support for Gmail OAuth2 (3 accounts) and iCloud IMAP (1 account)
-**Summary:** Implement email read + notification pipeline for personal accounts with automatic categorization and integration into knowledge system. qwen3:14b primary model, Claude Haiku fallback.
-
-### Phase 24.14: Jeanne Alter Web Search Quality Improvement (Third Major Session)
-**Effort:** 4 hours  
-**Priority:** High  
-**Goal:** Iterative multi-query search with synthesis step  
-**Deliverables:** Improved search result relevance and comprehensiveness closer to Gemini-style search
-**Summary:** Replace single Firecrawl + Haiku call pattern with iterative multi-query approach and result synthesis.
-
-### Phase Midas v2: Financial Intelligence (Fourth Major Session)
-**Effort:** 10-12 hours  
-**Priority:** High  
-**Goal:** Firefly III integration with receipt and PDF statement capture  
-**Deliverables:** 
-- Expense tracking with receipt OCR
-- PDF import workflow
-- Spending insights via Jeanne Alter
-- Suggested spending optimization when approaching $10 monthly limit
-**Summary:** Enhance Midas agent with financial intelligence features including receipt capture, expense tracking, and proactive spending recommendations.
-
-### Phase 31: Off-site Backup (Backblaze B2) (Ready to Start)
-**Effort:** 6 hours  
-**Priority:** High  
-**Status:** NOW UNBLOCKED (Aug 1, 2026) — Kinmoon Storage Pool 1 rebuild complete and verified healthy. Emergency backup copy safe on Kuromoon. backup-daily job re-enabled.  
-**Deliverables:** Offsite backup expansion, completing 3-2-1 backup strategy
-**Summary:** With Kinmoon stable and
+**Summary:** Rename bot identity to Jeanne Alter across n8n workflows, Telegram bot handle, and documentation. Requires updates to: Da Vinci, MERLIN
